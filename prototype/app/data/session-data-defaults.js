@@ -17,14 +17,13 @@ Example usage:
 
 */
 
-let tasks                 = require('./tasks.json')
-let caseManagers          = require('./caseManagers.js')
-let taskTypes             = require('./taskTypes.json')
-
+const tasks = require('./tasks.json')
+const caseManagers = require('./caseManagers.js')
+const taskTypes = require('./taskTypes.json')
 
 module.exports = {
   // Insert values here
   tasks,
   caseManagers,
-  taskTypes,
+  taskTypes
 }

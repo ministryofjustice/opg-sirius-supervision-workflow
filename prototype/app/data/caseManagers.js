@@ -6,5 +6,5 @@ module.exports = [
   'Raman Kumar',
   'Simon Read',
   'Sujon Miah',
-  'Vincent McBrien',
+  'Vincent McBrien'
 ]

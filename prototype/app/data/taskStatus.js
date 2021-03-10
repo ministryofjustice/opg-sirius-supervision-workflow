@@ -3,5 +3,5 @@ module.exports = [
   'Allocated',
   'Unallocated',
   'Overdue',
-  'Completed',
+  'Completed'
 ]
