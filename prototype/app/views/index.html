@@ -32,13 +32,13 @@
         </div>
       </div>
 
-      {% include "workflow/1-0/includes/overview.html" %}
+      {% include "workflow/overview.html" %}
 
       <h3 class="govuk-heading-m data-description">Showing: all <strong>open tasks</strong></h3>
 
       <div class="govuk-grid-row">
         <div id="filters-column" class="govuk-grid-column-one-quarter">
-          {% include "workflow/1-0/includes/filters.html" %}
+          {% include "workflow/filters.html" %}
         </div>
 
         <div id="table-column" class="govuk-grid-column-three-quarters">
@@ -51,14 +51,14 @@
             Manage task
           </button>
 
-          {% include "workflow/1-0/includes/success-banner.html" %}
+          {% include "workflow/success-banner.html" %}
 
-          {% include "workflow/1-0/includes/pagination.html" %}
+          {% include "workflow/pagination.html" %}
 
-          {% include "workflow/1-0/includes/edit-panel.html" %}
+          {% include "workflow/edit-panel.html" %}
 
-          {% include "workflow/1-0/includes/table.html" %}
-          {% include "workflow/1-0/includes/pagination.html" %}
+          {% include "workflow/table.html" %}
+          {% include "workflow/pagination.html" %}
         </div>
 
       </div>
