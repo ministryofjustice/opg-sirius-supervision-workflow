@@ -22,11 +22,11 @@ jQuery(document).ready(function ($) {
       $(this).addClass('due')
       $(this).after('<span class="secondary due">Due this week</span>')
       // If it's due tomorrow
-    } else if (due == 1) {
+    } else if (due === 1) {
       $(this).addClass('due')
       $(this).after('<span class="secondary due">Due tomorrow</span>')
       // If it's due today
-    } else if (due == 0) {
+    } else if (due === 0) {
       $(this).addClass('overdue')
       $(this).after('<span class="secondary overdue">Due today</span>')
       // If it's due before today
@@ -279,7 +279,7 @@ jQuery(document).ready(function ($) {
       var filterSelected = $(this).val()
       $('tbody td:contains(' + filterSelected + ')').closest('tr').show()
 
-      if (filterSelected == 'Not assigned') {
+      if (filterSelected === 'Not assigned') {
         $('tbody td:contains(–)').closest('tr').show()
         // alert ('working');
       }
