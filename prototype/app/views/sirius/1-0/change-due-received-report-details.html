@@ -1,0 +1,451 @@
+<style>
+    .hmcts-header__navigation {
+      color: #ffffff;
+      margin-top: -35px;
+  }
+  
+  .govuk-heading-l {
+      margin-bottom: 5px;
+  }
+  </style>
+  
+  {% extends "../../layout.html" %}
+  
+  {% block pageTitle %}
+  Sirius Supervision - Reports
+  {% endblock %}
+  
+  {% block header %}
+  <header class="govuk-header " role="banner" data-module="govuk-header">
+    <div class="govuk-header__container govuk-width-container">
+      <div class="govuk-header__logo">
+        <a href="index.html" class="govuk-header__link govuk-header__link--homepage">
+          <span class="govuk-header__logotype">
+            <svg aria-hidden="true" focusable="false" class="govuk-header__logotype-crown" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 132 97" height="30" width="36">
+              <path fill="currentColor" fill-rule="evenodd" d="M25 30.2c3.5 1.5 7.7-.2 9.1-3.7 1.5-3.6-.2-7.8-3.9-9.2-3.6-1.4-7.6.3-9.1 3.9-1.4 3.5.3 7.5 3.9 9zM9 39.5c3.6 1.5 7.8-.2 9.2-3.7 1.5-3.6-.2-7.8-3.9-9.1-3.6-1.5-7.6.2-9.1 3.8-1.4 3.5.3 7.5 3.8 9zM4.4 57.2c3.5 1.5 7.7-.2 9.1-3.8 1.5-3.6-.2-7.7-3.9-9.1-3.5-1.5-7.6.3-9.1 3.8-1.4 3.5.3 7.6 3.9 9.1zm38.3-21.4c3.5 1.5 7.7-.2 9.1-3.8 1.5-3.6-.2-7.7-3.9-9.1-3.6-1.5-7.6.3-9.1 3.8-1.3 3.6.4 7.7 3.9 9.1zm64.4-5.6c-3.6 1.5-7.8-.2-9.1-3.7-1.5-3.6.2-7.8 3.8-9.2 3.6-1.4 7.7.3 9.2 3.9 1.3 3.5-.4 7.5-3.9 9zm15.9 9.3c-3.6 1.5-7.7-.2-9.1-3.7-1.5-3.6.2-7.8 3.7-9.1 3.6-1.5 7.7.2 9.2 3.8 1.5 3.5-.3 7.5-3.8 9zm4.7 17.7c-3.6 1.5-7.8-.2-9.2-3.8-1.5-3.6.2-7.7 3.9-9.1 3.6-1.5 7.7.3 9.2 3.8 1.3 3.5-.4 7.6-3.9 9.1zM89.3 35.8c-3.6 1.5-7.8-.2-9.2-3.8-1.4-3.6.2-7.7 3.9-9.1 3.6-1.5 7.7.3 9.2 3.8 1.4 3.6-.3 7.7-3.9 9.1zM69.7 17.7l8.9 4.7V9.3l-8.9 2.8c-.2-.3-.5-.6-.9-.9L72.4 0H59.6l3.5 11.2c-.3.3-.6.5-.9.9l-8.8-2.8v13.1l8.8-4.7c.3.3.6.7.9.9l-5 15.4v.1c-.2.8-.4 1.6-.4 2.4 0 4.1 3.1 7.5 7 8.1h.2c.3 0 .7.1 1 .1.4 0 .7 0 1-.1h.2c4-.6 7.1-4.1 7.1-8.1 0-.8-.1-1.7-.4-2.4V34l-5.1-15.4c.4-.2.7-.6 1-.9zM66 92.8c16.9 0 32.8 1.1 47.1 3.2 4-16.9 8.9-26.7 14-33.5l-9.6-3.4c1 4.9 1.1 7.2 0 10.2-1.5-1.4-3-4.3-4.2-8.7L108.6 76c2.8-2 5-3.2 7.5-3.3-4.4 9.4-10 11.9-13.6 11.2-4.3-.8-6.3-4.6-5.6-7.9 1-4.7 5.7-5.9 8-.5 4.3-8.7-3-11.4-7.6-8.8 7.1-7.2 7.9-13.5 2.1-21.1-8 6.1-8.1 12.3-4.5 20.8-4.7-5.4-12.1-2.5-9.5 6.2 3.4-5.2 7.9-2 7.2 3.1-.6 4.3-6.4 7.8-13.5 7.2-10.3-.9-10.9-8-11.2-13.8 2.5-.5 7.1 1.8 11 7.3L80.2 60c-4.1 4.4-8 5.3-12.3 5.4 1.4-4.4 8-11.6 8-11.6H55.5s6.4 7.2 7.9 11.6c-4.2-.1-8-1-12.3-5.4l1.4 16.4c3.9-5.5 8.5-7.7 10.9-7.3-.3 5.8-.9 12.8-11.1 13.8-7.2.6-12.9-2.9-13.5-7.2-.7-5 3.8-8.3 7.1-3.1 2.7-8.7-4.6-11.6-9.4-6.2 3.7-8.5 3.6-14.7-4.6-20.8-5.8 7.6-5 13.9 2.2 21.1-4.7-2.6-11.9.1-7.7 8.8 2.3-5.5 7.1-4.2 8.1.5.7 3.3-1.3 7.1-5.7 7.9-3.5.7-9-1.8-13.5-11.2 2.5.1 4.7 1.3 7.5 3.3l-4.7-15.4c-1.2 4.4-2.7 7.2-4.3 8.7-1.1-3-.9-5.3 0-10.2l-9.5 3.4c5 6.9 9.9 16.7 14 33.5 14.8-2.1 30.8-3.2 47.7-3.2z"></path>
+              <image src="/assets/images/govuk-logotype-crown.png" xlink:href="" class="govuk-header__logotype-crown-fallback-image" width="36" height="32"></image>
+            </svg>
+            <span class="govuk-header__logotype-text">
+              SIRIUS
+            </span>
+          </span>
+        </a>
+      </div>
+      <div class="govuk-header__content">
+        <a href="#" class="govuk-header__link govuk-header__link--service-name">
+          David Francis - Dashboard
+        </a>
+        <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide Top Level Navigation">Menu</button>
+        <nav>
+          <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
+            <li class="govuk-header__navigation-item govuk-header__navigation-item--active">
+              <a class="govuk-header__link" href="#1">
+                Supervision
+              </a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="#2">
+                Lasting Power of Attorney
+              </a>
+            </li>
+            <!-- <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="#3">
+                Navigation item 3
+              </a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="#4">
+                Navigation item 4
+              </a>
+            </li> -->
+          </ul>
+        </nav>
+      </div>
+  
+      <div class="hmcts-header__content">
+        <nav class="hmcts-header__navigation" aria-label="Account navigation">
+          <ul class="hmcts-header__navigation-list">
+      
+            <li class="hmcts-header__navigation-item">
+              <a class="hmcts-header__navigation-link" href="#1">
+                Help
+              </a>
+            </li>
+      
+            <li class="hmcts-header__navigation-item">
+              <a class="hmcts-header__navigation-link" href="#1">
+                Sign out
+              </a>
+            </li>
+      
+          </ul>
+        </nav>
+      </div>
+  
+    </div>
+    
+  </header>
+  
+  <div class="govuk-width-container">
+    <div class="govuk-breadcrumbs ">
+      <ol class="govuk-breadcrumbs__list">
+        <li class="govuk-breadcrumbs__list-item">
+          <a class="govuk-breadcrumbs__link" href="#">Supervision</a>
+        </li>
+        <li class="govuk-breadcrumbs__list-item">
+          <a class="govuk-breadcrumbs__link" href="#">Dashboard</a>
+        </li>
+        <li class="govuk-breadcrumbs__list-item">
+          Matt Smith
+        </li>
+      </ol>
+    </div>
+    <div class="govuk-grid-row">
+      
+      <div class="govuk-grid-column-two-thirds">
+        <div class="moj-search">
+          <form action="#" method="post">
+          <div class="govuk-form-group">
+            <!-- <label class="govuk-label moj-search__label govuk-!-font-weight-bold" for="search">
+              Find a person
+            </label> -->
+          
+            <!-- <span id="search-hint" class="govuk-hint moj-search__hint ">
+              You can search by name, date of birth or national insurance number
+            </span> -->
+            <input class="govuk-input moj-search__input " id="search" name="search" type="search" placeholder="Search by order number, SIRIUS ID or name" aria-describedby="search-hint">
+          </div>       
+          <button type="submit" class="govuk-button moj-search__button " data-module="govuk-button">
+            Search
+          </button>      
+          </form>
+          </div> 
+  
+      </div>
+  </div>
+  
+  <br>
+  
+  <section class="key-details-bar" role="contentinfo" aria-label="Key details">
+    <dl class="key-details-bar__key-details">
+      <div class="key-details-bar__top-block">
+        <!-- <dt class="visually-hidden">Name:</dt> -->
+        <dd class="key-details-bar__name">Matt Smith</dd>
+  
+        <!-- <dt class="visually-hidden">National Insurance number:</dt> -->
+        <dd class="key-details-bar__nino">Court reference: 83891960</dd>
+  
+        <!-- <dt class="visually-hidden">Claim status:</dt> -->
+        <!-- <dd class="key-details-bar__status">Complete</dd> -->
+      </div>
+  
+      <div class="key-details-bar__bottom-block">
+        <dt style="font-weight: bold;">DOB:</dt>
+        <dd>28 March 1970</dd>
+  
+        <dt style="font-weight: bold;">Address:</dt>
+        <dd>72 Guild street, Nottingham, NG80 1EH</dd>
+  
+        <dt style="font-weight: bold;">Medical Condition:</dt>
+        <dd>Alzheimer’s</dd>
+      </div>
+    </dl>
+  </section>
+  
+  </div>
+  
+  
+  <br>
+  
+  
+  
+  
+  
+  
+  
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <nav class="navigation-global">
+          <ul>
+            <li>
+              <a href="#">Case details</a>
+            </li>
+        
+            <li>
+              <a href="#">Tasks</a>
+            </li>
+        
+            <li>
+              <a href="#">Timeline</a>
+            </li>
+      
+            <li>
+              <a href="#">Contacts</a>
+            </li>
+      
+            <li>
+              <a href="#" class="active" aria-current="page">Reports</a>
+            </li>
+      
+            <li>
+              <a href="#">Documents</a>
+            </li>
+      
+            <li>
+              <a href="#">Finance</a>
+            </li>
+      
+            <li>
+              <a href="#">Visits</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  
+  
+  
+    
+  
+    <div class="govuk-width-container">
+  
+    
+      <main class="govuk-main-wrapper">
+    
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <a href="/1-0/index.html#received" class="govuk-back-link">Back to received reports</a>
+            <h1 class="govuk-heading-xl">Reports details</h1>
+  
+  
+            <dl class="govuk-summary-list">
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Report type
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  OPG102
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <!-- <a class="govuk-link" href="#">
+                    Change<span class="govuk-visually-hidden"> report type</span>
+                  </a> -->
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Reporting period
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  12 Dec 2018 to 10 Dec 2019
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-period-received-report-details.html">
+                    Change<span class="govuk-visually-hidden">reporting period</span>
+                  </a>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Due date
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  10 Dec 2019
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <!-- <a class="govuk-link" href="#">
+                    Change<span class="govuk-visually-hidden">due date</span>
+                  </a> -->
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Received date
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  10 Dec 2019
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-receive-received-report-details.html">
+                    Change<span class="govuk-visually-hidden">received date</span>
+                  </a>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Lodged date
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  31 Dec 2019
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-lodged-received-report-details.html">
+                    Change<span class="govuk-visually-hidden">lodged date</span>
+                  </a>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Lodged by
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  086 - David Francis
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <!-- <a class="govuk-link" href="#">
+                    Change<span class="govuk-visually-hidden"> lodged date</span>
+                  </a> -->
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Lodged status
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  Lodged: incomplete<br><span style="font-size: 16px; font-weight: bold;">More information requested by 21 Jan 2020</span>
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-lodged-status-received-report-details.html">
+                    Change<span class="govuk-visually-hidden"> lodged status</span>
+                  </a>
+                </dd>
+              </div>
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Format
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  <p class="govuk-body">Paper</p>
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-format-received-report-details.html">
+                    Change<span class="govuk-visually-hidden"> report format</span>
+                  </a>
+                </dd>
+              </div>
+  
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Review status
+                </dt>
+                <dd class="govuk-summary-list__value">
+                  <p class="govuk-body">Staff: referred</p>
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <a class="govuk-link" href="/1-0/change-review-received-report-details.html">
+                    Change<span class="govuk-visually-hidden">review status</span>
+                  </a>
+                </dd>
+              </div>
+            </dl>
+  
+            <div class="govuk-inset-text">
+              View associated documents for this report in the <a class="govuk-link" href="#">documents section</a>
+            </div>
+            <br>
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            <h2 class="govuk-heading-l">Reports timeline</h2>
+  
+            <div class="hmcts-timeline">
+
+              <div class="hmcts-timeline__item">
+              
+                <div class="hmcts-timeline__header">
+                  <h2 class="hmcts-timeline__title">
+                    Referred for staff review
+                  </h2>
+                
+                  <p class="hmcts-timeline__by">by David Francis</p>
+                
+                </div>
+                
+                <p class="hmcts-timeline__date"><time datetime="2017-11-20T14:27">02 Jan 2020 at 13:22pm</time></p>
+                
+                <p class="hmcts-timeline__description">This report has been referred for staff review</p>
+      
+                </div>
+
+              <div class="hmcts-timeline__item">
+              
+              <div class="hmcts-timeline__header">
+                <h2 class="hmcts-timeline__title">
+                  Report lodged: more information needed
+                </h2>
+              
+                <p class="hmcts-timeline__by">by David Francis</p>
+              
+              </div>
+              
+              <p class="hmcts-timeline__date"><time datetime="2018-01-25T14:04">31 Dec 2019 at 12:04pm</time></p>
+              
+              <p class="hmcts-timeline__description">We've assessed and accepted the report but need a small amount of additional information from the deputy.</p>
+              
+              <!-- <ul class="hmcts-timeline__documents">
+              
+                <li class="hmcts-timeline__document-item"><a class="hmcts-timeline__document-link" href="#1">Statement of information</a></li>
+              
+                <li class="hmcts-timeline__document-item"><a class="hmcts-timeline__document-link" href="#2">Another document</a></li>
+              
+              </ul> -->
+              
+              </div>
+                            
+              </div> 
+
+          </div>
+  
+  
+  
+    
+          <div class="govuk-grid-column-one-third">
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+  
+            <h2 class="govuk-heading-m">Due date:</h2>
+    
+  
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="address-postcode">
+                Due date
+              </label>
+              <input class="govuk-input govuk-input--width-20" id="due-date" name="due-date" value="2018-12-10" type="date">
+            </div>
+  
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="more-detail">
+                Note
+              </label>
+              <!-- <span id="more-detail-hint" class="govuk-hint">
+                Do not include personal or financial information, like your National Insurance number or credit card details.
+              </span> -->
+              <textarea class="govuk-textarea" id="more-detail" name="more-detail" rows="5" aria-describedby="more-detail-hint"></textarea>
+            </div>
+  
+            {{ govukButton({
+              text: "Save",
+              classes: "govuk-!-margin-right-1",
+              href: "#"
+            }) }}
+            
+            {{ govukButton({
+              text: "Cancel",
+              classes: "govuk-button--secondary",
+              href: "/1-0/received-report-details.html"
+            }) }}
+  
+          </div>
+        </div>
+    
+      </main>
+    </div>
+  
+  
+  
+  
+  
+  {% endblock %}
+  
+  {% block content %}
+  
+  
+  
+  {% endblock %}

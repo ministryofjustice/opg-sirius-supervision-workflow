@@ -1,0 +1,7 @@
+{
+  "name": "opg-sirius-workflow",
+  "version": "0.1.0",
+  "scripts": {
+    "postinstall": "yarn install --cwd prototype"
+  }
+}

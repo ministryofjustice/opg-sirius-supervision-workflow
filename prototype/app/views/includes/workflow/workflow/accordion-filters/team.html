@@ -1,0 +1,55 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+
+{{ govukCheckboxes({
+  idPrefix: "caseOwnerTeam",
+  name: "team",
+  attributes: {
+    "id": 'filterTeamCheckboxes'
+  },
+  classes: "govuk-checkboxes--small",
+  fieldset: {
+    legend: {
+      text: "Team",
+      isPageHeading: true,
+      classes: "govuk-fieldset__legend--m"
+    }
+  },
+  items: [
+    {
+      value: "team-1",
+      text: "Team 1"
+    },
+    {
+      value: "team-2",
+      text: "Team 2"
+    },
+    {
+      value: "team-3",
+      text: "Team 3"
+    },
+    {
+      value: "team-4",
+      text: "Team 4"
+    },
+    {
+      value: "team-5",
+      text: "Team 5"
+    },
+    {
+      value: "team-6",
+      text: "Team 6"
+    },
+    {
+      value: "team-7",
+      text: "Team 7"
+    },
+    {
+      value: "team-8",
+      text: "Team 8"
+    },
+    {
+      value: "team-9",
+      text: "Team 9"
+    }
+  ]
+}) }}

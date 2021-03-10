@@ -1,0 +1,39 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+
+{{ govukRadios({
+  classes: "govuk-radios--small",
+  idPrefix: "changed-name",
+  name: "changed-name",
+  attributes: {
+    "id": 'filterStatusCheckboxes'
+  },
+  fieldset: {
+    legend: {
+      text: "Select a task status",
+      isPageHeading: true,
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  items: [
+    {
+      value: "all",
+      text: "All tasks"
+    },
+    {
+      value: "allocated",
+      text: "Allocated"
+    },
+    {
+      value: "unallocated",
+      text: "Unallocated"
+    },
+    {
+      value: "overdue",
+      text: "Overdue"
+    },
+    {
+      value: "completed",
+      text: "Completed"
+    }
+  ]
+}) }}

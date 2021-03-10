@@ -1,0 +1,107 @@
+{% extends "layout_workflow.html" %}
+
+{% block pageTitle %}
+{{ serviceName }} - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+
+<main role="main" class="govuk-main-wrapper">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Supervision workflow</h1>
+
+      <div id="team-banner" class="govuk-grid-row">
+        <div id="team-banner-container" class="govuk-grid-column-full">
+          <h2 class="govuk-heading-m">Lay team 3</h2>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="change-team">
+              Change view
+            </label>
+            <select class="govuk-select" id="change-team" name="change-team">
+              <option value="team-1">Team 1</option>
+              <option value="team-2">Team 2</option>
+              <option value="team-3" selected>Team 3</option>
+              <option value="team-4">Team 4</option>
+              <option value="team-5">Team 5</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {% include "workflow/1-0/includes/overview.html" %}
+
+      <h3 class="govuk-heading-m data-description">Showing: all <strong>open tasks</strong></h3>
+
+      <div class="govuk-grid-row">
+        <div id="filters-column" class="govuk-grid-column-one-quarter">
+          {% include "workflow/1-0/includes/filters.html" %}
+        </div>
+
+        <div id="table-column" class="govuk-grid-column-three-quarters">
+
+          <button id="toggle-filters" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+            Show filters
+          </button>
+
+          <button id="edit-task" class="govuk-button govuk-button--blue" data-module="govuk-button">
+            Manage task
+          </button>
+
+          {% include "workflow/1-0/includes/success-banner.html" %}
+
+          {% include "workflow/1-0/includes/pagination.html" %}
+
+          {% include "workflow/1-0/includes/edit-panel.html" %}
+
+          {% include "workflow/1-0/includes/table.html" %}
+          {% include "workflow/1-0/includes/pagination.html" %}
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+{% endblock %}
+
+{% block pageScripts %}
+<script type="text/javascript">
+  var caseManagers = [
+  'Becky Lydon',
+  'Carole Langford',
+  'John Lowing',
+  'Joseph Magee',
+  'Raman Kumar',
+  'Simon Read',
+  'Sujon Miah',
+  'Vincent McBrien'
+]
+</script>
+
+<script type="text/javascript">
+  element = document.querySelector('#tt-overlay')
+  id = 'autocomplete-overlay'
+  accessibleAutocomplete({
+    displayMenu: 'overlay',
+    element: element,
+    id: id,
+    source: caseManagers
+  })
+</script>
+
+<script type="text/javascript">
+  element = document.querySelector('#tt-autoselect')
+  id = 'autocomplete-autoselect'
+  accessibleAutocomplete({
+    autoselect: true,
+    element: element,
+    id: id,
+    source: caseManagers
+  })
+</script>
+{% endblock %}
