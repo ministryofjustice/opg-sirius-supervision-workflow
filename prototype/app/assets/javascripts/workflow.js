@@ -1,6 +1,7 @@
 /* Workflow prototype specific styles $ */
 
 /* eslint-env jquery */
+/* eslint eqeqeq: "off" */
 
 // Warn about using the kit in production
 
