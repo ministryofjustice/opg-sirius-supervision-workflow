@@ -347,4 +347,4 @@ $(document).on("click", "a.moj-filter__tag",function() {
 
   return false;
   // alert (deleteThisCorrect);
-});
+})
