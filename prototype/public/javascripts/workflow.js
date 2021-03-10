@@ -1,5 +1,7 @@
 /* Workflow prototype specific styles $ */
 
+/* eslint-env jquery */
+
 // Warn about using the kit in production
 
 new MOJFrontend.SortableTable({
