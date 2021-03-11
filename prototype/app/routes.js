@@ -9,7 +9,7 @@ router.get('*', (req, res, next) => {
 
 router.get('/home', (req, res, next) => {
   if (req.session.data.email === 'user@opgtest.com') {
-    res.redirect('/workflow')
+    res.redirect('/my-details')
   } else {
     next()
   }

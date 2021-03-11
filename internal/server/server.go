@@ -20,8 +20,8 @@ type Templates interface {
 
 func New(logger *log.Logger, client Client, templates Templates, webDir string) http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("/", http.RedirectHandler("/workflow", http.StatusFound))
-	mux.Handle("/workflow", myDetails(logger, client, templates))
+	mux.Handle("/", http.RedirectHandler("/my-details", http.StatusFound))
+	mux.Handle("/my-details", myDetails(logger, client, templates))
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
 	mux.Handle("/assets/", static)

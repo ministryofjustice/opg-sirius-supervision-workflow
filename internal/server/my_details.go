@@ -8,7 +8,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type MyDetailsClient interface {
+type myDetailsClient interface {
 	MyDetails(context.Context, []*http.Cookie) (sirius.MyDetails, error)
 	AuthenticateClient
 }

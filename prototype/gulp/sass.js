@@ -11,7 +11,7 @@ const sourcemaps = require('gulp-sourcemaps')
 const path = require('path')
 const fs = require('fs')
 
-const extensions = require('../lib/extensions/extensions')
+const extensions = require('../lib/middleware/extensions/extensions')
 const config = require('./config.json')
 
 gulp.task('sass-extensions', function (done) {

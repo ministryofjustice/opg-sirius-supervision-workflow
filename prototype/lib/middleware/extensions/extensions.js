@@ -39,7 +39,7 @@ const fs = require('fs')
 const path = require('path')
 
 // Local dependencies
-const appConfig = require('../../app/config')
+const appConfig = require('../../../app/config')
 
 // Generic utilities
 const removeDuplicates = arr => [...new Set(arr)]
