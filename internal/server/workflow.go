@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ministryofjustice/opg-sirius-user-management/internal/sirius"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
 type MyDetailsClient interface {
