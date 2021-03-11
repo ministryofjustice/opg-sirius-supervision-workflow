@@ -66,7 +66,7 @@ jobs:
             export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
             docker tag sirius-workflow:latest << parameters.container_repo_url >>:latest
             docker tag sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               # We want all of the tags pushed
               docker push << parameters.container_repo_url >>
             else
