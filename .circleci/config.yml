@@ -1,0 +1,23 @@
+version: 2.1
+
+workflows:
+  version: 2
+  pr:
+    jobs:
+      - test
+
+jobs:
+  test:
+    docker:
+      - image: circleci/golang
+    steps:
+      - checkout
+      - run:
+          name: Install modules
+          command: go mod download
+      - run: mkdir -p /tmp/test-results
+      - run:
+          name: Run tests
+          command: gotestsum --junitfile /tmp/test-results/unit-tests.xml
+      - store_test_results:
+          path: /tmp/test-results

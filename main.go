@@ -13,7 +13,7 @@ import (
 
 func newServer(port string) *http.Server {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello")
+		io.WriteString(w, "Hello Kate and Nick, the beautiful webpage is running")
 	})
 
 	return &http.Server{Addr: ":" + port, Handler: handler}
