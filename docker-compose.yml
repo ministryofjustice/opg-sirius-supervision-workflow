@@ -1,0 +1,10 @@
+version: "3.6"
+
+services:
+  api:
+    build: ./mock-api
+    ports: ["8081:8080"]
+
+  app:
+    build: .
+    ports: ["8080:80"]
