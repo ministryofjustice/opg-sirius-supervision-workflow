@@ -1,0 +1,50 @@
+<!-- Task table row -->
+<tr class="govuk-table__row">
+
+  <!-- Task type -->
+  <td class="govuk-table__cell govuk-table__select">
+    <div class="govuk-checkboxes govuk-checkboxes--small">
+      <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input sirius-select-task" id="organisation" name="taskDetails" type="checkbox" value="hmrc">
+        <label class="govuk-label govuk-checkboxes__label" for="organisation">
+          <span class="govuk-visually-hidden">Select</span>
+        </label>
+      </div>
+    </div>
+  </td>
+
+  <!-- Task type -->
+  <td class="govuk-table__cell task_type">
+    {{ task.task_type_name }}
+  </td>
+
+  <!-- Client name and ID -->
+  <td class="govuk-table__cell">
+    {{ task.client_name }}
+    <span class="secondary">{{ task.client_id }}</span>
+  </td>
+
+  <!-- Case owner -->
+  <td class="govuk-table__cell">
+    {{ task.case_owner_name }}
+    <span class="secondary">{{ task.case_owner_team }}</span>
+  </td>
+
+  <!-- Assigned to -->
+  <td class="govuk-table__cell assigned_to">
+    <span class="name">{{ task.assigned_name }}</span>
+    <span class="secondary team">{{ task.assigned_team }}</span>
+  </td>
+
+  <!-- Due date -->
+  <td class="govuk-table__cell due_date">
+    <span class="date">{{ task.due_date }}</span>
+  </td>
+
+
+  <!-- Actions -->
+  <td class="govuk-table__cell">
+    <a href="">Open case</a>
+  </td>
+
+</tr><!-- End task table row -->
