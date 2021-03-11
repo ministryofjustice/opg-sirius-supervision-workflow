@@ -26,5 +26,5 @@ func TestNewServer(t *testing.T) {
 
 	data, err := ioutil.ReadAll(resp.Body)
 	assert.Nil(err)
-	assert.Equal("Hello", string(data))
+	assert.Equal("Hello Kate and Nick, the beautiful webpage is running", string(data))
 }
