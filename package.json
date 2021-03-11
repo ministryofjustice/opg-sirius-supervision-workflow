@@ -1,0 +1,12 @@
+{
+    "name": "opg-sirius-workflow",
+    "version": "0.1.0",
+    "dependencies": {
+      "@ministryofjustice/frontend": "^0.0.19-alpha",
+      "govuk-frontend": "^3.9.0",
+      "sass": "^1.26.11",
+      "sass-loader": "^10.0.2",
+      "webpack": "^4.44.2",
+      "webpack-cli": "^3.3.12"
+    }
+  }

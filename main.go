@@ -2,31 +2,44 @@ package main
 
 import (
 	"context"
-	"io"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-func newServer(port string) *http.Server {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello Kate and Nicholas Sully, the beautiful webpage is running")
-	})
-
-	return &http.Server{Addr: ":" + port, Handler: handler}
-}
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	logger := log.New(os.Stdout, "opg-sirius-workflow ", log.LstdFlags)
+
+	port := getEnv("PORT", "8080")
+	webDir := getEnv("WEB_DIR", "web")
+	siriusURL := getEnv("SIRIUS_URL", "http://localhost:9001")
+
+	templates, err := template.New("").Funcs(map[string]interface{}{
+		"join": func(sep string, items []string) string {
+			return strings.Join(items, sep)
+		},
+	}).ParseGlob(webDir + "/template/*.gotmpl")
+	if err != nil {
+		logger.Fatalln(err)
 	}
 
-	logger := log.New(os.Stdout, "opg-sirius-workflow ", log.LstdFlags)
-	server := newServer(port)
+	client, err := sirius.NewClient(http.DefaultClient, siriusURL)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: server.New(logger, client, templates, webDir),
+	}
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
@@ -48,4 +61,12 @@ func main() {
 	if err := server.Shutdown(tc); err != nil {
 		logger.Println(err)
 	}
+}
+
+func getEnv(key, def string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+
+	return def
 }
