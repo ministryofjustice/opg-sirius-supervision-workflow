@@ -7,7 +7,7 @@ import (
 )
 
 type Client interface {
-	MyDetailsClient
+	myDetailsClient
 }
 
 type AuthenticateClient interface {

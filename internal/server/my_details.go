@@ -25,7 +25,7 @@ type myDetailsVars struct {
 	Teams        []string
 }
 
-func myDetails(logger *log.Logger, client MyDetailsClient, templates Templates) http.Handler {
+func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "", http.StatusMethodNotAllowed)
