@@ -20,11 +20,11 @@ const middleware = [
   require('./lib/middleware/extensions/extensions.js')
 ]
 const config = require('./app/config.js')
-const documentationRoutes = null
 const packageJson = require('./package.json')
 const routes = require('./app/routes.js')
 const utils = require('./lib/utils.js')
 const extensions = require('./lib/extensions/extensions.js')
+const documentationRoutes = null
 
 // Variables for v6 backwards compatibility
 // Set false by default, then turn on if we find /app/v6/routes.js
@@ -33,7 +33,7 @@ var v6App
 var v6Routes
 
 if (fs.existsSync('./app/v6/routes.js')) {
-  v6Routes = require('./prototype/app/v6/routes.js')
+  v6Routes = require('./app/v6/routes.js')
   useV6 = true
 }
 
@@ -53,8 +53,7 @@ documentationApp.use(utils.handleCookies(documentationApp))
 
 // Set up configuration variables
 var releaseVersion = packageJson.version
-var glitchEnv = (process.env.PROJECT_REMIX_CHAIN) ? 'production' : false // glitch.com
-var env = (process.env.NODE_ENV || glitchEnv || 'development').toLowerCase()
+var env = (process.env.NODE_ENV || 'development').toLowerCase()
 var useAutoStoreData = process.env.USE_AUTO_STORE_DATA || config.useAutoStoreData
 var useCookieSessionStore = process.env.USE_COOKIE_SESSION_STORE || config.useCookieSessionStore
 var useHttps = process.env.USE_HTTPS || config.useHttps
@@ -216,7 +215,7 @@ app.post('/prototype-admin/clear-data', function (req, res) {
 if (promoMode === 'true') {
   console.log('Prototype Kit running in promo mode')
 
-  app.locals.cookieText = 'GOV.UK uses cookies to make the site simpler. <a href="/prototype/docs/cookies">Find out more about cookies</a>'
+  app.locals.cookieText = 'GOV.UK uses cookies to make the site simpler. <a href="/docs/cookies">Find out more about cookies</a>'
 
   app.get('/', function (req, res) {
     res.redirect('/docs')
