@@ -1,0 +1,23 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix (printf "/edit-user/%s" .ID) }}">Back</a>
+{{ end }}
+
+{{ define "title" }}
+  Resent activation email
+{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">Resend activation email</h1>
+
+      <p class="govuk-body">A new activation email has been sent to <strong>{{ .Email }}</strong></p>
+
+      <a href="{{ prefix (printf "/edit-user/%s" .ID) }}" role="button" class="govuk-button" data-module="govuk-button">
+        Continue
+      </a>
+    </div>
+  </div>
+{{ end }}

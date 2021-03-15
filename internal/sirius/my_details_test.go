@@ -1,88 +1,139 @@
 package sirius
 
 import (
-	"context"
-	"io"
+	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
-	"time"
 
+	"github.com/pact-foundation/pact-go/dsl"
 	"github.com/stretchr/testify/assert"
 )
 
-type request struct {
-	method, path string
-	cookies      []*http.Cookie
-	headers      http.Header
-}
-
 func TestMyDetails(t *testing.T) {
-	assert := assert.New(t)
-	requests := make(chan request, 1)
+	pact := &dsl.Pact{
+		Consumer:          "sirius-user-management",
+		Provider:          "sirius",
+		Host:              "localhost",
+		PactFileWriteMode: "merge",
+		LogDir:            "../../logs",
+		PactDir:           "../../pacts",
+	}
+	defer pact.Teardown()
 
-	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requests <- request{
-			method:  r.Method,
-			path:    r.URL.Path,
-			cookies: r.Cookies(),
-			headers: r.Header,
-		}
+	testCases := []struct {
+		name              string
+		setup             func()
+		cookies           []*http.Cookie
+		expectedMyDetails MyDetails
+		expectedError     error
+	}{
+		{
+			name: "OK",
+			setup: func() {
+				pact.
+					AddInteraction().
+					Given("User exists").
+					UponReceiving("A request to get my details").
+					WithRequest(dsl.Request{
+						Method: http.MethodGet,
+						Path:   dsl.String("/api/v1/users/current"),
+						Headers: dsl.MapMatcher{
+							"X-XSRF-TOKEN":        dsl.String("abcde"),
+							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
+							"OPG-Bypass-Membrane": dsl.String("1"),
+						},
+					}).
+					WillRespondWith(dsl.Response{
+						Status:  http.StatusOK,
+						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
+						Body: dsl.Like(map[string]interface{}{
+							"id":          dsl.Like(47),
+							"name":        dsl.Like("system"),
+							"phoneNumber": dsl.Like("03004560300"),
+							"teams": dsl.EachLike(map[string]interface{}{
+								"displayName": dsl.Like("Allocations - (Supervision)"),
+							}, 1),
+							"displayName": dsl.Like("system admin"),
+							"deleted":     dsl.Like(false),
+							"email":       dsl.Like("system.admin@opgtest.com"),
+							"firstname":   dsl.Like("system"),
+							"surname":     dsl.Like("admin"),
+							"roles":       dsl.EachLike("System Admin", 1),
+							"locked":      dsl.Like(false),
+							"suspended":   dsl.Like(false),
+						}),
+					})
+			},
+			cookies: []*http.Cookie{
+				{Name: "XSRF-TOKEN", Value: "abcde"},
+				{Name: "Other", Value: "other"},
+			},
+			expectedMyDetails: MyDetails{
+				ID:          47,
+				Name:        "system",
+				PhoneNumber: "03004560300",
+				Teams: []MyDetailsTeam{
+					{DisplayName: "Allocations - (Supervision)"},
+				},
+				DisplayName: "system admin",
+				Deleted:     false,
+				Email:       "system.admin@opgtest.com",
+				Firstname:   "system",
+				Surname:     "admin",
+				Roles:       []string{"System Admin"},
+				Locked:      false,
+				Suspended:   false,
+			},
+		},
 
-		io.WriteString(w, `{"id":47,"name":"system","phoneNumber":"03004560300","teams":[{"id":10,"name":"Allocations - (Supervision)","phoneNumber":"0123456789","teams":[],"displayName":"Allocations - (Supervision)","deleted":false,"tasks":[],"email":"allocations.team@opgtest.com"}],"displayName":"system admin","deleted":false,"tasks":[],"email":"system.admin@opgtest.com","firstname":"system","surname":"admin","roles":["OPG User","System Admin"],"locked":false,"suspended":false}`)
-	}))
-	defer s.Close()
-
-	client, _ := NewClient(http.DefaultClient, s.URL)
-
-	cookies := []*http.Cookie{
-		{Name: "XSRF-TOKEN", Value: "abcde"},
-		{Name: "Other", Value: "other"},
+		{
+			name: "Unauthorized",
+			setup: func() {
+				pact.
+					AddInteraction().
+					Given("User exists").
+					UponReceiving("A request to get my details without cookies").
+					WithRequest(dsl.Request{
+						Method: http.MethodGet,
+						Path:   dsl.String("/api/v1/users/current"),
+						Headers: dsl.MapMatcher{
+							"OPG-Bypass-Membrane": dsl.String("1"),
+						},
+					}).
+					WillRespondWith(dsl.Response{
+						Status: http.StatusUnauthorized,
+					})
+			},
+			expectedError: ErrUnauthorized,
+		},
 	}
 
-	myDetails, err := client.MyDetails(context.Background(), cookies)
-	assert.Nil(err)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.setup()
 
-	assert.Equal(myDetails, MyDetails{
-		ID:          47,
-		Name:        "system",
-		PhoneNumber: "03004560300",
-		Teams: []MyDetailsTeam{
-			{DisplayName: "Allocations - (Supervision)"},
-		},
-		DisplayName: "system admin",
-		Deleted:     false,
-		Email:       "system.admin@opgtest.com",
-		Firstname:   "system",
-		Surname:     "admin",
-		Roles:       []string{"OPG User", "System Admin"},
-		Locked:      false,
-		Suspended:   false,
-	})
+			assert.Nil(t, pact.Verify(func() error {
+				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-	select {
-	case r := <-requests:
-		assert.Equal(http.MethodGet, r.method)
-		assert.Equal("/api/v1/users/current", r.path)
-		assert.Equal(cookies, r.cookies)
-		assert.Equal("1", r.headers.Get("OPG-Bypass-Membrane"))
-		assert.Equal("abcde", r.headers.Get("X-XSRF-TOKEN"))
-
-	case <-time.After(time.Millisecond):
-		assert.Fail("request did not happen in time")
+				myDetails, err := client.MyDetails(getContext(tc.cookies))
+				assert.Equal(t, tc.expectedMyDetails, myDetails)
+				assert.Equal(t, tc.expectedError, err)
+				return nil
+			}))
+		})
 	}
 }
 
-func TestMyDetailsUnauthorized(t *testing.T) {
-	assert := assert.New(t)
-
-	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "", http.StatusUnauthorized)
-	}))
+func TestMyDetailsStatusError(t *testing.T) {
+	s := teapotServer()
 	defer s.Close()
 
 	client, _ := NewClient(http.DefaultClient, s.URL)
 
-	_, err := client.MyDetails(context.Background(), []*http.Cookie{})
-	assert.Equal(ErrUnauthorized, err)
+	_, err := client.MyDetails(getContext(nil))
+	assert.Equal(t, StatusError{
+		Code:   http.StatusTeapot,
+		URL:    s.URL + "/api/v1/users/current",
+		Method: http.MethodGet,
+	}, err)
 }

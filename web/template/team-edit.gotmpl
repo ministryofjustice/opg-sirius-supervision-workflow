@@ -1,0 +1,135 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix (printf "/teams/%d" .Team.ID) }}">Back</a>
+{{ end }}
+
+{{ define "title" }}
+  Edit {{ .Team.DisplayName }}
+{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .Success }}
+        {{ template "success-banner" (printf "You have successfully edited %s." .Team.DisplayName) }}
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="moj-page-header-actions">
+    <div class="moj-page-header-actions__title">
+      <h1 class="govuk-heading-xl">Edit {{ .Team.DisplayName }}</h1>
+    </div>
+    <div class="moj-page-header-actions__actions">
+      <div class="moj-button-menu">
+        <div class="moj-button-menu__wrapper">
+          {{ if .CanDeleteTeam }}
+            <a href="{{ prefix (printf "/teams/delete/%d" .Team.ID) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--warning moj-page-header-actions__action" data-module="govuk-button">
+              Delete team
+            </a>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form class="form" action="" method="post">
+        <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+
+        <div class="govuk-form-group {{ if .Errors.name }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-name">
+            Team name
+          </label>
+
+          {{ range .Errors.name }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+
+          <input class="govuk-input {{ if .Errors.name }}govuk-input--error{{ end }}" id="f-name" name="name" type="text" value="{{ .Team.DisplayName }}">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.teamType }}govuk-form-group--error{{ end }}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">
+              Team service
+            </legend>
+
+            {{ range .Errors.teamType }}
+              <span class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ . }}
+              </span>
+            {{ end }}
+
+            <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-service-conditional" name="service" type="radio" value="supervision" aria-controls="conditional-f-service-conditional" {{ if not (eq .Team.Type "") }}checked{{ end }} {{ if not .CanEditTeamType }}disabled{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-service-conditional">
+                  Supervision
+                </label>
+              </div>
+
+              <div class="govuk-radios__conditional {{ if eq .Team.Type "" }}govuk-radios__conditional--hidden{{ end }}" id="conditional-f-service-conditional">
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="f-teamType">
+                    Supervision team type
+                  </label>
+                  <select class="govuk-select {{ if .Errors.teamType }}govuk-select--error{{ end }}" id="f-teamType" name="supervision-type" {{ if not .CanEditTeamType }}disabled{{ end }}>
+                    {{ range .TeamTypeOptions }}
+                      <option value="{{ .Handle }}" {{ if eq $.Team.Type .Handle }}selected{{ end }}>{{ .Label }}</option>
+                    {{ end }}
+                  </select>
+                </div>
+              </div>
+
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-service-conditional-2" name="service" type="radio" value="lpa" {{ if eq .Team.Type "" }}checked{{ end }} {{ if not .CanEditTeamType }}disabled{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-service-conditional-2">
+                  LPA
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.phoneNumber }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-phoneNumber">
+            Phone number
+          </label>
+
+          {{ range .Errors.phoneNumber }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+
+          <input class="govuk-input govuk-!-width-one-third {{ if .Errors.phoneNumber }}govuk-input--error{{ end }}" id="f-phoneNumber" name="phone" type="text" value="{{ .Team.PhoneNumber }}">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.email }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-email">
+            Email address (optional)
+          </label>
+
+          {{ range .Errors.email }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+
+          <input class="govuk-input govuk-!-width-two-thirds {{ if .Errors.email }}govuk-input--error{{ end }}" id="f-email" name="email" type="email" value="{{ .Team.Email }}">
+        </div>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Save changes
+        </button>
+      </form>
+    </div>
+  </div>
+{{ end }}

@@ -1,0 +1,43 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix "/my-details" }}">Back</a>
+{{ end }}
+
+{{ define "title" }}Change your phone number{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .Success }}
+        {{ template "success-banner" "You have successfully edited your details." }}
+      {{ end }}
+
+      <h1 class="govuk-heading-xl">Change your phone number</h1>
+
+      <form class="form" method="post">
+        <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+
+        <div class="govuk-form-group {{ if .Errors.phoneNumber }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-phonenumber">
+            Telephone
+          </label>
+
+          {{ range .Errors.phoneNumber }}
+            <span id="name-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+
+          <input class="govuk-input govuk-!-width-two-thirds" id="f-phonenumber" name="phonenumber" type="text" value="{{ .PhoneNumber }}">
+        </div>
+        
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Save changes
+        </button>
+      </form>
+    </div>
+  </div>
+{{ end }}

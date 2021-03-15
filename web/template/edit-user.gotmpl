@@ -1,0 +1,169 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix "/users" }}">Back</a>
+{{ end }}
+
+{{ define "title" }}
+  {{ if .Errors }}Error: {{ end }}Edit {{ .User.Firstname }} {{ .User.Surname }}
+{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .Success }}
+        {{ template "success-banner" "You have successfully edited a user." }}
+      {{ end }}
+
+      {{ if .User.Inactive }}
+        <div class="moj-banner">
+          <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+            <path d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8
+	                   C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z"></path>
+          </svg>
+
+          <div class="moj-banner__message">User has not activated their account yet.</div>
+        </div>
+      {{ end }}
+      {{ if .User.Locked }}
+        <div class="moj-banner">
+          <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25"><path d="M13.7,18.5h-2.4v-2.4h2.4V18.5z M12.5,13.7c-0.7,0-1.2-0.5-1.2-1.2V7.7c0-0.7,0.5-1.2,1.2-1.2s1.2,0.5,1.2,1.2v4.8
+          C13.7,13.2,13.2,13.7,12.5,13.7z M12.5,0.5c-6.6,0-12,5.4-12,12s5.4,12,12,12s12-5.4,12-12S19.1,0.5,12.5,0.5z"></path></svg>
+          <div class="moj-banner__message">
+            User account is locked, do you want to <a class="govuk-link" href="{{ prefix (printf "/unlock-user/%d" .User.ID) }}">unlock it</a>?
+          </div>
+        </div>
+      {{ end }}
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <div class="moj-page-header-actions">
+        <div class="moj-page-header-actions__title">
+          <h1 class="govuk-heading-xl">Edit {{ .User.Firstname }} {{ .User.Surname }}</h1>
+        </div>
+
+        <div class="moj-page-header-actions__actions">
+          <div class="moj-button-menu">
+            <div class="moj-button-menu__wrapper">
+              {{ if .User.Inactive }}
+                <form method="POST" action="{{ prefix "/resend-confirmation" }}" class="moj-button-menu__item">
+                  <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+                  <input type="hidden" name="id" value="{{ .User.ID }}">
+                  <input type="hidden" name="email" value="{{ .User.Email }}">
+                  <button class="govuk-button govuk-button--secondary moj-page-header-actions__action">Resend activation email</button>
+                </form>
+              {{ end }}
+              {{ if .DeleteUserEnabled }}
+                <a class="govuk-button moj-button-menu__item govuk-button--warning moj-page-header-actions__action" href="{{ prefix (printf "/delete-user/%d" .User.ID) }}">Delete user</a>
+              {{ end }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+      <form class="form" method="post">
+        <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="f-email">Email address</label>
+          <input class="govuk-input" id="f-email" type="text" value="{{ .User.Email }}" disabled>
+          <input name="email" type="hidden" value="{{ .User.Email }}">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.firstname }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-firstname">First name</label>
+          {{ range .Errors.firstname }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+          <input class="govuk-input govuk-!-width-two-thirds {{ if .Errors.firstname }}govuk-input--error{{ end }}" id="f-firstname" name="firstname" type="text" autocomplete="name" spellcheck="false" value="{{ .User.Firstname }}">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.surname }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-surname">Last name</label>
+          {{ range .Errors.surname }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+          <input class="govuk-input govuk-!-width-two-thirds {{ if .Errors.surname }}govuk-input--error{{ end }}" id="f-surname" name="surname" type="text" autocomplete="name" spellcheck="false" value="{{ .User.Surname }}">
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Suspended</legend>
+            <div class="govuk-radios govuk-radios--inline">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-suspended" name="suspended" type="radio" value="Yes" {{ if .User.Suspended }}checked{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-suspended">Yes</label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-suspended-2" name="suspended" type="radio" value="No" {{ if not .User.Suspended }}checked{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-suspended-2">No</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Organisation</legend>
+            <div class="govuk-radios govuk-radios--inline">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-organisation" name="organisation" type="radio" value="COP User" {{ if eq .User.Organisation "COP User" }}checked{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-organisation">
+                  COP User
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-organisation-2" name="organisation" type="radio" value="OPG User" {{ if eq .User.Organisation "OPG User" }}checked{{ end }}>
+                <label class="govuk-label govuk-radios__label" for="f-organisation-2">
+                  OPG User
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.roles }}govuk-form-group--error{{ end }}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Roles</legend>
+            {{ range .Errors.roles }}
+              <span class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ . }}
+              </span>
+            {{ end }}
+
+            <div class="govuk-checkboxes govuk-checkboxes--small">
+              {{ range $i, $e := .Roles }}
+                {{ if eq $e "System Admin"  }}
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="f-roles-{{ $i }}" name="roles" type="checkbox" value="{{ $e }}" aria-describedby="f-roles-{{ $i }}-item-hint" {{ if contains $.User.Roles $e }}checked{{ end }}>
+                    <label class="govuk-label govuk-checkboxes__label" for="f-roles-{{ $i }}">{{ $e }}</label>
+                    <div id="f-roles-{{ $i }}-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                      System Admins can add and edit other users
+                    </div>
+                  </div>
+                {{ else }}
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="f-roles-{{ $i }}" name="roles" type="checkbox" value="{{ $e }}" {{ if contains $.User.Roles $e }}checked{{ end }}>
+                    <label class="govuk-label govuk-checkboxes__label" for="f-roles-{{ $i }}">{{ $e }}</label>
+                  </div>
+                {{ end }}
+              {{ end }}
+            </div>
+          </fieldset>
+        </div>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+          Save changes
+        </button>
+      </form>
+    </div>
+  </div>
+{{ end }}

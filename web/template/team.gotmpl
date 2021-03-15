@@ -1,0 +1,69 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix "/teams" }}">Back</a>
+{{ end }}
+
+{{ define "title" }}
+  {{ .Team.DisplayName }}
+{{ end }}
+
+{{ define "main" }}
+  <div class="moj-page-header-actions">
+    <div class="moj-page-header-actions__title">
+      <h1 class="govuk-heading-xl">{{ .Team.DisplayName }}</h1>
+    </div>
+    <div class="moj-page-header-actions__actions">
+      <div class="moj-button-menu">
+        <div class="moj-button-menu__wrapper">
+          <a href="{{ prefix (printf "/teams/edit/%d" .Team.ID) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary moj-page-header-actions__action" data-module="govuk-button">
+            Edit team
+          </a>
+          <a href="{{ prefix (printf "/teams/add-member/%d" .Team.ID) }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary moj-page-header-actions__action" data-module="govuk-button">
+            Add user to team
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{ if .Team.Members }}
+    <form action="{{ prefix (printf "/teams/remove-member/%d" .Team.ID) }}" method="POST">
+      <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+
+      <button type="submit" class="govuk-button govuk-button--secondary">
+        Remove selected from team
+      </button>
+
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Select</span></th>
+            <th scope="col" class="govuk-table__header">Name</th>
+            <th scope="col" class="govuk-table__header">Email</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {{ range .Team.Members }}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">
+                <div class="govuk-checkboxes govuk-checkboxes--small">
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" name="selected[]" type="checkbox" value="{{ .ID }}" id="f-select-user-{{ .ID }}">
+                    <label class="govuk-label govuk-checkboxes__label" for="f-select-user-{{ .ID }}">
+                      <span class="govuk-visually-hidden">Select {{ .DisplayName }}</span>
+                    </label>
+                  </div>
+                </div>
+              </th>
+              <td class="govuk-table__cell">{{ .DisplayName }}</td>
+              <td class="govuk-table__cell">{{ .Email }}</td>
+            </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </form>
+  {{ else }}
+    <p class="govuk-body">This team currently has no users</p>
+  {{ end }}
+{{ end }}

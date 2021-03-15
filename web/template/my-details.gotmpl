@@ -12,16 +12,25 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Name</dt>
           <dd class="govuk-summary-list__value">{{ .Firstname }} {{ .Surname }}</dd>
+          <dd class="govuk-summary-list__actions"></dd>
         </div>
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Email</dt>
           <dd class="govuk-summary-list__value">{{ .Email }}</dd>
+          <dd class="govuk-summary-list__actions"></dd>
         </div>
 
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Phone number</dt>
           <dd class="govuk-summary-list__value">{{ .PhoneNumber }}</dd>
+          <dd class="govuk-summary-list__actions">
+            {{ if .CanEditPhoneNumber }}
+              <a class="govuk-link" href="{{ prefix "/my-details/edit" }}">
+                Change<span class="govuk-visually-hidden"> phone number</span>
+              </a>
+            {{ end }}
+          </dd>
         </div>
       </dl>
 

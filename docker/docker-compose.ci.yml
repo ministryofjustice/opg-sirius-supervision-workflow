@@ -1,0 +1,47 @@
+version: "3.6"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: ./docker/sirius-user-management/Dockerfile
+    ports: ["8888:8888"]
+    environment:
+      PORT: 8888
+      SIRIUS_URL: http://pact-stub:8080
+      SIRIUS_PUBLIC_URL: http://localhost:8080
+
+  pact-stub:
+    build: ./pact-stub
+    ports: ["8080:8080"]
+    environment:
+      PACT_DIR: ./pacts
+      PORT: 8080
+    volumes:
+      - type: volume
+        source: pacts_data
+        target: /app/pacts
+
+  puppeteer:
+    build: ./puppeteer
+    depends_on:
+      - app
+      - pact-stub
+    environment:
+      - LHCI_BUILD_CONTEXT__CURRENT_HASH=$CIRCLE_SHA1
+      - LHCI_BUILD_CONTEXT__GITHUB_REPO_SLUG=ministryofjustice/opg-sirius-user-management
+      - LHCI_GITHUB_APP_TOKEN
+
+  cypress:
+    build:
+      context: ..
+      dockerfile: ./docker/cypress/Dockerfile
+    command: ["--headless", "-b", "chrome"]
+    depends_on:
+      - app
+      - pact-stub
+
+volumes:
+  pacts_data:
+    name: pacts_data
+    external: true

@@ -1,0 +1,65 @@
+{{ template "page" . }}
+
+{{ define "title" }}
+  Teams
+{{ end }}
+
+{{ define "main" }}
+  <div class="moj-page-header-actions">
+    <div class="moj-page-header-actions__title">
+      <h1 class="govuk-heading-xl">Teams</h1>
+    </div>
+
+    <div class="moj-page-header-actions__actions">
+      <div class="moj-button-menu">
+        <div class="moj-button-menu__wrapper">
+          <a href="{{ prefix "/teams/add" }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary moj-page-header-actions__action">
+            Add new team
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-form-group">
+    <div class="moj-search">
+      <form action="{{ prefix "/teams" }}" method="GET">
+        <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+
+        <div class="govuk-form-group">
+          <label class="govuk-label moj-search__label" for="f-search">
+            Find a team
+          </label>
+
+          <input class="govuk-input moj-search__input" id="f-search" name="search" type="search" value="{{ .Search }}">
+        </div>
+        <button type="submit" class="govuk-button moj-search__button" data-module="govuk-button">
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Name</th>
+        <th scope="col" class="govuk-table__header">Type</th>
+        <th scope="col" class="govuk-table__header">Members</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {{ range .Teams }}
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">
+            <a href="{{ prefix (printf "/teams/%d" .ID) }}" class="govuk-link">
+              {{ .DisplayName }}
+            </a>
+          </th>
+          <td class="govuk-table__cell">{{ .TypeLabel }}</td>
+          <td class="govuk-table__cell">{{ len .Members }}</td>
+        </tr>
+      {{ end }}
+    </tbody>
+  </table>
+{{ end }}

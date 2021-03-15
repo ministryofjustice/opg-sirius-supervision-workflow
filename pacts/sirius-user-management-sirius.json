@@ -1,0 +1,1239 @@
+{
+  "consumer": {
+    "name": "sirius-user-management"
+  },
+  "provider": {
+    "name": "sirius"
+  },
+  "interactions": [
+    {
+      "description": "A request to add a new team",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/api/v1/teams",
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "email": "john.doe@example.com",
+          "name": "testteam",
+          "phoneNumber": "0300456090"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+        },
+        "body": {
+          "id": 123
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to add a new supervision team",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/api/v1/teams",
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "email": "john.doe@example.com",
+          "name": "supervisiontestteam",
+          "phoneNumber": "0300456090",
+          "type": "INVESTIGATIONS"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+        },
+        "body": {
+          "id": 123
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to add a new team without cookies",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/api/v1/teams",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to add a new team errors",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/api/v1/teams",
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "email": "john.doehrfgjuerhujghejrhrgherjrghgjrehergeghrjkrghkerhgerjkhgerjkheghergkhgekrhgerherhjghkjerhgherghjkerhgekjherkjhgerhgjehherkjhgkjehrghrehgkjrehjkghrjkehgrehehgkjhrejghhehgkjerhegjrhegrjhrjkhgkrhrghrkjegrkjehrghjkerhgjkhergjhrjkerregjhrekjhrgrehjkg@example.com",
+          "name": "testteam",
+          "phoneNumber": "0300456090"
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "validation_errors": {
+            "email": {
+              "stringLengthTooLong": "The input is more than 255 characters long"
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.validation_errors": {
+            "match": "type"
+          },
+          "$.body.validation_errors.email": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to add a new user",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/auth/user",
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "email": "john.doe@example.com",
+          "firstname": "John",
+          "roles": [
+            "COP User",
+            "other1",
+            "other2"
+          ],
+          "surname": "Doe"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to add a new user without cookies",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/auth/user",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to add a new user errors",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/auth/user",
+        "headers": {
+          "Content-Type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "email": "john.doefkhjgerhergjgerjkrgejgerjgerjegrjhkgrehjergjgerhjkgerhjkegrhjkgerhjkegrhjkegrhjkegrhjkgerhjkgerhjkgerhjkgerhjkgerhjkgerhjkegrhjkgerhjkgerhjkgerhjkgerhjkerghjkgerhjkgerhjkgerhjkgrhjkgrehjgerhjkgerhjkegrhjkgerhjkgrerghger@example.com",
+          "firstname": "John",
+          "roles": [
+            "COP User",
+            "other1",
+            "other2"
+          ],
+          "surname": "Doe"
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "errorMessages": {
+            "email": {
+              "emailAddressLengthExceeded": "The input is more than 255 characters long"
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body.errorMessages.email.emailAddressLengthExceeded": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to change the password",
+      "providerState": "User has password",
+      "request": {
+        "method": "POST",
+        "path": "/auth/change-password",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "existingPassword=Password1&password=Password1&confirmPassword=Password1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to change password without cookies",
+      "providerState": "User exists with password",
+      "request": {
+        "method": "POST",
+        "path": "/auth/change-password",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to change password errors",
+      "providerState": "User exists with password",
+      "request": {
+        "method": "POST",
+        "path": "/auth/change-password",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "existingPassword=x&password=y&confirmPassword=z"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "errors": "oops"
+        },
+        "matchingRules": {
+          "$.body.errors": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to delete the team",
+      "providerState": "A team that can be deleted",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v1/teams/461",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 204,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to delete the team without cookies",
+      "providerState": "A team that can be deleted",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/v1/teams/461",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to delete the user",
+      "providerState": "A user that can be deleted",
+      "request": {
+        "method": "DELETE",
+        "path": "/auth/user/123",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request delete the user without cookies",
+      "providerState": "A user",
+      "request": {
+        "method": "DELETE",
+        "path": "/auth/user/123",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to change my phone number",
+      "providerState": "User exists",
+      "request": {
+        "method": "PUT",
+        "path": "/api/v1/users/47/updateTelephoneNumber",
+        "headers": {
+          "Content-type": "application/json",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "phoneNumber": "01210930320"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "description": "An invalid request to change my phone number",
+      "providerState": "User exists",
+      "request": {
+        "method": "PUT",
+        "path": "/api/v1/users/47/updateTelephoneNumber",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "phoneNumber": "85845984598649858684596849859549684568465894689498468495689645468384938743893892317571934751439574638753683761084565480713465618457365784613876481376457651471645463178546357843615971435645387364139756147361456145161587165477143576698764574569834659465974657946574569856896745229786"
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/problem+json"
+        },
+        "body": {
+          "detail": "Payload failed validation",
+          "status": 400,
+          "validation_errors": {
+            "phoneNumber": {
+              "stringLengthTooLong": "The input is more than 255 characters long"
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body.detail": {
+            "match": "type"
+          },
+          "$.body.status": {
+            "match": "type"
+          },
+          "$.body.validation_errors.phoneNumber.stringLengthTooLong": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to change my phone number without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "PUT",
+        "path": "/api/v1/users/47/updateTelephoneNumber",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        },
+        "body": {
+          "phoneNumber": "01210930320"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to edit the team",
+      "providerState": "A user and a team",
+      "request": {
+        "method": "PUT",
+        "path": "/api/team/65",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "email=test.team%40opgtest.com&name=Test+team&phoneNumber=014729583920&teamType%5Bhandle%5D=INVESTIGATIONS"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to edit the team with members",
+      "providerState": "A user and a team",
+      "request": {
+        "method": "PUT",
+        "path": "/api/team/65",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "email=test.team%40opgtest.com&members%5B0%5D%5Bid%5D=23&members%5B1%5D%5Bid%5D=87&name=Test+team&phoneNumber=014729583920&teamType%5Bhandle%5D=INVESTIGATIONS"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to edit the team without cookies",
+      "providerState": "A user and a team",
+      "request": {
+        "method": "PUT",
+        "path": "/api/team/65",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        },
+        "body": "email=&name=Test+team&phoneNumber=&teamType%5Bhandle%5D=FINANCE"
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to edit the team with an non-unique type",
+      "providerState": "A user and a team",
+      "request": {
+        "method": "PUT",
+        "path": "/api/team/65",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "email=&name=Test+team&phoneNumber=&teamType%5Bhandle%5D=FINANCE"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "data": {
+            "errorMessages": {
+              "teamType": {
+                "teamTypeAlreadyInUse": "Invalid team type"
+              }
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body.data.errorMessages.teamType.teamTypeAlreadyInUse": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to edit the user",
+      "providerState": "A user",
+      "request": {
+        "method": "PUT",
+        "path": "/auth/user/123",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "firstname": "a",
+          "id": 123,
+          "locked": false,
+          "roles": [
+            "e",
+            "f",
+            "d"
+          ],
+          "surname": "b",
+          "suspended": true
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request edit the user without cookies",
+      "providerState": "A user",
+      "request": {
+        "method": "PUT",
+        "path": "/auth/user/123",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to edit the user errors on validation",
+      "providerState": "A user",
+      "request": {
+        "method": "PUT",
+        "path": "/auth/user/123",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": {
+          "firstname": "grehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjgergrehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjgergrehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjgergrehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjgergrehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjgergrehjreghjerghjerghjgerhjegrhjgrehgrehjgjherbhjger",
+          "id": 123,
+          "locked": false,
+          "roles": [
+            ""
+          ],
+          "surname": "",
+          "suspended": false
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+        },
+        "body": {
+          "message": "oops"
+        },
+        "matchingRules": {
+          "$.body.message": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to get my details",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/users/current",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "deleted": false,
+          "displayName": "system admin",
+          "email": "system.admin@opgtest.com",
+          "firstname": "system",
+          "id": 47,
+          "locked": false,
+          "name": "system",
+          "phoneNumber": "03004560300",
+          "roles": [
+            "System Admin"
+          ],
+          "surname": "admin",
+          "suspended": false,
+          "teams": [
+            {
+              "displayName": "Allocations - (Supervision)"
+            }
+          ]
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.deleted": {
+            "match": "type"
+          },
+          "$.body.displayName": {
+            "match": "type"
+          },
+          "$.body.email": {
+            "match": "type"
+          },
+          "$.body.firstname": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "type"
+          },
+          "$.body.locked": {
+            "match": "type"
+          },
+          "$.body.name": {
+            "match": "type"
+          },
+          "$.body.phoneNumber": {
+            "match": "type"
+          },
+          "$.body.roles": {
+            "min": 1
+          },
+          "$.body.roles[*].*": {
+            "match": "type"
+          },
+          "$.body.surname": {
+            "match": "type"
+          },
+          "$.body.suspended": {
+            "match": "type"
+          },
+          "$.body.teams": {
+            "min": 1
+          },
+          "$.body.teams[*].*": {
+            "match": "type"
+          },
+          "$.body.teams[*].displayName": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to get my details without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/users/current",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to get my permissions",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/permission",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": {
+            "team": {
+              "permissions": [
+                "POST"
+              ]
+            },
+            "user": {
+              "permissions": [
+                "PATCH"
+              ]
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.data.team.permissions": {
+            "min": 1
+          },
+          "$.body.data.team.permissions[*].*": {
+            "match": "type"
+          },
+          "$.body.data.user.permissions": {
+            "min": 1
+          },
+          "$.body.data.user.permissions[*].*": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request to get my permissions without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/permission",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to resend a confirmation email",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/auth/resend-confirmation",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        },
+        "body": "email=system.admin@opgtest.com"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request to resend a confirmation email without cookies",
+      "providerState": "An admin user",
+      "request": {
+        "method": "POST",
+        "path": "/auth/resend-confirmation",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request for roles",
+      "providerState": "Some roles",
+      "request": {
+        "method": "GET",
+        "path": "/api/role",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "data": [
+            "System Admin"
+          ]
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.data": {
+            "min": 1
+          },
+          "$.body.data[*].*": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for roles without cookies",
+      "providerState": "Some roles",
+      "request": {
+        "method": "GET",
+        "path": "/api/role",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A search for admin users",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/search/users",
+        "query": "query=admin",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": [
+            {
+              "displayName": "system admin",
+              "email": "system.admin@opgtest.com",
+              "id": 47,
+              "locked": false,
+              "surname": "admin",
+              "suspended": false
+            }
+          ]
+        },
+        "matchingRules": {
+          "$.body.data": {
+            "min": 1
+          },
+          "$.body.data[*].*": {
+            "match": "type"
+          },
+          "$.body.data[*].displayName": {
+            "match": "type"
+          },
+          "$.body.data[*].email": {
+            "match": "type"
+          },
+          "$.body.data[*].id": {
+            "match": "type"
+          },
+          "$.body.data[*].locked": {
+            "match": "type"
+          },
+          "$.body.data[*].surname": {
+            "match": "type"
+          },
+          "$.body.data[*].suspended": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A search for admin users without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/search/users",
+        "query": "query=admin",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request for a team",
+      "providerState": "Supervision team with members exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/team/65",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": {
+            "displayName": "Cool Team",
+            "email": "coolteam@opgtest.com",
+            "id": 65,
+            "members": [
+              {
+                "displayName": "John",
+                "email": "john@opgtest.com"
+              }
+            ],
+            "phoneNumber": "01818118181",
+            "teamType": {
+              "handle": "ALLOCATIONS"
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.data.displayName": {
+            "match": "type"
+          },
+          "$.body.data.email": {
+            "match": "type"
+          },
+          "$.body.data.id": {
+            "match": "type"
+          },
+          "$.body.data.members": {
+            "min": 1
+          },
+          "$.body.data.members[*].*": {
+            "match": "type"
+          },
+          "$.body.data.members[*].displayName": {
+            "match": "type"
+          },
+          "$.body.data.members[*].email": {
+            "match": "type"
+          },
+          "$.body.data.phoneNumber": {
+            "match": "type"
+          },
+          "$.body.data.teamType": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for an LPA team",
+      "providerState": "LPA team with members exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/team/65",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": {
+            "displayName": "Cool Team",
+            "id": 65,
+            "members": [
+              {
+                "displayName": "Carline",
+                "email": "carline@opgtest.com"
+              }
+            ]
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.data.displayName": {
+            "match": "type"
+          },
+          "$.body.data.id": {
+            "match": "type"
+          },
+          "$.body.data.members": {
+            "min": 1
+          },
+          "$.body.data.members[*].*": {
+            "match": "type"
+          },
+          "$.body.data.members[*].displayName": {
+            "match": "type"
+          },
+          "$.body.data.members[*].email": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for a team without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/team/65",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request for team types",
+      "providerState": "Some team types",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/reference-data",
+        "query": "filter=teamType",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "teamType": [
+            {
+              "handle": "ALLOCATIONS",
+              "label": "Allocations"
+            }
+          ]
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.teamType": {
+            "min": 1
+          },
+          "$.body.teamType[*].*": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for team types without cookies",
+      "providerState": "Some team types",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/reference-data",
+        "query": "filter=teamType",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request for teams without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/teams",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "A request for the user",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/auth/user/123",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "email": "system.admin@opgtest.com",
+          "firstname": "system",
+          "id": 123,
+          "inactive": true,
+          "locked": true,
+          "roles": [
+            "string"
+          ],
+          "surname": "admin",
+          "suspended": false
+        },
+        "matchingRules": {
+          "$.body.email": {
+            "match": "type"
+          },
+          "$.body.firstname": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "type"
+          },
+          "$.body.inactive": {
+            "match": "type"
+          },
+          "$.body.locked": {
+            "match": "type"
+          },
+          "$.body.roles": {
+            "min": 1
+          },
+          "$.body.roles[*].*": {
+            "match": "type"
+          },
+          "$.body.roles[*]": {
+            "match": "type"
+          },
+          "$.body.surname": {
+            "match": "type"
+          },
+          "$.body.suspended": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for the user without cookies",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/auth/user/123",
+        "headers": {
+          "OPG-Bypass-Membrane": "1"
+        }
+      },
+      "response": {
+        "status": 401,
+        "headers": {
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
