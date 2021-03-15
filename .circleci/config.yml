@@ -1,4 +1,3 @@
-
 version: 2.1
 
 workflows:
@@ -6,16 +5,10 @@ workflows:
   pr:
     jobs:
       - test
-      - lint
-      - acceptance-test:
-          requires: [test, lint]
-      - cypress:
-          requires: [acceptance-test]
       - push:
-          requires: [cypress]
+          requires: [test]
 
 orbs:
-  codecov: codecov/codecov@1.1.1
   ecr:
     commands:
       login:
@@ -39,7 +32,6 @@ jobs:
   test:
     docker:
       - image: circleci/golang
-    resource_class: small
     steps:
       - checkout
       - run:
@@ -47,100 +39,17 @@ jobs:
           command: go mod download
       - run: mkdir -p /tmp/test-results
       - run:
-          name: Download pact tools
-          command: |
-            curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
-            tar xzf pact-1.88.6-linux-x86_64.tar.gz
-            echo 'export PATH=$PWD/pact/bin:$PATH' >> $BASH_ENV
-      - run:
           name: Run tests
-          command: gotestsum --junitfile /tmp/test-results/unit-tests.xml -- ./... -coverprofile=/tmp/test-coverage.txt
+          command: gotestsum --junitfile /tmp/test-results/unit-tests.xml
       - store_test_results:
           path: /tmp/test-results
-      - run:
-          name: Publish pacts
-          command: PACT_TAG=$CIRCLE_BRANCH PACT_CONSUMER_VERSION=$CIRCLE_SHA1 go run internal/pact/publish.go
-          environment:
-            PACT_DIR: ./pacts
-            PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
-            PACT_BROKER_USERNAME: admin
-      - codecov/upload:
-          file: /tmp/test-coverage.txt
-      - persist_to_workspace:
-          root: ./pacts
-          paths:
-            - sirius-user-management-sirius.json
-            - ignored-ignored.json
 
-  lint:
-    docker:
-      - image: circleci/golang
-    resource_class: small
-    steps:
-      - checkout
-      - run:
-          name: Install modules
-          command: go mod download
-      - run:
-          name: Install golangci-lint
-          command: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.27.0
-      - run:
-          name: Lint
-          command: golangci-lint run
-
-  acceptance-test:
-    docker:
-      - image: circleci/node
-    resource_class: small
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 18.06.0-ce
-          docker_layer_caching: false
-      - attach_workspace:
-          at: ./pacts
-      - run:
-          name: Retrieve pact
-          command: |
-            docker container create --name temp -v pacts_data:/root hello-world
-            docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
-            docker cp ./pacts/sirius-user-management-sirius.json temp:/root/sirius-user-management-sirius.json
-      - run:
-          name: Run pa11y
-          command: |
-            docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
-      - run:
-          name: Run Lighthouse
-          command: |
-            docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
-  cypress:
-    docker:
-      - image: circleci/node
-    resource_class: small
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 18.06.0-ce
-          docker_layer_caching: false
-      - attach_workspace:
-          at: ./pacts
-      - run:
-          name: Retrieve pact
-          command: |
-            docker container create --name temp -v pacts_data:/root hello-world
-            docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
-            docker cp ./pacts/sirius-user-management-sirius.json temp:/root/sirius-user-management-sirius.json
-      - run:
-          name: Run cypress
-          command: |
-            docker-compose -f docker/docker-compose.ci.yml run cypress
   push:
     executor: ecr/python
-    resource_class: small
     parameters:
       container_repo_url:
-        type: string
-        default: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius-user-management
+        type: string 
+        default: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
     steps:
       - checkout
       - setup_remote_docker:
@@ -149,37 +58,17 @@ jobs:
       - run:
           name: Build
           command: |
-            docker build --tag sirius-user-management:latest -f docker/sirius-user-management/Dockerfile .
-      - run:
-          name: Scan
-          command: |
-            docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy sirius-user-management:latest
+            docker build --tag sirius-workflow:latest .
       - ecr/login
       - run:
           name: Push container
           command: |
             export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
-            docker tag sirius-user-management:latest << parameters.container_repo_url >>:latest
-            docker tag sirius-user-management:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            docker tag sirius-workflow:latest << parameters.container_repo_url >>:latest
+            docker tag sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
               # We want all of the tags pushed
               docker push << parameters.container_repo_url >>
             else
               docker push << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
             fi
-      - when:
-          condition:
-            equal: [ master, << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Update Parameter Store Green Build value
-                command: |
-                  export SHORT_HASH=${CIRCLE_SHA1:0:7}
-                  temp_role=$(aws sts assume-role --role-arn arn:aws:iam::997462338508:role/sirius-ci --role-session-name ci)
-                  export AWS_ACCESS_KEY_ID=$(echo $temp_role | jq .Credentials.AccessKeyId | xargs)
-                  export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
-                  export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
-                  aws ssm put-parameter --name "opg-sirius-user-management-latest-green-build" --type "String" --value "$CIRCLE_BRANCH-$SHORT_HASH" --overwrite --region=eu-west-1
-            - run:
-                name: Trigger Sirius Platform Deployment
-                command: curl -u ${JENKINS_API_USER}:${JENKINS_API_TOKEN} "https://${JENKINS_URL}/job/Sirius/job/Deploy_to_Development/buildWithParameters?token=${JENKINS_API_TOKEN_NAME}&cause=Triggered+by+opg-sirius-user-management"
