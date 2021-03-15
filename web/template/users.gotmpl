@@ -1,0 +1,72 @@
+{{ template "page" . }}
+
+{{ define "title" }}
+  {{ if .Errors }}Error: {{ end }}Users
+{{ end }}
+
+{{ define "main" }}
+  {{ template "error-summary" .Errors }}
+
+  <div class="moj-page-header-actions">
+    <div class="moj-page-header-actions__title">
+      <h1 class="govuk-heading-xl">Users</h1>
+    </div>
+    <div class="moj-page-header-actions__actions">
+      <div class="moj-button-menu">
+        <div class="moj-button-menu__wrapper">
+          <a href="{{ prefix "/add-user" }}" role="button" draggable="false" class="govuk-button moj-button-menu__item govuk-button--secondary moj-page-header-actions__action">
+            Add new user
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-form-group">
+    <div class="moj-search">
+      <form action="{{ prefix "/users" }}" method="GET">
+        <div class="govuk-form-group">
+          <label class="govuk-label moj-search__label" for="f-search">
+            Find a user
+          </label>
+
+          <input class="govuk-input moj-search__input" id="f-search" name="search" type="search" value="{{ .Search }}">
+        </div>
+        <button type="submit" class="govuk-button moj-search__button" data-module="govuk-button">
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{ if .Users }}
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Name</th>
+        <th scope="col" class="govuk-table__header">Email</th>
+        <th scope="col" class="govuk-table__header">Status</th>
+        <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {{ range .Users }}
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">{{ .DisplayName }}</th>
+          <td class="govuk-table__cell">{{ .Email }}</td>
+          <td class="govuk-table__cell">
+            <strong class="govuk-tag {{ .Status.TagColour }}">
+              {{ .Status }}
+            </strong>
+          </td>
+          <td class="govuk-table__cell">
+            <a href="{{ prefix (printf "/edit-user/%d" .ID) }}" class="govuk-link">Edit</a>
+          </td>
+        </tr>
+      {{ end }}
+    </tbody>
+  </table>
+  {{ else if and .Search (not .Errors) }}
+    <p class="govuk-body">No users found matching search term</p>
+  {{ end }}
+{{ end }}

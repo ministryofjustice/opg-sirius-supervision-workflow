@@ -1,0 +1,72 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix "/teams" }}">Back</a>
+{{ end }}
+
+{{ define "title" }}{{ if .Errors }}Error: {{ end }}Add team{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .Success }}
+        {{ template "success-banner" "You have successfully added a new team." }}
+      {{ end }}
+
+       <h1 class="govuk-heading-xl">Add new team</h1>
+
+       <form class="form" method="post">
+         <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+         
+         <div class="govuk-form-group">
+           <label class="govuk-label" for="f-name">Team name</label>
+           <input class="govuk-input" id="f-name" name="name" type="text" value="{{ .Name }}">
+         </div>
+
+         <div class="govuk-form-group">
+           <fieldset class="govuk-fieldset">
+             <legend class="govuk-fieldset__legend">Team service</legend>
+
+             <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+               <div class="govuk-radios__item">
+                 <input class="govuk-radios__input" id="f-service-conditional" name="service" type="radio" value="supervision" data-aria-controls="conditional-f-service-conditional" {{ if eq .Service "supervision" }}checked{{ end }}>
+                 <label class="govuk-label govuk-radios__label" for="f-service-conditional">Supervision</label>
+               </div>
+               
+               <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-f-service-conditional">
+                 <div class="govuk-form-group">
+                   <label class="govuk-label" for="f-supervision-type">Supervision team type</label>
+
+                   <select class="govuk-select" id="f-supervision-type" name="supervision-type">
+                     {{ range .TeamTypes }}
+                       <option value="{{ .Handle }}" {{ if eq $.TeamType .Handle }}selected{{ end }}>{{ .Label }}</option>
+                     {{ end }}
+                   </select>
+                 </div>
+               </div>
+               
+               <div class="govuk-radios__item">
+                 <input class="govuk-radios__input" id="f-service-conditional-2" name="service" type="radio" value="lpa" {{ if not (eq .Service "supervision") }}checked{{ end }}>
+                 <label class="govuk-label govuk-radios__label" for="f-service-conditional-2">LPA</label>
+               </div>
+             </div>
+           </fieldset>
+         </div>
+
+         <div class="govuk-form-group">
+           <label class="govuk-label" for="f-phone">Phone number</label>
+           <input class="govuk-input govuk-!-width-one-third" id="f-phone" name="phone" type="text" value="{{ .Phone }}">
+         </div>
+
+         <div class="govuk-form-group">
+           <label class="govuk-label" for="f-email">Email address (optional)</label>
+           <input class="govuk-input govuk-!-width-two-thirds" id="f-email" name="email" type="email" value="{{ .Email }}">
+         </div>
+
+         <button type="submit" class="govuk-button" data-module="govuk-button">Add team</button>
+       </form>
+    </div>
+  </div>
+{{ end }}

@@ -1,0 +1,161 @@
+I, [2021-03-15T09:29:19.429837 #9454]  INFO -- : Registered expected interaction GET /auth/user/123
+D, [2021-03-15T09:29:19.430074 #9454] DEBUG -- : {
+  "description": "A request for the user",
+  "providerState": "User exists",
+  "request": {
+    "method": "GET",
+    "path": "/auth/user/123",
+    "headers": {
+      "Cookie": "XSRF-TOKEN=abcde; Other=other",
+      "OPG-Bypass-Membrane": "1",
+      "X-XSRF-TOKEN": "abcde"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "email": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "system.admin@opgtest.com"
+      },
+      "firstname": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "system"
+      },
+      "id": {
+        "json_class": "Pact::SomethingLike",
+        "contents": 123
+      },
+      "inactive": {
+        "json_class": "Pact::SomethingLike",
+        "contents": true
+      },
+      "locked": {
+        "json_class": "Pact::SomethingLike",
+        "contents": true
+      },
+      "roles": {
+        "json_class": "Pact::ArrayLike",
+        "contents": {
+          "json_class": "Pact::SomethingLike",
+          "contents": "string"
+        },
+        "min": 1
+      },
+      "surname": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "admin"
+      },
+      "suspended": {
+        "json_class": "Pact::SomethingLike",
+        "contents": false
+      }
+    }
+  },
+  "metadata": null
+}
+I, [2021-03-15T09:29:19.432352 #9454]  INFO -- : Received request GET /auth/user/123
+D, [2021-03-15T09:29:19.432444 #9454] DEBUG -- : {
+  "path": "/auth/user/123",
+  "query": "",
+  "method": "get",
+  "headers": {
+    "Host": "localhost:51254",
+    "User-Agent": "Go-http-client/1.1",
+    "Cookie": "XSRF-TOKEN=abcde; Other=other",
+    "Opg-Bypass-Membrane": "1",
+    "X-Xsrf-Token": "abcde",
+    "Accept-Encoding": "gzip",
+    "Version": "HTTP/1.1"
+  }
+}
+I, [2021-03-15T09:29:19.432786 #9454]  INFO -- : Found matching response for GET /auth/user/123
+D, [2021-03-15T09:29:19.432949 #9454] DEBUG -- : {
+  "status": 200,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "email": {
+      "json_class": "Pact::SomethingLike",
+      "contents": "system.admin@opgtest.com"
+    },
+    "firstname": {
+      "json_class": "Pact::SomethingLike",
+      "contents": "system"
+    },
+    "id": {
+      "json_class": "Pact::SomethingLike",
+      "contents": 123
+    },
+    "inactive": {
+      "json_class": "Pact::SomethingLike",
+      "contents": true
+    },
+    "locked": {
+      "json_class": "Pact::SomethingLike",
+      "contents": true
+    },
+    "roles": {
+      "json_class": "Pact::ArrayLike",
+      "contents": {
+        "json_class": "Pact::SomethingLike",
+        "contents": "string"
+      },
+      "min": 1
+    },
+    "surname": {
+      "json_class": "Pact::SomethingLike",
+      "contents": "admin"
+    },
+    "suspended": {
+      "json_class": "Pact::SomethingLike",
+      "contents": false
+    }
+  }
+}
+I, [2021-03-15T09:29:19.434881 #9454]  INFO -- : Verifying - interactions matched
+I, [2021-03-15T09:29:19.436864 #9454]  INFO -- : Cleared interactions
+I, [2021-03-15T09:29:19.439845 #9454]  INFO -- : Registered expected interaction GET /auth/user/123
+D, [2021-03-15T09:29:19.439927 #9454] DEBUG -- : {
+  "description": "A request for the user without cookies",
+  "providerState": "User exists",
+  "request": {
+    "method": "GET",
+    "path": "/auth/user/123",
+    "headers": {
+      "OPG-Bypass-Membrane": "1"
+    }
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+    }
+  },
+  "metadata": null
+}
+I, [2021-03-15T09:29:19.441947 #9454]  INFO -- : Received request GET /auth/user/123
+D, [2021-03-15T09:29:19.442051 #9454] DEBUG -- : {
+  "path": "/auth/user/123",
+  "query": "",
+  "method": "get",
+  "headers": {
+    "Host": "localhost:51254",
+    "User-Agent": "Go-http-client/1.1",
+    "Opg-Bypass-Membrane": "1",
+    "X-Xsrf-Token": "abcde",
+    "Accept-Encoding": "gzip",
+    "Version": "HTTP/1.1"
+  }
+}
+I, [2021-03-15T09:29:19.442167 #9454]  INFO -- : Found matching response for GET /auth/user/123
+D, [2021-03-15T09:29:19.442237 #9454] DEBUG -- : {
+  "status": 401,
+  "headers": {
+  }
+}
+I, [2021-03-15T09:29:19.444043 #9454]  INFO -- : Verifying - interactions matched
+I, [2021-03-15T09:29:19.445876 #9454]  INFO -- : Cleared interactions

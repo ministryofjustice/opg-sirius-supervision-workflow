@@ -1,0 +1,29 @@
+$govuk-include-default-font-face: false;
+
+@import "node_modules/govuk-frontend/govuk/all";
+@import "node_modules/@ministryofjustice/frontend/moj/all";
+
+.govuk-table .link-button {
+    @include govuk-link-common;
+    @include govuk-link-style-default;
+    color: $govuk-link-colour;
+    text-decoration: underline;
+    margin-bottom: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    line-height: 1.3157894737;
+    font-size: 1.1875rem;
+    cursor: pointer;
+}
+
+.govuk-checkboxes--small .govuk-checkboxes__label {
+    &::before {
+        top: 0;
+    }
+
+    &::after {
+        top: 8px;
+    }
+}

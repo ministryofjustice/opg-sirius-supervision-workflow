@@ -1,0 +1,111 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix "/users" }}">Back</a>
+{{ end }}
+
+{{ define "title" }}{{ if .Errors }}Error: {{ end }}Add user{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .Success }}
+        {{ template "success-banner" "You have successfully added a new user." }}
+      {{ end }}
+
+      <h1 class="govuk-heading-xl">Add new user</h1>
+
+      <form class="form" action="{{ prefix "/add-user" }}" method="post">
+        <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+        
+        <div class="govuk-form-group {{ if .Errors.email }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-email">Email address</label>
+          {{ range .Errors.email }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+          <input class="govuk-input {{ if .Errors.email }}govuk-input--error{{ end }}" id="f-email" name="email" type="text">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.firstname }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-firstname">First name</label>
+          {{ range .Errors.firstname }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+          <input class="govuk-input govuk-!-width-two-thirds {{ if .Errors.firstname }}govuk-input--error{{ end }}" id="f-firstname" name="firstname" type="text" autocomplete="name" spellcheck="false">
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.surname }}govuk-form-group--error{{ end }}">
+          <label class="govuk-label" for="f-surname">Last name</label>
+          {{ range .Errors.surname }}
+            <span class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ . }}
+            </span>
+          {{ end }}
+          <input class="govuk-input govuk-!-width-two-thirds {{ if .Errors.surname }}govuk-input--error{{ end }}" id="f-surname" name="surname" type="text" autocomplete="name" spellcheck="false">
+        </div>
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Organisation</legend>
+            <div class="govuk-radios govuk-radios--inline">
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-organisation" name="organisation" type="radio" value="COP User">
+                <label class="govuk-label govuk-radios__label" for="f-organisation">
+                  COP
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input class="govuk-radios__input" id="f-organisation-2" name="organisation" type="radio" value="OPG User" checked>
+                <label class="govuk-label govuk-radios__label" for="f-organisation-2">
+                  OPG 
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group {{ if .Errors.roles }}govuk-form-group--error{{ end }}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Roles</legend>
+            <div id="f-roles-item-hint" class="govuk-hint">
+              Select one or more roles
+            </div>
+            
+            {{ range .Errors.roles }}
+              <span class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ . }}
+              </span>
+            {{ end }}
+
+            <div class="govuk-checkboxes govuk-checkboxes--small">
+              {{ range $i, $e := .Roles }}
+                {{ if eq $e "System Admin"  }}
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="f-roles-{{ $i }}" name="roles" type="checkbox" value="{{ $e }}" aria-describedby="f-roles-{{ $i }}-item-hint">
+                    <label class="govuk-label govuk-checkboxes__label" for="f-roles-{{ $i }}">{{ $e }}</label>
+                    <div id="f-roles-{{ $i }}-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                      System Admins can add and edit other users
+                    </div>
+                  </div>
+                {{ else }}
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="f-roles-{{ $i }}" name="roles" type="checkbox" value="{{ $e }}">
+                    <label class="govuk-label govuk-checkboxes__label" for="f-roles-{{ $i }}">{{ $e }}</label>
+                  </div>
+                {{ end }}
+              {{ end }}
+            </div>
+          </fieldset>
+        </div>
+
+        <button type="submit" class="govuk-button" data-module="govuk-button">Add user</button>
+      </form>
+    </div>
+  </div>
+{{ end }}

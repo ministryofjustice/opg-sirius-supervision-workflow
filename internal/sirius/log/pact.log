@@ -1,0 +1,5 @@
+# Logfile created on 2021-03-15 09:28:53 +0000 by logger.rb/47272
+W, [2021-03-15T09:28:53.217212 #8617]  WARN -- : No content type found, performing text diff on body
+W, [2021-03-15T09:28:53.225758 #8617]  WARN -- : No content type found, performing text diff on body
+W, [2021-03-15T09:28:57.161842 #8745]  WARN -- : No content type found, performing text diff on body
+W, [2021-03-15T09:28:57.182039 #8745]  WARN -- : No content type found, performing text diff on body

@@ -1,0 +1,57 @@
+{{ template "page" . }}
+
+{{ define "title" }}My details{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">My details</h1>
+      <h2 class="govuk-heading-m">Personal details</h2>
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Name</dt>
+          <dd class="govuk-summary-list__value">{{ .Firstname }} {{ .Surname }}</dd>
+          <dd class="govuk-summary-list__actions"></dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Email</dt>
+          <dd class="govuk-summary-list__value">{{ .Email }}</dd>
+          <dd class="govuk-summary-list__actions"></dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Phone number</dt>
+          <dd class="govuk-summary-list__value">{{ .PhoneNumber }}</dd>
+          <dd class="govuk-summary-list__actions">
+            {{ if .CanEditPhoneNumber }}
+              <a class="govuk-link" href="{{ prefix "/my-details/edit" }}">
+                Change<span class="govuk-visually-hidden"> phone number</span>
+              </a>
+            {{ end }}
+          </dd>
+        </div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Permissions</h2>
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Organisation</dt>
+          <dd class="govuk-summary-list__value">{{ .Organisation }}</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Team</dt>
+          <dd class="govuk-summary-list__value">{{ .Teams | join ", " }}</dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Roles</dt>
+          <dd class="govuk-summary-list__value">{{ .Roles | join ", " }}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+{{ end }}

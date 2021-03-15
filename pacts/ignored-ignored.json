@@ -1,0 +1,188 @@
+{
+  "consumer": {
+    "name": "ignored"
+  },
+  "provider": {
+    "name": "ignored"
+  },
+  "interactions": [
+    {
+      "description": "A request to get all the permissions I need",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/permission",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "data": {
+            "team": {
+              "permissions": [
+                "GET",
+                "POST",
+                "PUT"
+              ]
+            },
+            "v1-teams": {
+              "permissions": [
+                "DELETE"
+              ]
+            },
+            "v1-users": {
+              "permissions": [
+                "PUT",
+                "POST",
+                "DELETE"
+              ]
+            },
+            "v1-users-updatetelephonenumber": {
+              "permissions": [
+                "PUT"
+              ]
+            }
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for teams",
+      "providerState": "User exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/teams",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "displayName": "Cool Team",
+            "id": 123,
+            "members": [
+              {
+                "displayName": "John",
+                "email": "john@opgtest.com"
+              }
+            ],
+            "teamType": {
+              "handle": "ALLOCATIONS",
+              "label": "Allocations"
+            }
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          },
+          "$.body[*].displayName": {
+            "match": "type"
+          },
+          "$.body[*].id": {
+            "match": "type"
+          },
+          "$.body[*].members": {
+            "min": 1
+          },
+          "$.body[*].members[*].*": {
+            "match": "type"
+          },
+          "$.body[*].members[*].displayName": {
+            "match": "type"
+          },
+          "$.body[*].members[*].email": {
+            "match": "type"
+          },
+          "$.body[*].teamType": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "A request for teams",
+      "providerState": "User exists and teams have no type",
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/teams",
+        "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "displayName": "Cool Team",
+            "id": 123,
+            "members": [
+              {
+                "displayName": "John",
+                "email": "john@opgtest.com"
+              }
+            ]
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          },
+          "$.body[*].displayName": {
+            "match": "type"
+          },
+          "$.body[*].id": {
+            "match": "type"
+          },
+          "$.body[*].members": {
+            "min": 1
+          },
+          "$.body[*].members[*].*": {
+            "match": "type"
+          },
+          "$.body[*].members[*].displayName": {
+            "match": "type"
+          },
+          "$.body[*].members[*].email": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}

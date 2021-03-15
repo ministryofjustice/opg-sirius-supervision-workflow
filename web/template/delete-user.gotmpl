@@ -1,0 +1,39 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  {{ if not .SuccessMessage }}
+    <a class="govuk-back-link" href="{{ prefix (printf "/edit-user/%d" .User.ID) }}">Back</a>
+  {{ end }}
+{{ end }}
+
+{{ define "title" }}
+  Delete {{ .User.Firstname }} {{ .User.Surname }}
+{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ template "error-summary" .Errors }}
+
+      {{ if .SuccessMessage }}
+        <h1 class="govuk-heading-xl">User account deleted</h1>
+
+        <p class="govuk-body">{{ .SuccessMessage }}</p>
+
+        <a href="{{ prefix "/users" }}" class="govuk-button">Continue</a>
+      {{ else }}
+        <h1 class="govuk-heading-xl">Delete user</h1>
+
+        <p class="govuk-body">
+          Are you sure you want to delete <strong>{{ .User.Firstname }} {{ .User.Surname }}</strong>?
+        </p>
+
+        <form class="form" action="" method="post">
+          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+          <button type="submit" class="govuk-button govuk-button--warning govuk-!-margin-right-1">Delete user</button>
+          <a href="{{ prefix (printf "/edit-user/%d" .User.ID) }}" class="govuk-button govuk-button--secondary">Cancel</a>
+        </form>
+      {{ end }}
+    </div>
+  </div>
+{{ end }}

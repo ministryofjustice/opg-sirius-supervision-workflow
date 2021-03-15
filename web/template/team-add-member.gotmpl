@@ -1,0 +1,71 @@
+{{ template "page" . }}
+
+{{ define "backlink" }}
+  <a class="govuk-back-link" href="{{ prefix (printf "/teams/%d" .Team.ID) }}">Back</a>
+{{ end }}
+
+{{ define "title" }}
+  {{ if .Errors }}Error: {{ end }}Add user to {{ .Team.DisplayName }}
+{{ end }}
+
+{{ define "main" }}
+  {{ template "error-summary" .Errors }}
+
+  {{ if .Success }}
+    {{ template "success-banner" (printf "You have successfully added %s to the team." .Success) }}
+  {{ end }}
+
+  <h1 class="govuk-heading-xl">Add user to {{ .Team.DisplayName }}</h1>
+
+  <div class="govuk-form-group">
+    <div class="moj-search">
+      <form method="GET">
+        <div class="govuk-form-group">
+          <label class="govuk-label moj-search__label" for="f-search">
+            Find a user
+          </label>
+
+          <input class="govuk-input moj-search__input" id="f-search" name="search" type="search" value="{{ .Search }}">
+        </div>
+        <button type="submit" class="govuk-button moj-search__button" data-module="govuk-button">
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{ if .Users }}
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Name</th>
+        <th scope="col" class="govuk-table__header">Email</th>
+        <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {{ range .Users }}
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">{{ .DisplayName }}</th>
+          <td class="govuk-table__cell">{{ .Email }}</td>
+          <td class="govuk-table__cell">
+            {{ if index $.Members .ID }}
+              Already in team
+            {{ else }}
+              <form method="POST">
+                <input type="hidden" name="xsrfToken" value="{{ $.XSRFToken }}" />
+                <input type="hidden" name="id" value="{{ .ID }}" />
+                <input type="hidden" name="email" value="{{ .Email }}" />
+                <input type="hidden" name="search" value="{{ $.Search }}" />
+                <button type="submit" class="link-button">Add to team</button>
+              </form>
+            {{ end }}
+          </td>
+        </tr>
+      {{ end }}
+    </tbody>
+  </table>
+  {{ else if and .Search (not .Errors) }}
+    <p class="govuk-body">No users found matching search term</p>
+  {{ end }}
+{{ end }}

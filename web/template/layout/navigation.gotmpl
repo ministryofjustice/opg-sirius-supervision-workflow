@@ -1,0 +1,24 @@
+{{ define "navigation" }}
+  <div class="moj-primary-navigation">
+    <div class="moj-primary-navigation__container">
+      <div class="moj-primary-navigation__nav">
+        <nav class="moj-primary-navigation" aria-label="Primary navigation">
+          <ul class="moj-primary-navigation__list">
+            <li class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" {{ if eq .Path "/users" }}aria-current="page"{{ end }} href="{{ prefix "/users" }}">Users</a>
+            </li>
+            <li class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" {{ if eq .Path "/teams" }}aria-current="page"{{ end }} href="{{ prefix "/teams" }}">Teams</a>
+            </li>
+            <li class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" {{ if eq .Path "/my-details" }}aria-current="page"{{ end }} href="{{ prefix "/my-details" }}">My details</a>
+            </li>
+            <li class="moj-primary-navigation__item">
+              <a class="moj-primary-navigation__link" {{ if eq .Path "/change-password" }}aria-current="page"{{ end }} href="{{ prefix "/change-password" }}">Change password</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+{{ end }}
