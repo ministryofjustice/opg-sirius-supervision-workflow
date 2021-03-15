@@ -6,10 +6,6 @@ import (
 	"strconv"
 )
 
-type apiTeamResponse struct {
-	Data apiTeam `json:"data"`
-}
-
 func (c *Client) Team(ctx Context, id int) (Team, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams/"+strconv.Itoa(id), nil)
 	if err != nil {
@@ -30,20 +26,20 @@ func (c *Client) Team(ctx Context, id int) (Team, error) {
 		return Team{}, newStatusError(resp)
 	}
 
-	var v apiTeamResponse
+	var v apiTeam
 	if err := json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return Team{}, err
 	}
 
 	team := Team{
-		ID:          v.Data.ID,
-		DisplayName: v.Data.DisplayName,
+		ID:          v.ID,
+		DisplayName: v.DisplayName,
 		Type:        "",
-		Email:       v.Data.Email,
-		PhoneNumber: v.Data.PhoneNumber,
+		Email:       v.Email,
+		PhoneNumber: v.PhoneNumber,
 	}
 
-	for _, m := range v.Data.Members {
+	for _, m := range v.Members {
 		team.Members = append(team.Members, TeamMember{
 			ID:          m.ID,
 			DisplayName: m.DisplayName,
@@ -51,8 +47,8 @@ func (c *Client) Team(ctx Context, id int) (Team, error) {
 		})
 	}
 
-	if v.Data.TeamType != nil {
-		team.Type = v.Data.TeamType.Handle
+	if v.TeamType != nil {
+		team.Type = v.TeamType.Handle
 	}
 
 	return team, nil

@@ -55,13 +55,13 @@
           <input class="govuk-input {{ if .Errors.name }}govuk-input--error{{ end }}" id="f-name" name="name" type="text" value="{{ .Team.DisplayName }}">
         </div>
 
-        <div class="govuk-form-group {{ if .Errors.teamType }}govuk-form-group--error{{ end }}">
+        <div class="govuk-form-group {{ if .Errors.type }}govuk-form-group--error{{ end }}">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">
               Team service
             </legend>
 
-            {{ range .Errors.teamType }}
+            {{ range .Errors.type }}
               <span class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ . }}
               </span>
@@ -77,10 +77,10 @@
 
               <div class="govuk-radios__conditional {{ if eq .Team.Type "" }}govuk-radios__conditional--hidden{{ end }}" id="conditional-f-service-conditional">
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="f-teamType">
+                  <label class="govuk-label" for="f-type">
                     Supervision team type
                   </label>
-                  <select class="govuk-select {{ if .Errors.teamType }}govuk-select--error{{ end }}" id="f-teamType" name="supervision-type" {{ if not .CanEditTeamType }}disabled{{ end }}>
+                  <select class="govuk-select {{ if .Errors.type }}govuk-select--error{{ end }}" id="f-type" name="supervision-type" {{ if not .CanEditTeamType }}disabled{{ end }}>
                     {{ range .TeamTypeOptions }}
                       <option value="{{ .Handle }}" {{ if eq $.Team.Type .Handle }}selected{{ end }}>{{ .Label }}</option>
                     {{ end }}

@@ -1,5 +1,5 @@
-I, [2021-02-08T14:19:32.213504 #34691]  INFO -- : Registered expected interaction GET /auth/user/123
-D, [2021-02-08T14:19:32.213683 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.293490 #11006]  INFO -- : Registered expected interaction GET /auth/user/123
+D, [2021-03-15T09:31:41.293712 #11006] DEBUG -- : {
   "description": "A request for the user",
   "providerState": "User exists",
   "request": {
@@ -57,13 +57,13 @@ D, [2021-02-08T14:19:32.213683 #34691] DEBUG -- : {
   },
   "metadata": null
 }
-I, [2021-02-08T14:19:32.215544 #34691]  INFO -- : Received request GET /auth/user/123
-D, [2021-02-08T14:19:32.215637 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.296472 #11006]  INFO -- : Received request GET /auth/user/123
+D, [2021-03-15T09:31:41.296624 #11006] DEBUG -- : {
   "path": "/auth/user/123",
   "query": "",
   "method": "get",
   "headers": {
-    "Host": "localhost:65143",
+    "Host": "localhost:51616",
     "User-Agent": "Go-http-client/1.1",
     "Cookie": "XSRF-TOKEN=abcde; Other=other",
     "Opg-Bypass-Membrane": "1",
@@ -72,8 +72,8 @@ D, [2021-02-08T14:19:32.215637 #34691] DEBUG -- : {
     "Version": "HTTP/1.1"
   }
 }
-I, [2021-02-08T14:19:32.215892 #34691]  INFO -- : Found matching response for GET /auth/user/123
-D, [2021-02-08T14:19:32.216016 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.297127 #11006]  INFO -- : Found matching response for GET /auth/user/123
+D, [2021-03-15T09:31:41.297291 #11006] DEBUG -- : {
   "status": 200,
   "headers": {
     "Content-Type": "application/json"
@@ -117,10 +117,10 @@ D, [2021-02-08T14:19:32.216016 #34691] DEBUG -- : {
     }
   }
 }
-I, [2021-02-08T14:19:32.217606 #34691]  INFO -- : Verifying - interactions matched
-I, [2021-02-08T14:19:32.219234 #34691]  INFO -- : Cleared interactions
-I, [2021-02-08T14:19:32.221475 #34691]  INFO -- : Registered expected interaction GET /auth/user/123
-D, [2021-02-08T14:19:32.221546 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.299951 #11006]  INFO -- : Verifying - interactions matched
+I, [2021-03-15T09:31:41.302659 #11006]  INFO -- : Cleared interactions
+I, [2021-03-15T09:31:41.306115 #11006]  INFO -- : Registered expected interaction GET /auth/user/123
+D, [2021-03-15T09:31:41.306214 #11006] DEBUG -- : {
   "description": "A request for the user without cookies",
   "providerState": "User exists",
   "request": {
@@ -137,13 +137,13 @@ D, [2021-02-08T14:19:32.221546 #34691] DEBUG -- : {
   },
   "metadata": null
 }
-I, [2021-02-08T14:19:32.223172 #34691]  INFO -- : Received request GET /auth/user/123
-D, [2021-02-08T14:19:32.223230 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.308685 #11006]  INFO -- : Received request GET /auth/user/123
+D, [2021-03-15T09:31:41.308786 #11006] DEBUG -- : {
   "path": "/auth/user/123",
   "query": "",
   "method": "get",
   "headers": {
-    "Host": "localhost:65143",
+    "Host": "localhost:51616",
     "User-Agent": "Go-http-client/1.1",
     "Opg-Bypass-Membrane": "1",
     "X-Xsrf-Token": "abcde",
@@ -151,11 +151,11 @@ D, [2021-02-08T14:19:32.223230 #34691] DEBUG -- : {
     "Version": "HTTP/1.1"
   }
 }
-I, [2021-02-08T14:19:32.223305 #34691]  INFO -- : Found matching response for GET /auth/user/123
-D, [2021-02-08T14:19:32.223356 #34691] DEBUG -- : {
+I, [2021-03-15T09:31:41.308899 #11006]  INFO -- : Found matching response for GET /auth/user/123
+D, [2021-03-15T09:31:41.308970 #11006] DEBUG -- : {
   "status": 401,
   "headers": {
   }
 }
-I, [2021-02-08T14:19:32.224803 #34691]  INFO -- : Verifying - interactions matched
-I, [2021-02-08T14:19:32.226277 #34691]  INFO -- : Cleared interactions
+I, [2021-03-15T09:31:41.311217 #11006]  INFO -- : Verifying - interactions matched
+I, [2021-03-15T09:31:41.313584 #11006]  INFO -- : Cleared interactions

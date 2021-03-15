@@ -39,7 +39,7 @@ func TestTeam(t *testing.T) {
 					UponReceiving("A request for a team").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/team/65"),
+						Path:   dsl.String("/api/v1/teams/65"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -50,19 +50,17 @@ func TestTeam(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"data": map[string]interface{}{
-								"id":          dsl.Like(65),
-								"displayName": dsl.Like("Cool Team"),
-								"email":       dsl.Like("coolteam@opgtest.com"),
-								"phoneNumber": dsl.Like("01818118181"),
-								"members": dsl.EachLike(map[string]interface{}{
-									"displayName": dsl.Like("John"),
-									"email":       dsl.Like("john@opgtest.com"),
-								}, 1),
-								"teamType": dsl.Like(map[string]interface{}{
-									"handle": "ALLOCATIONS",
-								}),
-							},
+							"id":          dsl.Like(65),
+							"displayName": dsl.Like("Cool Team"),
+							"email":       dsl.Like("coolteam@opgtest.com"),
+							"phoneNumber": dsl.Like("01818118181"),
+							"members": dsl.EachLike(map[string]interface{}{
+								"displayName": dsl.Like("John"),
+								"email":       dsl.Like("john@opgtest.com"),
+							}, 1),
+							"teamType": dsl.Like(map[string]interface{}{
+								"handle": "ALLOCATIONS",
+							}),
 						}),
 					})
 			},
@@ -94,7 +92,7 @@ func TestTeam(t *testing.T) {
 					UponReceiving("A request for an LPA team").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/team/65"),
+						Path:   dsl.String("/api/v1/teams/65"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -105,14 +103,12 @@ func TestTeam(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"data": map[string]interface{}{
-								"id":          dsl.Like(65),
-								"displayName": dsl.Like("Cool Team"),
-								"members": dsl.EachLike(map[string]interface{}{
-									"displayName": dsl.Like("Carline"),
-									"email":       dsl.Like("carline@opgtest.com"),
-								}, 1),
-							},
+							"id":          dsl.Like(65),
+							"displayName": dsl.Like("Cool Team"),
+							"members": dsl.EachLike(map[string]interface{}{
+								"displayName": dsl.Like("Carline"),
+								"email":       dsl.Like("carline@opgtest.com"),
+							}, 1),
 						}),
 					})
 			},
@@ -142,7 +138,7 @@ func TestTeam(t *testing.T) {
 					UponReceiving("A request for a team without cookies").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/team/65"),
+						Path:   dsl.String("/api/v1/teams/65"),
 						Headers: dsl.MapMatcher{
 							"OPG-Bypass-Membrane": dsl.String("1"),
 						},
@@ -191,7 +187,7 @@ func TestTeamStatusError(t *testing.T) {
 	_, err := client.Team(getContext(nil), 123)
 	assert.Equal(t, StatusError{
 		Code:   http.StatusTeapot,
-		URL:    s.URL + "/api/team/123",
+		URL:    s.URL + "/api/v1/teams/123",
 		Method: http.MethodGet,
 	}, err)
 }

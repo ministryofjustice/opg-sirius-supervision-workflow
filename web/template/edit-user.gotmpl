@@ -55,9 +55,7 @@
                   <button class="govuk-button govuk-button--secondary moj-page-header-actions__action">Resend activation email</button>
                 </form>
               {{ end }}
-              {{ if .DeleteUserEnabled }}
-                <a class="govuk-button moj-button-menu__item govuk-button--warning moj-page-header-actions__action" href="{{ prefix (printf "/delete-user/%d" .User.ID) }}">Delete user</a>
-              {{ end }}
+               <a class="govuk-button moj-button-menu__item govuk-button--warning moj-page-header-actions__action" href="{{ prefix (printf "/delete-user/%d" .User.ID) }}">Delete user</a>
             </div>
           </div>
         </div>

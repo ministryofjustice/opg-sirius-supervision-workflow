@@ -39,8 +39,6 @@ type Template interface {
 func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusURL, siriusPublicURL, webDir string) http.Handler {
 	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
 
-	deleteUserEnabled := siriusPublicURL != "https://live.sirius-opg.uk"
-
 	mux := http.NewServeMux()
 	mux.Handle("/", http.RedirectHandler(prefix+"/my-details", http.StatusFound))
 	mux.Handle("/health-check", healthCheck())
@@ -95,7 +93,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 
 	mux.Handle("/edit-user/",
 		wrap(
-			editUser(client, templates["edit-user.gotmpl"], deleteUserEnabled)))
+			editUser(client, templates["edit-user.gotmpl"])))
 
 	mux.Handle("/unlock-user/",
 		wrap(
@@ -103,7 +101,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 
 	mux.Handle("/delete-user/",
 		wrap(
-			deleteUser(client, templates["delete-user.gotmpl"], deleteUserEnabled)))
+			deleteUser(client, templates["delete-user.gotmpl"])))
 
 	mux.Handle("/resend-confirmation",
 		wrap(

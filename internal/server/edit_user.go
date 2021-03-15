@@ -19,12 +19,11 @@ type editUserVars struct {
 	XSRFToken         string
 	Roles             []string
 	User              sirius.AuthUser
-	DeleteUserEnabled bool
 	Success           bool
 	Errors            sirius.ValidationErrors
 }
 
-func editUser(client EditUserClient, tmpl Template, deleteUserEnabled bool) Handler {
+func editUser(client EditUserClient, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		if !perm.HasPermission("v1-users", http.MethodPut) {
 			return StatusError(http.StatusForbidden)
@@ -46,7 +45,6 @@ func editUser(client EditUserClient, tmpl Template, deleteUserEnabled bool) Hand
 			Path:              r.URL.Path,
 			XSRFToken:         ctx.XSRFToken,
 			Roles:             roles,
-			DeleteUserEnabled: deleteUserEnabled,
 		}
 
 		switch r.Method {

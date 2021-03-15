@@ -439,17 +439,25 @@
     },
     {
       "description": "A request to edit the team",
-      "providerState": "A user and a team",
+      "providerState": "Supervision team with members exists",
       "request": {
         "method": "PUT",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
           "Cookie": "XSRF-TOKEN=abcde; Other=other",
           "OPG-Bypass-Membrane": "1",
           "X-XSRF-TOKEN": "abcde"
         },
-        "body": "email=test.team%40opgtest.com&name=Test+team&phoneNumber=014729583920&teamType%5Bhandle%5D=INVESTIGATIONS"
+        "body": {
+          "email": "test.team@opgtest.com",
+          "memberIds": [
+
+          ],
+          "name": "Test team",
+          "phoneNumber": "014729583920",
+          "type": "INVESTIGATIONS"
+        }
       },
       "response": {
         "status": 200,
@@ -459,17 +467,25 @@
     },
     {
       "description": "A request to edit the team with members",
-      "providerState": "A user and a team",
+      "providerState": "Supervision team with members exists",
       "request": {
         "method": "PUT",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
           "Cookie": "XSRF-TOKEN=abcde; Other=other",
           "OPG-Bypass-Membrane": "1",
           "X-XSRF-TOKEN": "abcde"
         },
-        "body": "email=test.team%40opgtest.com&members%5B0%5D%5Bid%5D=23&members%5B1%5D%5Bid%5D=87&name=Test+team&phoneNumber=014729583920&teamType%5Bhandle%5D=INVESTIGATIONS"
+        "body": {
+          "email": "test.team@opgtest.com",
+          "memberIds": [
+            23
+          ],
+          "name": "Test team with members",
+          "phoneNumber": "014729583920",
+          "type": "INVESTIGATIONS"
+        }
       },
       "response": {
         "status": 200,
@@ -479,14 +495,23 @@
     },
     {
       "description": "A request to edit the team without cookies",
-      "providerState": "A user and a team",
+      "providerState": "Supervision team with members exists",
       "request": {
         "method": "PUT",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
+          "Content-Type": "application/json",
           "OPG-Bypass-Membrane": "1"
         },
-        "body": "email=&name=Test+team&phoneNumber=&teamType%5Bhandle%5D=FINANCE"
+        "body": {
+          "email": "",
+          "memberIds": [
+
+          ],
+          "name": "Test team",
+          "phoneNumber": "",
+          "type": "FINANCE"
+        }
       },
       "response": {
         "status": 401,
@@ -495,34 +520,40 @@
       }
     },
     {
-      "description": "A request to edit the team with an non-unique type",
-      "providerState": "A user and a team",
+      "description": "A request to edit the team with a non-unique type",
+      "providerState": "Supervision team with members exists",
       "request": {
         "method": "PUT",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
           "Cookie": "XSRF-TOKEN=abcde; Other=other",
           "OPG-Bypass-Membrane": "1",
           "X-XSRF-TOKEN": "abcde"
         },
-        "body": "email=&name=Test+team&phoneNumber=&teamType%5Bhandle%5D=FINANCE"
+        "body": {
+          "email": "",
+          "memberIds": [
+
+          ],
+          "name": "Test duplicate finance team",
+          "phoneNumber": "",
+          "type": "FINANCE"
+        }
       },
       "response": {
         "status": 400,
         "headers": {
         },
         "body": {
-          "data": {
-            "errorMessages": {
-              "teamType": {
-                "teamTypeAlreadyInUse": "Invalid team type"
-              }
+          "validation_errors": {
+            "type": {
+              "error": "Invalid team type"
             }
           }
         },
         "matchingRules": {
-          "$.body.data.errorMessages.teamType.teamTypeAlreadyInUse": {
+          "$.body.validation_errors.type.error": {
             "match": "type"
           }
         }
@@ -947,7 +978,7 @@
       "providerState": "Supervision team with members exists",
       "request": {
         "method": "GET",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
           "Cookie": "XSRF-TOKEN=abcde; Other=other",
           "OPG-Bypass-Membrane": "1",
@@ -960,51 +991,49 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "data": {
-            "displayName": "Cool Team",
-            "email": "coolteam@opgtest.com",
-            "id": 65,
-            "members": [
-              {
-                "displayName": "John",
-                "email": "john@opgtest.com"
-              }
-            ],
-            "phoneNumber": "01818118181",
-            "teamType": {
-              "handle": "ALLOCATIONS"
+          "displayName": "Cool Team",
+          "email": "coolteam@opgtest.com",
+          "id": 65,
+          "members": [
+            {
+              "displayName": "John",
+              "email": "john@opgtest.com"
             }
+          ],
+          "phoneNumber": "01818118181",
+          "teamType": {
+            "handle": "ALLOCATIONS"
           }
         },
         "matchingRules": {
           "$.body": {
             "match": "type"
           },
-          "$.body.data.displayName": {
+          "$.body.displayName": {
             "match": "type"
           },
-          "$.body.data.email": {
+          "$.body.email": {
             "match": "type"
           },
-          "$.body.data.id": {
+          "$.body.id": {
             "match": "type"
           },
-          "$.body.data.members": {
+          "$.body.members": {
             "min": 1
           },
-          "$.body.data.members[*].*": {
+          "$.body.members[*].*": {
             "match": "type"
           },
-          "$.body.data.members[*].displayName": {
+          "$.body.members[*].displayName": {
             "match": "type"
           },
-          "$.body.data.members[*].email": {
+          "$.body.members[*].email": {
             "match": "type"
           },
-          "$.body.data.phoneNumber": {
+          "$.body.phoneNumber": {
             "match": "type"
           },
-          "$.body.data.teamType": {
+          "$.body.teamType": {
             "match": "type"
           }
         }
@@ -1015,7 +1044,7 @@
       "providerState": "LPA team with members exists",
       "request": {
         "method": "GET",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
           "Cookie": "XSRF-TOKEN=abcde; Other=other",
           "OPG-Bypass-Membrane": "1",
@@ -1028,37 +1057,35 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "data": {
-            "displayName": "Cool Team",
-            "id": 65,
-            "members": [
-              {
-                "displayName": "Carline",
-                "email": "carline@opgtest.com"
-              }
-            ]
-          }
+          "displayName": "Cool Team",
+          "id": 65,
+          "members": [
+            {
+              "displayName": "Carline",
+              "email": "carline@opgtest.com"
+            }
+          ]
         },
         "matchingRules": {
           "$.body": {
             "match": "type"
           },
-          "$.body.data.displayName": {
+          "$.body.displayName": {
             "match": "type"
           },
-          "$.body.data.id": {
+          "$.body.id": {
             "match": "type"
           },
-          "$.body.data.members": {
+          "$.body.members": {
             "min": 1
           },
-          "$.body.data.members[*].*": {
+          "$.body.members[*].*": {
             "match": "type"
           },
-          "$.body.data.members[*].displayName": {
+          "$.body.members[*].displayName": {
             "match": "type"
           },
-          "$.body.data.members[*].email": {
+          "$.body.members[*].email": {
             "match": "type"
           }
         }
@@ -1069,7 +1096,7 @@
       "providerState": "User exists",
       "request": {
         "method": "GET",
-        "path": "/api/team/65",
+        "path": "/api/v1/teams/65",
         "headers": {
           "OPG-Bypass-Membrane": "1"
         }

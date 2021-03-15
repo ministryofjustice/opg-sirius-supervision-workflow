@@ -22,13 +22,15 @@ type deleteUserVars struct {
 	SuccessMessage string
 }
 
-func deleteUser(client DeleteUserClient, tmpl Template, deleteUserEnabled bool) Handler {
+func deleteUser(client DeleteUserClient, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
-		if !deleteUserEnabled || !perm.HasPermission("v1-users", http.MethodDelete) {
-			return StatusError(http.StatusForbidden)
-		}
 
-		id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/delete-user/"))
+        if !perm.HasPermission("v1-users", http.MethodDelete) {
+            return StatusError(http.StatusForbidden)
+        }
+
+        id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/delete-user/"))
+
 		if err != nil {
 			return StatusError(http.StatusNotFound)
 		}
@@ -37,7 +39,7 @@ func deleteUser(client DeleteUserClient, tmpl Template, deleteUserEnabled bool) 
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		ctx := getContext(r)
+        ctx := getContext(r)
 
 		user, err := client.User(ctx, id)
 		if err != nil {
