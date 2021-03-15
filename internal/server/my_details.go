@@ -63,7 +63,7 @@ func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) 
 			vars.Teams = append(vars.Teams, team.DisplayName)
 		}
 
-		if err := templates.ExecuteTemplate(w, "my-details.gotmpl", vars); err != nil {
+		if err := templates.ExecuteTemplate(w, "workflow.gotmpl", vars); err != nil {
 			logger.Println("myDetails:", err)
 		}
 	})
