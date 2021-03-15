@@ -33,7 +33,7 @@ RUN apk --update --no-cache add \
     && rm -rf /var/cache/apk/*
 RUN apk --no-cache add tzdata
 
-COPY --from=build-env /go/bin/opg-sirius-workflow /go/bin/opg-sirius-workflow
+COPY --from=build-env /go/bin/opg-sirius-workflow opg-sirius-workflow
 COPY --from=build-env /app/web/template web/template
 COPY --from=asset-env /app/web/static web/static
-ENTRYPOINT ["/go/bin/opg-sirius-workflow"]
+ENTRYPOINT ["./opg-sirius-workflow"]
