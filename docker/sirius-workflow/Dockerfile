@@ -5,11 +5,11 @@ WORKDIR /app
 RUN mkdir -p web/static
 
 COPY web/assets web/assets
-COPY build_assets.sh .
+COPY webpack.config.js .
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn && sh build_assets.sh
+RUN yarn && yarn build
 
 FROM golang:1.14 as build-env
 
