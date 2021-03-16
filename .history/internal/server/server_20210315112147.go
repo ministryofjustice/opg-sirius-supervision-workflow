@@ -6,10 +6,6 @@ import (
 	"net/http"
 )
 
-type Logger interface {
-	Request(*http.Request, error)
-}
-
 type Client interface {
 	myDetailsClient
 }
