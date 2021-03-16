@@ -1,5 +1,5 @@
 {{ define "table" }}
-<table id="workflow-tasks" class="govuk-table">
+<table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
   <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -14,12 +14,12 @@
         </div>
 
       </th>
-      <th scope="col" class="govuk-table__header">Task type</th>
-      <th scope="col" class="govuk-table__header">Client</th>
-      <th scope="col" class="govuk-table__header">Case owner</th>
-      <th scope="col" class="govuk-table__header">Assigned to</th>
-      <th scope="col" class="govuk-table__header">Due date</th>
-      <th scope="col" class="govuk-table__header">Actions</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
     </tr>
   </thead>
   
