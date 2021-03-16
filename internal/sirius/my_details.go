@@ -2,8 +2,6 @@ package sirius
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"net/http"
 )
 
@@ -27,36 +25,51 @@ type MyDetailsTeam struct {
 }
 
 func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (MyDetails, error) {
-	var v MyDetails
+	myDetails := MyDetails{ID: 47,
+		Name:        "system",
+		PhoneNumber: "03004560300",
+		Teams: []MyDetailsTeam{
+			{DisplayName: "Allocations - (Supervision)"},
+		},
+		DisplayName: "system admin",
+		Deleted:     false,
+		Email:       "system.admin@opgtest.com",
+		Firstname:   "system",
+		Surname:     "admin",
+		Roles:       []string{"OPG User", "System Admin"},
+		Locked:      false,
+		Suspended:   false}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url("/api/v1/users/current"), nil)
-	if err != nil {
-		return v, err
-	}
-	var xsrfToken string
-	for _, c := range cookies {
-		req.AddCookie(c)
-		if c.Name == "XSRF-TOKEN" {
-			xsrfToken = c.Value
-		}
-	}
-	req.Header.Add("OPG-Bypass-Membrane", "1")
-	req.Header.Add("X-XSRF-TOKEN", xsrfToken)
+	return myDetails, nil
 
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return v, err
-	}
-	defer resp.Body.Close()
+	// req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url("/api/v1/users/current"), nil)
+	// if err != nil {
+	// 	return v, err
+	// }
+	// var xsrfToken string
+	// for _, c := range cookies {
+	// 	req.AddCookie(c)
+	// 	if c.Name == "XSRF-TOKEN" {
+	// 		xsrfToken = c.Value
+	// 	}
+	// }
+	// req.Header.Add("OPG-Bypass-Membrane", "1")
+	// req.Header.Add("X-XSRF-TOKEN", xsrfToken)
 
-	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
-	}
+	// resp, err := c.http.Do(req)
+	// if err != nil {
+	// 	return v, err
+	// }
+	// defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return v, errors.New("returned non-2XX response")
-	}
+	// if resp.StatusCode == http.StatusUnauthorized {
+	// 	return v, ErrUnauthorized
+	// }
 
-	err = json.NewDecoder(resp.Body).Decode(&v)
-	return v, err
+	// if resp.StatusCode != http.StatusOK {
+	// 	return v, errors.New("returned non-2XX response")
+	// }
+
+	// err = json.NewDecoder(resp.Body).Decode(&v)
+	// return v, err
 }
