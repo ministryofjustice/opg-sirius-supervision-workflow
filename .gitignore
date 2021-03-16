@@ -11,5 +11,6 @@ public/*
 node_modules
 .tmuxp.*
 package-lock.json
+./history
 
 web/static

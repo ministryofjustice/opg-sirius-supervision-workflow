@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -26,7 +27,7 @@ type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (MyDetails, error) {
+func (c *Client) MyDetails(logger *log.Logger, ctx context.Context, cookies []*http.Cookie) (MyDetails, error) {
 	var v MyDetails
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url("/api/v1/users/current"), nil)
@@ -56,7 +57,8 @@ func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (MyDetai
 	if resp.StatusCode != http.StatusOK {
 		return v, errors.New("returned non-2XX response")
 	}
-
+	logger.Println(resp.StatusCode)
+	logger.Println(resp.Body)
 	err = json.NewDecoder(resp.Body).Decode(&v)
 	return v, err
 }

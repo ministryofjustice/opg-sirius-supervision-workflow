@@ -18,9 +18,9 @@ import (
 func main() {
 	logger := log.New(os.Stdout, "opg-sirius-workflow ", log.LstdFlags)
 
-	port := getEnv("PORT", "8888")
+	port := getEnv("PORT", "9999")
 	webDir := getEnv("WEB_DIR", "web")
-	siriusURL := getEnv("SIRIUS_URL", "http://localhost:8080")
+	siriusURL := getEnv("SIRIUS_URL", "http://localhost:9001")
 
 	templates, err := template.New("").Funcs(map[string]interface{}{
 		"join": func(sep string, items []string) string {

@@ -49,7 +49,7 @@ jobs:
     parameters:
       container_repo_url:
         type: string 
-        default: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
+        default: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/opg-sirius-workflow
     steps:
       - checkout
       - setup_remote_docker:
@@ -58,14 +58,14 @@ jobs:
       - run:
           name: Build
           command: |
-            docker build --tag sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
+            docker build --tag opg-sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
       - ecr/login
       - run:
           name: Push container
           command: |
             export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
-            docker tag sirius-workflow:latest << parameters.container_repo_url >>:latest
-            docker tag sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
+            docker tag opg-sirius-workflow:latest << parameters.container_repo_url >>:latest
+            docker tag opg-sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
               # We want all of the tags pushed
               docker push << parameters.container_repo_url >>

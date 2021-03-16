@@ -33,6 +33,7 @@ func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) 
 		}
 
 		myDetails, err := client.MyDetails(r.Context(), r.Cookies())
+		logger.Println(myDetails)
 		if err == sirius.ErrUnauthorized {
 			client.Authenticate(w, r)
 			return
