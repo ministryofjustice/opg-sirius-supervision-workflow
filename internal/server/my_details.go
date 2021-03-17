@@ -8,7 +8,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type myDetailsClient interface {
+type userDetailsClient interface {
 	MyDetails(context.Context, []*http.Cookie) (sirius.MyDetails, error)
 	AuthenticateClient
 }
@@ -25,7 +25,7 @@ type myDetailsVars struct {
 	Teams        []string
 }
 
-func loggingInfoForWorflow(logger *log.Logger, client myDetailsClient, templates Templates) http.Handler {
+func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templates Templates) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "", http.StatusMethodNotAllowed)

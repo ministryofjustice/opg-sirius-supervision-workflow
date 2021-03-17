@@ -11,7 +11,7 @@ type Logger interface {
 }
 
 type Client interface {
-	myDetailsClient
+	userDetailsClient
 }
 
 type AuthenticateClient interface {
