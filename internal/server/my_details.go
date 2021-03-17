@@ -9,7 +9,7 @@ import (
 )
 
 type userDetailsClient interface {
-	MyDetails(context.Context, []*http.Cookie) (sirius.MyDetails, error)
+	MyDetails(context.Context, []*http.Cookie) (sirius.UserDetails, error)
 	AuthenticateClient
 }
 

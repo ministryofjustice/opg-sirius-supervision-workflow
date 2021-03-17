@@ -18,10 +18,10 @@ type mockMyDetailsClient struct {
 	count       int
 	lastCookies []*http.Cookie
 	err         error
-	data        sirius.MyDetails
+	data        sirius.UserDetails
 }
 
-func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Cookie) (sirius.MyDetails, error) {
+func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Cookie) (sirius.UserDetails, error) {
 	m.count += 1
 	m.lastCookies = cookies
 
@@ -31,7 +31,7 @@ func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Coo
 func TestGetMyDetails(t *testing.T) {
 	assert := assert.New(t)
 
-	data := sirius.MyDetails{
+	data := sirius.UserDetails{
 		ID:          123,
 		Firstname:   "John",
 		Surname:     "Doe",
