@@ -42,7 +42,7 @@ func TestMyDetails(t *testing.T) {
 	myDetails, err := client.MyDetails(context.Background(), cookies)
 	assert.Nil(err)
 
-	assert.Equal(myDetails, MyDetails{
+	assert.Equal(myDetails, UserDetails{
 		ID:          47,
 		Name:        "system",
 		PhoneNumber: "03004560300",

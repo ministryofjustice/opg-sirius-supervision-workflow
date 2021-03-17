@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type MyDetails struct {
+type UserDetails struct {
 	ID          int             `json:"id"`
 	Name        string          `json:"name"`
 	PhoneNumber string          `json:"phoneNumber"`
@@ -24,8 +24,8 @@ type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (MyDetails, error) {
-	myDetails := MyDetails{ID: 47,
+func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (UserDetails, error) {
+	myDetails := UserDetails{ID: 47,
 		Name:        "system",
 		PhoneNumber: "03004560300",
 		Teams: []MyDetailsTeam{
