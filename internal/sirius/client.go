@@ -1,41 +1,59 @@
 package sirius
 
 import (
+	"context"
+	"io"
 	"net/http"
-	"net/url"
 )
 
 const ErrUnauthorized ClientError = "unauthorized"
 
-func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
-	parsed, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, err
-	}
+type ClientError string
 
+type Context struct {
+	Context   context.Context
+	Cookies   []*http.Cookie
+	XSRFToken string
+}
+
+func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
 	return &Client{
 		http:    httpClient,
-		baseURL: parsed,
+		baseURL: baseURL,
 	}, nil
 }
 
 type Client struct {
 	http    *http.Client
-	baseURL *url.URL
+	baseURL string
 }
 
-func (c *Client) Authenticate(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, c.url("/auth"), http.StatusFound)
+func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx.Context, method, c.baseURL+path, body)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, c := range ctx.Cookies {
+		req.AddCookie(c)
+	}
+
+	req.Header.Add("OPG-Bypass-Membrane", "1")
+	req.Header.Add("X-XSRF-TOKEN", ctx.XSRFToken)
+
+	return req, err
 }
 
-func (c *Client) url(path string) string {
-	partial, _ := url.Parse(path)
+// func (c *Client) Authenticate(w http.ResponseWriter, r *http.Request) {
+// 	http.Redirect(w, r, c.url("/auth"), http.StatusFound)
+// }
 
-	return c.baseURL.ResolveReference(partial).String()
-}
+// // func (c *Client) url(path string) string {
+// // 	partial, _ := url.Parse(path)
 
-type ClientError string
+// // 	return c.baseURL.ResolveReference(partial).String()
+// // }
 
-func (e ClientError) Error() string {
-	return string(e)
-}
+// func (e ClientError) Error() string {
+// 	return string(e)
+// }

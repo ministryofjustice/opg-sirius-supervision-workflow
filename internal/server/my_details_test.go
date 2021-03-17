@@ -70,22 +70,22 @@ func TestGetMyDetails(t *testing.T) {
 	}, templates.lastVars)
 }
 
-func TestGetMyDetailsUnauthenticated(t *testing.T) {
-	assert := assert.New(t)
+// func TestGetMyDetailsUnauthenticated(t *testing.T) {
+// 	assert := assert.New(t)
 
-	client := &mockMyDetailsClient{err: sirius.ErrUnauthorized}
-	templates := &mockTemplates{}
+// 	client := &mockMyDetailsClient{err: sirius.ErrUnauthorized}
+// 	templates := &mockTemplates{}
 
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "", nil)
+// 	w := httptest.NewRecorder()
+// 	r, _ := http.NewRequest("GET", "", nil)
 
-	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
+// 	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
 
-	resp := w.Result()
-	assert.Equal(http.StatusOK, resp.StatusCode)
-	assert.Equal(0, templates.count)
-	assert.True(client.authenticated)
-}
+// 	resp := w.Result()
+// 	assert.Equal(http.StatusOK, resp.StatusCode)
+// 	assert.Equal(0, templates.count)
+// 	assert.True(client.authenticated)
+// }
 
 func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	assert := assert.New(t)

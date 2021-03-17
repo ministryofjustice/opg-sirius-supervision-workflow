@@ -34,3 +34,5 @@ func New(logger *log.Logger, client Client, templates Templates, webDir string) 
 
 	return mux
 }
+
+type Handler func(w http.ResponseWriter, r *http.Request) error
