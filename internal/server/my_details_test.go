@@ -21,7 +21,7 @@ type mockMyDetailsClient struct {
 	data        sirius.UserDetails
 }
 
-func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Cookie) (sirius.UserDetails, error) {
+func (m *mockMyDetailsClient) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) (sirius.UserDetails, error) {
 	m.count += 1
 	m.lastCookies = cookies
 

@@ -24,7 +24,7 @@ type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (c *Client) MyDetails(ctx context.Context, cookies []*http.Cookie) (UserDetails, error) {
+func (c *Client) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) (UserDetails, error) {
 	myDetails := UserDetails{ID: 47,
 		Name:        "system",
 		PhoneNumber: "03004560300",

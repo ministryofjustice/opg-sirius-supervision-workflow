@@ -9,7 +9,7 @@ import (
 )
 
 type userDetailsClient interface {
-	MyDetails(context.Context, []*http.Cookie) (sirius.UserDetails, error)
+	SiriusUserDetails(context.Context, []*http.Cookie) (sirius.UserDetails, error)
 	AuthenticateClient
 }
 
@@ -32,7 +32,7 @@ func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templat
 			return
 		}
 
-		myDetails, err := client.MyDetails(r.Context(), r.Cookies())
+		myDetails, err := client.SiriusUserDetails(r.Context(), r.Cookies())
 		if err == sirius.ErrUnauthorized {
 			client.Authenticate(w, r)
 			return
