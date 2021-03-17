@@ -57,7 +57,7 @@ func TestGetMyDetails(t *testing.T) {
 
 	assert.Equal(1, templates.count)
 	assert.Equal("workflow.gotmpl", templates.lastName)
-	assert.Equal(myDetailsVars{
+	assert.Equal(userDetailsVars{
 		Path:         "",
 		ID:           123,
 		Firstname:    "John",

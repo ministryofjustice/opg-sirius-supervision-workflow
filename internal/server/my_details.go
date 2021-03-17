@@ -13,7 +13,7 @@ type userDetailsClient interface {
 	AuthenticateClient
 }
 
-type myDetailsVars struct {
+type userDetailsVars struct {
 	Path         string
 	ID           int
 	Firstname    string
@@ -42,7 +42,7 @@ func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templat
 			return
 		}
 
-		vars := myDetailsVars{
+		vars := userDetailsVars{
 			Path:        r.URL.Path,
 			ID:          myDetails.ID,
 			Firstname:   myDetails.Firstname,
