@@ -1,0 +1,280 @@
+
+$govuk-include-default-font-face: false;
+
+@import "node_modules/govuk-frontend/govuk/all";
+@import "node_modules/@ministryofjustice/frontend/moj/all";
+
+// Sirius specific styles
+
+.sirius-workflow {
+    .govuk-width-container,
+    .moj-header__container,
+    .moj-primary-navigation__container {
+      max-width: none;
+      padding: 0 15px;
+    }
+  
+    .flex-container {
+      display: flex;
+      justify-content: space-between;
+    }
+  
+    #change-view-number.govuk-form-group {
+      margin-bottom: 0px;
+      label {
+        display: inline-block;
+        margin-right: 10px
+      }
+      select {
+        display: inline-block;;
+      }
+    }
+  
+    table {
+      tr {
+        td, th {
+            &:first-child {
+              border-left: 5px solid transparent;
+              padding-left: 15px;
+            }
+            &:last-child {
+              padding-right: 15px;
+            }
+            span {
+              display: block;
+            }
+            .govuk-checkboxes {margin-top: -8px;}
+            &.due {color: #f47738; font-weight: bold;}
+            &.overdue {color: #d4351c;font-weight: bold;}
+          }
+          &.selected {
+            background: #E7F2FB;
+            td {
+              &:first-child {
+              border-left: 5px solid #1d70b8!important;
+            }
+          }
+        }
+      }
+    }
+  
+    .govuk-grid-column-one-fifth {
+      float: left;
+      box-sizing: border-box;
+      padding: 0 25px 0 15px;
+    }
+  
+    td span.secondary {
+      color: #505a5f;
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+  
+    td.govuk-table__select,
+    th.govuk-table__select {
+      max-width: 15px;
+    }
+  
+    #edit-panel {
+      background-color: #f3f2f1;
+  
+      header {
+        background-color: #b1b4b6;
+      }
+  
+      .govuk-width-container {
+        padding: 15px;
+      }
+  
+      select {
+        min-width: 200px;
+      }
+  
+      .govuk-button--cancel {
+        background: none !important;
+        color: #0b0c0c;
+        border-color: transparent;
+        box-shadow: 0 2px 0 transparent !important;
+        text-decoration: underline;
+      }
+    }
+  
+    #team-banner {
+      background: #1d70b8;
+      margin-bottom: 1em;
+      padding: 15px 0;
+  
+      #team-banner-container {
+        display: flex;
+        justify-content: space-between;
+  
+        h2 {
+          color: white;
+          margin: 0;
+          line-height: 1.75;
+        }
+  
+        .govuk-form-group {
+          float: right;
+          margin-bottom: 0;
+  
+          label {
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  
+    #overview {
+      .govuk-grid-column-container {
+        background-color: #f3f2f1;
+        overflow: auto;
+        padding: 30px;
+      }
+      padding: 15px;
+      margin-bottom: 2em;
+  
+      .data-item-container {
+        display: flex;
+        padding-left: 0;
+  
+        .data-item {
+          margin-bottom: 0;
+          &:first-of-type {
+            padding-right: 10px;
+          }
+        }
+      }
+    }
+  
+    .data-description {
+      font-weight: 400;
+    }
+  
+    #filters-column {
+  
+      .govuk-checkboxes__item {
+        float: none;
+      }
+  
+      #accordion-task-type {
+        max-height: 200px;
+        overflow-y: scroll;
+      }
+    }
+  
+    .govuk-button--blue {
+      background: #1d70b8;
+  
+      &:hover {
+        background: #003078;
+      }
+    }
+  
+    .autocomplete__menu {
+      font-family: "GDS Transport", arial, sans-serif;
+    }
+  
+    button.govuk-button {
+      margin-top: 1em;
+    }
+  
+    .moj-filter-tags-list {
+      margin-bottom: 1em;
+    }
+  
+  }
+  
+  // Select option filter
+  
+  .app-c-option-select {
+      position: relative;
+      padding: 0 0 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #b1b4b6;
+  }
+  
+  .app-c-option-select__heading {
+      position: relative;
+      padding: 10px 8px 5px 43px;
+      margin: 0;
+  }
+  
+  .app-c-option-select__button {
+      z-index: 1;
+      background: none;
+      border: 0;
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
+      color: #1d70b8;
+  }
+  .app-c-option-select__title {
+      font-size: 19px;
+      line-height: 1.3157894737;
+  }
+  .app-c-option-select__icon {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 9px;
+      width: 30px;
+      height: 40px;
+      fill: #0b0c0c;
+  }
+  
+  [aria-expanded="true"]~.app-c-option-select__icon--up {
+      display: block;
+  }
+  
+  [aria-expanded="false"]~.app-c-option-select__icon--down {
+      display: block;
+  }
+  
+  .app-c-option-select__selected-counter {
+      font-size: 14px;
+      line-height: 1.4285714286;
+  }
+  
+  .app-c-option-select__filter {
+      position: relative;
+      background: #fff;
+      padding: 13px 13px 10px 13px;
+  }
+  
+  .app-c-option-select__filter-input {
+      font-family: "nta",arial,sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.25;
+      padding-left: 33px;
+      background: url("/public/images/icon-search.svg") #fff no-repeat -5px -3px;
+  }
+  
+  .app-c-option-select__container-inner {
+      padding: 5px 13px;
+  }
+  
+  .app-c-option-select__container {
+      position: relative;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background-color: #fff;
+  }
+  
+  .app-c-option-select.js-closed .app-c-option-select__filter,
+  .app-c-option-select.js-closed .app-c-option-select__container {
+    display: none;
+  }
+
+
+.moj-header__container {
+    max-width: 98%;
+}

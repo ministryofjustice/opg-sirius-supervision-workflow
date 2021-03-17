@@ -1,0 +1,63 @@
+{{ template "page" . }}
+
+{{ define "title" }} OPG Sirius Workflow {{ end }}
+
+{{ define "main" }}
+  <main role="main" class="govuk-main-wrapper sirius-workflow">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h1 class="govuk-heading-l">Supervision workflow</h1>
+
+      <div id="team-banner" class="govuk-grid-row">
+        <div id="team-banner-container" class="govuk-grid-column-full">
+          <h2 class="govuk-heading-m">Lay team 3</h2>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="change-team">
+              Change view
+            </label>
+            <select class="govuk-select" id="change-team" name="change-team">
+              <option value="team-1">Team 1</option>
+              <option value="team-2">Team 2</option>
+              <option value="team-3" selected>Team 3</option>
+              <option value="team-4">Team 4</option>
+              <option value="team-5">Team 5</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {{ template "overview" . }}
+
+      <h3 class="govuk-heading-m data-description">Showing: all <strong>open tasks</strong></h3>
+
+      <div class="govuk-grid-row">
+        <div id="filters-column" class="govuk-grid-column-one-quarter">
+          {{ template "filters" . }}
+        </div>
+
+        <div id="table-column" class="govuk-grid-column-three-quarters">
+
+          <button id="toggle-filters" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+            Show filters
+          </button>
+
+          <button id="edit-task" class="govuk-button govuk-button--blue" data-module="govuk-button">
+            Manage task
+          </button>
+
+          {{ template "success-banner" . }}
+
+          {{ template "pagination" .}}
+
+          {{ template "edit-panel" . }}
+
+          {{ template "table" . }}
+
+          {{ template "pagination" .}}
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

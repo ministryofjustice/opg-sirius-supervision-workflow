@@ -1,0 +1,105 @@
+{{ define "filters" }}
+
+{{/* <moj/components/filter/macro.njk" import mojFilter </h1>  */}}
+
+
+<div class="moj-filter">
+
+  <div class="moj-filter__header">
+
+    <div class="moj-filter__header-title">
+      <h2 class="govuk-heading-m">Filter the list</h2>
+    </div>
+
+    <div class="moj-filter__header-action">
+
+    </div>
+
+  </div>
+
+  <div class="moj-filter__content">
+
+    <div class="moj-filter__selected">
+
+      <div class="moj-filter__selected-heading">
+
+        <div class="moj-filter__heading-title">
+          <h2 class="govuk-heading-m">Selected filters</h2>
+        </div>
+
+        <div class="moj-filter__heading-action">
+          <p><a id="clear-filters" class="govuk-link govuk-link--no-visited-state" href="">Clear filters</a></p>
+        </div>
+
+      </div>
+
+      <p id="none-selected" class="govuk-body">No filters selected</p>
+
+      <div id="task-type-tags-section" class="moj-filter-tags-list">
+
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Task type</h3>
+
+        <ul class="moj-filter-tags task-type-filter-tags">
+        </ul>
+
+      </div>
+
+
+      <div id="assigned-tags-section" class="moj-filter-tags-list">
+
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Assigned to</h3>
+
+        <ul class="moj-filter-tags assigned-filter-tags">
+
+          <li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span> Test</a></li>
+
+        </ul>
+
+      </div>
+
+      <div id="case-owner-tags-section" class="moj-filter-tags-list">
+
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Case owner</h3>
+
+        <ul class="moj-filter-tags case-owner-filter-tags">
+
+          <li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span> Test</a></li>
+
+        </ul>
+
+      </div>
+
+      <div id="date-range-tags-section" class="moj-filter-tags-list">
+
+        <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Date range</h3>
+
+        <ul class="moj-filter-tags date-range-filter-tags">
+
+          <li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span> Test</a></li>
+
+        </ul>
+
+      </div>
+
+
+    </div>
+
+    <div class="moj-filter__options">
+
+      {{ template "task-type" . }}
+      {{ template "assigned" . }}
+      {{ template "case-owner" . }}
+      {{ template "date-range" . }}
+
+      <button id="actionFilter" type="submit" class="govuk-button" data-module="govuk-button">
+        Apply filters
+      </button>
+
+    </div>
+
+
+  </div>
+
+</div>
+
+{{ end }}
