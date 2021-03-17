@@ -18,10 +18,10 @@ type mockMyDetailsClient struct {
 	count       int
 	lastCookies []*http.Cookie
 	err         error
-	data        sirius.MyDetails
+	data        sirius.UserDetails
 }
 
-func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Cookie) (sirius.MyDetails, error) {
+func (m *mockMyDetailsClient) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) (sirius.UserDetails, error) {
 	m.count += 1
 	m.lastCookies = cookies
 
@@ -31,7 +31,7 @@ func (m *mockMyDetailsClient) MyDetails(ctx context.Context, cookies []*http.Coo
 func TestGetMyDetails(t *testing.T) {
 	assert := assert.New(t)
 
-	data := sirius.MyDetails{
+	data := sirius.UserDetails{
 		ID:          123,
 		Firstname:   "John",
 		Surname:     "Doe",
@@ -49,7 +49,7 @@ func TestGetMyDetails(t *testing.T) {
 	r, _ := http.NewRequest("GET", "", nil)
 	r.AddCookie(&http.Cookie{Name: "test", Value: "val"})
 
-	myDetails(nil, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
@@ -57,7 +57,7 @@ func TestGetMyDetails(t *testing.T) {
 
 	assert.Equal(1, templates.count)
 	assert.Equal("workflow.gotmpl", templates.lastName)
-	assert.Equal(myDetailsVars{
+	assert.Equal(userDetailsVars{
 		Path:         "",
 		ID:           123,
 		Firstname:    "John",
@@ -79,7 +79,7 @@ func TestGetMyDetailsUnauthenticated(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	myDetails(nil, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
@@ -97,7 +97,7 @@ func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	myDetails(logger, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(logger, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusInternalServerError, resp.StatusCode)

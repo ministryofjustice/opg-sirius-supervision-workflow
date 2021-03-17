@@ -39,10 +39,10 @@ func TestMyDetails(t *testing.T) {
 		{Name: "Other", Value: "other"},
 	}
 
-	myDetails, err := client.MyDetails(context.Background(), cookies)
+	myDetails, err := client.SiriusUserDetails(context.Background(), cookies)
 	assert.Nil(err)
 
-	assert.Equal(myDetails, MyDetails{
+	assert.Equal(myDetails, UserDetails{
 		ID:          47,
 		Name:        "system",
 		PhoneNumber: "03004560300",

@@ -8,12 +8,12 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type myDetailsClient interface {
-	MyDetails(context.Context, []*http.Cookie) (sirius.MyDetails, error)
+type userDetailsClient interface {
+	SiriusUserDetails(context.Context, []*http.Cookie) (sirius.UserDetails, error)
 	AuthenticateClient
 }
 
-type myDetailsVars struct {
+type userDetailsVars struct {
 	Path         string
 	ID           int
 	Firstname    string
@@ -25,14 +25,14 @@ type myDetailsVars struct {
 	Teams        []string
 }
 
-func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) http.Handler {
+func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templates Templates) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "", http.StatusMethodNotAllowed)
 			return
 		}
 
-		myDetails, err := client.MyDetails(r.Context(), r.Cookies())
+		myDetails, err := client.SiriusUserDetails(r.Context(), r.Cookies())
 		if err == sirius.ErrUnauthorized {
 			client.Authenticate(w, r)
 			return
@@ -42,7 +42,7 @@ func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) 
 			return
 		}
 
-		vars := myDetailsVars{
+		vars := userDetailsVars{
 			Path:        r.URL.Path,
 			ID:          myDetails.ID,
 			Firstname:   myDetails.Firstname,
@@ -64,7 +64,7 @@ func myDetails(logger *log.Logger, client myDetailsClient, templates Templates) 
 		}
 
 		if err := templates.ExecuteTemplate(w, "workflow.gotmpl", vars); err != nil {
-			logger.Println("myDetails:", err)
+			logger.Println("workflow:", err)
 		}
 	})
 }
