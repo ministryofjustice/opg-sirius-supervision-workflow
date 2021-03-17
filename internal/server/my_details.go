@@ -64,7 +64,7 @@ func loggingInfoForWorflow(logger *log.Logger, client myDetailsClient, templates
 		}
 
 		if err := templates.ExecuteTemplate(w, "workflow.gotmpl", vars); err != nil {
-			logger.Println("myDetails:", err)
+			logger.Println("workflow:", err)
 		}
 	})
 }

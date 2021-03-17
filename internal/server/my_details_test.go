@@ -49,7 +49,7 @@ func TestGetMyDetails(t *testing.T) {
 	r, _ := http.NewRequest("GET", "", nil)
 	r.AddCookie(&http.Cookie{Name: "test", Value: "val"})
 
-	myDetails(nil, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
@@ -79,7 +79,7 @@ func TestGetMyDetailsUnauthenticated(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	myDetails(nil, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
@@ -97,7 +97,7 @@ func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	myDetails(logger, client, templates).ServeHTTP(w, r)
+	loggingInfoForWorflow(logger, client, templates).ServeHTTP(w, r)
 
 	resp := w.Result()
 	assert.Equal(http.StatusInternalServerError, resp.StatusCode)
