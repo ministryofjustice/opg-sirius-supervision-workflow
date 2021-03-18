@@ -36,6 +36,10 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 		wrap(
 			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
 
+	mux.Handle("/task-type",
+		wrap(
+			listTaskTypes(client, templates["task-type.gotmpl"])))
+
 	static := http.FileServer(http.Dir(webDir + "/static"))
 	mux.Handle("/assets/", static)
 	mux.Handle("/javascript/", static)

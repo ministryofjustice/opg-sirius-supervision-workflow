@@ -10,21 +10,18 @@ type GetTaskTypeClient interface {
 	GetTaskDetails(sirius.Context) ([]sirius.LoadTasks, error)
 }
 
-type listTeamsVars struct {
-	Path          string
-	XSRFToken     string
-	LoadTaskTypes []sirius.LoadTasks
+type listTaskTypeVars struct {
+	Path      string
+	XSRFToken string
+	LoadTasks []sirius.LoadTasks
 }
 
 func listTaskTypes(client GetTaskTypeClient, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
-		// if !perm.HasPermission("team", http.MethodPut) {
-		// 	return StatusError(http.StatusForbidden)
-		// }
 
-		// if r.Method != http.MethodGet {
-		// 	return StatusError(http.StatusMethodNotAllowed)
-		// }
+		if r.Method != http.MethodGet {
+			return StatusError(http.StatusMethodNotAllowed)
+		}
 
 		ctx := getContext(r)
 
@@ -33,10 +30,10 @@ func listTaskTypes(client GetTaskTypeClient, tmpl Template) Handler {
 			return err
 		}
 
-		vars := listTeamsVars{
-			Path:          r.URL.Path,
-			XSRFToken:     ctx.XSRFToken,
-			LoadTaskTypes: loadTaskTypes,
+		vars := listTaskTypeVars{
+			Path:      r.URL.Path,
+			XSRFToken: ctx.XSRFToken,
+			LoadTasks: loadTaskTypes,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)

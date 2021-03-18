@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type apiTaskTypes struct {
+type ApiTaskTypes struct {
 	Category   string `json:"category"`
 	Complete   string `json:"complete"`
 	Handle     string `json:"handle"`
@@ -22,6 +22,7 @@ type LoadTasks struct {
 }
 
 func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
+
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return nil, err
@@ -33,6 +34,21 @@ func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusUnauthorized {
+		return nil, ErrUnauthorized
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, newStatusError(resp)
+	}
+
+	var v []ApiTaskTypes
+	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		return nil, err
+	}
+
+	tasklist := make([]LoadTasks, len(v))
+
 	// if resp.StatusCode == http.StatusUnauthorized {
 	// 	return nil, ErrUnauthorized
 	// }
@@ -41,22 +57,22 @@ func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
 	// 	return nil, newStatusError(resp)
 	// }
 
-	var v []apiTaskTypes
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return nil, err
-	}
+	// var v []apiTaskTypes
+	// if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	// 	return nil, err
+	// }
 
-	taskTypeList := make([]LoadTasks, len(v))
+	// taskTypeList := make([]LoadTasks, len(v))
 
-	for i, t := range v {
-		taskTypeList[i] = LoadTasks{
-			Category:   t.Category,
-			Complete:   t.Complete,
-			Handle:     t.Handle,
-			Incomplete: t.Incomplete,
-			User:       t.User,
-		}
-	}
+	// for i, t := range v {
+	// 	taskTypeList[i] = LoadTasks{
+	// 		Category:   t.Category,
+	// 		Complete:   t.Complete,
+	// 		Handle:     t.Handle,
+	// 		Incomplete: t.Incomplete,
+	// 		User:       t.User,
+	// 	}
+	// }
 
-	return taskTypeList, nil
+	return tasklist, nil
 }

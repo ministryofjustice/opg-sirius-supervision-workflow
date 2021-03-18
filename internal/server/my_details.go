@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -28,6 +29,14 @@ func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 		if r.Method != http.MethodGet {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
+
+		log.Println("my details page response is")
+		log.Println("request is")
+		log.Println(r)
+		log.Println("writer is")
+		log.Println(w)
+		log.Println("permissions is")
+		log.Println(perm)
 
 		ctx := getContext(r)
 
