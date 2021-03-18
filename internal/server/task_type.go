@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
@@ -19,40 +18,25 @@ type listTeamsVars struct {
 
 func listTaskTypes(client GetTaskTypeClient, tmpl Templates) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
-		if !perm.HasPermission("team", http.MethodPut) {
-			return StatusError(http.StatusForbidden)
-		}
+		// if !perm.HasPermission("team", http.MethodPut) {
+		// 	return StatusError(http.StatusForbidden)
+		// }
 
-		if r.Method != http.MethodGet {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
+		// if r.Method != http.MethodGet {
+		// 	return StatusError(http.StatusMethodNotAllowed)
+		// }
 
 		ctx := getContext(r)
 
-		teams, err := client.Teams(ctx)
+		loadTaskTypes, err := client.GetTaskDetails(ctx)
 		if err != nil {
 			return err
 		}
 
-		search := r.FormValue("search")
-		if search != "" {
-			searchLower := strings.ToLower(search)
-
-			var matchingTeams []sirius.Team
-			for _, t := range teams {
-				if strings.Contains(strings.ToLower(t.DisplayName), searchLower) {
-					matchingTeams = append(matchingTeams, t)
-				}
-			}
-
-			teams = matchingTeams
-		}
-
 		vars := listTeamsVars{
-			Path:      r.URL.Path,
-			XSRFToken: ctx.XSRFToken,
-			Search:    search,
-			Teams:     teams,
+			Path:          r.URL.Path,
+			XSRFToken:     ctx.XSRFToken,
+			LoadTaskTypes: loadTaskTypes,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
