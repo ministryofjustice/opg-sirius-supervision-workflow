@@ -30,7 +30,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.RedirectHandler(prefix+"/workflow", http.StatusFound))
-	//	mux.Handle("/workflow", loggingInfoForWorkflow(logger, client, templates))
+	// mux.Handle("/workflow", loggingInfoForWorkflow(logger, client, templates))
 
 	mux.Handle("/workflow",
 		wrap(
@@ -119,7 +119,7 @@ func errorHandler(logger Logger, client ErrorHandlerClient, tmplError Template, 
 
 				if err != nil {
 					logger.Request(r, err)
-					http.Error(w, "Could not generate error template", http.StatusInternalServerError)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}
 		})

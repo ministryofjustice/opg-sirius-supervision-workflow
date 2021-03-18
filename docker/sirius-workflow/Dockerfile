@@ -1,4 +1,4 @@
-FROM node:lts-alpine as asset-env
+FROM node:14.13.1-alpine3.12 as asset-env
 
 WORKDIR /app
 

@@ -1,0 +1,44 @@
+{{ template "page" . }}
+
+{{ define "title" }}
+  {{ if eq .Code 403 }}
+    Forbidden
+  {{ else if eq .Code 404 }}
+    Page not found
+  {{ else }}
+    Sorry, there is a problem with the service
+  {{ end }}
+{{ end }}
+
+{{ define "main" }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ if eq .Code 403 }}
+        <h1 class="govuk-heading-l">Forbidden</h1>
+        <p class="govuk-body">
+          You do not have access to view this page.
+        </p>
+        <p class="govuk-body">
+          Please use your browser to go back to the previous page, or return to the <a class="govuk-link" href="{{ prefix "/" }}">homepage</a>.
+        </p>
+      {{ else if eq .Code 404 }}
+        <h1 class="govuk-heading-l">Page not found</h1>
+        <p class="govuk-body">
+          If you typed the web address, check it is correct.
+        </p>
+        <p class="govuk-body">
+          If you pasted the web address, check you copied the entire address.
+        </p>
+        <p class="govuk-body">
+          Please use your browser to go back to the previous page, or return to the <a class="govuk-link" href="{{ prefix "/" }}">homepage</a>.
+        </p>
+      {{ else }}
+        <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+        <p class="govuk-body">Try again later.</p>
+        {{ if .Error }}
+          <p class="govuk-body"><strong>Further information:</strong> {{ .Error }}</p>
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+{{ end }}

@@ -1,3 +1,5 @@
+{{ template "page" . }}
+
 {{ define "task-type" }}
 
 <div class="app-c-option-select js-closed">
@@ -25,12 +27,12 @@
           <div class="govuk-checkboxes__item filter__checkbox">
             <input class="govuk-checkboxes__input task-type" id="" name="taskType" type="checkbox">
             <label class="govuk-label govuk-checkboxes__label" for="">
-            {{ range .Team.Members }}
+            {{/* {{ range .Team.Members }}
               <h1> {{ .LoadTasks.Category }} </h1>
               <h1> {{ .LoadTasks.omplete }} </h1>
               <h1> {{ .LoadTasks.Handle }} </h1>
               <h1> {{ .LoadTasks.Incomplete }} </h1>
-              <h1> {{ .LoadTasks.User }} </h1>
+              <h1> {{ .LoadTasks.User }} </h1> */}}
             </label>
           </div>
     
