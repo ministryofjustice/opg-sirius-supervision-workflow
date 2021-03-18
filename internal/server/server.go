@@ -71,9 +71,8 @@ type Handler func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Requ
 type errorVars struct {
 	SiriusURL string
 	Path      string
-
-	Code  int
-	Error string
+	Code      int
+	Error     string
 }
 
 type ErrorHandlerClient interface {

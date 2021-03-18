@@ -26,9 +26,8 @@
 
       <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-      {{ template "header.gotmpl" . }} 
+      {{ template "header" . }}
 
-    
       <div class="govuk-width-container app-width-container">
         <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
           {{ block "main" . }}{{ end }}
