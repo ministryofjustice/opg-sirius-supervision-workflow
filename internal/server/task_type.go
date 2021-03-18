@@ -16,7 +16,7 @@ type listTeamsVars struct {
 	LoadTaskTypes []sirius.LoadTasks
 }
 
-func listTaskTypes(client GetTaskTypeClient, tmpl Templates) Handler {
+func listTaskTypes(client GetTaskTypeClient, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		// if !perm.HasPermission("team", http.MethodPut) {
 		// 	return StatusError(http.StatusForbidden)

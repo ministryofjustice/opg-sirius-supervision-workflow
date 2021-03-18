@@ -1,14 +1,13 @@
 package server
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type userDetailsClient interface {
-	MyDetails(context.Context) (sirius.UserDetails, error)
+type UserDetailsClient interface {
+	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 }
 
 type userDetailsVars struct {
@@ -24,7 +23,7 @@ type userDetailsVars struct {
 	CanEditPhoneNumber bool
 }
 
-func loggingInfoForWorflow(client userDetailsClient, tmpl Templates) Handler {
+func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		if r.Method != http.MethodGet {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -32,7 +31,7 @@ func loggingInfoForWorflow(client userDetailsClient, tmpl Templates) Handler {
 
 		ctx := getContext(r)
 
-		myDetails, err := client.MyDetails(ctx)
+		myDetails, err := client.SiriusUserDetails(ctx)
 		if err != nil {
 			return err
 		}

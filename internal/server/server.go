@@ -16,27 +16,32 @@ type Logger interface {
 
 //this is the files in server which need a client
 type Client interface {
-	userDetailsClient
+	ErrorHandlerClient
+	UserDetailsClient
 	GetTaskTypeClient
 }
 
-type Templates interface {
+type Template interface {
 	ExecuteTemplate(io.Writer, string, interface{}) error
 }
 
 func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusURL, siriusPublicURL, webDir string) http.Handler {
+	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
+
 	mux := http.NewServeMux()
-	mux.Handle("/", http.RedirectHandler("/workflow", http.StatusFound))
+	mux.Handle("/", http.RedirectHandler(prefix+"/workflow", http.StatusFound))
 	//	mux.Handle("/workflow", loggingInfoForWorkflow(logger, client, templates))
 
-	mux.Handle("/workflow", loggingInfoForWorflow(client, templates["workflow.gotmpl"]))
+	mux.Handle("/workflow",
+		wrap(
+			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
 	mux.Handle("/assets/", static)
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return mux
+	return http.StripPrefix(prefix, mux)
 }
 
 type RedirectError string

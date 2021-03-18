@@ -21,7 +21,7 @@ type LoadTasks struct {
 	User       bool
 }
 
-func (c *Client) TaskTypes(ctx Context) ([]LoadTasks, error) {
+func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return nil, err
