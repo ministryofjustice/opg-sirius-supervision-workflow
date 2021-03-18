@@ -1,10 +1,7 @@
 package server
 
 import (
-	"context"
 	"errors"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,17 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockMyDetailsClient struct {
-	mockAuthenticateClient
-	count       int
-	lastCookies []*http.Cookie
-	err         error
-	data        sirius.UserDetails
+type mockUserDetailsClient struct {
+	count   int
+	lastCtx sirius.Context
+	err     error
+	data    sirius.UserDetails
 }
 
-func (m *mockMyDetailsClient) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) (sirius.UserDetails, error) {
+func (m *mockUserDetailsClient) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
 	m.count += 1
-	m.lastCookies = cookies
+	m.lastCtx = ctx
 
 	return m.data, m.err
 }
@@ -42,21 +38,23 @@ func TestGetMyDetails(t *testing.T) {
 			{DisplayName: "A Team"},
 		},
 	}
-	client := &mockMyDetailsClient{data: data}
-	templates := &mockTemplates{}
+	client := &mockUserDetailsClient{data: data}
+	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
-	r.AddCookie(&http.Cookie{Name: "test", Value: "val"})
 
-	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Nil(err)
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
-	assert.Equal(r.Cookies(), client.lastCookies)
+	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(1, templates.count)
-	assert.Equal("workflow.gotmpl", templates.lastName)
+	assert.Equal(1, template.count)
+	assert.Equal("page", template.lastName)
 	assert.Equal(userDetailsVars{
 		Path:         "",
 		ID:           123,
@@ -67,7 +65,7 @@ func TestGetMyDetails(t *testing.T) {
 		Organisation: "COP User",
 		Roles:        []string{"A", "B"},
 		Teams:        []string{"A Team"},
-	}, templates.lastVars)
+	}, template.lastVars)
 }
 
 // func TestGetMyDetailsUnauthenticated(t *testing.T) {
@@ -90,18 +88,18 @@ func TestGetMyDetails(t *testing.T) {
 func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	assert := assert.New(t)
 
-	logger := log.New(ioutil.Discard, "", 0)
-	client := &mockMyDetailsClient{err: errors.New("err")}
-	templates := &mockTemplates{}
+	client := &mockUserDetailsClient{err: errors.New("err")}
+	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	loggingInfoForWorflow(logger, client, templates).ServeHTTP(w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-	resp := w.Result()
-	assert.Equal(http.StatusInternalServerError, resp.StatusCode)
-	assert.Equal(0, templates.count)
+	assert.Equal("err", err.Error())
+
+	assert.Equal(0, template.count)
 }
 
 // func TestPostMyDetails(t *testing.T) {

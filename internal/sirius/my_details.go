@@ -26,7 +26,6 @@ type MyDetailsTeam struct {
 }
 
 func (c *Client) SiriusUserDetails(ctx Context) (UserDetails, error) {
-
 	var v UserDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)

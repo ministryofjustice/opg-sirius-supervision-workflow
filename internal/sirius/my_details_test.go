@@ -1,7 +1,6 @@
 package sirius
 
 import (
-	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -40,7 +39,11 @@ func TestMyDetails(t *testing.T) {
 		{Name: "Other", Value: "other"},
 	}
 
-	myDetails, err := client.SiriusUserDetails(context.Background(), cookies)
+	// context := []Context {
+	// 	Cookies: cookies
+	// }
+
+	myDetails, err := client.SiriusUserDetails(getContext(cookies))
 	assert.Nil(err)
 
 	assert.Equal(myDetails, UserDetails{
@@ -81,8 +84,13 @@ func TestMyDetailsUnauthorized(t *testing.T) {
 	}))
 	defer s.Close()
 
+	cookies := []*http.Cookie{
+		{Name: "XSRF-TOKEN", Value: "abcde"},
+		{Name: "Other", Value: "other"},
+	}
+
 	client, _ := NewClient(http.DefaultClient, s.URL)
 
-	_, err := client.SiriusUserDetails(context.Background(), []*http.Cookie{})
+	_, err := client.SiriusUserDetails(getContext(cookies))
 	assert.Equal(ErrUnauthorized, err)
 }
