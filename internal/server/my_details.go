@@ -1,45 +1,39 @@
 package server
 
 import (
-	"context"
-	"log"
 	"net/http"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type userDetailsClient interface {
-	SiriusUserDetails(context.Context, []*http.Cookie) (sirius.UserDetails, error)
-	AuthenticateClient
+type UserDetailsClient interface {
+	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 }
 
 type userDetailsVars struct {
-	Path         string
-	ID           int
-	Firstname    string
-	Surname      string
-	Email        string
-	PhoneNumber  string
-	Organisation string
-	Roles        []string
-	Teams        []string
+	Path               string
+	ID                 int
+	Firstname          string
+	Surname            string
+	Email              string
+	PhoneNumber        string
+	Organisation       string
+	Roles              []string
+	Teams              []string
+	CanEditPhoneNumber bool
 }
 
-func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templates Templates) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
+	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		if r.Method != http.MethodGet {
-			http.Error(w, "", http.StatusMethodNotAllowed)
-			return
+			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		myDetails, err := client.SiriusUserDetails(r.Context(), r.Cookies())
-		if err == sirius.ErrUnauthorized {
-			client.Authenticate(w, r)
-			return
-		} else if err != nil {
-			logger.Println("myDetails:", err)
-			http.Error(w, "Could not connect to Sirius", http.StatusInternalServerError)
-			return
+		ctx := getContext(r)
+
+		myDetails, err := client.SiriusUserDetails(ctx)
+		if err != nil {
+			return err
 		}
 
 		vars := userDetailsVars{
@@ -63,8 +57,6 @@ func loggingInfoForWorflow(logger *log.Logger, client userDetailsClient, templat
 			vars.Teams = append(vars.Teams, team.DisplayName)
 		}
 
-		if err := templates.ExecuteTemplate(w, "workflow.gotmpl", vars); err != nil {
-			logger.Println("workflow:", err)
-		}
-	})
+		return tmpl.ExecuteTemplate(w, "page", vars)
+	}
 }

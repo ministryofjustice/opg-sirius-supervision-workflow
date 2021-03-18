@@ -1,9 +1,8 @@
 package sirius
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
+
 	"net/http"
 )
 
@@ -26,22 +25,13 @@ type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (c *Client) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) (UserDetails, error) {
+func (c *Client) SiriusUserDetails(ctx Context) (UserDetails, error) {
 	var v UserDetails
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.url("/api/v1/users/current"), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)
 	if err != nil {
 		return v, err
 	}
-	var xsrfToken string
-	for _, c := range cookies {
-		req.AddCookie(c)
-		if c.Name == "XSRF-TOKEN" {
-			xsrfToken = c.Value
-		}
-	}
-	req.Header.Add("OPG-Bypass-Membrane", "1")
-	req.Header.Add("X-XSRF-TOKEN", xsrfToken)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -54,7 +44,7 @@ func (c *Client) SiriusUserDetails(ctx context.Context, cookies []*http.Cookie) 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, errors.New("returned non-2XX response")
+		return v, newStatusError(resp)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&v)
