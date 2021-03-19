@@ -7,13 +7,13 @@ import (
 )
 
 type GetTaskTypeClient interface {
-	GetTaskDetails(sirius.Context) ([]sirius.LoadTasks, error)
+	GetTaskDetails(sirius.Context) (sirius.WholeTaskList, error)
 }
 
 type listTaskTypeVars struct {
 	Path      string
 	XSRFToken string
-	LoadTasks []sirius.LoadTasks
+	LoadTasks sirius.WholeTaskList
 }
 
 func listTaskTypes(client GetTaskTypeClient, tmpl Template) Handler {
