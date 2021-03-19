@@ -1,6 +1,5 @@
-{{ template "page" . }}
+{{ define "task-type" }}
 
-{{ define "main" }}
             <h1> Hi  Nck I'm a task type </h1>
           {{ range  .LoadTasks }}
               <h1> {{ .Incomplete }} </h1> 
