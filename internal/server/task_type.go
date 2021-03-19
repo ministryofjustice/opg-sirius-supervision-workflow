@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
@@ -29,6 +30,10 @@ func listTaskTypes(client GetTaskTypeClient, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+
+		sort.SliceStable(loadTaskTypes, func(i, j int) bool {
+			return loadTaskTypes[i].Incomplete < loadTaskTypes[j].Incomplete
+		})
 
 		vars := listTaskTypeVars{
 			Path:      r.URL.Path,
