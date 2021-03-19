@@ -2,7 +2,9 @@
 
 {{ define "main" }}
             <h1> Hi  Nck I'm a task type </h1>
-              {{ .LoadTasks }}
+          {{ range  .LoadTasks }}
+              <h1> {{ .Incomplete }} </h1> 
+          {{ end }}
 
 <div class="app-c-option-select js-closed">
   <h2 class="app-c-option-select__heading js-container-heading">

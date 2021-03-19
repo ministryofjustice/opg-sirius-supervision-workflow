@@ -5,16 +5,6 @@ import (
 	"net/http"
 )
 
-// type Salary struct {
-// 	Basic, HRA, TA float64
-// }
-
-// type Employee struct {
-// 	FirstName, LastName, Email string
-// 	Age                        int
-// 	MonthlySalary              []Salary
-// }
-
 type ApiTaskTypes struct {
 	Handle     string `json:"handle"`
 	Incomplete string `json:"incomplete"`
@@ -27,32 +17,54 @@ type WholeTaskList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskDetails(ctx Context) (WholeTaskList, error) {
-	var v WholeTaskList
+// type TaskTypesList struct {
+// 	Handle     string `json:"handle"`
+// 	Incomplete string `json:"incomplete"`
+// 	Category   string `json:"category"`
+// 	Complete   string `json:"complete"`
+// 	User       bool   `json:"user"`
+// }
 
+func (c *Client) GetTaskDetails(ctx Context) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
-		return v, err
+		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	// io.Copy(os.Stdout, resp.Body)
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, newStatusError(resp)
+		return nil, newStatusError(resp)
 	}
 
+	var v WholeTaskList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, err
+		return nil, err
+	}
+
+	WholeTaskList := v.AllTaskList
+
+	var taskTypeList []ApiTaskTypes
+
+	for _, u := range WholeTaskList {
+		taskType := ApiTaskTypes{
+			Handle:     u.Handle,
+			Incomplete: u.Incomplete,
+			Category:   u.Category,
+			Complete:   u.Complete,
+			User:       u.User,
+		}
+		taskTypeList = append(taskTypeList, taskType)
 	}
 
 	// tasklist := make([]LoadTasks, len(v))
@@ -82,5 +94,5 @@ func (c *Client) GetTaskDetails(ctx Context) (WholeTaskList, error) {
 	// 	}
 	// }
 
-	return v, err
+	return taskTypeList, err
 }
