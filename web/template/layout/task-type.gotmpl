@@ -1,11 +1,8 @@
-{{ template "page" . }}
-
 {{ define "task-type" }}
 
-<div class="app-c-option-select js-closed">
+<div class="app-c-option-select">
   <h2 class="app-c-option-select__heading js-container-heading">
-    <button class="js-container-button app-c-option-select__title app-c-option-select__button" type="button" aria-expanded="false" id="option-select-title-task-type" aria-controls="list_of_countries_to_filter">Task type</button>
-    <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up" aria-hidden="true" focusable="false">
+      <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up" aria-hidden="true" focusable="false">
       <path d="m798.16 609.84l-256-256c-16.683-16.683-43.691-16.683-60.331 0l-256 256c-16.683 16.683-16.683 43.691 0 60.331s43.691 16.683 60.331 0l225.84-225.84 225.84 225.84c16.683 16.683 43.691 16.683 60.331 0s16.683-43.691 0-60.331z"></path>
     </svg>
     <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--down" aria-hidden="true" focusable="false">
@@ -13,7 +10,7 @@
     </svg>
   </h2>
 
-  <div class="app-c-option-select__filter"> <label for="input-3eca3372" class="govuk-label govuk-visually-hidden">
+  <div class="app-c-option-select__filter"> <label for="input-3eca3372" class="govuk-label">
       Enter a name
     </label>
     <input name="option-select-filter" id="taskSearch" class="filterCheckboxes app-c-option-select__filter-input govuk-input" type="text" aria-describedby="checkboxes-19682d1b-count" aria-controls="checkboxes-19682d1b">
@@ -22,21 +19,16 @@
   <div role="group" aria-labelledby="option-select-task-type" class="app-c-option-select__container js-options-container" id="list_of_tasks_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset">
+      {{ range  .LoadTasks }}
         <div class="govuk-checkboxes govuk-checkboxes--small">
-          <h1> for taskTypes in data.taskTypes </h1>
           <div class="govuk-checkboxes__item filter__checkbox">
             <input class="govuk-checkboxes__input task-type" id="" name="taskType" type="checkbox">
             <label class="govuk-label govuk-checkboxes__label" for="">
-            {{/* {{ range .Team.Members }}
-              <h1> {{ .LoadTasks.Category }} </h1>
-              <h1> {{ .LoadTasks.Complete }} </h1>
-              <h1> {{ .LoadTasks.Handle }} </h1>
-              <h1> {{ .LoadTasks.Incomplete }} </h1>
-              <h1> {{ .LoadTasks.User }} </h1> */}}
+             {{ .Incomplete }}
             </label>
           </div>
-    
         </div>
+      {{ end }}
       </fieldset>
     </div>
 

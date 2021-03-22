@@ -39,10 +39,6 @@ func TestMyDetails(t *testing.T) {
 		{Name: "Other", Value: "other"},
 	}
 
-	// context := []Context {
-	// 	Cookies: cookies
-	// }
-
 	myDetails, err := client.SiriusUserDetails(getContext(cookies))
 	assert.Nil(err)
 

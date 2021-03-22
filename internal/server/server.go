@@ -18,7 +18,6 @@ type Logger interface {
 type Client interface {
 	ErrorHandlerClient
 	UserDetailsClient
-	GetTaskTypeClient
 }
 
 type Template interface {
@@ -29,10 +28,9 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.RedirectHandler(prefix+"/workflow", http.StatusFound))
-	// mux.Handle("/workflow", loggingInfoForWorkflow(logger, client, templates))
+	mux.Handle("/", http.RedirectHandler(prefix+"/supervision/workflow", http.StatusFound))
 
-	mux.Handle("/workflow",
+	mux.Handle("/supervision/workflow",
 		wrap(
 			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
 

@@ -11,34 +11,35 @@ import (
 )
 
 type mockUserDetailsClient struct {
-	count   int
-	lastCtx sirius.Context
-	err     error
-	data    sirius.UserDetails
+	count           int
+	lastCtx         sirius.Context
+	err             error
+	userdetailsdata sirius.UserDetails
+	taskdetailsdata []sirius.ApiTaskTypes
 }
 
 func (m *mockUserDetailsClient) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
-	return m.data, m.err
+	return m.userdetailsdata, m.err
+}
+
+func (c *mockUserDetailsClient) GetTaskDetails(ctx sirius.Context) ([]sirius.ApiTaskTypes, error) {
+	c.count += 1
+	c.lastCtx = ctx
+
+	return c.taskdetailsdata, c.err
 }
 
 func TestGetMyDetails(t *testing.T) {
 	assert := assert.New(t)
 
 	data := sirius.UserDetails{
-		ID:          123,
-		Firstname:   "John",
-		Surname:     "Doe",
-		Email:       "john@doe.com",
-		PhoneNumber: "123",
-		Roles:       []string{"A", "COP User", "B"},
-		Teams: []sirius.MyDetailsTeam{
-			{DisplayName: "A Team"},
-		},
+		Firstname: "John",
+		Surname:   "Doe",
 	}
-	client := &mockUserDetailsClient{data: data}
+	client := &mockUserDetailsClient{userdetailsdata: data}
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
@@ -56,34 +57,62 @@ func TestGetMyDetails(t *testing.T) {
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
 	assert.Equal(userDetailsVars{
-		Path:         "",
-		ID:           123,
-		Firstname:    "John",
-		Surname:      "Doe",
-		Email:        "john@doe.com",
-		PhoneNumber:  "123",
-		Organisation: "COP User",
-		Roles:        []string{"A", "B"},
-		Teams:        []string{"A Team"},
+		Path:      "",
+		Firstname: "John",
+		Surname:   "Doe",
 	}, template.lastVars)
 }
 
-// func TestGetMyDetailsUnauthenticated(t *testing.T) {
-// 	assert := assert.New(t)
+func TestGetTaskTypes(t *testing.T) {
+	assert := assert.New(t)
 
-// 	client := &mockMyDetailsClient{err: sirius.ErrUnauthorized}
-// 	templates := &mockTemplates{}
+	data := []sirius.ApiTaskTypes{
+		{
+			Handle:     "TestHandle",
+			Incomplete: "TestIncomplete",
+			Category:   "TestCategory",
+			Complete:   "TestComplete",
+			User:       true,
+		},
+	}
+	client := &mockUserDetailsClient{taskdetailsdata: data}
+	template := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	loggingInfoForWorflow(nil, client, templates).ServeHTTP(w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
+	assert.Nil(err)
 
-// 	resp := w.Result()
-// 	assert.Equal(http.StatusOK, resp.StatusCode)
-// 	assert.Equal(0, templates.count)
-// 	assert.True(client.authenticated)
-// }
+	resp := w.Result()
+	assert.Equal(http.StatusOK, resp.StatusCode)
+	assert.Equal(getContext(r), client.lastCtx)
+
+	assert.Equal(1, template.count)
+	assert.Equal("page", template.lastName)
+	assert.Equal(userDetailsVars{
+		Path:      "",
+		LoadTasks: data,
+	}, template.lastVars)
+}
+
+func TestGetMyDetailsUnauthenticated(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockUserDetailsClient{err: sirius.ErrUnauthorized}
+	templates := &mockTemplates{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
+
+	handler := loggingInfoForWorflow(client, templates)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Equal(sirius.ErrUnauthorized, err)
+
+	assert.Equal(0, templates.count)
+}
 
 func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	assert := assert.New(t)
@@ -102,16 +131,17 @@ func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	assert.Equal(0, template.count)
 }
 
-// func TestPostMyDetails(t *testing.T) {
-// 	assert := assert.New(t)
-// 	templates := &mockTemplates{}
+func TestPostMyDetails(t *testing.T) {
+	assert := assert.New(t)
+	templates := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("POST", "", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "", nil)
 
-// 	myDetails(nil, nil, templates).ServeHTTP(w, r)
+	handler := loggingInfoForWorflow(nil, templates)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	resp := w.Result()
-// 	assert.Equal(http.StatusMethodNotAllowed, resp.StatusCode)
-// 	assert.Equal(0, templates.count)
-// }
+	assert.Equal(StatusError(http.StatusMethodNotAllowed), err)
+
+	assert.Equal(0, templates.count)
+}

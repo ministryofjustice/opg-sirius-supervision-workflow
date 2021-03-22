@@ -5,23 +5,19 @@ import (
 	"net/http"
 )
 
-type apiTaskTypes struct {
-	Category   string `json:"category"`
-	Complete   string `json:"complete"`
+type ApiTaskTypes struct {
 	Handle     string `json:"handle"`
 	Incomplete string `json:"incomplete"`
+	Category   string `json:"category"`
+	Complete   string `json:"complete"`
 	User       bool   `json:"user"`
 }
 
-type LoadTasks struct {
-	Category   string
-	Complete   string
-	Handle     string
-	Incomplete string
-	User       bool
+type WholeTaskList struct {
+	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
+func (c *Client) GetTaskDetails(ctx Context) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return nil, err
@@ -33,30 +29,35 @@ func (c *Client) GetTaskDetails(ctx Context) ([]LoadTasks, error) {
 	}
 	defer resp.Body.Close()
 
-	// if resp.StatusCode == http.StatusUnauthorized {
-	// 	return nil, ErrUnauthorized
-	// }
+	// io.Copy(os.Stdout, resp.Body)
 
-	// if resp.StatusCode != http.StatusOK {
-	// 	return nil, newStatusError(resp)
-	// }
+	if resp.StatusCode == http.StatusUnauthorized {
+		return nil, ErrUnauthorized
+	}
 
-	var v []apiTaskTypes
+	if resp.StatusCode != http.StatusOK {
+		return nil, newStatusError(resp)
+	}
+
+	var v WholeTaskList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
 
-	taskTypeList := make([]LoadTasks, len(v))
+	WholeTaskList := v.AllTaskList
 
-	for i, t := range v {
-		taskTypeList[i] = LoadTasks{
-			Category:   t.Category,
-			Complete:   t.Complete,
-			Handle:     t.Handle,
-			Incomplete: t.Incomplete,
-			User:       t.User,
+	var taskTypeList []ApiTaskTypes
+
+	for _, u := range WholeTaskList {
+		taskType := ApiTaskTypes{
+			Handle:     u.Handle,
+			Incomplete: u.Incomplete,
+			Category:   u.Category,
+			Complete:   u.Complete,
+			User:       u.User,
 		}
+		taskTypeList = append(taskTypeList, taskType)
 	}
 
-	return taskTypeList, nil
+	return taskTypeList, err
 }
