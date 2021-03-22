@@ -21,7 +21,7 @@
       <fieldset class="govuk-fieldset">
       {{ range  .LoadTasks }}
         <div class="govuk-checkboxes govuk-checkboxes--small">
-          <div class="govuk-checkboxes__item filter__checkbox">
+          <div class="govuk-checkboxes__item filter__checkbox" id="hook-task-type">
             <input class="govuk-checkboxes__input task-type" id="" name="taskType" type="checkbox">
             <label class="govuk-label govuk-checkboxes__label" for="">
              {{ .Incomplete }}
