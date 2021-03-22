@@ -6,11 +6,10 @@
   ### `test-sirius`
   <p> test sirius files </p>
 
-  ### `test-server`
+  
   <p> test server files </p>
 
 <h2> Build service </h2>
-  ```
-    docker-compose -f docker/docker-compose.cypress.yml up -d --build 
-  ```
+  
+  ### `docker-compose -f docker/docker-compose.yml up -d --build `
     
