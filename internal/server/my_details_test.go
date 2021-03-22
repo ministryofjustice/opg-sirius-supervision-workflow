@@ -10,53 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// type mockAddTeamMemberClient struct {
-// 	team struct {
-// 		count   int
-// 		lastCtx sirius.Context
-// 		lastID  int
-// 		data    sirius.Team
-// 		err     error
-// 	}
-// 	editTeam struct {
-// 		count    int
-// 		lastCtx  sirius.Context
-// 		lastTeam sirius.Team
-// 		err      error
-// 	}
-// 	searchUsers struct {
-// 		count      int
-// 		lastCtx    sirius.Context
-// 		lastSearch string
-// 		data       []sirius.User
-// 		err        error
-// 	}
-// }
-
-// func (c *mockAddTeamMemberClient) Team(ctx sirius.Context, id int) (sirius.Team, error) {
-// 	c.team.count += 1
-// 	c.team.lastCtx = ctx
-// 	c.team.lastID = id
-
-// 	return c.team.data, c.team.err
-// }
-
-// func (c *mockAddTeamMemberClient) EditTeam(ctx sirius.Context, team sirius.Team) error {
-// 	c.editTeam.count += 1
-// 	c.editTeam.lastCtx = ctx
-// 	c.editTeam.lastTeam = team
-
-// 	return c.editTeam.err
-// }
-
-// func (c *mockAddTeamMemberClient) SearchUsers(ctx sirius.Context, search string) ([]sirius.User, error) {
-// 	c.searchUsers.count += 1
-// 	c.searchUsers.lastCtx = ctx
-// 	c.searchUsers.lastSearch = search
-
-// 	return c.searchUsers.data, c.searchUsers.err
-// }
-
 type mockUserDetailsClient struct {
 	count           int
 	lastCtx         sirius.Context
@@ -128,7 +81,7 @@ func TestGetTaskTypes(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	handler := listTaskTypes(client, template)
+	handler := loggingInfoForWorflow(client, template)
 	err := handler(sirius.PermissionSet{}, w, r)
 	assert.Nil(err)
 
@@ -138,7 +91,7 @@ func TestGetTaskTypes(t *testing.T) {
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
-	assert.Equal(listTaskTypeVars{
+	assert.Equal(userDetailsVars{
 		Path:      "",
 		LoadTasks: data,
 	}, template.lastVars)

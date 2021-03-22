@@ -18,7 +18,6 @@ type Logger interface {
 type Client interface {
 	ErrorHandlerClient
 	UserDetailsClient
-	GetTaskTypeClient
 }
 
 type Template interface {
@@ -30,15 +29,10 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 
 	mux := http.NewServeMux()
 	mux.Handle("/", http.RedirectHandler(prefix+"/supervision/workflow", http.StatusFound))
-	// mux.Handle("/workflow", loggingInfoForWorkflow(logger, client, templates))
 
 	mux.Handle("/supervision/workflow",
 		wrap(
 			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
-
-	mux.Handle("/task-type",
-		wrap(
-			listTaskTypes(client, templates["task-type.gotmpl"])))
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
 	mux.Handle("/assets/", static)
