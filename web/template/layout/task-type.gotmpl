@@ -19,16 +19,16 @@
   <div role="group" aria-labelledby="option-select-task-type" class="app-c-option-select__container js-options-container" id="list_of_tasks_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset">
-      {{ range  .LoadTasks }}
+      {{/* {{ range  .LoadTasks }} */}}
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox" id="hook-task-type">
             <input class="govuk-checkboxes__input task-type" id="" name="taskType" type="checkbox">
             <label class="govuk-label govuk-checkboxes__label" for="">
-             {{ .Incomplete }}
+             {{/* {{ .Incomplete }} */}}
             </label>
           </div>
         </div>
-      {{ end }}
+      {{/* {{ end }} */}}
       </fieldset>
     </div>
 

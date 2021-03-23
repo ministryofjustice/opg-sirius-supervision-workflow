@@ -1,12 +1,8 @@
 describe("Work flow", () => {
     beforeEach(() => {
-        cy.visit("/supervision/workflow", {
-            headers: {
-                Cookie: "XSRF-TOKEN=abcde; Other=other",
-                "OPG-Bypass-Membrane": "1",
-                "X-XSRF-TOKEN": "abcde",
-            },
-        });
+        cy.setCookie("Other", "other");
+        cy.setCookie("XSRF-TOKEN", "abcde");
+        cy.visit("/supervision/workflow");
     });
 
     it("shows task", () => {
