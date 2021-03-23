@@ -11,9 +11,8 @@ services:
       SIRIUS_PUBLIC_URL: http://localhost:8080
 
   pact-stub:
-    build: ./pact-stub
-    environment:
-      PACT_DIR: ./pacts
-      PORT: 8080
+    image: pactfoundation/pact-stub-server:v0.4.3
+    ports: ["8080:8080"]
+    command: ["-d", "pacts", "-p", "8080"]
     volumes:
       - "../pacts:/app/pacts"

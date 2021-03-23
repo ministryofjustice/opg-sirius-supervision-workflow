@@ -11,5 +11,8 @@ public/*
 node_modules
 .tmuxp.*
 package-lock.json
-
+logs
+pacts
 web/static
+cypress/screenshots
+cypress/videos
