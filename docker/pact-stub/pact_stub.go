@@ -8,48 +8,34 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 func main() {
 	port := os.Getenv("PORT")
-	pactDir := os.Getenv("PACT_DIR")
+	pactPath := os.Getenv("PACT_PATH")
 
-	interactions, err := readInteractions(pactDir)
+	pacts, err := readPacts(pactPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err := http.ListenAndServe(":"+port, &Server{interactions: interactions}); err != nil {
+	if err := http.ListenAndServe(":"+port, &Server{interactions: pacts.Interactions}); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func readInteractions(dir string) ([]Interaction, error) {
-	var interactions []Interaction
-
-	paths, err := filepath.Glob(dir + "/*.json")
+func readPacts(path string) (Pacts, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return Pacts{}, fmt.Errorf("opening %s: %w", path, err)
 	}
+	defer file.Close()
 
-	for _, path := range paths {
-		file, err := os.Open(path)
-		if err != nil {
-			return nil, fmt.Errorf("opening %s: %w", path, err)
-		}
-		defer file.Close()
+	var v Pacts
+	err = json.NewDecoder(file).Decode(&v)
 
-		var v Pacts
-		if err = json.NewDecoder(file).Decode(&v); err != nil {
-			return nil, err
-		}
-
-		interactions = append(interactions, v.Interactions...)
-	}
-
-	return interactions, err
+	return v, err
 }
 
 type Pacts struct {
@@ -89,7 +75,6 @@ func (q Request) Match(r *http.Request) bool {
 			query := r.URL.Query()
 
 			if expectedQuery.Encode() != query.Encode() {
-				log.Println("QX", q)
 				return false
 			}
 		}

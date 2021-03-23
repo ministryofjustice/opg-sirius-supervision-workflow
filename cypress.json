@@ -1,4 +1,3 @@
 {
-    "baseUrl": "http://localhost:8888/",
-    "supportFile": false
+    "baseUrl": "http://localhost:8888/"
 }
