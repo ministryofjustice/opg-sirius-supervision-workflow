@@ -44,14 +44,14 @@ jobs:
           command: gotestsum --junitfile /tmp/test-results/unit-tests.xml
       - store_test_results:
           path: /tmp/test-results
-      - run:
-        name: Publish pacts
-        command: PACT_CONSUMER_VERSION=$(echo $CIRCLE_SHA1 | cut -c -7) go run internal/pact/publish.go
-        environment:
-          PACT_DIR: ./pacts
-          PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
-          PACT_BROKER_USERNAME: admin
-          PACT_TAG: v1_production
+        - run:
+          name: Publish pacts
+          command: PACT_CONSUMER_VERSION=$(echo $CIRCLE_SHA1 | cut -c -7) go run internal/pact/publish.go
+          environment:
+            PACT_DIR: ./pacts
+            PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
+            PACT_BROKER_USERNAME: admin
+            PACT_TAG: v1_production
 
   push:
     executor: ecr/python
