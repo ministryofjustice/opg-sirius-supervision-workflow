@@ -40,12 +40,6 @@ jobs:
           command: go mod download
       - run: mkdir -p /tmp/test-results
       - run:
-          name: Download pact tools
-          command: |
-            curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
-            tar xzf pact-1.88.6-linux-x86_64.tar.gz
-            echo 'export PATH=$PWD/pact/bin:$PATH' >> $BASH_ENV
-      - run:
           name: Run tests
           command: gotestsum --junitfile /tmp/test-results/unit-tests.xml
       - store_test_results:
