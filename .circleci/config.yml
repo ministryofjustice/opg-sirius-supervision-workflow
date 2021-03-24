@@ -5,10 +5,8 @@ workflows:
   pr:
     jobs:
       - test
-      - acceptance-test:
-          requires: [test]
       - push:
-          requires: [acceptance-test]
+          requires: [test]
 
 orbs:
   ecr:
@@ -60,26 +58,6 @@ jobs:
           PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
           PACT_BROKER_USERNAME: admin
           PACT_TAG: v1_production
-
-  acceptance-test:
-    docker:
-      - image: circleci/node
-    resource_class: small
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 18.06.0-ce
-          docker_layer_caching: false
-      - run:
-          name: Retrieve pact
-          command: |
-            curl -u "$PACT_BROKER_USERNAME:$PACT_BROKER_PASSWORD" "$PACT_BROKER_URL/pacts/provider/sirius/consumer/sirius-user-management/version/$(echo $CIRCLE_SHA1 | cut -c -7)" -o sirius-user-management-sirius.json
-            docker container create --name temp -v pacts_data:/root hello-world
-            docker cp ./sirius-user-management-sirius.json temp:/root/sirius-user-management-sirius.json
-            docker rm temp
-          environment:
-            PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
-            PACT_BROKER_USERNAME: admin
 
   push:
     executor: ecr/python
