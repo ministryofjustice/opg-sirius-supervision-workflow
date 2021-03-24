@@ -15,7 +15,7 @@ services:
     build: ./pact-stub
     ports: ["8080:8080"]
     environment:
-      PACT_PATH: ./pacts/sirius-workflow-sirius.json
+      PACT_PATH: ./pacts
       PORT: 8080
     volumes:
       - type: volume
@@ -26,7 +26,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/cypress/Dockerfile
-    command: ["--headless", "-b", "firefox"]
+    command: ["--headless", "-b", "chrome"]
     depends_on:
       - app
       - pact-stub
