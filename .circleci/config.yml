@@ -52,7 +52,7 @@ jobs:
           path: /tmp/test-results
       - run:
           name: Publish pacts
-          command: PACT_TAG=$CIRCLE_BRANCH PACT_CONSUMER_VERSION=$CIRCLE_SHA1 go run internal/pact/publish.go
+          command: PACT_CONSUMER_VERSION=$(echo $CIRCLE_SHA1 | cut -c -7) go run internal/pact/publish.go
           environment:
             PACT_DIR: ./pacts
             PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
