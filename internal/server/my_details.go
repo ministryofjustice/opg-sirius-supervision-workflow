@@ -8,7 +8,7 @@ import (
 
 type UserDetailsClient interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskDetails(sirius.Context) ([]sirius.ApiTaskTypes, error)
+	// GetTaskDetails(sirius.Context) ([]sirius.ApiTaskTypes, error)
 }
 
 type userDetailsVars struct {
@@ -22,7 +22,7 @@ type userDetailsVars struct {
 	Roles              []string
 	Teams              []string
 	CanEditPhoneNumber bool
-	LoadTasks          []sirius.ApiTaskTypes
+	// LoadTasks          []sirius.ApiTaskTypes
 }
 
 func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
@@ -34,7 +34,7 @@ func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		loadTaskTypes, err := client.GetTaskDetails(ctx)
+		// loadTaskTypes, err := client.GetTaskDetails(ctx)
 		if err != nil {
 			return err
 		}
@@ -46,7 +46,7 @@ func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 			Surname:     myDetails.Surname,
 			Email:       myDetails.Email,
 			PhoneNumber: myDetails.PhoneNumber,
-			LoadTasks:   loadTaskTypes,
+			// LoadTasks:   loadTaskTypes,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
