@@ -141,18 +141,18 @@ jobs:
       - run:
           name: Build
           command: |
-            docker build --tag sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
+            docker build --tag sirius/sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
       - run:
           name: Scan
           command: |
-            docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy sirius-workflow:latest
+            docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy sirius/sirius-workflow:latest
       - ecr/login
       - run:
           name: Push container
           command: |
             export SHORT_HASH=${CIRCLE_SHA1:0:7} >> $BASH_ENV
-            docker tag sirius-workflow:latest << parameters.container_repo_url >>:latest
-            docker tag sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
+            docker tag sirius/sirius-workflow:latest << parameters.container_repo_url >>:latest
+            docker tag sirius/sirius-workflow:latest << parameters.container_repo_url >>:$CIRCLE_BRANCH-$SHORT_HASH
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
               # We want all of the tags pushed
               docker push << parameters.container_repo_url >>
