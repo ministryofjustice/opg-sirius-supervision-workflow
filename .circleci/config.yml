@@ -5,7 +5,10 @@ workflows:
   pr:
     jobs:
       - test
-      - cypress
+      - acceptance-test:
+          requires: [test]
+      - cypress:
+          requires: [acceptance-test]
       - push:
           requires: [cypress]
 
@@ -82,6 +85,24 @@ jobs:
       - run:
           name: Lint
           command: golangci-lint run
+
+  acceptance-test:
+    docker:
+      - image: circleci/node
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          docker_layer_caching: false
+      - attach_workspace:
+          at: ./pacts
+      - run:
+          name: Retrieve pact
+          command: |
+            docker container create --name temp -v pacts_data:/root hello-world
+            docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
+            docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
 
   cypress:
     docker:
