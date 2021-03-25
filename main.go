@@ -19,7 +19,7 @@ import (
 func main() {
 	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 
-	port := getEnv("PORT", "8080")
+	port := getEnv("PORT", "9090")
 	webDir := getEnv("WEB_DIR", "web")
 	siriusURL := getEnv("SIRIUS_URL", "http://localhost:9001")
 	siriusPublicURL := getEnv("SIRIUS_PUBLIC_URL", "")
