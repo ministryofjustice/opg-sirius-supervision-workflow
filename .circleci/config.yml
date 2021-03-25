@@ -5,9 +5,8 @@ workflows:
   pr:
     jobs:
       - test
-      - lint
       - acceptance-test:
-          requires: [test, lint]
+          requires: [test]
       - cypress:
           requires: [acceptance-test]
       - push:
