@@ -7,6 +7,7 @@ services:
       context: ..
       dockerfile: ./docker/sirius-workflow/Dockerfile
     ports: ["8888:1234"]
+
     environment:
       SIRIUS_URL: http://pact-stub:8080
       SIRIUS_PUBLIC_URL: http://localhost:8080

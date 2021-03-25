@@ -170,4 +170,4 @@ jobs:
                   export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
                   export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
                   aws ssm put-parameter --name "opg-sirius-workflow-latest-green-build" --type "String" --value "$CIRCLE_BRANCH-$SHORT_HASH" --overwrite --region=eu-west-1
-            
+
