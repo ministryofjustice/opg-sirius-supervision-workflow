@@ -170,6 +170,4 @@ jobs:
                   export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
                   export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
                   aws ssm put-parameter --name "opg-sirius-workflow-latest-green-build" --type "String" --value "$CIRCLE_BRANCH-$SHORT_HASH" --overwrite --region=eu-west-1
-            - run:
-                name: Trigger Sirius Platform Deployment
-                command: curl -u ${JENKINS_API_USER}:${JENKINS_API_TOKEN} "https://${JENKINS_URL}/job/Sirius/job/Deploy_to_Development/buildWithParameters?token=${JENKINS_API_TOKEN_NAME}&cause=Triggered+by+opg-sirius-workflow"
+            
