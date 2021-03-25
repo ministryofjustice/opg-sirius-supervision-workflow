@@ -92,8 +92,8 @@ func TestGetTaskTypes(t *testing.T) {
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
 	assert.Equal(userDetailsVars{
-		Path:      "",
-		LoadTasks: data,
+		Path: "",
+		// LoadTasks: data,
 	}, template.lastVars)
 }
 
