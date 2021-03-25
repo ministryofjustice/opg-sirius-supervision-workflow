@@ -6,7 +6,7 @@ describe("Work flow", () => {
   });
 
   it("shows user that is logged in within banner", () => {
-    cy.contains(".moj-header__link", "system admin");
+    cy.contains(".moj-header__link", "case manager");
   });
 
 
