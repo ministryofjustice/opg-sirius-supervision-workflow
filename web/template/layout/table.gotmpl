@@ -35,11 +35,36 @@
               </div>
           </td>
           <td class="govuk-table__cell">{{ .Name }}</td>
+          <td class="govuk-table__cell">
+            {{ range .CaseItems }}
+              {{ .Client.TaskFirstname }} 
+              {{ .Client.TaskSurname }}
+          <br>
+              {{ .Client.CaseRecNumber }}
+          <br>
+            {{ end }}
+          </td>
           <td class="govuk-table__cell">{{ .Assignee.DisplayName }}</td>
+          <td class="govuk-table__cell">
+          {{ .Assignee.DisplayName }}
+          {{ range .CaseItems }}
+            {{ .Client.SupervisionCaseOwner.DisplayName }}
+            <br>
+          {{ end }}
+          </td>
+          <td class="govuk-table__cell">{{ .DueDate }}</td>
         </tr>
+        
+
       {{ end }}
   </tbody>
 </table>
 
-{{ .TaskList }}
+{{/* {{ range .TaskList }}
+{{ .Assignee.DisplayName }}
+{{ range .CaseItems }}
+{{ .Client.SupervisionCaseOwner.DisplayName }}
+<br>
+{{ end }}
+{{ end }}  */}}
 {{ end }}
