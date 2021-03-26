@@ -22,8 +22,24 @@
       <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
     </tr>
   </thead>
-  
-
+    <tbody class="govuk-table__body">
+      {{ range .TaskList }}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">
+            <div class="govuk-checkboxes govuk-checkboxes--small">
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+                  <label class="govuk-label govuk-checkboxes__label" for="organisation">
+                    <span class="govuk-visually-hidden">Select</span>
+                  </label>
+              </div>
+          </td>
+          <td class="govuk-table__cell">{{ .Name }}</td>
+          <td class="govuk-table__cell">{{ .Assignee.DisplayName }}</td>
+        </tr>
+      {{ end }}
   </tbody>
 </table>
+
+{{ .TaskList }}
 {{ end }}

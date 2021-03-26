@@ -44,11 +44,11 @@ func (c *Client) GetTaskDetails(ctx Context) ([]ApiTaskTypes, error) {
 		return nil, err
 	}
 
-	WholeTaskList := v.AllTaskList
+	wholeTaskList := v.AllTaskList
 
 	var taskTypeList []ApiTaskTypes
 
-	for _, u := range WholeTaskList {
+	for _, u := range wholeTaskList {
 		taskType := ApiTaskTypes{
 			Handle:     u.Handle,
 			Incomplete: u.Incomplete,

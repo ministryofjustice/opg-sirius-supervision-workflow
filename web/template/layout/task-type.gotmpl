@@ -1,6 +1,6 @@
 {{ define "task-type" }}
 
-<div class="app-c-option-select">
+{{/* <div class="app-c-option-select">
   <h2 class="app-c-option-select__heading js-container-heading">
       <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up" aria-hidden="true" focusable="false">
       <path d="m798.16 609.84l-256-256c-16.683-16.683-43.691-16.683-60.331 0l-256 256c-16.683 16.683-16.683 43.691 0 60.331s43.691 16.683 60.331 0l225.84-225.84 225.84 225.84c16.683 16.683 43.691 16.683 60.331 0s16.683-43.691 0-60.331z"></path>
@@ -19,21 +19,21 @@
   <div role="group" aria-labelledby="option-select-task-type" class="app-c-option-select__container js-options-container" id="list_of_tasks_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset">
-      {{/* {{ range  .LoadTasks }} */}}
+      {{ range  .LoadTasks }}
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
             <input class="govuk-checkboxes__input task-type" id="" name="taskType" type="checkbox">
             <label class="govuk-label govuk-checkboxes__label" for="">
-             {{/* {{ .Incomplete }} */}}
+             {{ .Incomplete }}
             </label>
           </div>
         </div>
-      {{/* {{ end }} */}}
+      {{ end }}
       </fieldset>
     </div>
 
   </div>
 
-</div>
+</div> */}}
 
 {{ end }}
