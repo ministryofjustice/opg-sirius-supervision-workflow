@@ -48,7 +48,7 @@ type ApiTask struct {
 }
 
 type TaskList struct {
-	AllTaskList []ApiTask `json:"tasks"` //look into the type of this map for next time
+	AllTaskList []ApiTask `json:"tasks"`
 }
 
 func (c *Client) GetTaskList(ctx Context) ([]ApiTask, error) {
@@ -63,8 +63,6 @@ func (c *Client) GetTaskList(ctx Context) ([]ApiTask, error) {
 	}
 	defer resp.Body.Close()
 
-	// io.Copy(os.Stdout, resp.Body)
-
 	if resp.StatusCode == http.StatusUnauthorized {
 		return nil, ErrUnauthorized
 	}
@@ -74,34 +72,11 @@ func (c *Client) GetTaskList(ctx Context) ([]ApiTask, error) {
 	}
 
 	var v TaskList
-	// var v []ApiTask
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
 
 	allTaskList := v.AllTaskList
 
-	// allTaskList := make([]MyTaskList, len(v))
-
-	// var taskList []ApiTask
-
-	// for _, u := range allTaskList {
-	// 	task := ApiTask{
-	// 		// Assignee:    u.Assignee,
-	// 		// CaseItems:   u.CaseItems,
-	// 		// Clients:     u.Clients,
-	// 		// CreatedTime: u.CreatedTime,
-	// 		// Description: u.Description,
-	// 		// DueDate:     u.DueDate,
-	// 		// ApiTaskId:   u.ApiTaskId,
-	// 		// Name:        u.Name,
-	// 		// Persons:     u.Persons,
-	// 		// RagRating:   u.RagRating,
-	// 		// Status:      u.Status,
-	// 		//Tasktype: u.Tasktype,
-	// 	}
-
-	// 	taskList = append(taskList, task)
-	// }
 	return allTaskList, err
 }
