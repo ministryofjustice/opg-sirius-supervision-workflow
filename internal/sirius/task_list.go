@@ -5,27 +5,27 @@ import (
 	"net/http"
 )
 
-type supervisionCaseOwnerDetail struct {
+type SupervisionCaseOwnerDetail struct {
 	DisplayName            string `json:"displayName"`
 	SupervisionCaseOwnerId int    `json:"id"`
 }
 
-type clientDetails struct {
+type ClientDetails struct {
 	CaseRecNumber        string                     `json:"caseRecNumber"`
 	TaskFirstname        string                     `json:"firstname"`
 	ClientId             int                        `json:"id"`
 	ClientMiddlenames    string                     `json:"middlenames"`
 	ClientSalutation     string                     `json:"salutation"`
-	SupervisionCaseOwner supervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
+	SupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
 	TaskSurname          string                     `json:"surname"`
 	ClientUId            string                     `json:"uId"`
 }
 
-type caseItemsDetails struct {
+type CaseItemsDetails struct {
 	CaseRecNumber string        `json:"caseRecNumber"`
 	CaseSubtype   string        `json:"caseSubtype"`
 	CaseType      string        `json:"caseType"`
-	Client        clientDetails `json:"client"`
+	Client        ClientDetails `json:"client"`
 	CaseItemsId   int           `json:"id"`
 	CaseItemsUId  string        `json:"uId"`
 }
@@ -45,6 +45,7 @@ type ApiTask struct {
 	Name string `json:"name"`
 	// Persons     []string           `json:"persons"`
 	// Status      string             `json:"status"`
+
 }
 
 type TaskList struct {

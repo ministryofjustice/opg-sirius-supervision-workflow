@@ -10,12 +10,21 @@ import (
 )
 
 type mockUserDetailsClient struct {
+<<<<<<< HEAD
 	count               int
 	lastCtx             sirius.Context
 	err                 error
 	userdetailsdata     sirius.UserDetails
 	taskdetailsdata     []sirius.ApiTaskTypes
 	tasklistdetailsdata sirius.ApiTask
+=======
+	count           int
+	lastCtx         sirius.Context
+	err             error
+	userdetailsdata sirius.UserDetails
+	// taskdetailsdata []sirius.ApiTaskTypes
+	taskList []sirius.ApiTask
+>>>>>>> 103ddc9f9358bc29d98f0112e2a0cff37d36ccb0
 }
 
 func (m *mockUserDetailsClient) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -25,11 +34,18 @@ func (m *mockUserDetailsClient) SiriusUserDetails(ctx sirius.Context) (sirius.Us
 	return m.userdetailsdata, m.err
 }
 
-func (c *mockUserDetailsClient) GetTaskDetails(ctx sirius.Context) ([]sirius.ApiTaskTypes, error) {
-	c.count += 1
-	c.lastCtx = ctx
+// func (c *mockUserDetailsClient) GetTaskDetails(ctx sirius.Context) ([]sirius.ApiTaskTypes, error) {
+// 	c.count += 1
+// 	c.lastCtx = ctx
 
-	return c.taskdetailsdata, c.err
+// 	return c.taskdetailsdata, c.err
+// }
+
+func (d *mockUserDetailsClient) GetTaskList(ctx sirius.Context) ([]sirius.ApiTask, error) {
+	d.count += 1
+	d.lastCtx = ctx
+
+	return d.taskList, d.err
 }
 
 func (d *mockUserDetailsClient) GetTaskList(ctx sirius.Context) (sirius.ApiTask, error) {
@@ -72,6 +88,20 @@ func TestGetMyDetails(t *testing.T) {
 
 // func TestGetTaskTypes(t *testing.T) {
 // 	assert := assert.New(t)
+<<<<<<< HEAD
+
+// 	data := []sirius.ApiTaskTypes{
+// 		{
+// 			Handle:     "TestHandle",
+// 			Incomplete: "TestIncomplete",
+// 			Category:   "TestCategory",
+// 			Complete:   "TestComplete",
+// 			User:       true,
+// 		},
+// 	}
+// 	client := &mockUserDetailsClient{taskdetailsdata: data}
+// 	template := &mockTemplates{}
+=======
 
 // 	data := []sirius.ApiTaskTypes{
 // 		{
@@ -103,6 +133,77 @@ func TestGetMyDetails(t *testing.T) {
 // 		// LoadTasks: data,
 // 	}, template.lastVars)
 // }
+
+func TestGetTaskList(t *testing.T) {
+	assert := assert.New(t)
+
+	data := []sirius.ApiTask{
+		{
+			Assignee: sirius.AssigneeDetails{
+				DisplayName: "Assingee Display Name",
+				AssigneeId:  4321,
+			},
+			CaseItems: []sirius.CaseItemsDetails{
+				{
+					CaseRecNumber: "caseRecNumber",
+					CaseSubtype:   "caseSubtype",
+					CaseType:      "caseType",
+					Client: sirius.ClientDetails{
+						CaseRecNumber:     "caseRecNumber",
+						TaskFirstname:     "TaskFirstname",
+						ClientId:          2222,
+						ClientMiddlenames: "middlenames",
+						ClientSalutation:  "salutation",
+						SupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+							DisplayName:            "displayName",
+							SupervisionCaseOwnerId: 3333,
+						},
+						TaskSurname: "TaskSurname",
+						ClientUId:   "ClientUId",
+					},
+					CaseItemsId:  1212,
+					CaseItemsUId: "uId",
+				},
+			},
+			Description: "TaskDescription",
+			DueDate:     "DueDateTask",
+			ApiTaskId:   1234,
+			Name:        "Taskname",
+			Status:      "TaskStatus",
+		},
+	}
+
+	client := &mockUserDetailsClient{taskList: data}
+	template := &mockTemplates{}
+>>>>>>> 103ddc9f9358bc29d98f0112e2a0cff37d36ccb0
+
+// 	w := httptest.NewRecorder()
+// 	r, _ := http.NewRequest("GET", "", nil)
+
+// 	handler := loggingInfoForWorflow(client, template)
+// 	err := handler(sirius.PermissionSet{}, w, r)
+// 	assert.Nil(err)
+
+// 	resp := w.Result()
+// 	assert.Equal(http.StatusOK, resp.StatusCode)
+// 	assert.Equal(getContext(r), client.lastCtx)
+
+<<<<<<< HEAD
+// 	assert.Equal(1, template.count)
+// 	assert.Equal("page", template.lastName)
+// 	assert.Equal(userDetailsVars{
+// 		Path: "",
+// 		// LoadTasks: data,
+// 	}, template.lastVars)
+// }
+=======
+	assert.Equal(1, template.count)
+	assert.Equal("page", template.lastName)
+	assert.Equal(userDetailsVars{
+		TaskList: data,
+	}, template.lastVars)
+}
+>>>>>>> 103ddc9f9358bc29d98f0112e2a0cff37d36ccb0
 
 // func TestGetMyDetailsUnauthenticated(t *testing.T) {
 // 	assert := assert.New(t)
