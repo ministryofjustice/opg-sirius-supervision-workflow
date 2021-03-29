@@ -9,7 +9,7 @@ import (
 type UserDetailsClient interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskDetails(sirius.Context) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context) (sirius.ApiTask, error)
+	GetTaskList(sirius.Context) (sirius.TaskList, error)
 }
 
 type userDetailsVars struct {
@@ -23,7 +23,7 @@ type userDetailsVars struct {
 	Roles              []string
 	Teams              []string
 	CanEditPhoneNumber bool
-	TaskList           sirius.ApiTask
+	TaskList           sirius.TaskList
 	LoadTasks          []sirius.ApiTaskTypes
 }
 

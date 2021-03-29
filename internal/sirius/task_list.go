@@ -36,7 +36,7 @@ type AssigneeDetails struct {
 }
 
 type ApiTask struct {
-	// Assignee    AssigneeDetails    `json:"assignee"`
+	Assignee  AssigneeDetails    `json:"assignee"`
 	CaseItems []CaseItemsDetails `json:"caseItems"`
 	// Clients []string `json:"clients"`
 	// Description string             `json:"description"`
@@ -49,11 +49,12 @@ type ApiTask struct {
 }
 
 type TaskList struct {
-	AllTaskList ApiTask `json:"tasks"`
+	AllTaskList []ApiTask `json:"tasks"`
 }
 
-func (c *Client) GetTaskList(ctx Context) (ApiTask, error) {
-	var v ApiTask
+func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
+
+	var v TaskList
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/65/tasks", nil)
 	if err != nil {

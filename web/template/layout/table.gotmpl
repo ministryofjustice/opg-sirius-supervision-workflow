@@ -23,7 +23,7 @@
     </tr>
   </thead>
     <tbody class="govuk-table__body">
-      {{/* {{ range .TaskList }}
+      {{ range .TaskList.AllTaskList }}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
@@ -58,12 +58,9 @@
           <a href="{{ sirius (printf "/supervision/#/clients/%d" .Client.ClientId) }}" class="govuk-button">Open case</a></td>
           {{ end }}
         </tr>
-        
-
+      
       {{ end }}
-       */}}
 
-      {{ .TaskList }}
 
   </tbody>
 

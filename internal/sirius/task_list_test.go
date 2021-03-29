@@ -24,7 +24,7 @@ func TestTaskList(t *testing.T) {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse ApiTask
+		expectedResponse TaskList
 		expectedError    error
 	}{
 		{
@@ -47,22 +47,30 @@ func TestTaskList(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"name":    dsl.Like("Case work - General"),
-							"dueDate": dsl.Like("01/02/2021"),
-							"caseItems": dsl.EachLike(map[string]interface{}{
-								"client": dsl.Like(map[string]interface{}{
-									"caseRecNumber": "caseRecNumber",
-									"firstname":     "ClientFirstname",
-									"id":            3333,
-									"middlenames":   "ClientMiddlenames",
-									"salutation":    "ClientSalutation",
-									"supervisionCaseOwner": dsl.Like(map[string]interface{}{
-										"displayName": "supervisionDisplayName",
-										"id":          4444,
-									}),
-									"surname": "ClientSurname",
-									"uId":     "ClientUId",
+
+							"tasks": dsl.EachLike(map[string]interface{}{
+
+								"assignee": dsl.Like(map[string]interface{}{
+									"displayName": "DisplayName",
+									"id":          1111,
 								}),
+								"name":    dsl.Like("Case work - General"),
+								"dueDate": dsl.Like("01/02/2021"),
+								"caseItems": dsl.EachLike(map[string]interface{}{
+									"client": dsl.Like(map[string]interface{}{
+										"caseRecNumber": "caseRecNumber",
+										"firstname":     "ClientFirstname",
+										"id":            3333,
+										"middlenames":   "ClientMiddlenames",
+										"salutation":    "ClientSalutation",
+										"supervisionCaseOwner": dsl.Like(map[string]interface{}{
+											"displayName": "supervisionDisplayName",
+											"id":          4444,
+										}),
+										"surname": "ClientSurname",
+										"uId":     "ClientUId",
+									}),
+								}, 1),
 							}, 1),
 						}),
 					})
@@ -71,23 +79,31 @@ func TestTaskList(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: ApiTask{
-				Name:    "Case work - General",
-				DueDate: "01/02/2021",
-				CaseItems: []CaseItemsDetails{
-					{
-						Client: ClientDetails{
-							CaseRecNumber:     "caseRecNumber",
-							TaskFirstname:     "ClientFirstname",
-							ClientId:          3333,
-							ClientMiddlenames: "ClientMiddlenames",
-							ClientSalutation:  "ClientSalutation",
-							SupervisionCaseOwner: SupervisionCaseOwnerDetail{
-								DisplayName:            "supervisionDisplayName",
-								SupervisionCaseOwnerId: 4444,
+
+			expectedResponse: TaskList{
+
+				AllTaskList: []ApiTask{
+					Assignee: AssigneeDetails{
+						DisplayName: "DisplayName",
+						AssigneeId:  1111,
+					},
+					Name:    "Case work - General",
+					DueDate: "01/02/2021",
+					CaseItems: []CaseItemsDetails{
+						{
+							Client: ClientDetails{
+								CaseRecNumber:     "caseRecNumber",
+								TaskFirstname:     "ClientFirstname",
+								ClientId:          3333,
+								ClientMiddlenames: "ClientMiddlenames",
+								ClientSalutation:  "ClientSalutation",
+								SupervisionCaseOwner: SupervisionCaseOwnerDetail{
+									DisplayName:            "supervisionDisplayName",
+									SupervisionCaseOwnerId: 4444,
+								},
+								TaskSurname: "ClientSurname",
+								ClientUId:   "ClientUId",
 							},
-							TaskSurname: "ClientSurname",
-							ClientUId:   "ClientUId",
 						},
 					},
 				},
