@@ -47,7 +47,23 @@ func TestTaskList(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"name": dsl.Like("Case work - General"),
+							"name":    dsl.Like("Case work - General"),
+							"dueDate": dsl.Like("01/02/2021"),
+							"caseItems": dsl.EachLike(map[string]interface{}{
+								"client": dsl.Like(map[string]interface{}{
+									"caseRecNumber": "caseRecNumber",
+									"firstname":     "ClientFirstname",
+									"id":            3333,
+									"middlenames":   "ClientMiddlenames",
+									"salutation":    "ClientSalutation",
+									"supervisionCaseOwner": dsl.Like(map[string]interface{}{
+										"displayName": "supervisionDisplayName",
+										"id":          4444,
+									}),
+									"surname": "ClientSurname",
+									"uId":     "ClientUId",
+								}),
+							}, 1),
 						}),
 					})
 			},
@@ -55,15 +71,26 @@ func TestTaskList(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			// expectedTaskList: []TaskList{
-			// 	ApiTaskId:   "123",
-			// 	Status:      "Not started",
-			// 	DueDate:     "01/10/2019",
-			// 	Name:        "Case work - General",
-			// 	Description: "Case work - General",
-			// },
 			expectedResponse: ApiTask{
-				Name: "Case work - General",
+				Name:    "Case work - General",
+				DueDate: "01/02/2021",
+				CaseItems: []CaseItemsDetails{
+					{
+						Client: ClientDetails{
+							CaseRecNumber:     "caseRecNumber",
+							TaskFirstname:     "ClientFirstname",
+							ClientId:          3333,
+							ClientMiddlenames: "ClientMiddlenames",
+							ClientSalutation:  "ClientSalutation",
+							SupervisionCaseOwner: SupervisionCaseOwnerDetail{
+								DisplayName:            "supervisionDisplayName",
+								SupervisionCaseOwnerId: 4444,
+							},
+							TaskSurname: "ClientSurname",
+							ClientUId:   "ClientUId",
+						},
+					},
+				},
 			},
 		},
 	}

@@ -37,10 +37,10 @@ type AssigneeDetails struct {
 
 type ApiTask struct {
 	// Assignee    AssigneeDetails    `json:"assignee"`
-	// CaseItems   []caseItemsDetails `json:"caseItems"`
+	CaseItems []CaseItemsDetails `json:"caseItems"`
 	// Clients []string `json:"clients"`
 	// Description string             `json:"description"`
-	// DueDate     string             `json:"dueDate"`
+	DueDate string `json:"dueDate"`
 	// ApiTaskId   int                `json:"id"`
 	Name string `json:"name"`
 	// Persons     []string           `json:"persons"`
