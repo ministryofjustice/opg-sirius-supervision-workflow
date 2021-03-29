@@ -34,28 +34,28 @@
                   </label>
               </div>
           </td>
-          <td class="govuk-table__cell">{{ .Name }}</td>
+          <td class="govuk-table__cell">{{ .ApiTaskType }}</td>
           <td class="govuk-table__cell">
-            {{ range .CaseItems }}
-              {{ .Client.TaskFirstname }} 
-              {{ .Client.TaskSurname }}
+            {{ range .ApiTaskCaseItems }}
+              {{ .CaseItemClient.ClientDetailsFirstName }} 
+              {{ .CaseItemClient.ClientDetailsSurname }}
           <br>
-              {{ .Client.CaseRecNumber }}
+              {{ .CaseItemClient.ClientDetailsCaseRecNumber }}
           <br>
             {{ end }}
           </td>
-          <td class="govuk-table__cell">{{ .Assignee.DisplayName }}</td>
+          <td class="govuk-table__cell">{{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}</td>
           <td class="govuk-table__cell">
-          {{ .Assignee.DisplayName }}
-          {{ range .CaseItems }}
-            {{ .Client.SupervisionCaseOwner.DisplayName }}
+          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}
+          {{ range .ApiTaskCaseItems }}
+            {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }}
             <br>
           {{ end }}
           </td>
-          <td class="govuk-table__cell">{{ .DueDate }}</td>
+          <td class="govuk-table__cell">{{ .ApiTaskDueDate }}</td>
           <td class="govuk-table__cell">
-          {{ range .CaseItems }}
-          <a href="{{ sirius (printf "/supervision/#/clients/%d" .Client.ClientId) }}" class="govuk-button">Open case</a></td>
+          {{ range .ApiTaskCaseItems }}
+          <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientDetailsId) }}" class="govuk-button">Open case</a></td>
           {{ end }}
         </tr>
       

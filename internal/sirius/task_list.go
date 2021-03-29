@@ -6,43 +6,43 @@ import (
 )
 
 type SupervisionCaseOwnerDetail struct {
-	DisplayName            string `json:"displayName"`
-	SupervisionCaseOwnerId int    `json:"id"`
+	SupervisionCaseOwnerName string `json:"displayName"`
+	//SupervisionCaseOwnerId   int    `json:"id"`
 }
 
 type ClientDetails struct {
-	CaseRecNumber        string                     `json:"caseRecNumber"`
-	TaskFirstname        string                     `json:"firstname"`
-	ClientId             int                        `json:"id"`
-	ClientMiddlenames    string                     `json:"middlenames"`
-	ClientSalutation     string                     `json:"salutation"`
-	SupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
-	TaskSurname          string                     `json:"surname"`
-	ClientUId            string                     `json:"uId"`
+	ClientDetailsCaseRecNumber string `json:"caseRecNumber"`
+	ClientDetailsFirstName     string `json:"firstname"`
+	ClientDetailsId            int    `json:"id"`
+	//ClientDetailsMiddlenames          string                     `json:"middlenames"`
+	//ClientDetailsSalutation           string                     `json:"salutation"`
+	ClientDetailsSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
+	ClientDetailsSurname              string                     `json:"surname"`
+	//ClientDetailsUId                  string                     `json:"uId"`
 }
 
 type CaseItemsDetails struct {
-	CaseRecNumber string        `json:"caseRecNumber"`
-	CaseSubtype   string        `json:"caseSubtype"`
-	CaseType      string        `json:"caseType"`
-	Client        ClientDetails `json:"client"`
-	CaseItemsId   int           `json:"id"`
-	CaseItemsUId  string        `json:"uId"`
+	//CaseItemCaseRecNumber string        `json:"caseRecNumber"`
+	//CaseItemSubtype       string        `json:"caseSubtype"`
+	//CaseItemType          string        `json:"caseType"`
+	CaseItemClient ClientDetails `json:"client"`
+	//CaseItemId            int           `json:"id"`
+	//CaseItemUId           string        `json:"uId"`
 }
 
 type AssigneeDetails struct {
-	DisplayName string `json:"displayName"`
-	AssigneeId  int    `json:"id"`
+	AssigneeDetailsDisplayName string `json:"displayName"`
+	//AssigneeDetailsId          int    `json:"id"`
 }
 
 type ApiTask struct {
-	Assignee  AssigneeDetails    `json:"assignee"`
-	CaseItems []CaseItemsDetails `json:"caseItems"`
+	ApiTaskAssignee  AssigneeDetails    `json:"assignee"`
+	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
 	// Clients []string `json:"clients"`
 	// Description string             `json:"description"`
-	DueDate string `json:"dueDate"`
+	ApiTaskDueDate string `json:"dueDate"`
 	// ApiTaskId   int                `json:"id"`
-	Name string `json:"name"`
+	ApiTaskType string `json:"name"`
 	// Persons     []string           `json:"persons"`
 	// Status      string             `json:"status"`
 

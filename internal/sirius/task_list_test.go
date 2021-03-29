@@ -52,8 +52,8 @@ func TestTaskList(t *testing.T) {
 									"displayName": "DisplayName",
 									"id":          1111,
 								}),
-								"name":    dsl.Like("Case work - General"),
-								"dueDate": dsl.Like("01/02/2021"),
+								"apiTaskType": dsl.Like("Case work - General"),
+								"dueDate":     dsl.Like("01/02/2021"),
 								"caseItems": dsl.EachLike(map[string]interface{}{
 									"client": dsl.Like(map[string]interface{}{
 										"caseRecNumber": "caseRecNumber",
@@ -82,26 +82,26 @@ func TestTaskList(t *testing.T) {
 
 				AllTaskList: []ApiTask{
 					{
-						Assignee: AssigneeDetails{
-							DisplayName: "DisplayName",
-							AssigneeId:  1111,
+						ApiTaskAssignee: AssigneeDetails{
+							AssigneeDetailsDisplayName: "DisplayName",
+							//AssigneeDetailsId:  1111,
 						},
-						Name:    "Case work - General",
-						DueDate: "01/02/2021",
-						CaseItems: []CaseItemsDetails{
+						ApiTaskType:    "Case work - General",
+						ApiTaskDueDate: "01/02/2021",
+						ApiTaskCaseItems: []CaseItemsDetails{
 							{
-								Client: ClientDetails{
-									CaseRecNumber:     "caseRecNumber",
-									TaskFirstname:     "ClientFirstname",
-									ClientId:          3333,
-									ClientMiddlenames: "ClientMiddlenames",
-									ClientSalutation:  "ClientSalutation",
-									SupervisionCaseOwner: SupervisionCaseOwnerDetail{
-										DisplayName:            "supervisionDisplayName",
-										SupervisionCaseOwnerId: 4444,
+								CaseItemClient: ClientDetails{
+									ClientDetailsCaseRecNumber: "caseRecNumber",
+									ClientDetailsFirstName:     "ClientFirstname",
+									ClientDetailsId:            3333,
+									//ClientDetailsMiddlenames: "ClientMiddlenames",
+									//ClientDetailsSalutation:  "ClientSalutation",
+									ClientDetailsSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+										SupervisionCaseOwnerName: "supervisionDisplayName",
+										//SupervisionCaseOwnerId: 4444,
 									},
-									TaskSurname: "ClientSurname",
-									ClientUId:   "ClientUId",
+									ClientDetailsSurname: "ClientSurname",
+									//ClientDetailsUId:   "ClientUId",
 								},
 							},
 						},
