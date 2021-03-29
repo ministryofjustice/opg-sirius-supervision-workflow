@@ -47,9 +47,7 @@ func TestTaskList(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-
 							"tasks": dsl.EachLike(map[string]interface{}{
-
 								"assignee": dsl.Like(map[string]interface{}{
 									"displayName": "DisplayName",
 									"id":          1111,
@@ -83,26 +81,28 @@ func TestTaskList(t *testing.T) {
 			expectedResponse: TaskList{
 
 				AllTaskList: []ApiTask{
-					Assignee: AssigneeDetails{
-						DisplayName: "DisplayName",
-						AssigneeId:  1111,
-					},
-					Name:    "Case work - General",
-					DueDate: "01/02/2021",
-					CaseItems: []CaseItemsDetails{
-						{
-							Client: ClientDetails{
-								CaseRecNumber:     "caseRecNumber",
-								TaskFirstname:     "ClientFirstname",
-								ClientId:          3333,
-								ClientMiddlenames: "ClientMiddlenames",
-								ClientSalutation:  "ClientSalutation",
-								SupervisionCaseOwner: SupervisionCaseOwnerDetail{
-									DisplayName:            "supervisionDisplayName",
-									SupervisionCaseOwnerId: 4444,
+					{
+						Assignee: AssigneeDetails{
+							DisplayName: "DisplayName",
+							AssigneeId:  1111,
+						},
+						Name:    "Case work - General",
+						DueDate: "01/02/2021",
+						CaseItems: []CaseItemsDetails{
+							{
+								Client: ClientDetails{
+									CaseRecNumber:     "caseRecNumber",
+									TaskFirstname:     "ClientFirstname",
+									ClientId:          3333,
+									ClientMiddlenames: "ClientMiddlenames",
+									ClientSalutation:  "ClientSalutation",
+									SupervisionCaseOwner: SupervisionCaseOwnerDetail{
+										DisplayName:            "supervisionDisplayName",
+										SupervisionCaseOwnerId: 4444,
+									},
+									TaskSurname: "ClientSurname",
+									ClientUId:   "ClientUId",
 								},
-								TaskSurname: "ClientSurname",
-								ClientUId:   "ClientUId",
 							},
 						},
 					},
