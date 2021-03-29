@@ -23,7 +23,7 @@
     </tr>
   </thead>
     <tbody class="govuk-table__body">
-      {{ range .TaskList }}
+      {{/* {{ range .TaskList }}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
@@ -61,6 +61,11 @@
         
 
       {{ end }}
+       */}}
+
+      {{ .TaskList }}
+
   </tbody>
+
 </table>
 {{ end }}

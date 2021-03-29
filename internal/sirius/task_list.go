@@ -36,47 +36,47 @@ type AssigneeDetails struct {
 }
 
 type ApiTask struct {
-	Assignee    AssigneeDetails    `json:"assignee"`
-	CaseItems   []caseItemsDetails `json:"caseItems"`
-	Clients     []string           `json:"clients"`
-	Description string             `json:"description"`
-	DueDate     string             `json:"dueDate"`
-	ApiTaskId   int                `json:"id"`
-	Name        string             `json:"name"`
-	Persons     []string           `json:"persons"`
-	Status      string             `json:"status"`
+	// Assignee    AssigneeDetails    `json:"assignee"`
+	// CaseItems   []caseItemsDetails `json:"caseItems"`
+	// Clients []string `json:"clients"`
+	// Description string             `json:"description"`
+	// DueDate     string             `json:"dueDate"`
+	// ApiTaskId   int                `json:"id"`
+	Name string `json:"name"`
+	// Persons     []string           `json:"persons"`
+	// Status      string             `json:"status"`
 }
 
 type TaskList struct {
-	AllTaskList []ApiTask `json:"tasks"`
+	AllTaskList ApiTask `json:"tasks"`
 }
 
-func (c *Client) GetTaskList(ctx Context) ([]ApiTask, error) {
+func (c *Client) GetTaskList(ctx Context) (ApiTask, error) {
+	var v ApiTask
+
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/65/tasks", nil)
 	if err != nil {
-		return nil, err
+		return v, err
 	}
-
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return v, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return nil, ErrUnauthorized
+		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, newStatusError(resp)
+		return v, newStatusError(resp)
 	}
 
-	var v TaskList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return nil, err
+		return v, err
 	}
 
-	allTaskList := v.AllTaskList
+	allTaskList := v
 
 	return allTaskList, err
 }
