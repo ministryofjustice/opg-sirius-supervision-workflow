@@ -14,10 +14,18 @@ describe("Work flow", () => {
     cy.contains("Actions");
   })
 
+  const expected = [
+    "Case work - General",
+    "ClientFirstname ClientSurname caseRecNumber",
+    "DisplayName",
+    "DisplayName supervisionDisplayName",
+    "01/02/2021",
+];
+
   it("should have data in the table", () => {
-    cy.get(".moj-header__navigation-link").first().should(
-      "have.text",
-      expected[index]
-)
+    cy.get(".govuk-table__row").each(($el, index) => {
+        "have.text",
+        expected[index]
+    })
   })
 });

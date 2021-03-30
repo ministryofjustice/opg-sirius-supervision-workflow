@@ -5,9 +5,9 @@ describe("Work flow", () => {
       cy.visit("/supervision/workflow");
   });
 
-  it("shows user that is logged in within banner", () => {
-    cy.contains(".moj-header__link", "case manager");
-  });
+  // it("shows user that is logged in within banner", () => {
+  //   cy.contains(".moj-header__link", "case manager");
+  // });
 
 
   const expected = [

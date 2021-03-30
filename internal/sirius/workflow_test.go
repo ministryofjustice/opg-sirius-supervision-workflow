@@ -47,7 +47,7 @@ func TestMyDetails(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"id":          dsl.Like(64),
+							"id":          dsl.Like(65),
 							"name":        dsl.Like("case"),
 							"phoneNumber": dsl.Like("12345678"),
 							"teams": dsl.EachLike(map[string]interface{}{
@@ -69,7 +69,7 @@ func TestMyDetails(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedMyDetails: UserDetails{
-				ID:          64,
+				ID:          65,
 				Name:        "case",
 				PhoneNumber: "12345678",
 				Teams: []MyDetailsTeam{

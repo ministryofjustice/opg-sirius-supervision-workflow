@@ -21,11 +21,11 @@ package sirius
 // 	defer pact.Teardown()
 
 // 	testCases := []struct {
-// 		name              string
-// 		setup             func()
-// 		cookies           []*http.Cookie
-// 		expectedResponse []WholeTaskList
-// 		expectedError     error
+// 		name             string
+// 		setup            func()
+// 		cookies          []*http.Cookie
+// 		expectedResponse WholeTaskList
+// 		expectedError    error
 // 	}{
 // 		{
 // 			name: "Test Types",
@@ -47,32 +47,28 @@ package sirius
 // 						Status:  http.StatusOK,
 // 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 // 						Body: dsl.Like(map[string]interface{}{
-// 							[
-// 								{
+// 							"task_types": dsl.EachLike(map[string]interface{}{
 // 								"handle":     dsl.Like("CDFC"),
 // 								"incomplete": dsl.Like("Correspondence - Review failed draft"),
 // 								"category":   dsl.Like("supervision"),
 // 								"complete":   dsl.Like("Correspondence - Reviewed draft failure"),
 // 								"user":       dsl.Like(true),
-// 								},
-// 							],
+// 							}, 1),
 // 						}),
-// 					}),
+// 					})
 // 			},
 // 			cookies: []*http.Cookie{
 // 				{Name: "XSRF-TOKEN", Value: "abcde"},
 // 				{Name: "Other", Value: "other"},
 // 			},
-// 			expectedResponse: []WholeTaskList{
-// 				[
-// 					{
+// 			expectedResponse: WholeTaskList{
+// 				AllTaskList: ApiTaskTypes{
 // 					Handle:     "CDFC",
 // 					Incomplete: "Correspondence - Review failed draft",
 // 					Category:   "supervision",
 // 					Complete:   "Correspondence - Reviewed draft failure",
 // 					User:       true,
-// 					},
-// 				],
+// 				},
 // 			},
 // 		},
 // 	}
@@ -91,28 +87,4 @@ package sirius
 // 			}))
 // 		})
 // 	}
-// }
-
-// func TestTeamBadJSONResponse(t *testing.T) {
-// 	s := invalidJSONServer()
-// 	defer s.Close()
-
-// 	client, _ := NewClient(http.DefaultClient, s.URL)
-
-// 	_, err := client.Team(getContext(nil), 123)
-// 	assert.IsType(t, &json.UnmarshalTypeError{}, err)
-// }
-
-// func TestTeamStatusError(t *testing.T) {
-// 	s := teapotServer()
-// 	defer s.Close()
-
-// 	client, _ := NewClient(http.DefaultClient, s.URL)
-
-// 	_, err := client.Team(getContext(nil), 123)
-// 	assert.Equal(t, StatusError{
-// 		Code:   http.StatusTeapot,
-// 		URL:    s.URL + "/api/v1/tasktypes/supervision",
-// 		Method: http.MethodGet,
-// 	}, err)
 // }

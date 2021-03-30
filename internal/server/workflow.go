@@ -8,7 +8,7 @@ import (
 
 type UserDetailsClient interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskDetails(sirius.Context) ([]sirius.ApiTaskTypes, error)
+	GetTaskDetails(sirius.Context) (sirius.WholeTaskList, error)
 	GetTaskList(sirius.Context, int) (sirius.TaskList, error)
 }
 
@@ -24,7 +24,7 @@ type userDetailsVars struct {
 	Teams              []string
 	CanEditPhoneNumber bool
 	TaskList           sirius.TaskList
-	LoadTasks          []sirius.ApiTaskTypes
+	LoadTasks          sirius.WholeTaskList
 }
 
 func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
