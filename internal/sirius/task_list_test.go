@@ -50,23 +50,23 @@ func TestTaskList(t *testing.T) {
 							"tasks": dsl.EachLike(map[string]interface{}{
 								"assignee": dsl.Like(map[string]interface{}{
 									"displayName": "DisplayName",
-									"id":          1111,
+									// "id":          1111,
 								}),
-								"apiTaskType": dsl.Like("Case work - General"),
-								"dueDate":     dsl.Like("01/02/2021"),
+								"name":    dsl.Like("Case work - General"),
+								"dueDate": dsl.Like("01/02/2021"),
 								"caseItems": dsl.EachLike(map[string]interface{}{
 									"client": dsl.Like(map[string]interface{}{
 										"caseRecNumber": "caseRecNumber",
 										"firstname":     "ClientFirstname",
 										"id":            3333,
-										"middlenames":   "ClientMiddlenames",
-										"salutation":    "ClientSalutation",
+										// "middlenames":   "ClientMiddlenames",
+										// "salutation":    "ClientSalutation",
 										"supervisionCaseOwner": dsl.Like(map[string]interface{}{
 											"displayName": "supervisionDisplayName",
-											"id":          4444,
+											// "id":          4444,
 										}),
 										"surname": "ClientSurname",
-										"uId":     "ClientUId",
+										// "uId":     "ClientUId",
 									}),
 								}, 1),
 							}, 1),
