@@ -118,7 +118,7 @@ func TestTaskList(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				taskList, err := client.GetTaskList(getContext(tc.cookies))
+				taskList, err := client.GetTaskList(getContext(tc.cookies), 65)
 				assert.Equal(t, tc.expectedResponse, taskList)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

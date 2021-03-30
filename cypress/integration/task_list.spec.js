@@ -13,4 +13,11 @@ describe("Work flow", () => {
     cy.contains("Due date");
     cy.contains("Actions");
   })
+
+  it("should have data in the table", () => {
+    cy.get(".moj-header__navigation-link").first().should(
+      "have.text",
+      expected[index]
+)
+  })
 });

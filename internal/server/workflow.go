@@ -9,7 +9,7 @@ import (
 type UserDetailsClient interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskDetails(sirius.Context) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int) (sirius.TaskList, error)
 }
 
 type userDetailsVars struct {
@@ -37,7 +37,7 @@ func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskDetails(ctx)
-		taskList, err := client.GetTaskList(ctx)
+		taskList, err := client.GetTaskList(ctx, myDetails.ID)
 		if err != nil {
 			return err
 		}
