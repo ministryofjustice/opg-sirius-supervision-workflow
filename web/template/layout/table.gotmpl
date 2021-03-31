@@ -37,20 +37,13 @@
           <td class="govuk-table__cell">{{ .ApiTaskType }}</td>
           <td class="govuk-table__cell">
             {{ range .ApiTaskCaseItems }}
-              {{ .CaseItemClient.ClientDetailsFirstName }} 
-              {{ .CaseItemClient.ClientDetailsSurname }}
-          <br>
-              {{ .CaseItemClient.ClientDetailsCaseRecNumber }}
-          <br>
+              {{ .CaseItemClient.ClientDetailsFirstName }} {{ .CaseItemClient.ClientDetailsSurname }} {{ .CaseItemClient.ClientDetailsCaseRecNumber }}
             {{ end }}
           </td>
           <td class="govuk-table__cell">{{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}</td>
           <td class="govuk-table__cell">
-          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}
-          {{ range .ApiTaskCaseItems }}
-            {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }}
-            <br>
-          {{ end }}
+          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }} 
+            {{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }} {{ end }}
           </td>
           <td class="govuk-table__cell">{{ .ApiTaskDueDate }}</td>
           <td class="govuk-table__cell">

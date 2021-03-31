@@ -51,7 +51,7 @@ type TaskList struct {
 	AllTaskList []ApiTask `json:"tasks"`
 }
 
-func (c *Client) GetTaskList(ctx Context, id int) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
 	var v TaskList
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/team/tasks", nil)

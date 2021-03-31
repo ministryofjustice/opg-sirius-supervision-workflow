@@ -15,17 +15,22 @@ describe("Work flow", () => {
   })
 
   const expected = [
+    "",
     "Case work - General",
-    "ClientFirstname ClientSurname caseRecNumber",
-    "TeamMember",
-    "DisplayName SupervisionTeamName",
+    "Client Alexander Zacchaeus Client Wolfeschlegelsteinhausenbergerdorff caseRecNumber",
+    "Assignee Duke Clive Henry Hetley Junior Jones",
+    `Assignee Duke Clive Henry Hetley Junior Jones\n Supervision - Team - Name`,
     "01/02/2021",
+    "Open case",
 ];
 
-  it("should have data in the table", () => {
-    cy.get(".govuk-table__row").each(($el, index) => {
-        "have.text",
-        expected[index]
-    })
+it("should have data in the table", () => {
+  cy.get(".govuk-table__body > .govuk-table__row")
+    .children()
+    .each(($el, index) => {
+        cy.wrap($el).should("contain", expected[index]);
+    });
   })
 });
+
+  
