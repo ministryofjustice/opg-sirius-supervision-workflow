@@ -42,13 +42,13 @@
           </td>
           <td class="govuk-table__cell">{{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}</td>
           <td class="govuk-table__cell">
-          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }} 
-            {{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }} {{ end }}
+          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
           </td>
           <td class="govuk-table__cell">{{ .ApiTaskDueDate }}</td>
           <td class="govuk-table__cell">
           {{ range .ApiTaskCaseItems }}
-          <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientDetailsId) }}" class="govuk-button">Open case</a></td>
+          <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientDetailsId) }}" class="govuk-button" id="hook-open-case">Open case</a>
+          </td>
           {{ end }}
         </tr>
       
