@@ -19,7 +19,6 @@ func TestTaskList(t *testing.T) {
 		PactDir:           "../../pacts",
 	}
 	defer pact.Teardown()
-
 	testCases := []struct {
 		name             string
 		setup            func()
@@ -32,8 +31,8 @@ func TestTaskList(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User logged in").
-					UponReceiving("A request to get task list").
+					Given("User is logged in").
+					UponReceiving("A request to get tasks which have long names").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/assignees/team/tasks"),
@@ -49,7 +48,7 @@ func TestTaskList(t *testing.T) {
 						Body: dsl.Like(map[string]interface{}{
 							"tasks": dsl.EachLike(map[string]interface{}{
 								"assignee": dsl.Like(map[string]interface{}{
-									"displayName": "TeamMember",
+									"displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
 									// "id":          1111,
 								}),
 								"name":    dsl.Like("Case work - General"),
@@ -57,15 +56,15 @@ func TestTaskList(t *testing.T) {
 								"caseItems": dsl.EachLike(map[string]interface{}{
 									"client": dsl.Like(map[string]interface{}{
 										"caseRecNumber": "caseRecNumber",
-										"firstname":     "ClientFirstname",
+										"firstname":     "Client Alexander Zacchaeus",
 										"id":            3333,
 										// "middlenames":   "ClientMiddlenames",
 										// "salutation":    "ClientSalutation",
 										"supervisionCaseOwner": dsl.Like(map[string]interface{}{
-											"displayName": "SupervisionTeamName",
+											"displayName": "Supervision - Team - Name",
 											// "id":          4444,
 										}),
-										"surname": "ClientSurname",
+										"surname": "Client Wolfeschlegelsteinhausenbergerdorff",
 										// "uId":     "ClientUId",
 									}),
 								}, 1),
@@ -77,13 +76,11 @@ func TestTaskList(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-
 			expectedResponse: TaskList{
-
 				AllTaskList: []ApiTask{
 					{
 						ApiTaskAssignee: AssigneeDetails{
-							AssigneeDetailsDisplayName: "TeamMember",
+							AssigneeDetailsDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
 							//AssigneeDetailsId:  1111,
 						},
 						ApiTaskType:    "Case work - General",
@@ -92,15 +89,15 @@ func TestTaskList(t *testing.T) {
 							{
 								CaseItemClient: ClientDetails{
 									ClientDetailsCaseRecNumber: "caseRecNumber",
-									ClientDetailsFirstName:     "ClientFirstname",
+									ClientDetailsFirstName:     "Client Alexander Zacchaeus",
 									ClientDetailsId:            3333,
 									//ClientDetailsMiddlenames: "ClientMiddlenames",
 									//ClientDetailsSalutation:  "ClientSalutation",
 									ClientDetailsSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-										SupervisionCaseOwnerName: "SupervisionTeamName",
+										SupervisionCaseOwnerName: "Supervision - Team - Name",
 										//SupervisionCaseOwnerId: 4444,
 									},
-									ClientDetailsSurname: "ClientSurname",
+									ClientDetailsSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
 									//ClientDetailsUId:   "ClientUId",
 								},
 							},
@@ -110,15 +107,12 @@ func TestTaskList(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.setup()
-
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-
-				taskList, err := client.GetTaskList(getContext(tc.cookies), 65)
+				taskList, err := client.GetTaskList(getContext(tc.cookies))
 				assert.Equal(t, tc.expectedResponse, taskList)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
