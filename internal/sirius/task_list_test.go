@@ -36,7 +36,7 @@ func TestTaskList(t *testing.T) {
 					UponReceiving("A request to get task list").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/v1/assignees/65/tasks"),
+						Path:   dsl.String("/api/v1/assignees/team/tasks"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -49,7 +49,7 @@ func TestTaskList(t *testing.T) {
 						Body: dsl.Like(map[string]interface{}{
 							"tasks": dsl.EachLike(map[string]interface{}{
 								"assignee": dsl.Like(map[string]interface{}{
-									"displayName": "DisplayName",
+									"displayName": "TeamMember",
 									// "id":          1111,
 								}),
 								"name":    dsl.Like("Case work - General"),
@@ -62,7 +62,7 @@ func TestTaskList(t *testing.T) {
 										// "middlenames":   "ClientMiddlenames",
 										// "salutation":    "ClientSalutation",
 										"supervisionCaseOwner": dsl.Like(map[string]interface{}{
-											"displayName": "supervisionDisplayName",
+											"displayName": "SupervisionTeamName",
 											// "id":          4444,
 										}),
 										"surname": "ClientSurname",
@@ -83,7 +83,7 @@ func TestTaskList(t *testing.T) {
 				AllTaskList: []ApiTask{
 					{
 						ApiTaskAssignee: AssigneeDetails{
-							AssigneeDetailsDisplayName: "DisplayName",
+							AssigneeDetailsDisplayName: "TeamMember",
 							//AssigneeDetailsId:  1111,
 						},
 						ApiTaskType:    "Case work - General",
@@ -97,7 +97,7 @@ func TestTaskList(t *testing.T) {
 									//ClientDetailsMiddlenames: "ClientMiddlenames",
 									//ClientDetailsSalutation:  "ClientSalutation",
 									ClientDetailsSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-										SupervisionCaseOwnerName: "supervisionDisplayName",
+										SupervisionCaseOwnerName: "SupervisionTeamName",
 										//SupervisionCaseOwnerId: 4444,
 									},
 									ClientDetailsSurname: "ClientSurname",

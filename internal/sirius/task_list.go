@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -46,7 +45,6 @@ type ApiTask struct {
 	ApiTaskType string `json:"name"`
 	// Persons     []string           `json:"persons"`
 	// Status      string             `json:"status"`
-
 }
 
 type TaskList struct {
@@ -55,8 +53,8 @@ type TaskList struct {
 
 func (c *Client) GetTaskList(ctx Context, id int) (TaskList, error) {
 	var v TaskList
-	//Team Id not who is logged in
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/%d/tasks", id), nil)
+
+	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/team/tasks", nil)
 	if err != nil {
 		return v, err
 	}

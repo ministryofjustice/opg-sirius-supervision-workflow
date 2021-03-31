@@ -17,8 +17,8 @@ describe("Work flow", () => {
   const expected = [
     "Case work - General",
     "ClientFirstname ClientSurname caseRecNumber",
-    "DisplayName",
-    "DisplayName supervisionDisplayName",
+    "TeamMember",
+    "DisplayName SupervisionTeamName",
     "01/02/2021",
 ];
 
