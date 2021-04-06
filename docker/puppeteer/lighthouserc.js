@@ -1,7 +1,7 @@
 module.exports = {
   ci: {
     collect: {
-      url: ['https://app:8888/supervision/workflow'],
+      url: ['http://app:8888/supervision/workflow'],
       settings: {
         extraHeaders: JSON.stringify({Cookie: 'XSRF-TOKEN=abcde; Other=other'}),
         chromeFlags: "--disable-gpu --no-sandbox",
