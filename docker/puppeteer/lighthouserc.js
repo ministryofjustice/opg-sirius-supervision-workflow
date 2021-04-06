@@ -1,7 +1,7 @@
 module.exports = {
   ci: {
     collect: {
-      url: ['http://app:8888/supervision/workflow'],
+      url: ['https://app:8888/supervision/workflow'],
       settings: {
         extraHeaders: JSON.stringify({Cookie: 'XSRF-TOKEN=abcde; Other=other'}),
         chromeFlags: "--disable-gpu --no-sandbox",
@@ -10,7 +10,7 @@ module.exports = {
     assert: {
       assertions: {
         "categories:performance": ["warn", {"minScore": 0.9}],
-        "categories:accessibility": ["error", {"minScore": 1}],
+        "categories:accessibility": ["error", {"minScore": 1}],ß
         "categories:best-practices": ["warn", {"minScore": 0.9}],
         "categories:seo": ["warn", {"minScore": 0.9}],
       },
