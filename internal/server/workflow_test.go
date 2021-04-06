@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -144,96 +145,51 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-// func TestGetMyDetailsUsesPermission(t *testing.T) {
-// 	assert := assert.New(t)
+func TestGetMyDetailsUnauthenticated(t *testing.T) {
+	assert := assert.New(t)
 
-// 	data := sirius.UserDetails{
-// 		ID:          123,
-// 		Firstname:   "John",
-// 		Surname:     "Doe",
-// 		Email:       "john@doe.com",
-// 		PhoneNumber: "123",
-// 		Roles:       []string{"A", "COP User", "B"},
-// 		Teams: []sirius.MyDetailsTeam{
-// 			{DisplayName: "A Team"},
-// 		},
-// 	}
-// 	client := &mockWorkflowClient{data: data}
-// 	template := &mockTemplates{}
+	client := &mockWorkflowClient{err: sirius.ErrUnauthorized}
+	template := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "/path", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{"v1-users-updatetelephonenumber": sirius.PermissionGroup{Permissions: []string{"put"}}}, w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	assert.Nil(err)
+	assert.Equal(sirius.ErrUnauthorized, err)
 
-// 	resp := w.Result()
-// 	assert.Equal(http.StatusOK, resp.StatusCode)
-// 	assert.Equal(getContext(r), client.lastCtx)
+	assert.Equal(0, template.count)
+}
 
-// 	assert.Equal(1, template.count)
-// 	assert.Equal("page", template.lastName)
-// 	assert.Equal(userDetailsVars{
-// 		Path:               "/path",
-// 		ID:                 123,
-// 		Firstname:          "John",
-// 		Surname:            "Doe",
-// 		Email:              "john@doe.com",
-// 		PhoneNumber:        "123",
-// 		Organisation:       "COP User",
-// 		Roles:              []string{"A", "B"},
-// 		Teams:              []string{"A Team"},
-// 		CanEditPhoneNumber: true,
-// 	}, template.lastVars)
-// }
+func TestGetMyDetailsSiriusErrors(t *testing.T) {
+	assert := assert.New(t)
 
-// func TestGetMyDetailsUnauthenticated(t *testing.T) {
-// 	assert := assert.New(t)
+	client := &mockWorkflowClient{err: errors.New("err")}
+	template := &mockTemplates{}
 
-// 	client := &mockWorkflowClient{err: sirius.ErrUnauthorized}
-// 	template := &mockTemplates{}
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	assert.Equal("err", err.Error())
 
-// 	assert.Equal(sirius.ErrUnauthorized, err)
+	assert.Equal(0, template.count)
+}
 
-// 	assert.Equal(0, template.count)
-// }
+func TestPostMyDetails(t *testing.T) {
+	assert := assert.New(t)
+	template := &mockTemplates{}
 
-// func TestGetMyDetailsSiriusErrors(t *testing.T) {
-// 	assert := assert.New(t)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "", nil)
 
-// 	client := &mockWorkflowClient{err: errors.New("err")}
-// 	template := &mockTemplates{}
+	handler := loggingInfoForWorflow(nil, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	assert.Equal(StatusError(http.StatusMethodNotAllowed), err)
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
-
-// 	assert.Equal("err", err.Error())
-
-// 	assert.Equal(0, template.count)
-// }
-
-// func TestPostMyDetails(t *testing.T) {
-// 	assert := assert.New(t)
-// 	template := &mockTemplates{}
-
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("POST", "", nil)
-
-// 	handler := loggingInfoForWorflow(nil, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
-
-// 	assert.Equal(StatusError(http.StatusMethodNotAllowed), err)
-
-// 	assert.Equal(0, template.count)
-// }
+	assert.Equal(0, template.count)
+}
