@@ -3,16 +3,6 @@
   <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header govuk-table__select">
-        <div class="govuk-checkboxes govuk-checkboxes--small">
-          <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc">
-            <label class="govuk-label govuk-checkboxes__label" for="organisation">
-              <span class="govuk-visually-hidden">Select</span>
-            </label>
-          </div>
-        </div>
-
       </th>
       <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
       <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
@@ -28,26 +18,36 @@
           <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+                <input class="govuk-checkboxes__input" id="tasktype-checkbox" name="organisation" type="checkbox" value="hmrc">
                   <label class="govuk-label govuk-checkboxes__label" for="organisation">
                     <span class="govuk-visually-hidden">Select</span>
                   </label>
               </div>
           </td>
-          <td class="govuk-table__cell">{{ .ApiTaskType }}</td>
           <td class="govuk-table__cell">
-            {{ range .ApiTaskCaseItems }}
-              {{ .CaseItemClient.ClientDetailsFirstName }} {{ .CaseItemClient.ClientDetailsSurname }} {{ .CaseItemClient.ClientDetailsCaseRecNumber }}
-            {{ end }}
+            <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
           </td>
-          <td class="govuk-table__cell">{{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}</td>
           <td class="govuk-table__cell">
-          {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
+            <label class="govuk-label" for="client-firstname-surname-caserec-number">
+              {{ range .ApiTaskCaseItems }}
+                {{ .CaseItemClient.ClientDetailsFirstName }} {{ .CaseItemClient.ClientDetailsSurname }} {{ .CaseItemClient.ClientDetailsCaseRecNumber }}
+              {{ end }}
+            </label>
           </td>
-          <td class="govuk-table__cell">{{ .ApiTaskDueDate }}</td>
           <td class="govuk-table__cell">
-          {{ range .ApiTaskCaseItems }}
-          <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientDetailsId) }}" class="govuk-button" id="hook-open-case">Open case</a>
+            <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}</label>
+          </td>
+          <td class="govuk-table__cell">
+            <label class="govuk-label" for="assignee-name-and-team">
+              {{ .ApiTaskAssignee.AssigneeDetailsDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientDetailsSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
+            </label>
+          </td>
+          <td class="govuk-table__cell">
+            <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+          </td>
+          <td class="govuk-table__cell">
+            <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
+            <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientDetailsId) }}" class="govuk-button" id="hook-open-case">Open case</a>
           </td>
           {{ end }}
         </tr>
