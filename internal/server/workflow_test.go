@@ -145,7 +145,7 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-func TestGetMyDetailsUnauthenticated(t *testing.T) {
+func TestWorkflowUnauthenticated(t *testing.T) {
 	assert := assert.New(t)
 
 	client := &mockWorkflowClient{err: sirius.ErrUnauthorized}
@@ -162,7 +162,7 @@ func TestGetMyDetailsUnauthenticated(t *testing.T) {
 	assert.Equal(0, template.count)
 }
 
-func TestGetMyDetailsSiriusErrors(t *testing.T) {
+func TestWorkflowSiriusErrors(t *testing.T) {
 	assert := assert.New(t)
 
 	client := &mockWorkflowClient{err: errors.New("err")}
@@ -179,7 +179,7 @@ func TestGetMyDetailsSiriusErrors(t *testing.T) {
 	assert.Equal(0, template.count)
 }
 
-func TestPostMyDetails(t *testing.T) {
+func TestPostWorkflow(t *testing.T) {
 	assert := assert.New(t)
 	template := &mockTemplates{}
 
