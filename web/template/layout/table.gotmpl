@@ -3,22 +3,7 @@
   <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header govuk-table__select">
-
-
-  
-
-
-          <div class="govuk-checkboxes govuk-checkboxes--small">
-            <div class="govuk-checkboxes__item">
-             <input class="govuk-checkboxes__input sirius-select-task" id="organisation" name="taskDetails" type="checkbox" value="hmrc">
-              {{/* <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc"> */}}
-              <label class="govuk-label govuk-checkboxes__label" for="organisation">
-                <span class="govuk-visually-hidden">Select</span>
-              </label>
-            </div>
-          </div>
-        </th>
+      <th scope="col" class="govuk-table__header govuk-table__select"></th>
       <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
       <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
       <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
@@ -31,14 +16,14 @@
       {{ range .TaskList.AllTaskList }}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
-            <div class="govuk-checkboxes govuk-checkboxes--small">
-              <div class="govuk-checkboxes__item">
-                <label class="govuk-label govuk-checkboxes__label" for="organisation">
-                  <input class="govuk-checkboxes__input sirius-select-task" id="organisation" name="taskDetails" type="checkbox" value="hmrc">
-                  {{/* <input class="govuk-checkboxes__input" id="tasktype-checkbox" name="organisation" type="checkbox" value="hmrc"> */}}
-                    <span class="govuk-visually-hidden">Select</span>
-                </label>
-              </div>
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+              <label class="govuk-label govuk-checkboxes__label" for="organisation">
+              <span class="govuk-visually-hidden">Select</span>
+              </label>
+            </div>
+          </div>
           </td>
           <td class="govuk-table__cell">
             <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
@@ -67,11 +52,7 @@
           </td>
           {{ end }}
         </tr>
-      
       {{ end }}
-
-
   </tbody>
-
 </table>
 {{ end }}
