@@ -41,8 +41,8 @@ type ApiTask struct {
 	// Clients []string `json:"clients"`
 	// Description string             `json:"description"`
 	ApiTaskDueDate string `json:"dueDate"`
-	// ApiTaskId   int                `json:"id"`
-	ApiTaskType string `json:"name"`
+	ApiTaskId      int    `json:"id"`
+	ApiTaskType    string `json:"name"`
 	// Persons     []string           `json:"persons"`
 	// Status      string             `json:"status"`
 }

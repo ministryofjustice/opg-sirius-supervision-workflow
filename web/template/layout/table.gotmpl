@@ -18,8 +18,8 @@
           <td class="govuk-table__cell">
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item">
-             <label class="govuk-label govuk-checkboxes__label" for="organisation">
-              <input class="govuk-checkboxes__input" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+              <input class="govuk-checkboxes__input" type="checkbox" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+             <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
               <span class="govuk-visually-hidden">Select</span>
               </label>
             </div>
