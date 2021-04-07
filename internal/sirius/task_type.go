@@ -13,12 +13,12 @@ type ApiTaskTypes struct {
 	User       bool   `json:"user"`
 }
 
-type WholeTaskList struct {
-	AllTaskList ApiTaskTypes `json:"task_types"`
+type TaskTypes struct {
+	TaskTypeList ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskDetails(ctx Context) (WholeTaskList, error) {
-	var t WholeTaskList
+func (c *Client) GetTaskType(ctx Context) (TaskTypes, error) {
+	var t TaskTypes
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return t, err

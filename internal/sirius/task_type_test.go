@@ -24,7 +24,7 @@ func TestTaskTypes(t *testing.T) {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse WholeTaskList
+		expectedResponse TaskTypes
 		expectedError    error
 	}{
 		{
@@ -61,8 +61,8 @@ func TestTaskTypes(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: WholeTaskList{
-				AllTaskList: ApiTaskTypes{
+			expectedResponse: TaskTypes{
+				TaskTypeList: ApiTaskTypes{
 					Handle:     "CDFC",
 					Incomplete: "Correspondence - Review failed draft",
 					Category:   "supervision",
@@ -80,7 +80,7 @@ func TestTaskTypes(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTaskTypes, err := client.GetTaskDetails(getContext(tc.cookies))
+				myTaskTypes, err := client.GetTaskType(getContext(tc.cookies))
 				assert.Equal(t, tc.expectedResponse, myTaskTypes)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

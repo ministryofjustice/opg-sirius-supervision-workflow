@@ -11,14 +11,14 @@ type SupervisionCaseOwnerDetail struct {
 }
 
 type ClientDetails struct {
-	ClientDetailsCaseRecNumber string `json:"caseRecNumber"`
-	ClientDetailsFirstName     string `json:"firstname"`
-	ClientDetailsId            int    `json:"id"`
-	//ClientDetailsMiddlenames          string                     `json:"middlenames"`
-	//ClientDetailsSalutation           string                     `json:"salutation"`
-	ClientDetailsSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
-	ClientDetailsSurname              string                     `json:"surname"`
-	//ClientDetailsUId                  string                     `json:"uId"`
+	ClientCaseRecNumber string `json:"caseRecNumber"`
+	ClientFirstName     string `json:"firstname"`
+	ClientId            int    `json:"id"`
+	//ClientMiddlenames          string                     `json:"middlenames"`
+	//ClientSalutation           string                     `json:"salutation"`
+	ClientSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
+	ClientSurname              string                     `json:"surname"`
+	//ClientUId                  string                     `json:"uId"`
 }
 
 type CaseItemsDetails struct {
@@ -31,8 +31,8 @@ type CaseItemsDetails struct {
 }
 
 type AssigneeDetails struct {
-	AssigneeDetailsDisplayName string `json:"displayName"`
-	//AssigneeDetailsId          int    `json:"id"`
+	AssigneeDisplayName string `json:"displayName"`
+	//AssigneeId          int    `json:"id"`
 }
 
 type ApiTask struct {
@@ -48,7 +48,7 @@ type ApiTask struct {
 }
 
 type TaskList struct {
-	AllTaskList []ApiTask `json:"tasks"`
+	WholeTaskList []ApiTask `json:"tasks"`
 }
 
 func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
@@ -76,7 +76,7 @@ func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
 		return v, err
 	}
 
-	allTaskList := v
+	TaskList := v
 
-	return allTaskList, err
+	return TaskList, err
 }

@@ -10,30 +10,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockWorkflowClient struct {
+type mockWorkflowInformation struct {
 	count        int
 	lastCtx      sirius.Context
 	err          error
 	userData     sirius.UserDetails
-	taskTypeData sirius.WholeTaskList
+	taskTypeData sirius.TaskTypes
 	taskListData sirius.TaskList
 }
 
-func (m *mockWorkflowClient) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
+func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowClient) GetTaskDetails(ctx sirius.Context) (sirius.WholeTaskList, error) {
+func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context) (sirius.TaskTypes, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowClient) GetTaskList(ctx sirius.Context) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context) (sirius.TaskList, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -49,8 +49,8 @@ func TestGetUserDetails(t *testing.T) {
 		Surname:   "Doe",
 	}
 
-	mockTaskTypeData := sirius.WholeTaskList{
-		AllTaskList: sirius.ApiTaskTypes{
+	mockTaskTypeData := sirius.TaskTypes{
+		TaskTypeList: sirius.ApiTaskTypes{
 			Handle:     "CDFC",
 			Incomplete: "Correspondence - Review failed draft",
 			Category:   "supervision",
@@ -60,23 +60,23 @@ func TestGetUserDetails(t *testing.T) {
 	}
 
 	mockTaskListData := sirius.TaskList{
-		AllTaskList: []sirius.ApiTask{
+		WholeTaskList: []sirius.ApiTask{
 			{
 				ApiTaskAssignee: sirius.AssigneeDetails{
-					AssigneeDetailsDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+					AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
 				},
 				ApiTaskType:    "Case work - General",
 				ApiTaskDueDate: "01/02/2021",
 				ApiTaskCaseItems: []sirius.CaseItemsDetails{
 					{
 						CaseItemClient: sirius.ClientDetails{
-							ClientDetailsCaseRecNumber: "caseRecNumber",
-							ClientDetailsFirstName:     "Client Alexander Zacchaeus",
-							ClientDetailsId:            3333,
-							ClientDetailsSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+							ClientCaseRecNumber: "caseRecNumber",
+							ClientFirstName:     "Client Alexander Zacchaeus",
+							ClientId:            3333,
+							ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
 								SupervisionCaseOwnerName: "Supervision - Team - Name",
 							},
-							ClientDetailsSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+							ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
 						},
 					},
 				},
@@ -84,7 +84,7 @@ func TestGetUserDetails(t *testing.T) {
 		},
 	}
 
-	client := &mockWorkflowClient{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
+	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
@@ -103,27 +103,27 @@ func TestGetUserDetails(t *testing.T) {
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
-	assert.Equal(userDetailsVars{
+	assert.Equal(workflowVars{
 		Path:      "/path",
 		ID:        123,
 		Firstname: "John",
 		Surname:   "Doe",
 		TaskList: sirius.TaskList{
-			AllTaskList: []sirius.ApiTask{
+			WholeTaskList: []sirius.ApiTask{
 				{
 					ApiTaskAssignee: sirius.AssigneeDetails{
-						AssigneeDetailsDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+						AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
 					},
 					ApiTaskCaseItems: []sirius.CaseItemsDetails{
 						{
 							CaseItemClient: sirius.ClientDetails{
-								ClientDetailsCaseRecNumber: "caseRecNumber",
-								ClientDetailsFirstName:     "Client Alexander Zacchaeus",
-								ClientDetailsId:            3333,
-								ClientDetailsSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+								ClientCaseRecNumber: "caseRecNumber",
+								ClientFirstName:     "Client Alexander Zacchaeus",
+								ClientId:            3333,
+								ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
 									SupervisionCaseOwnerName: "Supervision - Team - Name",
 								},
-								ClientDetailsSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+								ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
 							},
 						},
 					},
@@ -132,8 +132,8 @@ func TestGetUserDetails(t *testing.T) {
 				},
 			},
 		},
-		LoadTasks: sirius.WholeTaskList{
-			AllTaskList: sirius.ApiTaskTypes{
+		LoadTasks: sirius.TaskTypes{
+			TaskTypeList: sirius.ApiTaskTypes{
 				Handle:     "CDFC",
 				Incomplete: "Correspondence - Review failed draft",
 				Category:   "supervision",
@@ -148,7 +148,7 @@ func TestGetUserDetails(t *testing.T) {
 func TestWorkflowUnauthenticated(t *testing.T) {
 	assert := assert.New(t)
 
-	client := &mockWorkflowClient{err: sirius.ErrUnauthorized}
+	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
@@ -165,7 +165,7 @@ func TestWorkflowUnauthenticated(t *testing.T) {
 func TestWorkflowSiriusErrors(t *testing.T) {
 	assert := assert.New(t)
 
-	client := &mockWorkflowClient{err: errors.New("err")}
+	client := &mockWorkflowInformation{err: errors.New("err")}
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
