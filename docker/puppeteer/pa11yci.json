@@ -1,0 +1,24 @@
+{
+  "defaults": {
+      "chromeLaunchConfig": {
+          "args": ["--no-sandbox"]
+      },
+      "headers": {
+          "Cookie": "XSRF-TOKEN=abcde; Other=other",
+          "OPG-Bypass-Membrane": "1",
+          "X-XSRF-TOKEN": "abcde"
+      },
+      "ignore": [
+          "WCAG2AA.Principle1.Guideline1_3.1_3_1.F92,ARIA4",
+          "definition-list"
+      ],
+      "hideElements": ".govuk-back-link, input[type='radio'][aria-expanded]",
+      "runners": [
+          "axe",
+          "htmlcs"
+      ]
+  },
+  "urls": [
+      "http://app:8888/supervision/workflow"
+  ]
+}

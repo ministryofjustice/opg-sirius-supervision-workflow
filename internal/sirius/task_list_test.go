@@ -77,28 +77,28 @@ func TestTaskList(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedResponse: TaskList{
-				AllTaskList: []ApiTask{
+				WholeTaskList: []ApiTask{
 					{
 						ApiTaskAssignee: AssigneeDetails{
-							AssigneeDetailsDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
-							//AssigneeDetailsId:  1111,
+							AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+							//AssigneeId:  1111,
 						},
 						ApiTaskType:    "Case work - General",
 						ApiTaskDueDate: "01/02/2021",
 						ApiTaskCaseItems: []CaseItemsDetails{
 							{
 								CaseItemClient: ClientDetails{
-									ClientDetailsCaseRecNumber: "caseRecNumber",
-									ClientDetailsFirstName:     "Client Alexander Zacchaeus",
-									ClientDetailsId:            3333,
-									//ClientDetailsMiddlenames: "ClientMiddlenames",
-									//ClientDetailsSalutation:  "ClientSalutation",
-									ClientDetailsSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+									ClientCaseRecNumber: "caseRecNumber",
+									ClientFirstName:     "Client Alexander Zacchaeus",
+									ClientId:            3333,
+									//ClientMiddlenames: "ClientMiddlenames",
+									//ClientSalutation:  "ClientSalutation",
+									ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
 										SupervisionCaseOwnerName: "Supervision - Team - Name",
 										//SupervisionCaseOwnerId: 4444,
 									},
-									ClientDetailsSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
-									//ClientDetailsUId:   "ClientUId",
+									ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+									//ClientUId:   "ClientUId",
 								},
 							},
 						},

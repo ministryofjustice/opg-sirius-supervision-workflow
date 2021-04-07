@@ -6,13 +6,13 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-type UserDetailsClient interface {
+type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskDetails(sirius.Context) (sirius.WholeTaskList, error)
+	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context) (sirius.TaskList, error)
 }
 
-type userDetailsVars struct {
+type workflowVars struct {
 	Path               string
 	ID                 int
 	Firstname          string
@@ -24,10 +24,10 @@ type userDetailsVars struct {
 	Teams              []string
 	CanEditPhoneNumber bool
 	TaskList           sirius.TaskList
-	LoadTasks          sirius.WholeTaskList
+	LoadTasks          sirius.TaskTypes
 }
 
-func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
+func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		if r.Method != http.MethodGet {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -36,13 +36,13 @@ func loggingInfoForWorflow(client UserDetailsClient, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		loadTaskTypes, err := client.GetTaskDetails(ctx)
+		loadTaskTypes, err := client.GetTaskType(ctx)
 		taskList, err := client.GetTaskList(ctx)
 		if err != nil {
 			return err
 		}
 
-		vars := userDetailsVars{
+		vars := workflowVars{
 			Path:        r.URL.Path,
 			ID:          myDetails.ID,
 			Firstname:   myDetails.Firstname,

@@ -17,7 +17,7 @@ type Logger interface {
 //this is the files in server which need a client
 type Client interface {
 	ErrorHandlerClient
-	UserDetailsClient
+	WorkflowInformation
 }
 
 type Template interface {
