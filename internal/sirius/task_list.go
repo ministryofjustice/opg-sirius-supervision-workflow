@@ -48,8 +48,15 @@ type ApiTask struct {
 	// Status      string             `json:"status"`
 }
 
+type PageDetails struct {
+	PageCurrent int `json:"current"`
+	PageTotal   int `json:"total"`
+}
+
 type TaskList struct {
-	WholeTaskList []ApiTask `json:"tasks"`
+	WholeTaskList []ApiTask   `json:"tasks"`
+	Pages         PageDetails `json:"pages"`
+	ListOfPages   []int
 }
 
 func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
@@ -78,6 +85,10 @@ func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
 	}
 
 	TaskList := v
+
+	for i := 1; i < TaskList.Pages.PageTotal+1; i++ {
+		TaskList.ListOfPages = append(TaskList.ListOfPages, i)
+	}
 
 	return TaskList, err
 }
