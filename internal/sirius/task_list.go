@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -51,10 +52,10 @@ type TaskList struct {
 	WholeTaskList []ApiTask `json:"tasks"`
 }
 
-func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
 	var v TaskList
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/team/tasks", nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=10&page=%d&sort=dueDate:asc", search), nil)
 	if err != nil {
 		return v, err
 	}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
@@ -9,7 +10,7 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int) (sirius.TaskList, error)
 }
 
 type workflowVars struct {
@@ -35,9 +36,11 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		ctx := getContext(r)
 
+		search, _ := strconv.Atoi(r.FormValue("page"))
+
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, err := client.GetTaskList(ctx)
+		taskList, err := client.GetTaskList(ctx, search)
 		if err != nil {
 			return err
 		}

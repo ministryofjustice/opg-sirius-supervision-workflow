@@ -1,6 +1,7 @@
 {{ define "pagination" }}
 
-{{/* <nav class="moj-pagination govuk-!-margin-bottom-5" id="pagination-label">
+<nav class="moj-pagination govuk-!-margin-bottom-5" id="pagination-label">
+<form action="{{ prefix "/supervision/workflow" }}" method="GET">
   <p class="govuk-visually-hidden" aria-labelledby="pagination-label">Pagination navigation</p>
 
   <div class="flex-container">
@@ -13,14 +14,15 @@
       </li>
 
       <li class="moj-pagination__item moj-pagination__item--active">1</li>
-      <li class="moj-pagination__item"><a class="moj-pagination__link" href="">2</a></li>
-      <li class="moj-pagination__item"><a class="moj-pagination__link" href="">3</a></li>
+      <li class="moj-pagination__item"><button type="submit" class="govuk-button moj-search__button" data-module="govuk-button" name="page" value="2">2</button></li>
+      <li class="moj-pagination__item"><a class="moj-pagination__link" href="/api/v1/assignees/team/tasks?limit=5&page=3&sort=dueDate:asc">3</a></li>
       <li class="moj-pagination__item  moj-pagination__item--next">
         <a class="moj-pagination__link" href="">Next<span class="govuk-visually-hidden"> set of pages</span></a>
       </li>
     </ul>
+  </form>
 
-    <div id="change-view-number" class="govuk-form-group">
+    {{/* <div id="change-view-number" class="govuk-form-group">
       <label class="govuk-label" for="display-rows">
         View
       </label>
@@ -29,9 +31,9 @@
         <option value="50">100</option>
         <option value="500">All</option>
       </select>
-    </div>
+    </div> */}}
 
   </div>
-</nav> */}}
+</nav>
 
 {{ end }}
