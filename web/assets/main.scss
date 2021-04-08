@@ -186,6 +186,30 @@ $govuk-include-default-font-face: false;
     .moj-filter-tags-list {
       margin-bottom: 1em;
     }
+
+    .pagination_button_link {
+      background: none!important;
+      border: none;
+      padding: 0!important;
+      font-family: arial, sans-serif;
+      color: #1d70b8;
+      cursor: pointer;
+      font-size: large;
+    }
+
+    .moj-pagination__item--prev .moj-pagination__link:before,
+    .moj-pagination__item--next .moj-pagination__link:after {
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    border-style: solid;
+    color: govuk-colour("black");
+    background: transparent;
+    -webkit-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    content: "";
+} 
   
   }
   
