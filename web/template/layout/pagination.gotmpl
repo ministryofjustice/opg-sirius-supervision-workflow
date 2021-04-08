@@ -8,14 +8,20 @@
 
     <p class="moj-pagination__results">Showing <b>1</b> to <b>15</b> of <b>45</b> tasks</p>
 
+   
     <ul class="moj-pagination__list">
-      <li class="moj-pagination__item  moj-pagination__item--prev">
-        <a class="moj-pagination__link" href="">Previous<span class="govuk-visually-hidden"> set of pages</span></a>
-      </li>
+      {{/* <li class="moj-pagination__item  moj-pagination__item--prev">
+        <a class="moj-pagination__link" href={{ $previous }}">Previous<span class="govuk-visually-hidden"> set of pages</span></a>
+      </li> */}}
+      <li class="moj-pagination__item"><button type="submit" class="govuk-button moj-search__button" data-module="govuk-button" name="page" value="{{ .TaskList.PreviousPage }}">Previous {{ .TaskList.PreviousPage }}</button></li> 
+       {{ range .TaskList.ListOfPages }}
+        <li class="moj-pagination__item"><button type="submit" class="govuk-button moj-search__button" data-module="govuk-button" name="page" value="{{ . }}">{{ . }}</button></li> 
+      {{ end }} 
+       <li class="moj-pagination__item"><button type="submit" class="govuk-button moj-search__button" data-module="govuk-button" name="page" value="{{ .TaskList.NextPage }}">Next {{ .TaskList.NextPage }}</button></li> 
 
-      <li class="moj-pagination__item moj-pagination__item--active">1</li>
-      <li class="moj-pagination__item"><button type="submit" class="govuk-button moj-search__button" data-module="govuk-button" name="page" value="2">2</button></li>
-      <li class="moj-pagination__item"><a class="moj-pagination__link" href="/api/v1/assignees/team/tasks?limit=5&page=3&sort=dueDate:asc">3</a></li>
+      {{/* <li class="moj-pagination__item moj-pagination__item--active">1</li> */}}
+      
+      {{/* <li class="moj-pagination__item"><a class="moj-pagination__link" href="/api/v1/assignees/team/tasks?limit=5&page=3&sort=dueDate:asc">3</a></li> */}}
       <li class="moj-pagination__item  moj-pagination__item--next">
         <a class="moj-pagination__link" href="">Next<span class="govuk-visually-hidden"> set of pages</span></a>
       </li>

@@ -57,6 +57,8 @@ type TaskList struct {
 	WholeTaskList []ApiTask   `json:"tasks"`
 	Pages         PageDetails `json:"pages"`
 	ListOfPages   []int
+	PreviousPage  int
+	NextPage      int
 }
 
 func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
@@ -88,6 +90,18 @@ func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
 
 	for i := 1; i < TaskList.Pages.PageTotal+1; i++ {
 		TaskList.ListOfPages = append(TaskList.ListOfPages, i)
+	}
+
+	if search <= 1 {
+		TaskList.PreviousPage = 1
+	} else {
+		TaskList.PreviousPage = (search - 1)
+	}
+
+	if search < TaskList.Pages.PageTotal {
+		TaskList.NextPage = (search + 1)
+	} else {
+		TaskList.NextPage = TaskList.Pages.PageTotal
 	}
 
 	return TaskList, err
