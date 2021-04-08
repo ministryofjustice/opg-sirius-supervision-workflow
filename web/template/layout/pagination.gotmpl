@@ -7,11 +7,10 @@
   <div class="flex-container">
 
     <p class="moj-pagination__results">Showing <b>1</b> to <b>15</b> of <b>45</b> tasks</p>
-
    
     <ul class="moj-pagination__list">
       <li class="moj-pagination__item moj-pagination__item--prev">
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{.pageLimit}}{{ .TaskList.PreviousPage }}">Previous</button>
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.PreviousPage }}">Previous</button>
       </li> 
        {{ range .TaskList.ListOfPages }}
         <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
@@ -20,22 +19,21 @@
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.NextPage }}">Next</button>
       </li> 
     </ul>
-  </form>
-
-    <div id="change-view-number" class="govuk-form-group">
+     <div id="change-view-number" class="govuk-form-group">
       <label class="govuk-label" for="display-rows">
         View
       </label>
-      {{/* <select class="govuk-select" id="display-rows" name="change-team"> */}}
+        {{/* <button type="submit" a class="moj-pagination__link pagination_button_link" name="current-display-task-limit" value="{{ .TaskList.LimitTaskCurrentNumber}}">{{ .TaskList.LimitTaskCurrentNumber}}</button>
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="25">5</button>
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="15">15</button>
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="100">100</button>
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="5">5</button>
-        {{/* <option value="15" name="display-task-limit" selected>15</option>
-        <option value="50" name="display-task-limit">100</option>
-        <option value="500 name="display-task-limit">All</option> */}}
-      {{/* </select> */}}
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="100">100</button> */}}
+        <select class="govuk-select" id="display-rows" name="display-task-limit">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
     </div>
-
+  </form>
   </div>
 </nav>
 

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -38,6 +39,9 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("display-task-limit"))
+		// currentDisplayTaskLimit, _ := strconv.Atoi(r.FormValue("current-display-task-limit"))
+
+		log.Print(search, displayTaskLimit)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
