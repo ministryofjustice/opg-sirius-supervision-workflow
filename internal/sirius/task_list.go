@@ -61,13 +61,14 @@ type TaskList struct {
 	NextPage      int
 }
 
-func (c *Client) GetTaskList(ctx Context, search int) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
 	var v TaskList
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=10&page=%d&sort=dueDate:asc", search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=%d&page=%d&sort=dueDate:asc", displayTaskLimit, search), nil)
 	if err != nil {
 		return v, err
 	}
+
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return v, err

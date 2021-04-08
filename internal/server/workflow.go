@@ -10,7 +10,7 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context, int) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int) (sirius.TaskList, error)
 }
 
 type workflowVars struct {
@@ -37,10 +37,11 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
+		displayTaskLimit, _ := strconv.Atoi(r.FormValue("display-task-limit"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, err := client.GetTaskList(ctx, search)
+		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit)
 		if err != nil {
 			return err
 		}
