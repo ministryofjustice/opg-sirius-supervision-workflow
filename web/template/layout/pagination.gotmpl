@@ -13,18 +13,22 @@
       {{/* <li class="moj-pagination__item  moj-pagination__item--prev">
         <a class="moj-pagination__link" href={{ $previous }}">Previous<span class="govuk-visually-hidden"> set of pages</span></a>
       </li> */}}
-      <li class="moj-pagination__item moj-pagination__item--prev"><button type="submit" class="pagination_button_link" name="page" value="{{ .TaskList.PreviousPage }}">Previous</button></li> 
+      <li class="moj-pagination__item moj-pagination__item--prev">
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.PreviousPage }}">Previous</button>
+      </li> 
        {{ range .TaskList.ListOfPages }}
-        <li class="moj-pagination__item"><button type="submit" class="pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
+        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
       {{ end }} 
-       <li class="moj-pagination__item"><button type="submit" class="pagination_button_link" name="page" value="{{ .TaskList.NextPage }}">Next</button></li> 
+       <li class="moj-pagination__item moj-pagination__item--next">
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.NextPage }}">Next</button>
+      </li> 
 
       {{/* <li class="moj-pagination__item moj-pagination__item--active">1</li> */}}
       
       {{/* <li class="moj-pagination__item"><a class="moj-pagination__link" href="/api/v1/assignees/team/tasks?limit=5&page=3&sort=dueDate:asc">3</a></li> */}}
-      <li class="moj-pagination__item  moj-pagination__item--next">
+      {{/* <li class="moj-pagination__item  moj-pagination__item--next">
         <a class="moj-pagination__link" href="">Next<span class="govuk-visually-hidden"> set of pages</span></a>
-      </li>
+      </li> */}}
     </ul>
   </form>
 
