@@ -111,8 +111,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 	} else {
 		TaskList.NextPage = TaskList.Pages.PageTotal
 	}
-
-	TaskList.StoredTaskLimit = displayTaskLimit
+	if TaskList.StoredTaskLimit == 0 && displayTaskLimit == 0 {
+		TaskList.StoredTaskLimit = 25
+	} else {
+		TaskList.StoredTaskLimit = displayTaskLimit
+	}
 
 	return TaskList, err
 
