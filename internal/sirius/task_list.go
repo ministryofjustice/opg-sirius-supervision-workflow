@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -54,20 +55,26 @@ type PageDetails struct {
 }
 
 type TaskList struct {
-	WholeTaskList []ApiTask   `json:"tasks"`
-	Pages         PageDetails `json:"pages"`
-	ListOfPages   []int
-	PreviousPage  int
-	NextPage      int
+	WholeTaskList   []ApiTask   `json:"tasks"`
+	Pages           PageDetails `json:"pages"`
+	ListOfPages     []int
+	PreviousPage    int
+	NextPage        int
+	StoredTaskLimit int
 }
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
 	var v TaskList
 
+	log.Print("pre api call")
+	log.Print(displayTaskLimit)
+
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=%d&page=%d&sort=dueDate:asc", displayTaskLimit, search), nil)
 	if err != nil {
 		return v, err
 	}
+	log.Print("post api call")
+	log.Print(displayTaskLimit)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -105,5 +112,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 		TaskList.NextPage = TaskList.Pages.PageTotal
 	}
 
+	TaskList.StoredTaskLimit = displayTaskLimit
+
 	return TaskList, err
+
+	// i think it looses what the number is here
 }

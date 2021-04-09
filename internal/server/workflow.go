@@ -38,10 +38,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimit, _ := strconv.Atoi(r.FormValue("display-task-limit"))
+		displayTaskLimit, _ := strconv.Atoi(r.FormValue("action"))
 		// currentDisplayTaskLimit, _ := strconv.Atoi(r.FormValue("current-display-task-limit"))
 
-		log.Print(search, displayTaskLimit)
+		// log.Print(search, displayTaskLimit)
+		// r.ParseForm()
+		// log.Print(r.Form["action"])
+		// fmt.Println(r.Form["action"])
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
@@ -49,6 +52,9 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+
+		log.Print("back in workflow")
+		log.Print(taskList.StoredTaskLimit)
 
 		vars := workflowVars{
 			Path:        r.URL.Path,

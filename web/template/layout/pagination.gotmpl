@@ -27,7 +27,8 @@
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="25">5</button>
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="15">15</button>
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="100">100</button> */}}
-        <select class="govuk-select" id="display-rows" name="display-task-limit">
+        <select class="govuk-select" id="display-rows" name="action">
+          <option value="{{ .TaskList.StoredTaskLimit }}">{{ .TaskList.StoredTaskLimit }}</option>
           <option value="25">25</option>
           <option value="50">50</option>
           <option value="100">100</option>
