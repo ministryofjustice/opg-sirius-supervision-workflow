@@ -3,7 +3,6 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -55,26 +54,24 @@ type PageDetails struct {
 }
 
 type TaskList struct {
-	WholeTaskList   []ApiTask   `json:"tasks"`
-	Pages           PageDetails `json:"pages"`
-	ListOfPages     []int
-	PreviousPage    int
-	NextPage        int
-	StoredTaskLimit int
+	WholeTaskList     []ApiTask   `json:"tasks"`
+	Pages             PageDetails `json:"pages"`
+	TotalTasks        int         `json:"total"`
+	ListOfPages       []int
+	PreviousPage      int
+	NextPage          int
+	StoredTaskLimit   int
+	ShowingUpperLimit int
+	ShowingLowerLimit int
 }
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
 	var v TaskList
 
-	log.Print("pre api call")
-	log.Print(displayTaskLimit)
-
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=%d&page=%d&sort=dueDate:asc", displayTaskLimit, search), nil)
 	if err != nil {
 		return v, err
 	}
-	log.Print("post api call")
-	log.Print(displayTaskLimit)
 
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -107,7 +104,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 	}
 
 	if search < TaskList.Pages.PageTotal {
-		TaskList.NextPage = (search + 1)
+		if search == 0 {
+			TaskList.NextPage = (search + 2)
+		} else {
+			TaskList.NextPage = (search + 1)
+		}
 	} else {
 		TaskList.NextPage = TaskList.Pages.PageTotal
 	}
@@ -117,7 +118,18 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 		TaskList.StoredTaskLimit = displayTaskLimit
 	}
 
-	return TaskList, err
+	TaskList.ShowingUpperLimit = TaskList.Pages.PageCurrent * TaskList.StoredTaskLimit
 
-	// i think it looses what the number is here
+	if TaskList.Pages.PageCurrent == 1 {
+		TaskList.ShowingLowerLimit = 1
+	} else {
+		TaskList.ShowingLowerLimit = TaskList.ShowingUpperLimit - TaskList.StoredTaskLimit + 1
+	}
+
+	if TaskList.ShowingUpperLimit > TaskList.TotalTasks {
+		TaskList.ShowingUpperLimit = TaskList.TotalTasks
+		TaskList.ShowingLowerLimit = TaskList.ShowingUpperLimit
+	}
+
+	return TaskList, err
 }

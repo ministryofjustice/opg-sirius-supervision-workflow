@@ -6,7 +6,7 @@
 
   <div class="flex-container">
 
-    <p class="moj-pagination__results">Showing <b>1</b> to <b>15</b> of <b>45</b> tasks</p>
+    <p class="moj-pagination__results">Showing <b>{{ .TaskList.ShowingLowerLimit }}</b> to <b>{{ .TaskList.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
    
     <ul class="moj-pagination__list">
       <li class="moj-pagination__item moj-pagination__item--prev">
@@ -23,15 +23,12 @@
       <label class="govuk-label" for="display-rows">
         View
       </label>
-        {{/* <button type="submit" a class="moj-pagination__link pagination_button_link" name="current-display-task-limit" value="{{ .TaskList.LimitTaskCurrentNumber}}">{{ .TaskList.LimitTaskCurrentNumber}}</button>
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="25">5</button>
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="15">15</button>
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="display-task-limit" value="100">100</button> */}}
-        <select class="govuk-select" id="display-rows" name="action">
-          <option value="{{ .TaskList.StoredTaskLimit }}">{{ .TaskList.StoredTaskLimit }}</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
+        <select class="govuk-select" id="display-rows" name="action" onchange="this.form.submit()">
+          {{/* <option value="{{ .TaskList.StoredTaskLimit }}">{{ .TaskList.StoredTaskLimit }}</option> */}}
+          {{/* <option value="0" {{if .TaskList.StoredTaskLimit == 0}}selected{{end}} >0</option> */}}
+          <option value="25" {{if eq .TaskList.StoredTaskLimit 25}}selected{{end}} >25</option>
+          <option value="50" {{if eq .TaskList.StoredTaskLimit 50 }}selected{{end}} >50</option>
+          <option value="100" {{if eq .TaskList.StoredTaskLimit 100 }}selected{{end}} >100</option> 
         </select>
     </div>
   </form>
