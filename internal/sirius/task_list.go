@@ -123,12 +123,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 	if TaskList.Pages.PageCurrent == 1 {
 		TaskList.ShowingLowerLimit = 1
 	} else {
-		TaskList.ShowingLowerLimit = TaskList.ShowingUpperLimit - TaskList.StoredTaskLimit + 1
+		TaskList.ShowingLowerLimit = ((TaskList.Pages.PageCurrent - 1) * TaskList.StoredTaskLimit) + 1
 	}
 
 	if TaskList.ShowingUpperLimit > TaskList.TotalTasks {
 		TaskList.ShowingUpperLimit = TaskList.TotalTasks
-		TaskList.ShowingLowerLimit = TaskList.ShowingUpperLimit
 	}
 
 	return TaskList, err
