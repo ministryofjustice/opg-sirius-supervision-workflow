@@ -50,8 +50,12 @@
 
           {{ template "edit-panel" . }}
 
+          {{if ne .TaskList.TotalTasks 0}}
           {{ template "table" . }}
-
+          {{else if eq .TaskList.TotalTasks 0}}
+          {{ template "no-task-table" . }}
+          {{end}}
+         
           {{ template "pagination" . }}
         </div>
       </div>

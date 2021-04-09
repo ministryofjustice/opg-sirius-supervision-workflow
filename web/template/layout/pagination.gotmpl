@@ -1,5 +1,5 @@
 {{ define "pagination" }}
-
+{{if ne .TaskList.TotalTasks 0}}
 <nav class="moj-pagination govuk-!-margin-bottom-5" id="pagination-label">
 <form action="{{ prefix "/supervision/workflow" }}" method="GET">
   <p class="govuk-visually-hidden" aria-labelledby="pagination-label">Pagination navigation</p>
@@ -32,5 +32,5 @@
   </form>
   </div>
 </nav>
-
+{{ end }}
 {{ end }}

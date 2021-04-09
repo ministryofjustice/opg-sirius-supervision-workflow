@@ -1,0 +1,20 @@
+{{ define "no-task-table" }}
+<table id="workflow-tasks" class="govuk-table" >
+  <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header govuk-table__select"></th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
+    </tr>
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td colspan="7" style="width:100%; font-size: 150%;">The team has no tasks</td> 
+    </tr>
+  </tbody>
+</table>
+{{ end }}
