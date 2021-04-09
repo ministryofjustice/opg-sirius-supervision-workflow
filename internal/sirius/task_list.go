@@ -65,6 +65,14 @@ type TaskList struct {
 	ShowingLowerLimit int
 }
 
+func getPreviousPageNumber(search int) int {
+	if search <= 1 {
+		return 1
+	} else {
+		return search - 1
+	}
+}
+
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
 	var v TaskList
 
@@ -97,11 +105,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 		TaskList.ListOfPages = append(TaskList.ListOfPages, i)
 	}
 
-	if search <= 1 {
-		TaskList.PreviousPage = 1
-	} else {
-		TaskList.PreviousPage = (search - 1)
-	}
+	TaskList.PreviousPage = getPreviousPageNumber(search)
 
 	if search < TaskList.Pages.PageTotal {
 		if search == 0 {
