@@ -9,18 +9,18 @@
    
     <ul class="moj-pagination__list">
       <li class="moj-pagination__item moj-pagination__item--prev">
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }}> Previous </button>
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
       </li> 
-      {{ if lt .TaskList.Pages.PageTotal 2 }}
+      {{ if le .TaskList.Pages.PageTotal 1 }}
         <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="1" disabled>1</button></li> 
-      {{ else if gt .TaskList.Pages.PageTotal 2}}
+      {{ else if ge .TaskList.Pages.PageTotal 2}}
         {{ range .TaskList.ListOfPages }}
           <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
         {{ end }} 
       {{ end }}
 
        <li class="moj-pagination__item moj-pagination__item--next">
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }}> Next </button>
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskList.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
       </li> 
     </ul>
      <div id="change-view-number" class="govuk-form-group">
