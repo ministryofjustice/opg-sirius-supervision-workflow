@@ -73,6 +73,43 @@ func getPreviousPageNumber(search int) int {
 	}
 }
 
+func getNextPageNumber(TaskList TaskList, search int) int {
+	if search < TaskList.Pages.PageTotal {
+		if search == 0 {
+			return search + 2
+		} else {
+			return search + 1
+		}
+	} else {
+		return TaskList.Pages.PageTotal
+	}
+}
+
+func getStoredTaskLimitNumber(TaskList TaskList, displayTaskLimit int) int {
+	if TaskList.StoredTaskLimit == 0 && displayTaskLimit == 0 {
+		return 25
+	} else {
+		return displayTaskLimit
+	}
+}
+
+func getShowingLowerLimitNumber(TaskList TaskList) int {
+	if TaskList.Pages.PageCurrent == 1 {
+		return 1
+	} else {
+		previousPageNumber := TaskList.Pages.PageCurrent - 1
+		return previousPageNumber*TaskList.StoredTaskLimit + 1
+	}
+}
+
+func getShowingUpperLimitNumber(TaskList TaskList) int {
+	if TaskList.Pages.PageCurrent*TaskList.StoredTaskLimit > TaskList.TotalTasks {
+		return TaskList.TotalTasks
+	} else {
+		return TaskList.Pages.PageCurrent * TaskList.StoredTaskLimit
+	}
+}
+
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
 	var v TaskList
 
@@ -107,32 +144,13 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (Tas
 
 	TaskList.PreviousPage = getPreviousPageNumber(search)
 
-	if search < TaskList.Pages.PageTotal {
-		if search == 0 {
-			TaskList.NextPage = (search + 2)
-		} else {
-			TaskList.NextPage = (search + 1)
-		}
-	} else {
-		TaskList.NextPage = TaskList.Pages.PageTotal
-	}
-	if TaskList.StoredTaskLimit == 0 && displayTaskLimit == 0 {
-		TaskList.StoredTaskLimit = 25
-	} else {
-		TaskList.StoredTaskLimit = displayTaskLimit
-	}
+	TaskList.NextPage = getNextPageNumber(TaskList, search)
 
-	TaskList.ShowingUpperLimit = TaskList.Pages.PageCurrent * TaskList.StoredTaskLimit
+	TaskList.StoredTaskLimit = getStoredTaskLimitNumber(TaskList, displayTaskLimit)
 
-	if TaskList.Pages.PageCurrent == 1 {
-		TaskList.ShowingLowerLimit = 1
-	} else {
-		TaskList.ShowingLowerLimit = ((TaskList.Pages.PageCurrent - 1) * TaskList.StoredTaskLimit) + 1
-	}
+	TaskList.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList)
 
-	if TaskList.ShowingUpperLimit > TaskList.TotalTasks {
-		TaskList.ShowingUpperLimit = TaskList.TotalTasks
-	}
+	TaskList.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList)
 
 	return TaskList, err
 }
