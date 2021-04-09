@@ -69,6 +69,11 @@ func TestTaskList(t *testing.T) {
 									}),
 								}, 1),
 							}, 1),
+							"pages": dsl.Like(map[string]interface{}{
+								"current": 1,
+								"total":   1,
+							}),
+							"total": dsl.Like(1),
 						}),
 					})
 			},
@@ -104,6 +109,11 @@ func TestTaskList(t *testing.T) {
 						},
 					},
 				},
+				Pages: PageDetails{
+					PageCurrent: 1,
+					PageTotal:   1,
+				},
+				TotalTasks: 1,
 			},
 		},
 	}
@@ -112,8 +122,8 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, err := client.GetTaskList(getContext(tc.cookies))
-				assert.Equal(t, tc.expectedResponse, taskList)
+				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25)
+				assert.Equal(t, tc.expectedResponse, taskList, taskDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
 			}))

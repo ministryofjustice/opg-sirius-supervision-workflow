@@ -54,9 +54,12 @@ type PageDetails struct {
 }
 
 type TaskList struct {
-	WholeTaskList     []ApiTask   `json:"tasks"`
-	Pages             PageDetails `json:"pages"`
-	TotalTasks        int         `json:"total"`
+	WholeTaskList []ApiTask   `json:"tasks"`
+	Pages         PageDetails `json:"pages"`
+	TotalTasks    int         `json:"total"`
+}
+
+type TaskDetails struct {
 	ListOfPages       []int
 	PreviousPage      int
 	NextPage          int
@@ -85,72 +88,74 @@ func getNextPageNumber(TaskList TaskList, search int) int {
 	}
 }
 
-func getStoredTaskLimitNumber(TaskList TaskList, displayTaskLimit int) int {
-	if TaskList.StoredTaskLimit == 0 && displayTaskLimit == 0 {
+func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
+	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
 		return 25
 	} else {
 		return displayTaskLimit
 	}
 }
 
-func getShowingLowerLimitNumber(TaskList TaskList) int {
+func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
 	if TaskList.Pages.PageCurrent == 1 {
 		return 1
 	} else {
 		previousPageNumber := TaskList.Pages.PageCurrent - 1
-		return previousPageNumber*TaskList.StoredTaskLimit + 1
+		return previousPageNumber*TaskDetails.StoredTaskLimit + 1
 	}
 }
 
-func getShowingUpperLimitNumber(TaskList TaskList) int {
-	if TaskList.Pages.PageCurrent*TaskList.StoredTaskLimit > TaskList.TotalTasks {
+func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
+	if TaskList.Pages.PageCurrent*TaskDetails.StoredTaskLimit > TaskList.TotalTasks {
 		return TaskList.TotalTasks
 	} else {
-		return TaskList.Pages.PageCurrent * TaskList.StoredTaskLimit
+		return TaskList.Pages.PageCurrent * TaskDetails.StoredTaskLimit
 	}
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, TaskDetails, error) {
 	var v TaskList
+	var k TaskDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=%d&page=%d&sort=dueDate:asc", displayTaskLimit, search), nil)
 	if err != nil {
-		return v, err
+		return v, k, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, err
+		return v, k, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
+		return v, k, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, newStatusError(resp)
+		return v, k, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, err
+		return v, k, err
 	}
 
 	TaskList := v
+	TaskDetails := k
 
 	for i := 1; i < TaskList.Pages.PageTotal+1; i++ {
-		TaskList.ListOfPages = append(TaskList.ListOfPages, i)
+		TaskDetails.ListOfPages = append(TaskDetails.ListOfPages, i)
 	}
 
-	TaskList.PreviousPage = getPreviousPageNumber(search)
+	TaskDetails.PreviousPage = getPreviousPageNumber(search)
 
-	TaskList.NextPage = getNextPageNumber(TaskList, search)
+	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
 
-	TaskList.StoredTaskLimit = getStoredTaskLimitNumber(TaskList, displayTaskLimit)
+	TaskDetails.StoredTaskLimit = getStoredTaskLimitNumber(TaskDetails, displayTaskLimit)
 
-	TaskList.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList)
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
 
-	TaskList.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList)
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
 
-	return TaskList, err
+	return TaskList, TaskDetails, err
 }

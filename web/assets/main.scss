@@ -209,7 +209,14 @@ $govuk-include-default-font-face: false;
     -ms-transform: rotate(-45deg);
     transform: rotate(-45deg);
     content: "";
-} 
+}
+
+.table-cell__noTasks {
+  width:100%; 
+  font-size: 150%;
+  text-align: center;
+}
+
   
   }
   
