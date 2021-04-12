@@ -27,10 +27,10 @@
       <label class="govuk-label" for="bottom-label-display-rows">
         View
       </label>
-        <select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" onchange="this.form.submit()">
-          <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} ><label for="25">25</label></option>
-          <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} ><label for="50">50</label></option>
-          <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} ><label for="100">100</label></option> 
+        <select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" onchange="this.form.submit()">
+          <option value="25"  id="bottom-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} ><label for="25">25</label></option>
+          <option value="50"  id="bottom-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} ><label for="50">50</label></option>
+          <option value="100"  id="bottom-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} ><label for="100">100</label></option> 
         </select>
     </div>
   </form>
