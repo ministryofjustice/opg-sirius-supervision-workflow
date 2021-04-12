@@ -28,9 +28,9 @@
         View
       </label>
         <select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" onchange="this.form.submit()">
-          <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
-          <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
-          <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
+          <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} ><label for="25">25</label></option>
+          <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} ><label for="50">50</label></option>
+          <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} ><label for="100">100</label></option> 
         </select>
     </div>
   </form>
