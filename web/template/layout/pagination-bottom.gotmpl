@@ -1,7 +1,7 @@
-{{ define "pagination" }}
-<nav class="moj-pagination govuk-!-margin-bottom-5" id="pagination-label">
+{{ define "pagination-bottom" }}
+<nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label">
 <form action="{{ prefix "/supervision/workflow" }}" method="GET">
-  <p class="govuk-visually-hidden" aria-labelledby="pagination-label-form">Pagination navigation</p>
+  <p class="govuk-visually-hidden" id="bottom-pagination-form-heading">Pagination navigation</p>
 
   <div class="flex-container">
 
@@ -23,11 +23,11 @@
         <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
       </li> 
     </ul>
-     <div id="change-view-number" class="govuk-form-group">
-      <label class="govuk-label" for="display-rows">
+     <div id="bottom-change-view-number" class="govuk-form-group">
+      <label class="govuk-label" for="bottom-label-display-rows">
         View
       </label>
-        <select class="govuk-select" id="display-rows-{{.TaskDetails.StoredTaskLimit}}" name="tasksPerPage" onchange="this.form.submit()">
+        <select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" onchange="this.form.submit()">
           <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
           <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
           <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
