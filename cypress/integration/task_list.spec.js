@@ -1,4 +1,4 @@
-describe("Work flow", () => {
+describe("Task list", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");

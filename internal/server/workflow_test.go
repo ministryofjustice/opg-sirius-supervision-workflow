@@ -11,12 +11,13 @@ import (
 )
 
 type mockWorkflowInformation struct {
-	count        int
-	lastCtx      sirius.Context
-	err          error
-	userData     sirius.UserDetails
-	taskTypeData sirius.TaskTypes
-	taskListData sirius.TaskList
+	count           int
+	lastCtx         sirius.Context
+	err             error
+	userData        sirius.UserDetails
+	taskTypeData    sirius.TaskTypes
+	taskListData    sirius.TaskList
+	taskDetailsData sirius.TaskDetails
 }
 
 func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -33,11 +34,11 @@ func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context) (sirius.TaskTy
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int) (sirius.TaskList, sirius.TaskDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
-	return m.taskListData, m.err
+	return m.taskListData, m.taskDetailsData, m.err
 }
 
 func TestGetUserDetails(t *testing.T) {

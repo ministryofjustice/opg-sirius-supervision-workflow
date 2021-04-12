@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
@@ -9,7 +10,7 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int) (sirius.TaskList, sirius.TaskDetails, error)
 }
 
 type workflowVars struct {
@@ -24,6 +25,7 @@ type workflowVars struct {
 	Teams              []string
 	CanEditPhoneNumber bool
 	TaskList           sirius.TaskList
+	TaskDetails        sirius.TaskDetails
 	LoadTasks          sirius.TaskTypes
 }
 
@@ -35,9 +37,12 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		ctx := getContext(r)
 
+		search, _ := strconv.Atoi(r.FormValue("page"))
+		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
+
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, err := client.GetTaskList(ctx)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
 		if err != nil {
 			return err
 		}
@@ -50,6 +55,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			Email:       myDetails.Email,
 			PhoneNumber: myDetails.PhoneNumber,
 			TaskList:    taskList,
+			TaskDetails: taskdetails,
 			LoadTasks:   loadTaskTypes,
 		}
 

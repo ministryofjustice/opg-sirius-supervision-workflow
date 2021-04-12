@@ -1,0 +1,44 @@
+{{ define "pagination-top" }}
+<nav class="moj-pagination govuk-!-margin-bottom-5" id="top-pagination-label" aria-label="top-pagination-label">
+<form action="{{ prefix "/supervision/workflow" }}" method="GET" id="pagination-top-form">
+  <p class="govuk-visually-hidden" id="top-pagination-form-heading">Pagination navigation</p>
+
+  <div class="flex-container">
+
+    <p class="moj-pagination__results">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
+   
+    <ul class="moj-pagination__list">
+      <li class="moj-pagination__item moj-pagination__item--prev">
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
+      </li> 
+      {{ if le .TaskList.Pages.PageTotal 1 }}
+        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="1" disabled>1</button></li> 
+      {{ else if ge .TaskList.Pages.PageTotal 2}}
+        {{ range .TaskDetails.ListOfPages }}
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
+        {{ end }} 
+      {{ end }}
+
+       <li class="moj-pagination__item moj-pagination__item--next">
+        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
+      </li> 
+    </ul>
+      <div id="top-change-view-number" class="govuk-form-group">
+      <label class="govuk-label" for="top-label-display-rows"> View </label>
+      {{/* </legend>
+        <select class="govuk-select" id="top-display-rows" name="tasksPerPage" onchange="this.form.submit()">
+          <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} ><label for="25">25</label></option>
+          <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} ><label for="50">50</label></option>
+          <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} ><label for="100">100</label></option> 
+        </select> */}}
+
+      <select class="govuk-select" id="top-display-rows" name="tasksPerPage"  aria-labelledby="top-display-rows" aria-label="top-display-rows" onchange="this.form.submit()">
+        <option value="25" id="top-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
+        <option value="50" id="top-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
+        <option value="100" id="top-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option> 
+      </select>
+    </div>
+  </form>
+  </div>
+</nav>
+{{ end }}

@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -47,36 +48,114 @@ type ApiTask struct {
 	// Status      string             `json:"status"`
 }
 
-type TaskList struct {
-	WholeTaskList []ApiTask `json:"tasks"`
+type PageDetails struct {
+	PageCurrent int `json:"current"`
+	PageTotal   int `json:"total"`
 }
 
-func (c *Client) GetTaskList(ctx Context) (TaskList, error) {
-	var v TaskList
+type TaskList struct {
+	WholeTaskList []ApiTask   `json:"tasks"`
+	Pages         PageDetails `json:"pages"`
+	TotalTasks    int         `json:"total"`
+}
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/assignees/team/tasks", nil)
-	if err != nil {
-		return v, err
+type TaskDetails struct {
+	ListOfPages       []int
+	PreviousPage      int
+	NextPage          int
+	StoredTaskLimit   int
+	ShowingUpperLimit int
+	ShowingLowerLimit int
+}
+
+func getPreviousPageNumber(search int) int {
+	if search <= 1 {
+		return 1
+	} else {
+		return search - 1
 	}
+}
+
+func getNextPageNumber(TaskList TaskList, search int) int {
+	if search < TaskList.Pages.PageTotal {
+		if search == 0 {
+			return search + 2
+		} else {
+			return search + 1
+		}
+	} else {
+		return TaskList.Pages.PageTotal
+	}
+}
+
+func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
+	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
+		return 25
+	} else {
+		return displayTaskLimit
+	}
+}
+
+func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
+	if TaskList.Pages.PageCurrent == 1 {
+		return 1
+	} else {
+		previousPageNumber := TaskList.Pages.PageCurrent - 1
+		return previousPageNumber*TaskDetails.StoredTaskLimit + 1
+	}
+}
+
+func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
+	if TaskList.Pages.PageCurrent*TaskDetails.StoredTaskLimit > TaskList.TotalTasks {
+		return TaskList.TotalTasks
+	} else {
+		return TaskList.Pages.PageCurrent * TaskDetails.StoredTaskLimit
+	}
+}
+
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int) (TaskList, TaskDetails, error) {
+	var v TaskList
+	var k TaskDetails
+
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks?limit=%d&page=%d&sort=dueDate:asc", displayTaskLimit, search), nil)
+	if err != nil {
+		return v, k, err
+	}
+
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, err
+		return v, k, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
+		return v, k, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, newStatusError(resp)
+		return v, k, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, err
+		return v, k, err
 	}
 
 	TaskList := v
+	TaskDetails := k
 
-	return TaskList, err
+	for i := 1; i < TaskList.Pages.PageTotal+1; i++ {
+		TaskDetails.ListOfPages = append(TaskDetails.ListOfPages, i)
+	}
+
+	TaskDetails.PreviousPage = getPreviousPageNumber(search)
+
+	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
+
+	TaskDetails.StoredTaskLimit = getStoredTaskLimitNumber(TaskDetails, displayTaskLimit)
+
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
+
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+
+	return TaskList, TaskDetails, err
 }

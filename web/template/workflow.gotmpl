@@ -46,13 +46,17 @@
 
           {{ template "success-banner" . }}
 
-          {{ template "pagination" . }}
+          {{ template "pagination-top" . }}
 
           {{ template "edit-panel" . }}
 
+          {{if ne .TaskList.TotalTasks 0}}
           {{ template "table" . }}
-
-          {{ template "pagination" . }}
+          {{else if eq .TaskList.TotalTasks 0}}
+          {{ template "no-task-table" . }}
+          {{end}}
+         
+          {{ template "pagination-bottom" . }}
         </div>
       </div>
     </div>
