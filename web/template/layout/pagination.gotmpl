@@ -1,7 +1,7 @@
 {{ define "pagination" }}
 <nav class="moj-pagination govuk-!-margin-bottom-5" id="pagination-label">
 <form action="{{ prefix "/supervision/workflow" }}" method="GET">
-  <p class="govuk-visually-hidden" aria-labelledby="pagination-label">Pagination navigation</p>
+  <p class="govuk-visually-hidden" aria-labelledby="pagination-label-form">Pagination navigation</p>
 
   <div class="flex-container">
 
@@ -27,7 +27,7 @@
       <label class="govuk-label" for="display-rows">
         View
       </label>
-        <select class="govuk-select" id="display-rows" name="action" onchange="this.form.submit()">
+        <select class="govuk-select" id="display-rows-{{.TaskDetails.StoredTaskLimit}}" name="tasksPerPage" onchange="this.form.submit()">
           <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
           <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
           <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 

@@ -38,7 +38,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimit, _ := strconv.Atoi(r.FormValue("action"))
+		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
