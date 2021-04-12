@@ -24,14 +24,16 @@
       </li> 
     </ul>
      <div id="top-change-view-number" class="govuk-form-group">
-      <label class="govuk-label" for="top-label-display-rows">
-        View
-      </label>
+      <fieldset>
+        <legend label class="govuk-label">
+          View
+        </legend>
         <select class="govuk-select" id="top-display-rows" name="tasksPerPage" onchange="this.form.submit()">
           <option value="25" {{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} ><label for="25">25</label></option>
           <option value="50" {{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} ><label for="50">50</label></option>
           <option value="100" {{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} ><label for="100">100</label></option> 
         </select>
+      </fieldset>
     </div>
   </form>
   </div>
