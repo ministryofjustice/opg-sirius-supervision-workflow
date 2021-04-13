@@ -49,7 +49,6 @@ func TestTaskList(t *testing.T) {
 							"tasks": dsl.EachLike(map[string]interface{}{
 								"assignee": dsl.Like(map[string]interface{}{
 									"displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-									// "id":          1111,
 								}),
 								"name":    dsl.Like("Case work - General"),
 								"dueDate": dsl.Like("01/02/2021"),
@@ -58,22 +57,18 @@ func TestTaskList(t *testing.T) {
 										"caseRecNumber": "caseRecNumber",
 										"firstname":     "Client Alexander Zacchaeus",
 										"id":            3333,
-										// "middlenames":   "ClientMiddlenames",
-										// "salutation":    "ClientSalutation",
 										"supervisionCaseOwner": dsl.Like(map[string]interface{}{
 											"displayName": "Supervision - Team - Name",
-											// "id":          4444,
 										}),
 										"surname": "Client Wolfeschlegelsteinhausenbergerdorff",
-										// "uId":     "ClientUId",
 									}),
 								}, 1),
-							}, 1),
+							}, 100),
 							"pages": dsl.Like(map[string]interface{}{
 								"current": 1,
-								"total":   1,
+								"total":   4,
 							}),
-							"total": dsl.Like(1),
+							"total": dsl.Like(100),
 						}),
 					})
 			},
@@ -86,7 +81,6 @@ func TestTaskList(t *testing.T) {
 					{
 						ApiTaskAssignee: AssigneeDetails{
 							AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
-							//AssigneeId:  1111,
 						},
 						ApiTaskType:    "Case work - General",
 						ApiTaskDueDate: "01/02/2021",
@@ -96,14 +90,10 @@ func TestTaskList(t *testing.T) {
 									ClientCaseRecNumber: "caseRecNumber",
 									ClientFirstName:     "Client Alexander Zacchaeus",
 									ClientId:            3333,
-									//ClientMiddlenames: "ClientMiddlenames",
-									//ClientSalutation:  "ClientSalutation",
 									ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
 										SupervisionCaseOwnerName: "Supervision - Team - Name",
-										//SupervisionCaseOwnerId: 4444,
 									},
 									ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
-									//ClientUId:   "ClientUId",
 								},
 							},
 						},
@@ -111,9 +101,9 @@ func TestTaskList(t *testing.T) {
 				},
 				Pages: PageDetails{
 					PageCurrent: 1,
-					PageTotal:   1,
+					PageTotal:   4,
 				},
-				TotalTasks: 1,
+				TotalTasks: 100,
 			},
 		},
 	}
@@ -123,7 +113,7 @@ func TestTaskList(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25)
-				assert.Equal(t, tc.expectedResponse, taskList, taskDetails)
+				assert.Equal(t, tc.expectedResponse.WholeTaskList[0], taskList.WholeTaskList[0], taskDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
 			}))

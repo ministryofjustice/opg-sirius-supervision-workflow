@@ -14,25 +14,31 @@ describe("Task list", () => {
     cy.contains("Actions");
   })
 
-  const expected = [
-    "",
-    "Case work - General",
-    "Client Alexander Zacchaeus Client Wolfeschlegelsteinhausenbergerdorff caseRecNumber",
-    "Assignee Duke Clive Henry Hetley Junior Jones",
-    "Assignee Duke Clive Henry Hetley Junior Jones Supervision - Team - Name",
-    "01/02/2021",
-    "Open case",
-];
+it("should have a table with the column Task type", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2)").should("contain", "Case work - General")
+})
 
-it("should have data in the table", () => {
-  cy.get(".govuk-table__body > .govuk-table__row")
-    .children()
-    .each(($el, index) => {
-        cy.wrap($el).should("contain", expected[index]);
-    });
-  })
+it("should have a table with the column Client", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(3)").should("contain", "Client Alexander Zacchaeus Client Wolfeschlegelsteinhausenbergerdorff caseRecNumber")
+})
+
+it("should have a table with the column Case owner", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(4)").should("contain", "Assignee Duke Clive Henry Hetley Junior Jones")
+})
+
+it("should have a table with the column Assigned to", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "Assignee Duke Clive Henry Hetley Junior Jones Supervision - Team - Name")
+})
+
+it("should have a table with the column Due date", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(6)").should("contain", "01/02/2021")
+})
+
+it("should have a table with the column Actions", () => {
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(7)").should("contain", "Open case")
+})
   
-  it("the button should have a link to the correct case", () => {
+it("the button should have a link to the correct case", () => {
     cy.get(".govuk-table__body > .govuk-table__row > :nth-child(7) > a").should('have.attr', 'href', 'http://localhost:8080/supervision/#/clients/3333')
   })
 });
