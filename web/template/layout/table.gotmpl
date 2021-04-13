@@ -49,7 +49,7 @@
           </td>
           <td class="govuk-table__cell">
             <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
-            <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-button" id="hook-open-case-{{ .ApiTaskId }}">Open case</a>
+            <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-button" id="hook-open-case">Open case</a>
           </td>
           {{ end }}
         </tr>
