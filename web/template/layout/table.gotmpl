@@ -13,6 +13,7 @@
     </tr>
   </thead>
     <tbody class="govuk-table__body">
+    {{if ne .TaskList.TotalTasks 0}}
       {{ range .TaskList.WholeTaskList }}
         <tr class="govuk-table__row">
           <td class="govuk-table__cell">
@@ -53,6 +54,11 @@
           {{ end }}
         </tr>
       {{ end }}
+    {{else if eq .TaskList.TotalTasks 0}}
+      <tr class="govuk-table__row">
+        <td colspan="7" id="table-cell__noTasks">The team has no tasks</td> 
+      </tr>
+    {{ end }}
   </tbody>
 </table>
 {{ end }}
