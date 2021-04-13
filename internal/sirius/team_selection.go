@@ -9,8 +9,8 @@ type TeamMembers struct {
 	// TeamMembersDeleted      bool   `json:"deleted"`
 	// TeamMembersDisplayName  string `json:"displayName"`
 	// TeamMembersEmail        string `json:"email"`
-	TeamMembersId int `json:"id"`
-	// TeamMembersName         string `json:"name"`
+	TeamMembersId   int    `json:"id"`
+	TeamMembersName string `json:"name"`
 	// TeamMembersPhoneNumeber string `json:"phoneNumber"`
 }
 

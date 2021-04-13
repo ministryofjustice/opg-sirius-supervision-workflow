@@ -11,13 +11,14 @@ import (
 )
 
 type mockWorkflowInformation struct {
-	count           int
-	lastCtx         sirius.Context
-	err             error
-	userData        sirius.UserDetails
-	taskTypeData    sirius.TaskTypes
-	taskListData    sirius.TaskList
-	taskDetailsData sirius.TaskDetails
+	count             int
+	lastCtx           sirius.Context
+	err               error
+	userData          sirius.UserDetails
+	taskTypeData      sirius.TaskTypes
+	taskListData      sirius.TaskList
+	taskDetailsData   sirius.TaskDetails
+	teamSelectionData []sirius.TeamCollection
 }
 
 func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -39,6 +40,13 @@ func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, di
 	m.lastCtx = ctx
 
 	return m.taskListData, m.taskDetailsData, m.err
+}
+
+func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context) ([]sirius.TeamCollection, error) {
+	m.count += 1
+	m.lastCtx = ctx
+
+	return m.teamSelectionData, m.err
 }
 
 func TestGetUserDetails(t *testing.T) {
@@ -85,7 +93,20 @@ func TestGetUserDetails(t *testing.T) {
 		},
 	}
 
-	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
+	mockTeamSelectionData := []sirius.TeamCollection{
+		{
+			Id: 13,
+			Members: []sirius.TeamMembers{
+				{
+					TeamMembersId:   96,
+					TeamMembersName: "LayTeam1 User11",
+				},
+			},
+			Name: "Lay Team 1 - (Supervision)",
+		},
+	}
+
+	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
@@ -100,7 +121,7 @@ func TestGetUserDetails(t *testing.T) {
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(3, client.count)
+	assert.Equal(4, client.count)
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
@@ -140,6 +161,18 @@ func TestGetUserDetails(t *testing.T) {
 				Category:   "supervision",
 				Complete:   "Correspondence - Reviewed draft failure",
 				User:       true,
+			},
+		},
+		TeamSelection: []sirius.TeamCollection{
+			{
+				Id: 13,
+				Members: []sirius.TeamMembers{
+					{
+						TeamMembersId:   96,
+						TeamMembersName: "LayTeam1 User11",
+					},
+				},
+				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
 	}, template.lastVars)
