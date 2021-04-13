@@ -1,0 +1,19 @@
+{{ define "team-selection" }}
+
+ <div id="team-banner" class="govuk-grid-row">
+        <div id="team-banner-container" class="govuk-grid-column-full">
+          <h2 class="govuk-heading-m">Lay team 3</h2>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="change-team">
+              Change view
+            </label>
+            <select class="govuk-select" id="change-team" name="change-team">
+             {{ range .TeamSelection }}
+              <option value="team-1">{{ .Name }}</option>
+              {{ end }}
+            </select>
+          </div>
+        </div>
+      </div>
+
+{{ end }}

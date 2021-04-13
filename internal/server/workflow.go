@@ -11,6 +11,7 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTeamSelection(sirius.Context) ([]sirius.TeamCollection, error)
 }
 
 type workflowVars struct {
@@ -27,6 +28,7 @@ type workflowVars struct {
 	TaskList           sirius.TaskList
 	TaskDetails        sirius.TaskDetails
 	LoadTasks          sirius.TaskTypes
+	TeamSelection      []sirius.TeamCollection
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -43,20 +45,22 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
+		teamSelection, err := client.GetTeamSelection(ctx)
 		if err != nil {
 			return err
 		}
 
 		vars := workflowVars{
-			Path:        r.URL.Path,
-			ID:          myDetails.ID,
-			Firstname:   myDetails.Firstname,
-			Surname:     myDetails.Surname,
-			Email:       myDetails.Email,
-			PhoneNumber: myDetails.PhoneNumber,
-			TaskList:    taskList,
-			TaskDetails: taskdetails,
-			LoadTasks:   loadTaskTypes,
+			Path:          r.URL.Path,
+			ID:            myDetails.ID,
+			Firstname:     myDetails.Firstname,
+			Surname:       myDetails.Surname,
+			Email:         myDetails.Email,
+			PhoneNumber:   myDetails.PhoneNumber,
+			TaskList:      taskList,
+			TaskDetails:   taskdetails,
+			LoadTasks:     loadTaskTypes,
+			TeamSelection: teamSelection,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
