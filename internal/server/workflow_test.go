@@ -126,10 +126,13 @@ func TestGetUserDetails(t *testing.T) {
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
 	assert.Equal(workflowVars{
-		Path:      "/path",
-		ID:        123,
-		Firstname: "John",
-		Surname:   "Doe",
+		Path: "/path",
+		MyDetails: sirius.UserDetails{
+			ID:        123,
+			Firstname: "John",
+			Surname:   "Doe",
+		},
+
 		TaskList: sirius.TaskList{
 			WholeTaskList: []sirius.ApiTask{
 				{

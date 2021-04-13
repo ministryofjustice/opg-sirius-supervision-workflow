@@ -15,20 +15,12 @@ type WorkflowInformation interface {
 }
 
 type workflowVars struct {
-	Path               string
-	ID                 int
-	Firstname          string
-	Surname            string
-	Email              string
-	PhoneNumber        string
-	Organisation       string
-	Roles              []string
-	Teams              []string
-	CanEditPhoneNumber bool
-	TaskList           sirius.TaskList
-	TaskDetails        sirius.TaskDetails
-	LoadTasks          sirius.TaskTypes
-	TeamSelection      []sirius.TeamCollection
+	Path          string
+	MyDetails     sirius.UserDetails
+	TaskList      sirius.TaskList
+	TaskDetails   sirius.TaskDetails
+	LoadTasks     sirius.TaskTypes
+	TeamSelection []sirius.TeamCollection
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -52,11 +44,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		vars := workflowVars{
 			Path:          r.URL.Path,
-			ID:            myDetails.ID,
-			Firstname:     myDetails.Firstname,
-			Surname:       myDetails.Surname,
-			Email:         myDetails.Email,
-			PhoneNumber:   myDetails.PhoneNumber,
+			MyDetails:     myDetails,
 			TaskList:      taskList,
 			TaskDetails:   taskdetails,
 			LoadTasks:     loadTaskTypes,
