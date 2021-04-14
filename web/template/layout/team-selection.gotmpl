@@ -3,29 +3,17 @@
 <form>
  <div id="team-banner" class="govuk-grid-row">
         <div id="team-banner-container" class="govuk-grid-column-full">
-        {{/* {{ if eq .selectedTeamName ""}} */}}
-        {{ range .MyDetails.Teams }}
-          <h2 class="govuk-heading-m" id="hook-team-name">{{ .DisplayName }}</h2>
-        {{ end }}
-        {{/* {{ else if }}
-            <h2 class="govuk-heading-m" id="hook-team-name">{{ .selectedTeamName }}</h2>     
-        {{ end }} */}}
+        {{ range .TeamSelection }}
+          {{if eq .Id .UserSelectedTeam}}
+         <h2 class="govuk-heading-m" id="hook-team-name">{{ .Name }}</h2>
+          {{end}}
+         {{ end }}
           <div class="govuk-form-group">
             <label class="govuk-label" for="change-team">
-            {{/* {{ .TeamSelected }} */}}
-            {{/* {{ range .TeamSelection  }}
-            {{ .UserSelectedTeam }}
-            {{ end }} */}}
               Change view 
             </label>
             <select class="govuk-select" id="change-team" name="change-team" onchange="this.form.submit()">
-            {{/* {{ $TeamSelected := .MyDetails.Teams }} */}}
             {{ range .TeamSelection }}
-            
-              {{/* <option value="{{ .TeamSelection[0].Id }}" selected >{{ .Name }}</option>
-              <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
-              <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
-              <option value="{{ .TeamSelection.Id }}"  >{{ .Name }}</option> */}}
               <option value="{{ .Id }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
             {{ end }}
             </select>

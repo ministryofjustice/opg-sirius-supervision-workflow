@@ -66,7 +66,7 @@ type TeamCollection struct {
 	UserSelectedTeam int
 }
 
-var thing int
+var selectedTeamId int
 
 func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
 	var v []TeamCollection
@@ -96,13 +96,13 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 	}
 
 	if selectedTeamName == 0 {
-		thing = myDetails.Teams[0].TeamId
+		selectedTeamId = myDetails.Teams[0].TeamId
 	} else {
-		thing = selectedTeamName
+		selectedTeamId = selectedTeamName
 	}
 
 	for i, _ := range v {
-		v[i].UserSelectedTeam = thing
+		v[i].UserSelectedTeam = selectedTeamId
 	}
 	log.Println(v)
 
