@@ -12,7 +12,7 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context) ([]sirius.TeamCollection, error)
+	GetTeamSelection(sirius.Context, sirius.UserDetails) ([]sirius.TeamCollection, error)
 	GetTeamSelected(sirius.Context, int, sirius.UserDetails) (sirius.TeamSelected, error)
 }
 
@@ -43,7 +43,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
-		teamSelection, err := client.GetTeamSelection(ctx)
+		teamSelection, err := client.GetTeamSelection(ctx, myDetails)
 		teamSelected, err := client.GetTeamSelected(ctx, selectedTeamName, myDetails)
 		if err != nil {
 			return err

@@ -13,9 +13,10 @@
           <div class="govuk-form-group">
             <label class="govuk-label" for="change-team">
             {{/* {{ .TeamSelected }} */}}
-            {{ range .TeamSelection  }}
-            {{ . }}
-            {{ end }}
+            {{/* {{ range .TeamSelection  }}
+            {{ .UserSelectedTeam }}
+            {{ end }} */}}
+            {{ .MyDetails.Teams}}
               Change view 
             </label>
             <select class="govuk-select" id="change-team" name="change-team" onchange="this.form.submit()">

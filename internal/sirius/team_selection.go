@@ -62,9 +62,10 @@ type TeamCollection struct {
 	// Parent      string        `json:"parent"`
 	// PhoneNumber string        `json:"phoneNumber"`
 	// TeamTypeHandle TeamType      `json"teamType"`
+	UserSelectedTeam int
 }
 
-func (c *Client) GetTeamSelection(ctx Context) ([]TeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails) ([]TeamCollection, error) {
 	var v []TeamCollection
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
@@ -89,6 +90,13 @@ func (c *Client) GetTeamSelection(ctx Context) ([]TeamCollection, error) {
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
+	}
+
+	// thing := myDetails.Teams[0].TeamId
+	// log.Println(thing)
+
+	for i, _ := range v {
+		v[i].UserSelectedTeam = 7
 	}
 	// io.Copy(os.Stdout, resp.Body)
 
