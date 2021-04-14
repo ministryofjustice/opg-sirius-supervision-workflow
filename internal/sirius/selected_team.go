@@ -3,42 +3,10 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 )
 
-// {
-// 	"id":21,
-// 	"name":"Debt Management - (Supervision)",
-// 	// "phoneNumber":"0123456789",
-// 	// "displayName":"Debt Management - (Supervision)",
-// 	// "deleted":false,
-// 	// "email":"DebtManagement.team@opgtest.com",
-// 	"members":[
-// 		{"id": 79,
-// 		"name":"Finance",
-// 		"phoneNumber":"12345678",
-// 		"displayName":"Finance User",
-// 		"deleted":false,
-// 		"email":"finance.user@opgtest.com"
-// 		},
-// 		{"id":80,
-// 		"name":"Finance",
-// 		"phoneNumber":"12345678",
-// 		"displayName":"Finance Reporting",
-// 		"deleted":false,
-// 		"email":"finance.reporting@opgtest.com"
-// 		}
-// 		],
-// 		// "children":[],
-// 		// "teamType":{
-// 		// 	"handle":"FINANCE",
-// 		// 	"label":"Finance"
-// 		// }
-// }
-
-type TeamMembers struct {
+type TeamSelectedMembers struct {
 	// TeamMembersDeleted      bool   `json:"deleted"`
 	// TeamMembersDisplayName  string `json:"displayName"`
 	// TeamMembersEmail        string `json:"email"`
@@ -53,24 +21,24 @@ type TeamMembers struct {
 // 	TeamTypeLabel      string `json:"label"`
 // }
 
-type TeamCollection struct {
+type TeamSelected struct {
 	// Children    []string      `json:"children"`
 	// Delete      bool          `json:"deleted"`
 	// DisplayName string        `json:"displayName"`
 	// Email       string        `json:"email"`
 	// GroupName   string        `json:"groupName"`
-	Id      int           `json:"id"`
-	Members []TeamMembers `json:"members"`
-	Name    string        `json:"name"`
+	Id      int                   `json:"id"`
+	Members []TeamSelectedMembers `json:"members"`
+	Name    string                `json:"name"`
 	// Parent      string        `json:"parent"`
 	// PhoneNumber string        `json:"phoneNumber"`
 	// TeamTypeHandle TeamType      `json"teamType"`
 }
 
-func (c *Client) GetTeamSelection(ctx Context, selectedTeamName int) ([]TeamCollection, error) {
-	var v []TeamCollection
+func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int) (TeamSelected, error) {
+	var v TeamSelected
 	if selectedTeamName == 0 {
-		selectedTeamName = 21
+		selectedTeamName = 
 	}
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamName), nil)
 
@@ -95,7 +63,7 @@ func (c *Client) GetTeamSelection(ctx Context, selectedTeamName int) ([]TeamColl
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
-	io.Copy(os.Stdout, resp.Body)
+	// io.Copy(os.Stdout, resp.Body)
 
 	return v, err
 }

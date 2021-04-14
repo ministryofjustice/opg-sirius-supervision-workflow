@@ -33,11 +33,5 @@ describe("Work flow", () => {
   
   it("the nav link should contain logout", () => {
     cy.get(".moj-header__navigation-list > :nth-child(3) > a").should("have.attr", "href", "http://localhost:8080/auth/logout")
-  })
-  
-  it("should show the persons team thats logged in", () => {
-    cy.get("#hook-team-name").should("contain", "Go TaskForce")
-  })
-
- 
+  }) 
 });

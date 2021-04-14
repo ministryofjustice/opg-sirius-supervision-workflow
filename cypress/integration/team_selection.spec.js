@@ -9,4 +9,8 @@ describe("Team Selection", () => {
   cy.get("#change-team").should('contain', "Lay Team 1 - (Supervision)")
 })
 
+it("should show the persons team thats logged in", () => {
+  cy.get("#hook-team-name").should("contain", "Go TaskForce")
+})
+
 });

@@ -2,17 +2,21 @@
 
  <div id="team-banner" class="govuk-grid-row">
         <div id="team-banner-container" class="govuk-grid-column-full">
+        {{/* {{ if eq .selectedTeamName ""}} */}}
         {{ range .MyDetails.Teams }}
           <h2 class="govuk-heading-m" id="hook-team-name">{{ .DisplayName }}</h2>
         {{ end }}
+        {{/* {{ else if }}
+            <h2 class="govuk-heading-m" id="hook-team-name">{{ .selectedTeamName }}</h2>     
+        {{ end }} */}}
           <div class="govuk-form-group">
             <label class="govuk-label" for="change-team">
               Change view
             </label>
-            <select class="govuk-select" id="change-team" name="change-team">
-             {{ range .TeamSelection }}
-              <option value="team-1">{{ .Name }}</option>
-              {{ end }}
+            <select class="govuk-select" id="change-team" name="change-team" onchange="this.form.submit()">
+            {{ range .TeamSelection }}
+              <option value="{{ .Id }}">{{ .Name }}</option>
+            {{ end }}
             </select>
           </div>
         </div>
