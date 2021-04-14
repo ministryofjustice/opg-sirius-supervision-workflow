@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -92,12 +93,13 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails) ([]TeamCol
 		return v, err
 	}
 
-	// thing := myDetails.Teams[0].TeamId
-	// log.Println(thing)
+	thing := myDetails.Teams[0].TeamId
 
 	for i, _ := range v {
-		v[i].UserSelectedTeam = 7
+		v[i].UserSelectedTeam = thing
 	}
+	log.Println(v)
+
 	// io.Copy(os.Stdout, resp.Body)
 
 	return v, err

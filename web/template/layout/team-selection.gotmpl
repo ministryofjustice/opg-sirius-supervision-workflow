@@ -21,14 +21,14 @@
             </label>
             <select class="govuk-select" id="change-team" name="change-team" onchange="this.form.submit()">
             {{/* {{ $TeamSelected := .MyDetails.Teams }} */}}
-            {{/* {{ range .TeamSelection }} */}}
+            {{ range .TeamSelection }}
             
               {{/* <option value="{{ .TeamSelection[0].Id }}" selected >{{ .Name }}</option>
               <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
               <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
               <option value="{{ .TeamSelection.Id }}"  >{{ .Name }}</option> */}}
-              {{/* <option value="{{ .Id }}" {{if eq .Id $TeamSelected.TeamId}}selected{{end}}>{{ .Name }}</option> */}}
-            {{/* {{ end }} */}}
+              <option value="{{ .Id }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
+            {{ end }}
             </select>
           </div>
         </div>

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -59,7 +58,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TeamSelected:  teamSelected,
 		}
 
-		log.Print(vars.TeamSelected)
+		// log.Print(vars.TeamSelected)
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
