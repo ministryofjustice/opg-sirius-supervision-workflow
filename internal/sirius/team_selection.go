@@ -2,10 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
-	"os"
 )
 
 // {
@@ -67,12 +64,10 @@ type TeamCollection struct {
 	// TeamTypeHandle TeamType      `json"teamType"`
 }
 
-func (c *Client) GetTeamSelection(ctx Context, selectedTeamName int) ([]TeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context) ([]TeamCollection, error) {
 	var v []TeamCollection
-	if selectedTeamName == 0 {
-		selectedTeamName = 21
-	}
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamName), nil)
+
+	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 
 	if err != nil {
 		return v, err
@@ -95,7 +90,7 @@ func (c *Client) GetTeamSelection(ctx Context, selectedTeamName int) ([]TeamColl
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
-	io.Copy(os.Stdout, resp.Body)
+	// io.Copy(os.Stdout, resp.Body)
 
 	return v, err
 }

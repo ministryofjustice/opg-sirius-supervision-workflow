@@ -1,11 +1,12 @@
 {{ define "team-selection" }}
 
+<form>
  <div id="team-banner" class="govuk-grid-row">
         <div id="team-banner-container" class="govuk-grid-column-full">
         {{/* {{ if eq .selectedTeamName ""}} */}}
-        {{ range .MyDetails.Teams }}
+        {{/* {{ range .MyDetails.Teams }}
           <h2 class="govuk-heading-m" id="hook-team-name">{{ .DisplayName }}</h2>
-        {{ end }}
+        {{ end }} */}}
         {{/* {{ else if }}
             <h2 class="govuk-heading-m" id="hook-team-name">{{ .selectedTeamName }}</h2>     
         {{ end }} */}}
@@ -21,5 +22,5 @@
           </div>
         </div>
       </div>
-
+</form>
 {{ end }}

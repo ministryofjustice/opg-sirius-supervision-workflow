@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type TeamSelectedMembers struct {
@@ -35,10 +36,13 @@ type TeamSelected struct {
 	// TeamTypeHandle TeamType      `json"teamType"`
 }
 
-func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int) (TeamSelected, error) {
+func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int, myDetails UserDetails) (TeamSelected, error) {
 	var v TeamSelected
 	if selectedTeamName == 0 {
-		selectedTeamName = 
+		myTeamId, _ := strconv.Atoi(myDetails.Teams[0].TeamId)
+		selectedTeamName = myTeamId
+
+		// io.Copy(os.Stdout, resp.Body)
 	}
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamName), nil)
 
@@ -50,6 +54,7 @@ func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int) (TeamSelecte
 	if err != nil {
 		return v, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -63,7 +68,6 @@ func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int) (TeamSelecte
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
-	// io.Copy(os.Stdout, resp.Body)
 
 	return v, err
 }
