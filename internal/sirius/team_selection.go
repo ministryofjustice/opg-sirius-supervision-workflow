@@ -66,7 +66,9 @@ type TeamCollection struct {
 	UserSelectedTeam int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails) ([]TeamCollection, error) {
+var thing int
+
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
 	var v []TeamCollection
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
@@ -93,7 +95,11 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails) ([]TeamCol
 		return v, err
 	}
 
-	thing := myDetails.Teams[0].TeamId
+	if selectedTeamName == 0 {
+		thing = myDetails.Teams[0].TeamId
+	} else {
+		thing = selectedTeamName
+	}
 
 	for i, _ := range v {
 		v[i].UserSelectedTeam = thing
