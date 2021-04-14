@@ -12,12 +12,22 @@
         {{ end }} */}}
           <div class="govuk-form-group">
             <label class="govuk-label" for="change-team">
-              Change view
+            {{/* {{ .TeamSelected }} */}}
+            {{ range .TeamSelection  }}
+            {{ . }}
+            {{ end }}
+              Change view 
             </label>
             <select class="govuk-select" id="change-team" name="change-team" onchange="this.form.submit()">
-            {{ range .TeamSelection }}
-              <option value="{{ .Id }}">{{ .Name }}</option>
-            {{ end }}
+            {{/* {{ $TeamSelected := .MyDetails.Teams }} */}}
+            {{/* {{ range .TeamSelection }} */}}
+            
+              {{/* <option value="{{ .TeamSelection[0].Id }}" selected >{{ .Name }}</option>
+              <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
+              <option value="{{ .TeamSelection }}"  >{{ .Name }}</option>
+              <option value="{{ .TeamSelection.Id }}"  >{{ .Name }}</option> */}}
+              {{/* <option value="{{ .Id }}" {{if eq .Id $TeamSelected.TeamId}}selected{{end}}>{{ .Name }}</option> */}}
+            {{/* {{ end }} */}}
             </select>
           </div>
         </div>

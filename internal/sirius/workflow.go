@@ -23,7 +23,7 @@ type UserDetails struct {
 
 type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
-	TeamId      string `json:"id"`
+	TeamId      int    `json:"id"`
 }
 
 func (c *Client) SiriusUserDetails(ctx Context) (UserDetails, error) {

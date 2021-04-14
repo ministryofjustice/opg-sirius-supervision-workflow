@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -37,6 +38,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 
+		// log.Print(selectedTeamName)
+
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loadTaskTypes, err := client.GetTaskType(ctx)
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
@@ -55,6 +58,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TeamSelection: teamSelection,
 			TeamSelected:  teamSelected,
 		}
+
+		log.Print(vars.TeamSelected)
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}

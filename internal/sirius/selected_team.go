@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 type TeamSelectedMembers struct {
@@ -39,9 +38,7 @@ type TeamSelected struct {
 func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int, myDetails UserDetails) (TeamSelected, error) {
 	var v TeamSelected
 	if selectedTeamName == 0 {
-		myTeamId, _ := strconv.Atoi(myDetails.Teams[0].TeamId)
-		selectedTeamName = myTeamId
-
+		selectedTeamName = 12
 		// io.Copy(os.Stdout, resp.Body)
 	}
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamName), nil)
