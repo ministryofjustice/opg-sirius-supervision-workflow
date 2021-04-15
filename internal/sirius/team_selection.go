@@ -64,38 +64,43 @@ type TeamCollection struct {
 	// PhoneNumber string        `json:"phoneNumber"`
 	// TeamTypeHandle TeamType      `json"teamType"`
 	UserSelectedTeam int
-	Kate             int
+	// Kate             int
+}
+
+type TeamStoredData struct {
+	TeamId int
 }
 
 var selectedTeamId int
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, oldTeamId int) ([]TeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, oldTeamId int) ([]TeamCollection, TeamStoredData, error) {
 	log.Println("start function oldTeamId")
 	log.Println(oldTeamId)
 	var v []TeamCollection
+	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 
 	if err != nil {
-		return v, err
+		return v, k, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, err
+		return v, k, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
+		return v, k, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, newStatusError(resp)
+		return v, k, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, err
+		return v, k, err
 	}
 
 	// if selectedTeamName == 0 {
@@ -107,27 +112,31 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 	log.Println("team id before if statement")
 	log.Println(selectedTeamId)
 
-	if selectedTeamName == 0 && oldTeamId == 0 {
+	//when click next selectedTeamName = 0
+	if selectedTeamName != 0 {
+		k.TeamId = selectedTeamName
+	}
+
+	if selectedTeamName == 0 && k.TeamId == 0 {
 		selectedTeamId = myDetails.Teams[0].TeamId //first log on everything zero
 	} else if selectedTeamName == 0 {
-		selectedTeamId = oldTeamId //if submitted through page 2 take old value
+		selectedTeamId = k.TeamId //if submitted through page 2 take old value
 	} else {
 		selectedTeamId = selectedTeamName //if new value take that and add it into the struct
-
 	}
 	log.Println("team id after if statement")
 	log.Println(selectedTeamId)
 
 	for i, _ := range v {
 		v[i].UserSelectedTeam = selectedTeamId
-		v[i].Kate = selectedTeamId
+		// v[i].Kate = selectedTeamId
 	}
 
-	log.Println("kate ")
-	log.Println(v[0].Kate)
+	// log.Println("kate ")
+	// log.Println(v[0].Kate)
 	// log.Println("team selection end function v")
 	// log.Println(v)
-
+	log.Println(k)
 	// io.Copy(os.Stdout, resp.Body)
-	return v, err
+	return v, k, err
 }

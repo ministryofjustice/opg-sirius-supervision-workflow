@@ -12,18 +12,19 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int, sirius.TeamSelected) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context, sirius.UserDetails, int, int) ([]sirius.TeamCollection, error)
+	GetTeamSelection(sirius.Context, sirius.UserDetails, int, int) ([]sirius.TeamCollection, sirius.TeamStoredData, error)
 	GetTeamSelected(sirius.Context, []sirius.TeamCollection) (sirius.TeamSelected, error)
 }
 
 type workflowVars struct {
-	Path          string
-	MyDetails     sirius.UserDetails
-	TaskList      sirius.TaskList
-	TaskDetails   sirius.TaskDetails
-	LoadTasks     sirius.TaskTypes
-	TeamSelection []sirius.TeamCollection
-	TeamSelected  sirius.TeamSelected
+	Path           string
+	MyDetails      sirius.UserDetails
+	TaskList       sirius.TaskList
+	TaskDetails    sirius.TaskDetails
+	LoadTasks      sirius.TaskTypes
+	TeamSelection  []sirius.TeamCollection
+	TeamStoredData sirius.TeamStoredData
+	TeamSelected   sirius.TeamSelected
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -43,7 +44,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		log.Print(selectedTeamName)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName, oldTeamId)
+		teamSelection, teamStoreData, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName, oldTeamId)
 		selectedTeamMembers, err := client.GetTeamSelected(ctx, teamSelection)
 
 		loadTaskTypes, err := client.GetTaskType(ctx)
@@ -54,13 +55,14 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		vars := workflowVars{
-			Path:          r.URL.Path,
-			MyDetails:     myDetails,
-			TaskList:      taskList,
-			TaskDetails:   taskdetails,
-			LoadTasks:     loadTaskTypes,
-			TeamSelection: teamSelection,
-			TeamSelected:  selectedTeamMembers,
+			Path:           r.URL.Path,
+			MyDetails:      myDetails,
+			TaskList:       taskList,
+			TaskDetails:    taskdetails,
+			LoadTasks:      loadTaskTypes,
+			TeamSelection:  teamSelection,
+			TeamStoredData: teamStoreData,
+			TeamSelected:   selectedTeamMembers,
 		}
 
 		// log.Print(vars.TeamSelected)
