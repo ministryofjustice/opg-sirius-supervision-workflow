@@ -8,44 +8,30 @@ import (
 
 type SupervisionCaseOwnerDetail struct {
 	SupervisionCaseOwnerName string `json:"displayName"`
-	//SupervisionCaseOwnerId   int    `json:"id"`
 }
 
 type ClientDetails struct {
-	ClientCaseRecNumber string `json:"caseRecNumber"`
-	ClientFirstName     string `json:"firstname"`
-	ClientId            int    `json:"id"`
-	//ClientMiddlenames          string                     `json:"middlenames"`
-	//ClientSalutation           string                     `json:"salutation"`
+	ClientCaseRecNumber        string                     `json:"caseRecNumber"`
+	ClientFirstName            string                     `json:"firstname"`
+	ClientId                   int                        `json:"id"`
 	ClientSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
 	ClientSurname              string                     `json:"surname"`
-	//ClientUId                  string                     `json:"uId"`
 }
 
 type CaseItemsDetails struct {
-	//CaseItemCaseRecNumber string        `json:"caseRecNumber"`
-	//CaseItemSubtype       string        `json:"caseSubtype"`
-	//CaseItemType          string        `json:"caseType"`
 	CaseItemClient ClientDetails `json:"client"`
-	//CaseItemId            int           `json:"id"`
-	//CaseItemUId           string        `json:"uId"`
 }
 
 type AssigneeDetails struct {
 	AssigneeDisplayName string `json:"displayName"`
-	//AssigneeId          int    `json:"id"`
 }
 
 type ApiTask struct {
 	ApiTaskAssignee  AssigneeDetails    `json:"assignee"`
 	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
-	// Clients []string `json:"clients"`
-	// Description string             `json:"description"`
-	ApiTaskDueDate string `json:"dueDate"`
-	ApiTaskId      int    `json:"id"`
-	ApiTaskType    string `json:"name"`
-	// Persons     []string           `json:"persons"`
-	// Status      string             `json:"status"`
+	ApiTaskDueDate   string             `json:"dueDate"`
+	ApiTaskId        int                `json:"id"`
+	ApiTaskType      string             `json:"name"`
 }
 
 type PageDetails struct {
@@ -117,18 +103,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	var v TaskList
 	var k TaskDetails
 
-	teamID := selectedTeamMembers.Members[0].TeamMembersId
+	teamID := selectedTeamMembers.Id
 
-	// log.Print("task list search")
-	// log.Print(search)
-	// log.Print("task list displayTaskLimit")
-	// log.Print(displayTaskLimit)
-	// log.Print("task list team ID")
-	// log.Print(teamID)
-
-	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
-	//change-team=13&page=2&tasksPerPage=25
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks/%d?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
 	if err != nil {
 		return v, k, err
 	}
