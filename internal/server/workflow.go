@@ -12,7 +12,7 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int, sirius.TeamSelected) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, error)
+	GetTeamSelection(sirius.Context, sirius.UserDetails, int, int) ([]sirius.TeamCollection, error)
 	GetTeamSelected(sirius.Context, []sirius.TeamCollection) (sirius.TeamSelected, error)
 }
 
@@ -37,12 +37,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
+		oldTeamId, _ := strconv.Atoi(r.FormValue("feed-in-old-team-id"))
 		// get workflow to submit every time page reloads
 		log.Print("workflow selected team name")
 		log.Print(selectedTeamName)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
+		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName, oldTeamId)
 		selectedTeamMembers, err := client.GetTeamSelected(ctx, teamSelection)
 
 		loadTaskTypes, err := client.GetTaskType(ctx)

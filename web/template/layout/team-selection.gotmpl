@@ -8,6 +8,13 @@
          <h2 class="govuk-heading-m" id="hook-team-name">{{ .Name }}</h2>
           {{end}}
          {{ end }}
+      {{ range .TeamSelection }}
+      <select name="feed-in-old-team-id-select" onchange="this.form.submit()">
+        <option value="{{ .Kate }}" id="feed-in-old-team-id">{{ .Kate }}</label></option>
+      </select>
+          {{end}}
+        {{/* {{if ne 0 .UserSelectedTeam}}<h2 class="govuk-heading-m" id="feed-in-old-team-id">{{ .UserSelectedTeam }}</h2>{{end}} */}}
+       
           <div class="govuk-form-group">
             <label class="govuk-label" for="change-team">
               Change view 

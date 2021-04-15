@@ -64,25 +64,14 @@ type TeamCollection struct {
 	// PhoneNumber string        `json:"phoneNumber"`
 	// TeamTypeHandle TeamType      `json"teamType"`
 	UserSelectedTeam int
+	Kate             int
 }
 
 var selectedTeamId int
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
-	log.Println("team selection selectedTeamName")
-	log.Println(selectedTeamName)
-	log.Println("team selection start of function selectedTeamId")
-	log.Println(selectedTeamId)
-
-	if selectedTeamName == 0 {
-		selectedTeamId = myDetails.Teams[0].TeamId
-	} else {
-		selectedTeamId = selectedTeamName
-	}
-
-	log.Println("team selection after if team name 0 selectedTeamId")
-	log.Println(selectedTeamId)
-
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, oldTeamId int) ([]TeamCollection, error) {
+	log.Println("start function oldTeamId")
+	log.Println(oldTeamId)
 	var v []TeamCollection
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
@@ -109,12 +98,36 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 		return v, err
 	}
 
+	// if selectedTeamName == 0 {
+	// 	selectedTeamId = myDetails.Teams[0].TeamId
+	// } else {
+	// 	selectedTeamId = selectedTeamName
+	// }
+
+	log.Println("team id before if statement")
+	log.Println(selectedTeamId)
+
+	if selectedTeamName == 0 && oldTeamId == 0 {
+		selectedTeamId = myDetails.Teams[0].TeamId //first log on everything zero
+	} else if selectedTeamName == 0 {
+		selectedTeamId = oldTeamId //if submitted through page 2 take old value
+	} else {
+		selectedTeamId = selectedTeamName //if new value take that and add it into the struct
+
+	}
+	log.Println("team id after if statement")
+	log.Println(selectedTeamId)
+
 	for i, _ := range v {
 		v[i].UserSelectedTeam = selectedTeamId
+		v[i].Kate = selectedTeamId
 	}
 
-	log.Println("team selection end function selectedTeamId")
-	log.Println(selectedTeamId)
+	log.Println("kate ")
+	log.Println(v[0].Kate)
+	// log.Println("team selection end function v")
+	// log.Println(v)
+
 	// io.Copy(os.Stdout, resp.Body)
 	return v, err
 }
