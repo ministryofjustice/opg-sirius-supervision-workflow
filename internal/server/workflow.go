@@ -10,9 +10,9 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTaskList(sirius.Context, int, int, sirius.TeamSelected) (sirius.TaskList, sirius.TaskDetails, error)
 	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, error)
-	GetTeamSelected(sirius.Context, int, sirius.UserDetails) (sirius.TeamSelected, error)
+	GetTeamSelected(sirius.Context, []sirius.TeamCollection) (sirius.TeamSelected, error)
 }
 
 type workflowVars struct {
@@ -40,10 +40,12 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		// log.Print(selectedTeamName)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
 		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
-		teamSelected, err := client.GetTeamSelected(ctx, selectedTeamName, myDetails)
+		selectedTeamMembers, err := client.GetTeamSelected(ctx, teamSelection)
+
+		loadTaskTypes, err := client.GetTaskType(ctx)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamMembers)
+
 		if err != nil {
 			return err
 		}
@@ -55,7 +57,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TaskDetails:   taskdetails,
 			LoadTasks:     loadTaskTypes,
 			TeamSelection: teamSelection,
-			TeamSelected:  teamSelected,
+			TeamSelected:  selectedTeamMembers,
 		}
 
 		// log.Print(vars.TeamSelected)

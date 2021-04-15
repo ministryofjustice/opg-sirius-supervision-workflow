@@ -35,13 +35,11 @@ type TeamSelected struct {
 	// TeamTypeHandle TeamType      `json"teamType"`
 }
 
-func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int, myDetails UserDetails) (TeamSelected, error) {
+func (c *Client) GetTeamSelected(ctx Context, teamSelection []TeamCollection) (TeamSelected, error) {
 	var v TeamSelected
-	if selectedTeamName == 0 {
-		selectedTeamName = 12
-		// io.Copy(os.Stdout, resp.Body)
-	}
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamName), nil)
+	selectedTeamId := teamSelection[0].UserSelectedTeam
+
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamId), nil)
 
 	if err != nil {
 		return v, err
@@ -51,6 +49,8 @@ func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int, myDetails Us
 	if err != nil {
 		return v, err
 	}
+
+	// io.Copy(os.Stdout, resp.Body)
 
 	defer resp.Body.Close()
 
@@ -66,5 +66,6 @@ func (c *Client) GetTeamSelected(ctx Context, selectedTeamName int, myDetails Us
 		return v, err
 	}
 
+	//log.Println(v)
 	return v, err
 }
