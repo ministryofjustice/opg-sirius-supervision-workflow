@@ -118,11 +118,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	var v TaskList
 	var k TaskDetails
 	log.Println(selectedTeamMembers)
-	teamID := selectedTeamMembers.Id
+	teamID := selectedTeamMembers.Members[0].TeamMembersId
 	log.Println(teamID)
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
-	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks/%d?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks/%d?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
 	if err != nil {
 		return v, k, err
 	}
