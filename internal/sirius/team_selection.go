@@ -2,80 +2,26 @@ package sirius
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
-// {
-// 	"id":21,
-// 	"name":"Debt Management - (Supervision)",
-// 	// "phoneNumber":"0123456789",
-// 	// "displayName":"Debt Management - (Supervision)",
-// 	// "deleted":false,
-// 	// "email":"DebtManagement.team@opgtest.com",
-// 	"members":[
-// 		{"id": 79,
-// 		"name":"Finance",
-// 		"phoneNumber":"12345678",
-// 		"displayName":"Finance User",
-// 		"deleted":false,
-// 		"email":"finance.user@opgtest.com"
-// 		},
-// 		{"id":80,
-// 		"name":"Finance",
-// 		"phoneNumber":"12345678",
-// 		"displayName":"Finance Reporting",
-// 		"deleted":false,
-// 		"email":"finance.reporting@opgtest.com"
-// 		}
-// 		],
-// 		// "children":[],
-// 		// "teamType":{
-// 		// 	"handle":"FINANCE",
-// 		// 	"label":"Finance"
-// 		// }
-// }
-
 type TeamMembers struct {
-	// TeamMembersDeleted      bool   `json:"deleted"`
-	// TeamMembersDisplayName  string `json:"displayName"`
-	// TeamMembersEmail        string `json:"email"`
 	TeamMembersId   int    `json:"id"`
 	TeamMembersName string `json:"name"`
-	// TeamMembersPhoneNumeber string `json:"phoneNumber"`
 }
 
-// type TeamType struct {
-// 	TeamTypeDeprecated bool   `json:"deprecated"`
-// 	TeamTypeHandle     string `json:"handle"`
-// 	TeamTypeLabel      string `json:"label"`
-// }
-
 type TeamCollection struct {
-	// Children    []string      `json:"children"`
-	// Delete      bool          `json:"deleted"`
-	// DisplayName string        `json:"displayName"`
-	// Email       string        `json:"email"`
-	// GroupName   string        `json:"groupName"`
-	Id      int           `json:"id"`
-	Members []TeamMembers `json:"members"`
-	Name    string        `json:"name"`
-	// Parent      string        `json:"parent"`
-	// PhoneNumber string        `json:"phoneNumber"`
-	// TeamTypeHandle TeamType      `json"teamType"`
+	Id               int           `json:"id"`
+	Members          []TeamMembers `json:"members"`
+	Name             string        `json:"name"`
 	UserSelectedTeam int
-	// Kate             int
 }
 
 type TeamStoredData struct {
 	TeamId int
 }
 
-var selectedTeamId int
-
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, oldTeamId int) ([]TeamCollection, TeamStoredData, error) {
-	log.Println("start function oldTeamId")
-	log.Println(oldTeamId)
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, TeamStoredData, error) {
 	var v []TeamCollection
 	var k TeamStoredData
 
@@ -103,40 +49,15 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 		return v, k, err
 	}
 
-	// if selectedTeamName == 0 {
-	// 	selectedTeamId = myDetails.Teams[0].TeamId
-	// } else {
-	// 	selectedTeamId = selectedTeamName
-	// }
-
-	log.Println("team id before if statement")
-	log.Println(selectedTeamId)
-
-	//when click next selectedTeamName = 0
-	if selectedTeamName != 0 {
+	if selectedTeamName == 0 && k.TeamId == 0 {
+		k.TeamId = myDetails.Teams[0].TeamId
+	} else {
 		k.TeamId = selectedTeamName
 	}
 
-	if selectedTeamName == 0 && k.TeamId == 0 {
-		selectedTeamId = myDetails.Teams[0].TeamId //first log on everything zero
-	} else if selectedTeamName == 0 {
-		selectedTeamId = k.TeamId //if submitted through page 2 take old value
-	} else {
-		selectedTeamId = selectedTeamName //if new value take that and add it into the struct
-	}
-	log.Println("team id after if statement")
-	log.Println(selectedTeamId)
-
 	for i, _ := range v {
-		v[i].UserSelectedTeam = selectedTeamId
-		// v[i].Kate = selectedTeamId
+		v[i].UserSelectedTeam = k.TeamId
 	}
 
-	// log.Println("kate ")
-	// log.Println(v[0].Kate)
-	// log.Println("team selection end function v")
-	// log.Println(v)
-	log.Println(k)
-	// io.Copy(os.Stdout, resp.Body)
 	return v, k, err
 }

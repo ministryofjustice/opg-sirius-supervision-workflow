@@ -7,32 +7,14 @@ import (
 )
 
 type TeamSelectedMembers struct {
-	// TeamMembersDeleted      bool   `json:"deleted"`
-	// TeamMembersDisplayName  string `json:"displayName"`
-	// TeamMembersEmail        string `json:"email"`
 	TeamMembersId   int    `json:"id"`
 	TeamMembersName string `json:"name"`
-	// TeamMembersPhoneNumeber string `json:"phoneNumber"`
 }
 
-// type TeamType struct {
-// 	TeamTypeDeprecated bool   `json:"deprecated"`
-// 	TeamTypeHandle     string `json:"handle"`
-// 	TeamTypeLabel      string `json:"label"`
-// }
-
 type TeamSelected struct {
-	// Children    []string      `json:"children"`
-	// Delete      bool          `json:"deleted"`
-	// DisplayName string        `json:"displayName"`
-	// Email       string        `json:"email"`
-	// GroupName   string        `json:"groupName"`
 	Id      int                   `json:"id"`
 	Members []TeamSelectedMembers `json:"members"`
 	Name    string                `json:"name"`
-	// Parent      string        `json:"parent"`
-	// PhoneNumber string        `json:"phoneNumber"`
-	// TeamTypeHandle TeamType      `json"teamType"`
 }
 
 func (c *Client) GetTeamSelected(ctx Context, teamSelection []TeamCollection) (TeamSelected, error) {
@@ -50,8 +32,6 @@ func (c *Client) GetTeamSelected(ctx Context, teamSelection []TeamCollection) (T
 		return v, err
 	}
 
-	// io.Copy(os.Stdout, resp.Body)
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -66,6 +46,5 @@ func (c *Client) GetTeamSelected(ctx Context, teamSelection []TeamCollection) (T
 		return v, err
 	}
 
-	//log.Println(v)
 	return v, err
 }
