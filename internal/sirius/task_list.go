@@ -3,7 +3,6 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -117,11 +116,18 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers TeamSelected) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
-	log.Println(selectedTeamMembers)
+
 	teamID := selectedTeamMembers.Members[0].TeamMembersId
-	log.Println(teamID)
+
+	// log.Print("task list search")
+	// log.Print(search)
+	// log.Print("task list displayTaskLimit")
+	// log.Print(displayTaskLimit)
+	// log.Print("task list team ID")
+	// log.Print(teamID)
 
 	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	//change-team=13&page=2&tasksPerPage=25
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/tasks/%d?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
 	if err != nil {
 		return v, k, err
@@ -162,6 +168,5 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
 
-	log.Println(v)
 	return TaskList, TaskDetails, err
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -36,8 +37,9 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
-
-		// log.Print(selectedTeamName)
+		// get workflow to submit every time page reloads
+		log.Print("workflow selected team name")
+		log.Print(selectedTeamName)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)

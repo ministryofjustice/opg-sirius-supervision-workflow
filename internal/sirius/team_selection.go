@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -68,6 +69,20 @@ type TeamCollection struct {
 var selectedTeamId int
 
 func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
+	log.Println("team selection selectedTeamName")
+	log.Println(selectedTeamName)
+	log.Println("team selection start of function selectedTeamId")
+	log.Println(selectedTeamId)
+
+	if selectedTeamName == 0 {
+		selectedTeamId = myDetails.Teams[0].TeamId
+	} else {
+		selectedTeamId = selectedTeamName
+	}
+
+	log.Println("team selection after if team name 0 selectedTeamId")
+	log.Println(selectedTeamId)
+
 	var v []TeamCollection
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
@@ -94,17 +109,12 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 		return v, err
 	}
 
-	if selectedTeamName == 0 {
-		selectedTeamId = myDetails.Teams[0].TeamId
-	} else {
-		selectedTeamId = selectedTeamName
-	}
-
 	for i, _ := range v {
 		v[i].UserSelectedTeam = selectedTeamId
 	}
 
+	log.Println("team selection end function selectedTeamId")
+	log.Println(selectedTeamId)
 	// io.Copy(os.Stdout, resp.Body)
-
 	return v, err
 }
