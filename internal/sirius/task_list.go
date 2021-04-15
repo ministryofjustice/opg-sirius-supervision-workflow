@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -145,5 +146,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
 
+	log.Println(TaskList)
+	log.Println(TaskDetails)
 	return TaskList, TaskDetails, err
 }
