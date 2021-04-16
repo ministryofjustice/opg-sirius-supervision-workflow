@@ -1,5 +1,5 @@
 {{ define "pagination-bottom" }}
-<nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label" aria-label="bottom-pagination-label">
+<nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label"  role="navigation">
 <form action="{{ prefix "/supervision/workflow" }}" method="GET">
     <select class="govuk-select" id="change-team" style="display: none;" name="change-team" onchange="this.form.submit()">
                 {{ range .TeamSelection }}
