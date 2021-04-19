@@ -193,22 +193,22 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-func TestWorkflowUnauthenticated(t *testing.T) {
-	assert := assert.New(t)
+// func TestWorkflowUnauthenticated(t *testing.T) {
+// 	assert := assert.New(t)
 
-	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
-	template := &mockTemplates{}
+// 	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
+// 	template := &mockTemplates{}
 
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "", nil)
+// 	w := httptest.NewRecorder()
+// 	r, _ := http.NewRequest("GET", "", nil)
 
-	handler := loggingInfoForWorflow(client, template)
-	err := handler(sirius.PermissionSet{}, w, r)
+// 	handler := loggingInfoForWorflow(client, template)
+// 	err := handler(sirius.PermissionSet{}, w, r)
 
-	assert.Equal(sirius.ErrUnauthorized, err)
+// 	assert.Equal(sirius.ErrUnauthorized, err)
 
-	assert.Equal(0, template.count)
-}
+// 	assert.Equal(0, template.count)
+// }
 
 // func TestWorkflowSiriusErrors(t *testing.T) {
 // 	assert := assert.New(t)
