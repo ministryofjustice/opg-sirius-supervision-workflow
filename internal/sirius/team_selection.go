@@ -21,32 +21,32 @@ type TeamStoredData struct {
 	TeamId int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, TeamStoredData, error) {
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
 	var v []TeamCollection
 	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 
 	if err != nil {
-		return v, k, err
+		return v, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, k, err
+		return v, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, k, ErrUnauthorized
+		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, k, newStatusError(resp)
+		return v, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, k, err
+		return v, err
 	}
 
 	if selectedTeamName == 0 && k.TeamId == 0 {
@@ -59,5 +59,5 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 		v[i].UserSelectedTeam = k.TeamId
 	}
 
-	return v, k, err
+	return v, err
 }

@@ -6,7 +6,7 @@ describe("Team Selection", () => {
   });
 
  it("pulls through my team on the change view bar", () => {
-  cy.get("#change-team").should('contain', "Lay Team 1 - (Supervision)")
+  cy.get("#change-team").should('contain', "Go TaskForce")
 })
 
 it("should show the persons team thats logged in", () => {

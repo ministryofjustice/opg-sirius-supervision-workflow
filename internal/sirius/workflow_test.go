@@ -52,6 +52,7 @@ func TestMyDetails(t *testing.T) {
 							"phoneNumber": dsl.Like("12345678"),
 							"teams": dsl.EachLike(map[string]interface{}{
 								"displayName": dsl.Like("Go TaskForce"),
+								"id":          dsl.Like(13),
 							}, 1),
 							"displayName": dsl.Like("case manager"),
 							"deleted":     dsl.Like(false),
@@ -73,7 +74,10 @@ func TestMyDetails(t *testing.T) {
 				Name:        "case",
 				PhoneNumber: "12345678",
 				Teams: []MyDetailsTeam{
-					{DisplayName: "Go TaskForce"},
+					{
+						TeamId:      13,
+						DisplayName: "Go TaskForce",
+					},
 				},
 				DisplayName: "case manager",
 				Deleted:     false,

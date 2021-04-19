@@ -49,7 +49,7 @@ func TestTeamSelection(t *testing.T) {
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.EachLike(map[string]interface{}{
 							"id":   dsl.Like(13),
-							"name": dsl.Like("Lay Team 1 - (Supervision)"),
+							"name": dsl.Like("Go TaskForce"),
 							"members": dsl.EachLike(map[string]interface{}{
 								"id":   dsl.Like(96),
 								"name": dsl.Like("LayTeam1 - (Supervision)"),
@@ -64,7 +64,7 @@ func TestTeamSelection(t *testing.T) {
 			expectedResponse: []TeamCollection{
 				{
 					Id:   13,
-					Name: "Lay Team 1 - (Supervision)",
+					Name: "Go TaskForce",
 					Members: []TeamMembers{
 						{
 							TeamMembersId:   96,
@@ -84,8 +84,8 @@ func TestTeamSelection(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamCollection, TeamStoredData, err := client.GetTeamSelection(getContext(tc.cookies), tc.myDetails, 13)
-				assert.Equal(t, tc.expectedResponse, myTeamCollection, TeamStoredData)
+				myTeamCollection, err := client.GetTeamSelection(getContext(tc.cookies), tc.myDetails, 13)
+				assert.Equal(t, tc.expectedResponse, myTeamCollection)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
 			}))

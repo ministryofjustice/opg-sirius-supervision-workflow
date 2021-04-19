@@ -20,13 +20,12 @@ func TestTaskList(t *testing.T) {
 	}
 	defer pact.Teardown()
 	testCases := []struct {
-		name                string
-		setup               func()
-		cookies             []*http.Cookie
-		selectedTeamMembers TeamSelected
-		expectedResponse    TaskList
-		taskDetails         TaskDetails
-		expectedError       error
+		name             string
+		setup            func()
+		cookies          []*http.Cookie
+		expectedResponse TaskList
+		taskDetails      TaskDetails
+		expectedError    error
 	}{
 		{
 			name: "OK",
@@ -114,8 +113,7 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				tc.selectedTeamMembers.Id = 13
-				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, tc.selectedTeamMembers)
+				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13)
 				assert.Equal(t, tc.expectedResponse.WholeTaskList[0], taskList.WholeTaskList[0], taskDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

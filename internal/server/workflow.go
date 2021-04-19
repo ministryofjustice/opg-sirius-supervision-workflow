@@ -10,9 +10,8 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.TeamSelected) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, sirius.TeamStoredData, error)
-	GetTeamSelected(sirius.Context, []sirius.TeamCollection) (sirius.TeamSelected, error)
+	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, error)
 }
 
 type workflowVars struct {
@@ -23,7 +22,6 @@ type workflowVars struct {
 	LoadTasks      sirius.TaskTypes
 	TeamSelection  []sirius.TeamCollection
 	TeamStoredData sirius.TeamStoredData
-	TeamSelected   sirius.TeamSelected
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -39,25 +37,22 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-		teamSelection, teamStoreData, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
-		selectedTeamMembers, err := client.GetTeamSelected(ctx, teamSelection)
-
+		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
+		loggedintTeamId := myDetails.Teams[0].TeamId
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamMembers)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedintTeamId)
 
 		if err != nil {
 			return err
 		}
 
 		vars := workflowVars{
-			Path:           r.URL.Path,
-			MyDetails:      myDetails,
-			TaskList:       taskList,
-			TaskDetails:    taskdetails,
-			LoadTasks:      loadTaskTypes,
-			TeamSelection:  teamSelection,
-			TeamStoredData: teamStoreData,
-			TeamSelected:   selectedTeamMembers,
+			Path:          r.URL.Path,
+			MyDetails:     myDetails,
+			TaskList:      taskList,
+			TaskDetails:   taskdetails,
+			LoadTasks:     loadTaskTypes,
+			TeamSelection: teamSelection,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)

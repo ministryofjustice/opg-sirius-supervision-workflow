@@ -100,11 +100,17 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 	}
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers TeamSelected) (TaskList, TaskDetails, error) {
+var teamID int
+
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamID int) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
 
-	teamID := selectedTeamMembers.Id
+	if selectedTeamMembers == 0 {
+		teamID = loggedInTeamID
+	} else {
+		teamID = selectedTeamMembers
+	}
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
 	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks", teamID), nil)
