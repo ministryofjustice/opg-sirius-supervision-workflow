@@ -17,9 +17,10 @@
         </label>
         <form action="{{ prefix "/" }}" method="GET" id="assignTeam-form">
           <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-            {{/* <option value=""disabled>Select a team</option> */}}
+            <option value=""disabled>Select a team</option>
               {{ range .TeamSelection }}
-                <option value="{{ .Id }}"selected>{{ .Name }}</option>
+                <option value="{{ .Id }}>{{ .Name }}</option>
+                <option value="{{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
               {{ end }}
           </select>
           </form>
@@ -30,7 +31,7 @@
           Assign to a case manager
         </label>
         <select class="govuk-select" id="assignCM" name="assignTeam">
-        {{/* <option value=""disabled selected>Select a case manager</option> */}}
+        <option value=""disabled>Select a case manager</option>
           {{ range .TeamSelected.Members }}
             <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
           {{ end }}

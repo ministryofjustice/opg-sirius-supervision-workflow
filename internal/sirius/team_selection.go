@@ -15,13 +15,14 @@ type TeamCollection struct {
 	Members          []TeamMembers `json:"members"`
 	Name             string        `json:"name"`
 	UserSelectedTeam int
+	SelectedTeamId   int
 }
 
 type TeamStoredData struct {
 	TeamId int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int) ([]TeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, selectedTeamMembers TeamSelected) ([]TeamCollection, error) {
 	var v []TeamCollection
 	var k TeamStoredData
 
@@ -57,6 +58,7 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 
 	for i, _ := range v {
 		v[i].UserSelectedTeam = k.TeamId
+		v[i].SelectedTeamId = selectedTeamMembers.selectedTeamToAssignTask
 	}
 
 	return v, err

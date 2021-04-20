@@ -13,9 +13,10 @@ type TeamSelectedMembers struct {
 }
 
 type TeamSelected struct {
-	Id      int                   `json:"id"`
-	Members []TeamSelectedMembers `json:"members"`
-	Name    string                `json:"name"`
+	Id                       int                   `json:"id"`
+	Members                  []TeamSelectedMembers `json:"members"`
+	Name                     string                `json:"name"`
+	selectedTeamToAssignTask int
 }
 
 func (c *Client) GetMembersForTeam(ctx Context, myDetails UserDetails, selectedTeamToAssignTask int) (TeamSelected, error) {
@@ -49,6 +50,8 @@ func (c *Client) GetMembersForTeam(ctx Context, myDetails UserDetails, selectedT
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
+
+	v.selectedTeamToAssignTask = selectedTeamToAssignTask
 
 	return v, err
 }
