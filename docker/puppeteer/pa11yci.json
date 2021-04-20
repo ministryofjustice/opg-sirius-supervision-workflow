@@ -19,6 +19,6 @@
       ]
   },
   "urls": [
-      "http://app:8888/supervision/workflow"
+      "http://app:8888/"
   ]
 }

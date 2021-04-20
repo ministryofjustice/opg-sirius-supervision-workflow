@@ -28,9 +28,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.RedirectHandler(prefix+"/supervision/workflow", http.StatusFound))
-
-	mux.Handle("/supervision/workflow",
+	mux.Handle("/",
 		wrap(
 			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
 
