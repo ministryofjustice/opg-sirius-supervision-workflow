@@ -24,6 +24,7 @@ func TestTaskList(t *testing.T) {
 		setup            func()
 		cookies          []*http.Cookie
 		expectedResponse TaskList
+		taskDetails      TaskDetails
 		expectedError    error
 	}{
 		{
@@ -35,7 +36,7 @@ func TestTaskList(t *testing.T) {
 					UponReceiving("A request to get tasks which have long names").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/v1/assignees/team/tasks"),
+						Path:   dsl.String("/api/v1/assignees/team/13/tasks"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -112,7 +113,7 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25)
+				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13)
 				assert.Equal(t, tc.expectedResponse.WholeTaskList[0], taskList.WholeTaskList[0], taskDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

@@ -12,13 +12,13 @@
           "WCAG2AA.Principle1.Guideline1_3.1_3_1.F92,ARIA4",
           "definition-list"
       ],
-      "hideElements": ".govuk-back-link, input[type='radio'][aria-expanded], #select-task-0, #hook-open-case",
+      "hideElements": ".govuk-back-link, input[type='radio'][aria-expanded], #select-task-0, #hook-open-case, .govuk-skip-link",
       "runners": [
           "axe",
           "htmlcs"
       ]
   },
   "urls": [
-      "http://app:8888/supervision/workflow"
+      "http://app:8888/"
   ]
 }

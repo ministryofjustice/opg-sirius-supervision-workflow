@@ -103,14 +103,6 @@ jobs:
             docker container create --name temp -v pacts_data:/root hello-world
             docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
             docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
-      - run:
-          name: Run pa11y
-          command: |
-            docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
-      - run:
-          name: Run Lighthouse
-          command: |
-            docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
             
   cypress:
     docker:

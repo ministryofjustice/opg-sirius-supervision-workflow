@@ -2,7 +2,7 @@ describe("Pagination", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow");
+      cy.visit("/");
   });
 
   it("shows correct number of total tasks", () => {

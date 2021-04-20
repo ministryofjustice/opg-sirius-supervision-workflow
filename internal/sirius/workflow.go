@@ -23,6 +23,7 @@ type UserDetails struct {
 
 type MyDetailsTeam struct {
 	DisplayName string `json:"displayName"`
+	TeamId      int    `json:"id"`
 }
 
 func (c *Client) SiriusUserDetails(ctx Context) (UserDetails, error) {
@@ -37,6 +38,7 @@ func (c *Client) SiriusUserDetails(ctx Context) (UserDetails, error) {
 	if err != nil {
 		return v, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {

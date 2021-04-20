@@ -10,23 +10,18 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, error)
 }
 
 type workflowVars struct {
-	Path               string
-	ID                 int
-	Firstname          string
-	Surname            string
-	Email              string
-	PhoneNumber        string
-	Organisation       string
-	Roles              []string
-	Teams              []string
-	CanEditPhoneNumber bool
-	TaskList           sirius.TaskList
-	TaskDetails        sirius.TaskDetails
-	LoadTasks          sirius.TaskTypes
+	Path           string
+	MyDetails      sirius.UserDetails
+	TaskList       sirius.TaskList
+	TaskDetails    sirius.TaskDetails
+	LoadTasks      sirius.TaskTypes
+	TeamSelection  []sirius.TeamCollection
+	TeamStoredData sirius.TeamStoredData
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -39,24 +34,25 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
+		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
+		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
+		loggedintTeamId := myDetails.Teams[0].TeamId
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedintTeamId)
+
 		if err != nil {
 			return err
 		}
 
 		vars := workflowVars{
-			Path:        r.URL.Path,
-			ID:          myDetails.ID,
-			Firstname:   myDetails.Firstname,
-			Surname:     myDetails.Surname,
-			Email:       myDetails.Email,
-			PhoneNumber: myDetails.PhoneNumber,
-			TaskList:    taskList,
-			TaskDetails: taskdetails,
-			LoadTasks:   loadTaskTypes,
+			Path:          r.URL.Path,
+			MyDetails:     myDetails,
+			TaskList:      taskList,
+			TaskDetails:   taskdetails,
+			LoadTasks:     loadTaskTypes,
+			TeamSelection: teamSelection,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)

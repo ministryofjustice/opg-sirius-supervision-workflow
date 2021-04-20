@@ -28,12 +28,11 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", http.RedirectHandler(prefix+"/supervision/workflow", http.StatusFound))
+	mux.Handle("/",
+      wrap(
+			    loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
+  
 	mux.Handle("/health-check", healthCheck())
-
-	mux.Handle("/supervision/workflow",
-		wrap(
-			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
 	mux.Handle("/assets/", static)
