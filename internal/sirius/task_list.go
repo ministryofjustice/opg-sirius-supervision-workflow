@@ -101,12 +101,12 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamID int) (TaskList, TaskDetails, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
 
 	if selectedTeamMembers == 0 {
-		teamID = loggedInTeamID
+		teamID = loggedInTeamId
 	} else {
 		teamID = selectedTeamMembers
 	}

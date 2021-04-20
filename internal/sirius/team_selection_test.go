@@ -21,12 +21,12 @@ func TestTeamSelection(t *testing.T) {
 	defer pact.Teardown()
 
 	testCases := []struct {
-		name             string
-		setup            func()
-		cookies          []*http.Cookie
-		myDetails        UserDetails
-		expectedResponse []TeamCollection
-		expectedError    error
+		name                string
+		setup               func()
+		selectedTeamMembers TeamSelected
+		cookies             []*http.Cookie
+		expectedResponse    []TeamCollection
+		expectedError       error
 	}{
 		{
 			name: "TeamCollection",
@@ -72,6 +72,7 @@ func TestTeamSelection(t *testing.T) {
 						},
 					},
 					UserSelectedTeam: 13,
+					SelectedTeamId:   13,
 				},
 			},
 		},
@@ -84,7 +85,7 @@ func TestTeamSelection(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamCollection, err := client.GetTeamSelection(getContext(tc.cookies), tc.myDetails, 13)
+				myTeamCollection, err := client.GetTeamSelection(getContext(tc.cookies), 13, 13, tc.selectedTeamMembers)
 				assert.Equal(t, tc.expectedResponse, myTeamCollection)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

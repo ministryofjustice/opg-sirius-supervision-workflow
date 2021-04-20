@@ -11,8 +11,8 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context, sirius.UserDetails, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
-	GetMembersForTeam(sirius.Context, sirius.UserDetails, int) (sirius.TeamSelected, error)
+	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
+	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
 }
 
 type workflowVars struct {
@@ -40,17 +40,18 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
+		loggedInTeamId := myDetails.Teams[0].TeamId
 
-		loggedintTeamId := myDetails.Teams[0].TeamId
 		loadTaskTypes, err := client.GetTaskType(ctx)
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedintTeamId)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
 
-		selectedTeamMembers, err := client.GetMembersForTeam(ctx, myDetails, selectedTeamToAssignTask)
+		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
+
 		if err != nil {
 			return err
 		}
 
-		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName, selectedTeamMembers)
+		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName, selectedTeamMembers)
 
 		vars := workflowVars{
 			Path:          r.URL.Path,

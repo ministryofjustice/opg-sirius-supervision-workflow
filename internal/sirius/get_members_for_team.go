@@ -3,7 +3,6 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -19,17 +18,13 @@ type TeamSelected struct {
 	selectedTeamToAssignTask int
 }
 
-func (c *Client) GetMembersForTeam(ctx Context, myDetails UserDetails, selectedTeamToAssignTask int) (TeamSelected, error) {
+func (c *Client) GetMembersForTeam(ctx Context, loggedInTeamId int, selectedTeamToAssignTask int) (TeamSelected, error) {
 	var v TeamSelected
-	log.Println("v.selectedTeamToAssignTask")
-	log.Println(v.selectedTeamToAssignTask)
-	log.Println("selectedTeamToAssignTask")
-	log.Println(selectedTeamToAssignTask)
+
 	if selectedTeamToAssignTask == 0 && v.selectedTeamToAssignTask == 0 {
-		selectedTeamToAssignTask = myDetails.Teams[0].TeamId
+		selectedTeamToAssignTask = loggedInTeamId
 	}
 
-	// log.Println(selectedTeamToAssignTask)
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamToAssignTask), nil)
 
 	if err != nil {

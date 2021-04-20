@@ -23,7 +23,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTeamName int, selectedTeamMembers TeamSelected) ([]TeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers TeamSelected) ([]TeamCollection, error) {
 	var v []TeamCollection
 	var k TeamStoredData
 
@@ -52,13 +52,13 @@ func (c *Client) GetTeamSelection(ctx Context, myDetails UserDetails, selectedTe
 	}
 
 	if selectedTeamName == 0 && k.TeamId == 0 {
-		k.TeamId = myDetails.Teams[0].TeamId
+		k.TeamId = loggedInTeamId
 	} else {
 		k.TeamId = selectedTeamName
 	}
 
 	if selectedTeamMembers.selectedTeamToAssignTask == 0 && k.SelectedTeam == 0 {
-		k.SelectedTeam = myDetails.Teams[0].TeamId
+		k.SelectedTeam = loggedInTeamId
 	} else {
 		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}

@@ -18,6 +18,8 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.TeamCollection
+	teamStoredData    sirius.TeamStoredData
+	teamSelected      sirius.TeamSelected
 }
 
 func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -34,14 +36,21 @@ func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context) (sirius.TaskTy
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int) (sirius.TaskList, sirius.TaskDetails, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int) (sirius.TaskList, sirius.TaskDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.taskListData, m.taskDetailsData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, myDetails sirius.UserDetails, selectedTeamName int) ([]sirius.TeamCollection, error) {
+func (m *mockWorkflowInformation) GetMembersForTeam(ctx sirius.Context, loggedInTeamId int, selectedTeamToAssignTask int) (sirius.TeamSelected, error) {
+	m.count += 1
+	m.lastCtx = ctx
+
+	return m.teamSelected, m.err
+}
+
+func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers sirius.TeamSelected) ([]sirius.TeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -126,7 +135,7 @@ func TestGetUserDetails(t *testing.T) {
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(4, client.count)
+	assert.Equal(5, client.count)
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
