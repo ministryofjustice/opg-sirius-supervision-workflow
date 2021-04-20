@@ -63,7 +63,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: server.New(logger, client, tmpls, prefix, siriusURL, siriusPublicURL, webDir),
+		Handler: server.New(logger, client, tmpls, prefix, siriusPublicURL, webDir),
 	}
 
 	go func() {
