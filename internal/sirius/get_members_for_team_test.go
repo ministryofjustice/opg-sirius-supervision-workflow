@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTaskTypes(t *testing.T) {
+func TestGetMembersForTeam(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
 		Provider:          "sirius",
@@ -24,19 +24,19 @@ func TestTaskTypes(t *testing.T) {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse TaskTypes
+		expectedResponse TeamSelected
 		expectedError    error
 	}{
 		{
-			name: "Test Task Types",
+			name: "Test Get Members for Team",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User logged in").
-					UponReceiving("A request to get task types").
+					UponReceiving("A request to get team members for selected team").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/v1/tasktypes/supervision"),
+						Path:   dsl.String("/api/v1/teams/14"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -47,13 +47,12 @@ func TestTaskTypes(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"task_types": dsl.Like(map[string]interface{}{
-								"handle":     dsl.Like("CDFC"),
-								"incomplete": dsl.Like("Correspondence - Review failed draft"),
-								"category":   dsl.Like("supervision"),
-								"complete":   dsl.Like("Correspondence - Reviewed draft failure"),
-								"user":       dsl.Like(true),
-							}),
+							"id":   dsl.Like(14),
+							"name": dsl.Like("Lay Team 2 - (Supervision)"),
+							"members": dsl.EachLike(map[string]interface{}{
+								"id":          dsl.Like(106),
+								"displayName": dsl.Like("LayTeam2 User1"),
+							}, 1),
 						}),
 					})
 			},
@@ -61,14 +60,16 @@ func TestTaskTypes(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: TaskTypes{
-				TaskTypeList: ApiTaskTypes{
-					Handle:     "CDFC",
-					Incomplete: "Correspondence - Review failed draft",
-					Category:   "supervision",
-					Complete:   "Correspondence - Reviewed draft failure",
-					User:       true,
+			expectedResponse: TeamSelected{
+				Id:   14,
+				Name: "Lay Team 2 - (Supervision)",
+				Members: []TeamSelectedMembers{
+					{
+						TeamMembersId:   106,
+						TeamMembersName: "LayTeam2 User1",
+					},
 				},
+				selectedTeamToAssignTask: 14,
 			},
 		},
 	}
@@ -80,8 +81,8 @@ func TestTaskTypes(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTaskTypes, err := client.GetTaskType(getContext(tc.cookies))
-				assert.Equal(t, tc.expectedResponse, myTaskTypes)
+				myTeamMembers, err := client.GetMembersForTeam(getContext(tc.cookies), 13, 14)
+				assert.Equal(t, tc.expectedResponse, myTeamMembers)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
 			}))

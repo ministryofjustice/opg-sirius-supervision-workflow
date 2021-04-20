@@ -29,12 +29,12 @@ func TestTeamSelection(t *testing.T) {
 		expectedError       error
 	}{
 		{
-			name: "TeamCollection",
+			name: "Test Team Selection",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User logged in").
-					UponReceiving("A request to get teams").
+					UponReceiving("A request to get all teams for dropdown").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/teams"),

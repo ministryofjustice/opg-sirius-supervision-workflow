@@ -18,7 +18,10 @@ type TeamSelected struct {
 	selectedTeamToAssignTask int
 }
 
+// {14 [{106 LayTeam2 User1}] Lay Team 2 - (Supervision) 14}
+
 func (c *Client) GetMembersForTeam(ctx Context, loggedInTeamId int, selectedTeamToAssignTask int) (TeamSelected, error) {
+	//13 14
 	var v TeamSelected
 
 	if selectedTeamToAssignTask == 0 && v.selectedTeamToAssignTask == 0 {

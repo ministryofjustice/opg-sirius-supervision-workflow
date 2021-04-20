@@ -28,7 +28,7 @@ func TestPermissions(t *testing.T) {
 		expectedError    error
 	}{
 		{
-			name: "OK",
+			name: "Test My Permissions",
 			setup: func() {
 				pact.
 					AddInteraction().

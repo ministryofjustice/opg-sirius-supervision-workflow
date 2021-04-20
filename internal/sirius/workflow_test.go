@@ -28,12 +28,12 @@ func TestMyDetails(t *testing.T) {
 		expectedError     error
 	}{
 		{
-			name: "OK",
+			name: "Test Workflow",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User exists").
-					UponReceiving("A request to get my details").
+					UponReceiving("A request to workflow page").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/users/current"),
