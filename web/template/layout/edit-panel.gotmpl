@@ -19,8 +19,7 @@
           <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
             <option value=""disabled>Select a team</option>
               {{ range .TeamSelection }}
-                <option value="{{ .Id }}>{{ .Name }}</option>
-                <option value="{{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
               {{ end }}
           </select>
           </form>

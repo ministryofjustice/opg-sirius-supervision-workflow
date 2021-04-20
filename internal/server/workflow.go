@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -47,7 +46,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedintTeamId)
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, myDetails, selectedTeamToAssignTask)
-		log.Println(selectedTeamMembers)
 		if err != nil {
 			return err
 		}

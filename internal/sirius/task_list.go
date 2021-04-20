@@ -105,7 +105,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	var v TaskList
 	var k TaskDetails
 
-	if selectedTeamMembers == 0 {
+	if selectedTeamMembers == 0 && teamID == 0 {
 		teamID = loggedInTeamID
 	} else {
 		teamID = selectedTeamMembers
