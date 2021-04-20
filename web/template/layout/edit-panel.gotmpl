@@ -15,12 +15,14 @@
         <label class="govuk-label" for="sort">
           Assign to a team
         </label>
-        <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-          {{/* <option value=""disabled>Select a team</option> */}}
-            {{ range .TeamSelection }}
-              <option value="{{ .Id }}">{{ .Name }}</option>
-            {{ end }}
-        </select>
+        <form action="{{ prefix "/" }}" method="GET" id="assignTeam-form">
+          <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
+            {{/* <option value=""disabled>Select a team</option> */}}
+              {{ range .TeamSelection }}
+                <option value="{{ .Id }}"selected>{{ .Name }}</option>
+              {{ end }}
+          </select>
+          </form>
       </div>
 
       <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
@@ -30,7 +32,7 @@
         <select class="govuk-select" id="assignCM" name="assignTeam">
         {{/* <option value=""disabled selected>Select a case manager</option> */}}
           {{ range .TeamSelected.Members }}
-            <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
+            <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
           {{ end }}
           
           <h1> for caseManager in data.caseManagers </h1>
