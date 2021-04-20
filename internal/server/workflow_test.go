@@ -67,7 +67,7 @@ func TestGetUserDetails(t *testing.T) {
 		Teams: []sirius.MyDetailsTeam{
 			{
 				TeamId:      13,
-				DisplayName: "Go TaskForce",
+				DisplayName: "Lay Team 1 - (Supervision)",
 			},
 		},
 	}
@@ -116,7 +116,7 @@ func TestGetUserDetails(t *testing.T) {
 					TeamMembersName: "LayTeam1 User11",
 				},
 			},
-			Name: "Go TaskForce",
+			Name: "Lay Team 1 - (Supervision)",
 		},
 	}
 
@@ -148,7 +148,7 @@ func TestGetUserDetails(t *testing.T) {
 			Teams: []sirius.MyDetailsTeam{
 				{
 					TeamId:      13,
-					DisplayName: "Go TaskForce",
+					DisplayName: "Lay Team 1 - (Supervision)",
 				},
 			},
 		},
@@ -195,7 +195,7 @@ func TestGetUserDetails(t *testing.T) {
 						TeamMembersName: "LayTeam1 User11",
 					},
 				},
-				Name: "Go TaskForce",
+				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
 	}, template.lastVars)

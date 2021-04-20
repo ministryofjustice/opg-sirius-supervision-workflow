@@ -6,11 +6,11 @@ describe("Team Selection", () => {
   });
 
  it("pulls through my team on the change view bar", () => {
-  cy.get("#team-banner-container > .govuk-form-group > .govuk-select").should('contain', "Go TaskForce")
+  cy.get("#team-banner-container > .govuk-form-group > .govuk-select").should('contain', "Lay Team 1 - (Supervision)")
 })
 
 it("should show the persons team thats logged in", () => {
-  cy.get("#hook-team-name").should("contain", "Go TaskForce")
+  cy.get("#hook-team-name").should("contain", "Lay Team 1 - (Supervision)")
 })
 
 });

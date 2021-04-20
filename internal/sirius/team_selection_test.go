@@ -49,10 +49,10 @@ func TestTeamSelection(t *testing.T) {
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.EachLike(map[string]interface{}{
 							"id":   dsl.Like(13),
-							"name": dsl.Like("Go TaskForce"),
+							"name": dsl.Like("Lay Team 1 - (Supervision)"),
 							"members": dsl.EachLike(map[string]interface{}{
 								"id":   dsl.Like(96),
-								"name": dsl.Like("LayTeam1 - (Supervision)"),
+								"name": dsl.Like("LayTeam1 User11"),
 							}, 1),
 						}, 1),
 					})
@@ -64,11 +64,11 @@ func TestTeamSelection(t *testing.T) {
 			expectedResponse: []TeamCollection{
 				{
 					Id:   13,
-					Name: "Go TaskForce",
+					Name: "Lay Team 1 - (Supervision)",
 					Members: []TeamMembers{
 						{
 							TeamMembersId:   96,
-							TeamMembersName: "LayTeam1 - (Supervision)",
+							TeamMembersName: "LayTeam1 User11",
 						},
 					},
 					UserSelectedTeam: 13,

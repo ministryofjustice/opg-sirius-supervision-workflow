@@ -36,7 +36,7 @@ func TestGetMembersForTeam(t *testing.T) {
 					UponReceiving("A request to get team members for selected team").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
-						Path:   dsl.String("/api/v1/teams/14"),
+						Path:   dsl.String("/api/v1/teams/13"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -47,11 +47,11 @@ func TestGetMembersForTeam(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"id":   dsl.Like(14),
-							"name": dsl.Like("Lay Team 2 - (Supervision)"),
+							"id":   dsl.Like(13),
+							"name": dsl.Like("Lay Team 1 - (Supervision)"),
 							"members": dsl.EachLike(map[string]interface{}{
-								"id":          dsl.Like(106),
-								"displayName": dsl.Like("LayTeam2 User1"),
+								"id":          dsl.Like(96),
+								"displayName": dsl.Like("LayTeam1 User11"),
 							}, 1),
 						}),
 					})
@@ -61,15 +61,15 @@ func TestGetMembersForTeam(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedResponse: TeamSelected{
-				Id:   14,
-				Name: "Lay Team 2 - (Supervision)",
+				Id:   13,
+				Name: "Lay Team 1 - (Supervision)",
 				Members: []TeamSelectedMembers{
 					{
-						TeamMembersId:   106,
-						TeamMembersName: "LayTeam2 User1",
+						TeamMembersId:   96,
+						TeamMembersName: "LayTeam1 User11",
 					},
 				},
-				selectedTeamToAssignTask: 14,
+				selectedTeamToAssignTask: 13,
 			},
 		},
 	}
@@ -81,7 +81,7 @@ func TestGetMembersForTeam(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamMembers, err := client.GetMembersForTeam(getContext(tc.cookies), 13, 14)
+				myTeamMembers, err := client.GetMembersForTeam(getContext(tc.cookies), 13, 13)
 				assert.Equal(t, tc.expectedResponse, myTeamMembers)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
