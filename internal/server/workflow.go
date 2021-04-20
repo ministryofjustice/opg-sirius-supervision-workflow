@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -12,6 +13,7 @@ type WorkflowInformation interface {
 	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
 	GetTeamSelection(sirius.Context, sirius.UserDetails, int) ([]sirius.TeamCollection, error)
+	GetMembersForTeam(sirius.Context, sirius.UserDetails, int) (sirius.TeamSelected, error)
 }
 
 type workflowVars struct {
@@ -22,6 +24,7 @@ type workflowVars struct {
 	LoadTasks      sirius.TaskTypes
 	TeamSelection  []sirius.TeamCollection
 	TeamStoredData sirius.TeamStoredData
+	TeamSelected   sirius.TeamSelected
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
@@ -35,6 +38,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
+		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		teamSelection, err := client.GetTeamSelection(ctx, myDetails, selectedTeamName)
@@ -42,6 +46,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		loadTaskTypes, err := client.GetTaskType(ctx)
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedintTeamId)
 
+		selectedTeamMembers, err := client.GetMembersForTeam(ctx, myDetails, selectedTeamToAssignTask)
+		log.Println(selectedTeamMembers)
 		if err != nil {
 			return err
 		}
@@ -53,6 +59,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TaskDetails:   taskdetails,
 			LoadTasks:     loadTaskTypes,
 			TeamSelection: teamSelection,
+			TeamSelected:  selectedTeamMembers,
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
