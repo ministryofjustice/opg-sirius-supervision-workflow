@@ -1,64 +1,128 @@
 {{ define "table" }}
-<table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
-  <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header govuk-table__select"></th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
-      <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
-      <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
-    </tr>
-  </thead>
-    <tbody class="govuk-table__body">
-    {{if ne .TaskList.TotalTasks 0}}
-      {{ range .TaskList.WholeTaskList }}
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">
-          <div class="govuk-checkboxes govuk-checkboxes--small">
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" type="checkbox" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
-             <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
-              <span class="govuk-visually-hidden">Select</span>
-              </label>
+
+<section id="edit-panel">
+  <header>
+    <div class="govuk-width-container">
+      <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
+    </div>
+  </header>
+
+  <div class="govuk-width-container ">
+    <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
+    <div>
+      {{/* <form action="{{ prefix "/" }}" method="POST" id="assignTasks-form"> */}}
+
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a team
+          </label>
+          <form class="form" action="" method="post" id="assignTeam-form">
+          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+            <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
+              <option value=""disabled>Select a team</option>
+                {{ range .TeamSelection }}
+                  <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                {{ end }}
+            </select>
+          {{/* </form> */}}
+        </div>
+      
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a case manager
+          </label>
+          <select class="govuk-select" id="assignCM" name="assignCM">
+          <option value=""disabled>Select a case manager</option>
+            {{ range .TeamSelected.Members }}
+              <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
+            {{ end }}
+            
+            <h1> for caseManager in data.caseManagers </h1>
+            <h1> caseManager </h1>
+        
+          </select>
+        </div>
+
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Set priority
+          </label>
+          <select class="govuk-select" id="assignPriority" name="assignTeam">
+            <option value=""disabled selected>Select a priority</option>
+            <option value="Normal">Normal</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit">Submit</button>
+        {{/* formmethod="post">Submit using POST</button> */}}
+
+      <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
+
+    </div>
+  </section>
+
+  <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
+    <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-table__select"></th>
+        <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
+        <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
+      </tr>
+    </thead>
+      <tbody class="govuk-table__body">
+      {{if ne .TaskList.TotalTasks 0}}
+        {{ range .TaskList.WholeTaskList }}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+            <div class="govuk-checkboxes govuk-checkboxes--small">
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+              <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                <span class="govuk-visually-hidden">Select</span>
+                </label>
+              </div>
             </div>
-          </div>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="client-firstname-surname-caserec-number">
-              {{ range .ApiTaskCaseItems }}
-                {{ .CaseItemClient.ClientFirstName }} {{ .CaseItemClient.ClientSurname }} {{ .CaseItemClient.ClientCaseRecNumber }}
-              {{ end }}
-            </label>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}</label>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="assignee-name-and-team">
-              {{ .ApiTaskAssignee.AssigneeDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
-            </label>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
-          </td>
-          <td class="govuk-table__cell">
-            <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
-            <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-button" id="hook-open-case">Open case</a>
-          </td>
-          {{ end }}
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="client-firstname-surname-caserec-number">
+                {{ range .ApiTaskCaseItems }}
+                  {{ .CaseItemClient.ClientFirstName }} {{ .CaseItemClient.ClientSurname }} {{ .CaseItemClient.ClientCaseRecNumber }}
+                {{ end }}
+              </label>
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}</label>
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="assignee-name-and-team">
+                {{ .ApiTaskAssignee.AssigneeDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
+              </label>
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+            </td>
+            <td class="govuk-table__cell">
+              <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
+              <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-button" id="hook-open-case">Open case</a>
+            </td>
+            {{ end }}
+          </tr>
+        {{ end }}
+      {{else if eq .TaskList.TotalTasks 0}}
+        <tr class="govuk-table__row">
+          <td colspan="7" id="table-cell__noTasks">The team has no tasks</td> 
         </tr>
       {{ end }}
-    {{else if eq .TaskList.TotalTasks 0}}
-      <tr class="govuk-table__row">
-        <td colspan="7" id="table-cell__noTasks">The team has no tasks</td> 
-      </tr>
-    {{ end }}
-  </tbody>
-</table>
+    </tbody>
+  </table>
+<form>
 {{ end }}

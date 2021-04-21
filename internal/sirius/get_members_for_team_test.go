@@ -33,7 +33,7 @@ func TestGetMembersForTeam(t *testing.T) {
 				pact.
 					AddInteraction().
 					Given("User logged in").
-					UponReceiving("A request to get team members for selected team").
+					UponReceiving("A request to get default team members for selected team").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/teams/13"),
