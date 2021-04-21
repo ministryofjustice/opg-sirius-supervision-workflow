@@ -57,6 +57,13 @@ func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInT
 	return m.teamSelectionData, m.err
 }
 
+func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask int) error {
+	m.count += 1
+	m.lastCtx = ctx
+
+	return m.err
+}
+
 func TestGetUserDetails(t *testing.T) {
 	assert := assert.New(t)
 

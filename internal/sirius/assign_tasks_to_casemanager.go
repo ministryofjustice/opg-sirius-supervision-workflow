@@ -4,29 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
-func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, selectedTask int) error {
+func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, selectedTaskId int) error {
 
 	var body bytes.Buffer
 
-	log.Println("start of assign function")
-	log.Println("newAssigneeIdForTask")
-	log.Println(newAssigneeIdForTask)
-	log.Println("selectedTask")
-	log.Println(selectedTask)
-
-	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%d", newAssigneeIdForTask, selectedTask)
-
-	log.Println("request url")
-	log.Println(requestURL)
+	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%d", newAssigneeIdForTask, selectedTaskId)
 
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, &body)
-
-	log.Println("body")
-	log.Println(&body)
 
 	if err != nil {
 		return err
@@ -38,8 +25,6 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 		return err
 	}
 
-	log.Println("resp body")
-	log.Println(resp)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -59,6 +44,5 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 
 		return newStatusError(resp)
 	}
-	log.Println("end of assign task function")
 	return nil
 }

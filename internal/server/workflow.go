@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -49,7 +48,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
-		//selectedTask, _ := strconv.Atoi(r.FormValue("select-task"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		loggedInTeamId := myDetails.Teams[0].TeamId
@@ -84,22 +82,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return StatusError(http.StatusNotFound)
 		}
 
-		log.Println("start of post stuff")
-
 		switch r.Method {
 		case http.MethodGet:
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
-			tempTeamId, err := strconv.Atoi(r.PostFormValue("assignTeam"))
-			log.Println("teamId")
-			log.Println(tempTeamId)
 			tempAssignedCaseManagerId, err := strconv.Atoi(r.PostFormValue("assignCM"))
-			log.Println("assignCM")
-			log.Println(tempAssignedCaseManagerId)
 			tempTaskId, err := strconv.Atoi(r.PostFormValue("selected-tasks"))
-			log.Println("task id")
-			log.Println(tempTaskId)
 
 			//add if case manager empty assign to the team logic
 
@@ -107,9 +96,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				Path:      r.URL.Path,
 				XSRFToken: ctx.XSRFToken,
 			}
-
-			log.Println("assignTaskVars")
-			log.Println(assignTaskVars)
 
 			if err != nil {
 				return err
@@ -121,7 +107,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-			log.Println("back after call to assign tasks")
 
 			if _, ok := err.(sirius.ClientError); ok {
 				assignTaskVars.Errors = sirius.ValidationErrors{

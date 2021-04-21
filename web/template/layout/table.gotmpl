@@ -10,7 +10,6 @@
   <div class="govuk-width-container ">
     <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
     <div>
-      {{/* <form action="{{ prefix "/" }}" method="POST" id="assignTasks-form"> */}}
 
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <label class="govuk-label" for="sort">
@@ -24,7 +23,6 @@
                   <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
                 {{ end }}
             </select>
-          {{/* </form> */}}
         </div>
       
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
