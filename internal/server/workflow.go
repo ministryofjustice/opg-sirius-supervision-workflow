@@ -140,7 +140,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 					},
 				}
 				w.WriteHeader(http.StatusBadRequest)
-				return tmpl.ExecuteTemplate(w, "page", assignTaskVars)
+				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 
 			if err != nil {
@@ -149,7 +149,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 			assignTaskVars.Success = true
 
-			return tmpl.ExecuteTemplate(w, "page", assignTaskVars)
+			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
 		}
