@@ -32,21 +32,16 @@ type workflowVars struct {
 type editTaskVars struct {
 	Path      string
 	XSRFToken string
-	// TaskId                int
-	// TeamId                int
-	// AssignedCaseManagerId int
-	Success bool
-	Errors  sirius.ValidationErrors
+	Success   bool
+	Errors    sirius.ValidationErrors
 }
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 
-		// add if post request bit here
-		// amend following line to allow more than a get
-		// if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		// 	return StatusError(http.StatusMethodNotAllowed)
-		// }
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+			return StatusError(http.StatusMethodNotAllowed)
+		}
 
 		ctx := getContext(r)
 
@@ -85,10 +80,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TeamSelected:  selectedTeamMembers,
 		}
 
-		//post methods
-		//pulls id from url
-		//taskId := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/"))
-
 		if err != nil {
 			return StatusError(http.StatusNotFound)
 		}
@@ -110,12 +101,11 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			log.Println("task id")
 			log.Println(tempTaskId)
 
+			//add if case manager empty assign to the team logic
+
 			assignTaskVars := editTaskVars{
 				Path:      r.URL.Path,
 				XSRFToken: ctx.XSRFToken,
-				// TeamId:                tempTeamId,
-				// AssignedCaseManagerId: tempAssignedCaseManagerId,
-				// TaskId:                tempTaskId,
 			}
 
 			log.Println("assignTaskVars")

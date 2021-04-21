@@ -16,7 +16,7 @@
           <label class="govuk-label" for="sort">
             Assign to a team
           </label>
-          <form class="form" action="" method="post" id="assignTeam-form">
+          <form class="form" action="" method="" id="assignTeam-form">
           <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
             <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
               <option value=""disabled>Select a team</option>
@@ -54,8 +54,7 @@
           </select>
         </div>
       </div>
-      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit">Submit</button>
-        {{/* formmethod="post">Submit using POST</button> */}}
+      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Submit using POST</button>
 
       <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
 
