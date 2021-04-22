@@ -57,7 +57,7 @@ func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInT
 	return m.teamSelectionData, m.err
 }
 
-func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask int) error {
+func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask string) error {
 	m.count += 1
 	m.lastCtx = ctx
 

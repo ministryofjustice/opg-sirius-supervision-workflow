@@ -79,7 +79,7 @@
             <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                <input class="govuk-checkboxes__input" onClick="addSelectedTask()" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
               <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                 <span class="govuk-visually-hidden">Select</span>
                 </label>
