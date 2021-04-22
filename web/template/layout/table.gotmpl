@@ -10,10 +10,10 @@
   <div class="govuk-width-container ">
     <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
     <div>
-    {{/* {{ if .SuccessMessage }}
+    {{ if .SuccessMessage }}
         <h1 class="govuk-heading-xl">Task Reassigned</h1>
         <p class="govuk-body">{{ .SuccessMessage }}</p>
-    {{ end }} */}}
+    {{ end }}
 
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <label class="govuk-label" for="sort">
@@ -38,14 +38,10 @@
             {{ range .TeamSelected.Members }}
               <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
             {{ end }}
-            
-            <h1> for caseManager in data.caseManagers </h1>
-            <h1> caseManager </h1>
-        
           </select>
         </div>
 
-        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+        {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <label class="govuk-label" for="sort">
             Set priority
           </label>
@@ -54,9 +50,9 @@
             <option value="Normal">Normal</option>
             <option value="Urgent">Urgent</option>
           </select>
-        </div>
+        </div> */}}
       </div>
-      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Submit using POST</button>
+      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
 
       <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
 

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -26,7 +27,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.TeamCollection
 	TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
-	Success        string
+	SuccessMessage string
 }
 
 type editTaskVars struct {
@@ -134,6 +135,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			}
 
 			assignTaskVars.Success = true
+			vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned to Case Manager with ID %d", len(taskIdArray), newAssigneeIdForTask)
 			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
 			vars.TaskList = TaskList
 
