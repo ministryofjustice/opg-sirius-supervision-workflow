@@ -13,7 +13,7 @@ type WorkflowInformation interface {
 	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
 	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
 	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
-	AssignTasksToCaseManager(sirius.Context, int, int) error
+	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
 
 type workflowVars struct {
@@ -26,6 +26,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.TeamCollection
 	TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
+	Success        string
 }
 
 type editTaskVars struct {
@@ -87,8 +88,18 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
-			tempAssignedCaseManagerId, err := strconv.Atoi(r.PostFormValue("assignCM"))
-			tempTaskId, err := strconv.Atoi(r.PostFormValue("selected-tasks"))
+			newAssigneeIdForTask, err := strconv.Atoi(r.PostFormValue("assignCM"))
+			r.ParseForm()
+			taskIdArray := (r.Form["selected-tasks"])
+
+			taskIdForUrl := ""
+
+			for i := 0; i < len(taskIdArray); i++ {
+				taskIdForUrl += taskIdArray[i]
+				if i < (len(taskIdArray) - 1) {
+					taskIdForUrl += "+"
+				}
+			}
 
 			//add if case manager empty assign to the team logic
 
@@ -102,7 +113,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			}
 
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, tempAssignedCaseManagerId, tempTaskId)
+			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 
 			if err != nil {
 				return err
@@ -123,6 +134,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			}
 
 			assignTaskVars.Success = true
+			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+			vars.TaskList = TaskList
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:

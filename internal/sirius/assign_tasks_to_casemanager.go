@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
-func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, selectedTaskId int) error {
+func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIdForUrl string) error {
 
 	var body bytes.Buffer
 
-	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%d", newAssigneeIdForTask, selectedTaskId)
+	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%s", newAssigneeIdForTask, taskIdForUrl)
+
+	log.Println(requestURL)
 
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, &body)
 

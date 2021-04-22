@@ -10,6 +10,10 @@
   <div class="govuk-width-container ">
     <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
     <div>
+    {{/* {{ if .SuccessMessage }}
+        <h1 class="govuk-heading-xl">Task Reassigned</h1>
+        <p class="govuk-body">{{ .SuccessMessage }}</p>
+    {{ end }} */}}
 
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <label class="govuk-label" for="sort">
@@ -79,7 +83,7 @@
             <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                <input class="govuk-checkboxes__input" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
               <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                 <span class="govuk-visually-hidden">Select</span>
                 </label>
