@@ -28,12 +28,12 @@ func TestTaskList(t *testing.T) {
 		expectedError    error
 	}{
 		{
-			name: "OK",
+			name: "Test Task List",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User is logged in").
-					UponReceiving("A request to get tasks which have long names").
+					UponReceiving("A request to get tasks for a team which have long names").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/assignees/team/13/tasks"),

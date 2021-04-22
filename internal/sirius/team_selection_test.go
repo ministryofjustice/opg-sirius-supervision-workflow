@@ -21,20 +21,20 @@ func TestTeamSelection(t *testing.T) {
 	defer pact.Teardown()
 
 	testCases := []struct {
-		name             string
-		setup            func()
-		cookies          []*http.Cookie
-		myDetails        UserDetails
-		expectedResponse []TeamCollection
-		expectedError    error
+		name                string
+		setup               func()
+		selectedTeamMembers TeamSelected
+		cookies             []*http.Cookie
+		expectedResponse    []TeamCollection
+		expectedError       error
 	}{
 		{
-			name: "TeamCollection",
+			name: "Test Team Selection",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User logged in").
-					UponReceiving("A request to get teams").
+					UponReceiving("A request to get all teams for dropdown").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/teams"),
@@ -49,10 +49,10 @@ func TestTeamSelection(t *testing.T) {
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.EachLike(map[string]interface{}{
 							"id":   dsl.Like(13),
-							"name": dsl.Like("Go TaskForce"),
+							"name": dsl.Like("Lay Team 1 - (Supervision)"),
 							"members": dsl.EachLike(map[string]interface{}{
 								"id":   dsl.Like(96),
-								"name": dsl.Like("LayTeam1 - (Supervision)"),
+								"name": dsl.Like("LayTeam1 User11"),
 							}, 1),
 						}, 1),
 					})
@@ -64,14 +64,15 @@ func TestTeamSelection(t *testing.T) {
 			expectedResponse: []TeamCollection{
 				{
 					Id:   13,
-					Name: "Go TaskForce",
+					Name: "Lay Team 1 - (Supervision)",
 					Members: []TeamMembers{
 						{
 							TeamMembersId:   96,
-							TeamMembersName: "LayTeam1 - (Supervision)",
+							TeamMembersName: "LayTeam1 User11",
 						},
 					},
 					UserSelectedTeam: 13,
+					SelectedTeamId:   13,
 				},
 			},
 		},
@@ -84,7 +85,7 @@ func TestTeamSelection(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamCollection, err := client.GetTeamSelection(getContext(tc.cookies), tc.myDetails, 13)
+				myTeamCollection, err := client.GetTeamSelection(getContext(tc.cookies), 13, 13, tc.selectedTeamMembers)
 				assert.Equal(t, tc.expectedResponse, myTeamCollection)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

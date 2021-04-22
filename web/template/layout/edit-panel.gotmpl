@@ -1,6 +1,6 @@
-{{ define "edit-panel" }}
+{{/* {{ define "edit-panel" }}
 
-{{/* <section id="edit-panel">
+<section id="edit-panel">
   <header>
     <div class="govuk-width-container">
       <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
@@ -15,13 +15,14 @@
         <label class="govuk-label" for="sort">
           Assign to a team
         </label>
-        <select class="govuk-select" id="assignTeam" name="assignTeam">
-          <option value=""disabled>Select a team</option>
-          <option value="Team 1">Team 1</option>
-          <option value="Team 2">Team 2</option>
-          <option value="Team 3" selected>Team 3</option>
-          <option value="Team 4">Team 4</option>
-        </select>
+        <form action="{{ prefix "/" }}" method="GET" id="assignTeam-form">
+          <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
+            <option value=""disabled>Select a team</option>
+              {{ range .TeamSelection }}
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+              {{ end }}
+          </select>
+          </form>
       </div>
 
       <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
@@ -29,7 +30,11 @@
           Assign to a case manager
         </label>
         <select class="govuk-select" id="assignCM" name="assignTeam">
-          <option value=""disabled selected>Select a case manager</option>
+        <option value=""disabled>Select a case manager</option>
+          {{ range .TeamSelected.Members }}
+            <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
+          {{ end }}
+          
           <h1> for caseManager in data.caseManagers </h1>
           <h1> caseManager </h1>
       
@@ -55,6 +60,6 @@
 
 
   </div>
-</section> */}}
+</section>
 
-{{ end }}
+{{ end }} */}}

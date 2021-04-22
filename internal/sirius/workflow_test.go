@@ -28,12 +28,12 @@ func TestMyDetails(t *testing.T) {
 		expectedError     error
 	}{
 		{
-			name: "OK",
+			name: "Test Workflow",
 			setup: func() {
 				pact.
 					AddInteraction().
 					Given("User exists").
-					UponReceiving("A request to get my details").
+					UponReceiving("A request to workflow page").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/users/current"),
@@ -51,7 +51,7 @@ func TestMyDetails(t *testing.T) {
 							"name":        dsl.Like("case"),
 							"phoneNumber": dsl.Like("12345678"),
 							"teams": dsl.EachLike(map[string]interface{}{
-								"displayName": dsl.Like("Go TaskForce"),
+								"displayName": dsl.Like("Lay Team 1 - (Supervision)"),
 								"id":          dsl.Like(13),
 							}, 1),
 							"displayName": dsl.Like("case manager"),
@@ -76,7 +76,7 @@ func TestMyDetails(t *testing.T) {
 				Teams: []MyDetailsTeam{
 					{
 						TeamId:      13,
-						DisplayName: "Go TaskForce",
+						DisplayName: "Lay Team 1 - (Supervision)",
 					},
 				},
 				DisplayName: "case manager",

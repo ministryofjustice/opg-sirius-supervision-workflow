@@ -28,3 +28,9 @@
   <p> If any packages are added to go mod call </p>
 
    ### `go mod download `
+
+  <p> Noted issues: </p>
+  <ul>
+  <li> You can't log in if you don't have a team (or the team has no members) </li>
+  <li> Can't run locally if the pact stub is still running </li>
+  </ul>
