@@ -1,5 +1,6 @@
 {{ define "table" }}
 
+<section data-wf-module="manage-tasks">
 <section id="edit-panel">
   <header>
     <div class="govuk-width-container">
@@ -8,7 +9,7 @@
   </header>
 
   <div class="govuk-width-container ">
-    <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
+    <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-wf-module="manage-tasks_task-count">0</span> tasks selected</h4>
     <div>
     {{ if .SuccessMessage }}
         <h3 class="govuk-heading-xl">Task Reassigned</h3>
@@ -63,7 +64,16 @@
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header govuk-table__select"></th>
+        <th scope="col" class="govuk-table__header govuk-table__select">
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" data-wf-module="manage-tasks_all-checkboxes" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+              <label class="govuk-label govuk-checkboxes__label" for="organisation">
+                <span class="govuk-visually-hidden">Select</span>
+              </label>
+            </div>
+          </div>
+        </th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
@@ -79,8 +89,8 @@
             <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" onClick="addSelectedTask()" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
-              <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                <input class="govuk-checkboxes__input" data-wf-module="manage-tasks_checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                 <span class="govuk-visually-hidden">Select</span>
                 </label>
               </div>
@@ -121,5 +131,6 @@
       {{ end }}
     </tbody>
   </table>
+  </section>
 <form>
 {{ end }}
