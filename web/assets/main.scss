@@ -314,6 +314,28 @@ $govuk-include-default-font-face: false;
   display: none;
 }
 
-#table-size {
-  padding: 10%, 15%, 10%, 15%
+.workflow-size {
+  padding-left: 3em;
+  padding-right: 3em;
+}
+
+#top-change-view-number.govuk-form-group label {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+#bottom-change-view-number.govuk-form-group label {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.moj-pagination__item--active .moj-pagination__item--next .moj-pagination__item--prev {
+  font-weight: bold;
+  height: 25px;
+  padding: 5px 10px;
+  padding-top: 5px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  text-align: center;
 }

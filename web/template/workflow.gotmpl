@@ -4,7 +4,7 @@
 
 {{ define "main" }}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-full workflow-size">
      <h1 class="govuk-heading-l">Supervision workflow</h1>
 
       {{ template "overview" . }}
@@ -16,8 +16,8 @@
           {{ template "filters" . }}
         </div>
 
-        <div id="table-column table-size" class="govuk-grid-columns">
-
+        <div id="table-column" class="govuk-grid-columns">
+          
           {{ template "success-banner" . }}
 
           {{ template "pagination-top" . }}

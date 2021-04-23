@@ -1,5 +1,5 @@
 {{ define "pagination-top" }}
-<nav class="moj-pagination govuk-!-margin-bottom-5" id="top-pagination-label"  role="navigation">
+<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label"  role="navigation">
 <form action="{{ prefix "/" }}" method="GET" id="pagination-top-form">
  <div id="team-banner" class="govuk-grid-row">
         <div id="team-banner-container" class="govuk-grid-column-full">
@@ -43,7 +43,7 @@
       </li> 
     </ul>
       <div id="top-change-view-number" class="govuk-form-group">
-      <label class="govuk-label" for="top-label-display-rows"> View </label>
+      <label class="govuk-label" for="top-label-display-rows">View</label>
       <select class="govuk-select" id="top-display-rows" name="tasksPerPage"  aria-labelledby="top-display-rows" aria-label="top-display-rows" onchange="this.form.submit()">
         <option value="25" id="top-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
         <option value="50" id="top-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>

@@ -20,6 +20,7 @@ export default class ManageTasks {
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
     }
+    
     numberOfTasksSelected() {
         return this.data.selectedTasks;
     }

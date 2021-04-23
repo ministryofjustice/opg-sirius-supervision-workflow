@@ -13,6 +13,10 @@
     Manage task
   </button>
 
+  {{ if .SuccessMessage }}
+    <p class="govuk-body" id="success-message">Task Reassigned {{ .SuccessMessage }}</p>
+  {{ end }}
+
   <div data-wf-module="manage-tasks_edit-panel" class="govuk-width-container hide">
     <section id="edit-panel">
       <header>
@@ -21,11 +25,6 @@
         </div>
       </header>
       <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-wf-module="manage-tasks_task-count">0</span> tasks selected</h4>
-
-      {{ if .SuccessMessage }}
-          <h3 class="govuk-heading-xl">Task Reassigned</h3>
-          <p class="govuk-body">{{ .SuccessMessage }}</p>
-      {{ end }}
 
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <label class="govuk-label" for="sort">
@@ -65,7 +64,8 @@
         </div> */}}
         <div>
         <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
-        <button id="cancel-edit-tasks" data-wf-module="manage-tasks_cancel-button" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</button>
+
+        <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
 
       </div>
     </section>
