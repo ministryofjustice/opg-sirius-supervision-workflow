@@ -15,7 +15,7 @@ export default class ManageTasks {
 
         this.manageTasksButton = element.querySelectorAll('[data-wf-module="manage-tasks_edit-task-btn"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-wf-module="manage-tasks_edit-panel"]')[0];
-        this._bindAllCheckBox(this.manageTasksButton);
+        this._bindShowManageTasksButton(this.manageTasksButton);
     }
 
     numberOfTasksSelected() {
