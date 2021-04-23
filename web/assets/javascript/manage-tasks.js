@@ -63,6 +63,7 @@ export default class ManageTasks {
     }
 
    _showEditTasksPanel(event) {
+    debugger
     this.editPanelDiv.classList.toggle('hide', this.data.selectedTasks === 0);
    }
 }
