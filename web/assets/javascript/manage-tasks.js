@@ -12,12 +12,14 @@ export default class ManageTasks {
         this.checkBoxElements.forEach(checkbox => {
             this._bindCheckBox(checkbox);
         });
-
+      
         this.manageTasksButton = element.querySelectorAll('[data-wf-module="manage-tasks_edit-task-btn"]')[0];
+        this.cancelEditTasksButton = element.querySelectorAll('[data-wf-module="manage-tasks_cancel-button"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-wf-module="manage-tasks_edit-panel"]')[0];
+      
         this._bindShowManageTasksButton(this.manageTasksButton);
+        this._bindCancelTasksButton(this.cancelEditTasksButton);
     }
-
     numberOfTasksSelected() {
         return this.data.selectedTasks;
     }
@@ -63,7 +65,12 @@ export default class ManageTasks {
     }
 
    _showEditTasksPanel(event) {
-    debugger
     this.editPanelDiv.classList.toggle('hide', this.data.selectedTasks === 0);
    }
+
+   _bindCancelTasksButton(element) {
+    this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
+    element.addEventListener('click', this._showEditTasksPanel);
+  }
+
 }
