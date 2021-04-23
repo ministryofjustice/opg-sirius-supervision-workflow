@@ -1,16 +1,27 @@
 {{ define "table" }}
 
+{{/* <button id="toggle-filters" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+            Show filters
+          </button>
+*/}}
+{{/* data-module="govuk-button" */}}
+ 
+ 
 <section data-wf-module="manage-tasks">
-<section id="edit-panel">
-  <header>
-    <div class="govuk-width-container">
-      <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
-    </div>
-  </header>
 
-  <div class="govuk-width-container ">
+ <button id="edit-task" class="govuk-button govuk-button--blue hide" data-wf-module="manage-tasks_edit-task-btn">
+    Manage task
+  </button>
+
+ <div data-wf-module="manage-tasks_edit-panel" class="govuk-width-container hide">
+    <section id="edit-panel">
+    <header>
+      <div class="govuk-width-container">
+        <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
+      </div>
+    </header>
     <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-wf-module="manage-tasks_task-count">0</span> tasks selected</h4>
-    <div>
+  </div>
     {{ if .SuccessMessage }}
         <h3 class="govuk-heading-xl">Task Reassigned</h3>
         <p class="govuk-body">{{ .SuccessMessage }}</p>
@@ -52,13 +63,12 @@
             <option value="Urgent">Urgent</option>
           </select>
         </div> */}}
-      </div>
+      <div>
       <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
 
       <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
 
     </div>
-  </section>
 
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
