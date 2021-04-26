@@ -3,6 +3,7 @@ export default class ManageTasks {
         this.data = {
             selectedTasks: 0
         }
+        this.teamMemberData = [];
         this.checkBoxElements = element.querySelectorAll('[data-module="manage-tasks_checkbox"]');
         this.selectedCountElement = element.querySelectorAll('[data-module="manage-tasks_task-count"]')[0];
         this.allcheckBoxElements = element.querySelectorAll('[data-module="manage-tasks_all-checkboxes"]')[0];
@@ -16,13 +17,33 @@ export default class ManageTasks {
         this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_edit-task-btn"]')[0];
         this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
-
-        // this.kate = element.querySelectorAll('[data-module="manage-tasks_kate"]')[0];
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
-        // this._bindKatesFunction(this.kate);
+      
+        // this.callPlace();
     }
+
+    // async callPlace() {
+
+    //   fetch("http://localhost:8080/api/v1/teams?",
+    //   {
+    //     credentials: 'include',
+    //     headers: {
+    //     }
+    //   })
+    //   .then(response => {
+    //     console.log(response);
+    //     return response.json()
+    //   })
+    //   .then(data => {
+    //     console.log(data)
+    //     this.teamMemberData = data;
+    //     console.log(this.teamMemberData);
+    //   }).catch((error) => {
+    //     console.error('Error:', error);
+    //   });
+    // }
     
     numberOfTasksSelected() {
         return this.data.selectedTasks;
@@ -89,22 +110,6 @@ export default class ManageTasks {
   _hideEditTasksPanel(event) {
     this.editPanelDiv.classList.toggle('hide', true);
    }
-
-  // _katesFunction() {
-  //   var xhttp = new XMLHttpRequest();
-  //   xhttp.onreadystatechange=function() {
-  //     if (this.readyState == 4 && this.status == 200) {
-  //       document.getElementById("kate").innerHTML = this.responseText;
-  //     }
-  //   };
-  //   xhttp.open("GET", "/api/v1/teams/" + 14, true);
-  //   xhttp.send();
-  //   }
-
-  //   _bindKatesFunction(element) {
-  //     this._katesFunction = this._katesFunction(this);
-  //     element.addEventListener('onchange', this._katesFunction);
-  //   }
    
 
 }
