@@ -94,12 +94,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			var newAssigneeIdForTask int
 
 			if checkTaskHasIdForAssigning != "" {
-				fmt.Println("checkTaskHasIdForAssigning")
-				fmt.Println(checkTaskHasIdForAssigning)
 				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
 			} else {
-				fmt.Println("vars.TeamSelected.Id")
-				fmt.Println(vars.TeamSelected.Id)
 				newAssigneeIdForTask = vars.TeamSelected.Id
 			}
 
@@ -126,9 +122,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-
-			fmt.Println("newAssigneeIdForTask")
-			fmt.Println(newAssigneeIdForTask)
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
