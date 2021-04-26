@@ -3,9 +3,9 @@ export default class ManageTasks {
         this.data = {
             selectedTasks: 0
         }
-        this.checkBoxElements = element.querySelectorAll('[data-wf-module="manage-tasks_checkbox"]');
-        this.selectedCountElement = element.querySelectorAll('[data-wf-module="manage-tasks_task-count"]')[0];
-        this.allcheckBoxElements = element.querySelectorAll('[data-wf-module="manage-tasks_all-checkboxes"]')[0];
+        this.checkBoxElements = element.querySelectorAll('[data-module="manage-tasks_checkbox"]');
+        this.selectedCountElement = element.querySelectorAll('[data-module="manage-tasks_task-count"]')[0];
+        this.allcheckBoxElements = element.querySelectorAll('[data-module="manage-tasks_all-checkboxes"]')[0];
         
         this._bindAllCheckBox(this.allcheckBoxElements);
 
@@ -13,9 +13,9 @@ export default class ManageTasks {
             this._bindCheckBox(checkbox);
         });
       
-        this.manageTasksButton = element.querySelectorAll('[data-wf-module="manage-tasks_edit-task-btn"]')[0];
-        this.cancelEditTasksButton = element.querySelectorAll('[data-wf-module="manage-tasks_cancel-button"]')[0];
-        this.editPanelDiv = element.querySelectorAll('[data-wf-module="manage-tasks_edit-panel"]')[0];
+        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_edit-task-btn"]')[0];
+        this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
+        this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
@@ -37,6 +37,10 @@ export default class ManageTasks {
 
     _updateSelectedState(event) {
         event.target.checked ? this.data.selectedTasks++ : this.data.selectedTasks--;
+        event.target.parentElement.parentElement.parentElement.classList.toggle('govuk-table__select', event.target.checked);
+
+        event.target.parentElement.parentElement.parentElement.parentElement.classList.toggle('selected', event.target.checked);
+
         this._updateDomElements();   
     }
 
@@ -70,8 +74,12 @@ export default class ManageTasks {
    }
 
    _bindCancelTasksButton(element) {
-    this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
-    element.addEventListener('click', this._showEditTasksPanel);
+    this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
+    element.addEventListener('click', this._hideEditTasksPanel);
   }
+
+  _hideEditTasksPanel(event) {
+    this.editPanelDiv.classList.toggle('hide', true);
+   }
 
 }

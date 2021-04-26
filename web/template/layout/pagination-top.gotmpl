@@ -1,7 +1,6 @@
 {{ define "pagination-top" }}
-<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label"  role="navigation">
 <form action="{{ prefix "/" }}" method="GET" id="pagination-top-form">
- <div id="team-banner" class="govuk-grid-row">
+ <div id="team-banner" class="govuk-grid-column-full">
         <div id="team-banner-container" class="govuk-grid-column-full">
         {{ range .TeamSelection }}
           {{if eq .Id .UserSelectedTeam}}
@@ -20,6 +19,9 @@
           </div>
         </div>
       </div>
+    </div>
+<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label"  role="navigation">
+
   <p class="govuk-visually-hidden" id="top-pagination-form-heading">Pagination navigation</p>
 
   <div class="flex-container">
@@ -49,8 +51,7 @@
         <option value="50" id="top-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
         <option value="100" id="top-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option> 
       </select>
-    </div>
-  </form>
   </div>
 </nav>
+  </form>
 {{ end }}

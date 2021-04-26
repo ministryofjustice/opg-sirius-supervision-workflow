@@ -5,7 +5,7 @@ import ManageTasks from './javascript/manage-tasks';
 
 GOVUKFrontend.initAll();
 
-const manageTasks = document.querySelectorAll('[data-wf-module="manage-tasks"]');
+const manageTasks = document.querySelectorAll('[data-module="manage-tasks"]');
   MOJFrontend.nodeListForEach(manageTasks, function (manageTask) {
     new ManageTasks(manageTask);
   });

@@ -30,33 +30,33 @@ $govuk-include-default-font-face: false;
       }
     }
   
-    table {
+     table {
       tr {
         td, th {
             &:first-child {
-              border-left: 5px solid transparent;
-              padding-left: 15px;
+              border-left: govuk-spacing(1) solid transparent;
+              padding-left: govuk-spacing(3);
             }
             &:last-child {
-              padding-right: 15px;
+              padding-right: govuk-spacing(3);
             }
             span {
               display: block;
             }
             .govuk-checkboxes {margin-top: -8px;}
-            &.due {color: #f47738; font-weight: bold;}
-            &.overdue {color: #d4351c;font-weight: bold;}
+            &.due {color: govuk-colour("orange"); font-weight: bold;}
+            &.overdue {color: govuk-colour("red");font-weight: bold;}
           }
           &.selected {
             background: #E7F2FB;
             td {
               &:first-child {
-              border-left: 5px solid #1d70b8!important;
+              border-left: govuk-spacing(1) solid govuk-colour("blue")!important;
             }
           }
         }
       }
-    }
+    } 
   
     .govuk-grid-column-one-fifth {
       float: left;
@@ -65,10 +65,11 @@ $govuk-include-default-font-face: false;
     }
   
     td span.secondary {
-      color: #505a5f;
+      color: govuk-colour("black");
       font-size: 16px;
       font-size: 1rem;
       line-height: 1.25;
+      display: block;
     }
   
     td.govuk-table__select,
