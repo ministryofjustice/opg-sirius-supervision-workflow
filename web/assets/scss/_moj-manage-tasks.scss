@@ -1,8 +1,16 @@
 .moj-manage-tasks {
   .govuk-table {
+    .govuk-table__row.selected {
+      background: $govuk-moj-table-background-color;
+      .govuk-table__cell {
+        &:first-child {
+          border-left: govuk-spacing(1) solid govuk-colour("blue") !important;
+        }
+      }
+    }
     .govuk-table__row {
       .govuk-table__header,
-      .govuk-table__row {
+      .govuk-table__cell {
         &:first-child {
           border-left: govuk-spacing(1) solid transparent;
           padding-left: govuk-spacing(3);
@@ -10,23 +18,26 @@
         &:last-child {
           padding-right: govuk-spacing(3);
         }
+
         .govuk-table__select {
           max-width: 15px;
         }
-        .govuk-table__cell {
-          .secondary {
-            color: govuk-colour("black");
-            font-size: 16px;
-            font-size: 1rem;
-            line-height: 1.25;
-            display: block;
+
+          .govuk-label {
+            .secondary {
+              color: govuk-colour("black");
+              font-size: 16px;
+              font-size: 1rem;
+              line-height: 1.25;
+              display: block;
+            }
           }
           &--no-tasks {
             width: 100%;
             font-size: 150%;
             text-align: center;
           }
-        }
+        
         .govuk-checkboxes {
           margin-top: -8px;
         }
@@ -37,14 +48,6 @@
         &.overdue {
           color: govuk-colour("red");
           font-weight: bold;
-        }
-      }
-      &.selected {
-        background: $govuk-moj-table-background-color;
-        .govuk-table__cell {
-          &:first-child {
-            border-left: govuk-spacing(1) solid govuk-colour("blue") !important;
-          }
         }
       }
     }

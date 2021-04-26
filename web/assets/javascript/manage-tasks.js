@@ -17,11 +17,11 @@ export default class ManageTasks {
         this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
 
-        this.kate = element.querySelectorAll('[data-module="manage-tasks_kate"]')[0];
+        // this.kate = element.querySelectorAll('[data-module="manage-tasks_kate"]')[0];
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
-        this._bindKatesFunction(this.kate);
+        // this._bindKatesFunction(this.kate);
     }
     
     numberOfTasksSelected() {
@@ -38,12 +38,15 @@ export default class ManageTasks {
         element.addEventListener('click', this._updateSelectedState);
     }
 
+    _updateSelectedRowStyles(element) {
+      element.parentElement.parentElement.parentElement.classList.toggle('govuk-table__select', element.checked);
+      element.parentElement.parentElement.parentElement.parentElement.classList.toggle('selected', element.checked);
+
+    }
+
     _updateSelectedState(event) {
         event.target.checked ? this.data.selectedTasks++ : this.data.selectedTasks--;
-        event.target.parentElement.parentElement.parentElement.classList.toggle('govuk-table__select', event.target.checked);
-
-        event.target.parentElement.parentElement.parentElement.parentElement.classList.toggle('selected', event.target.checked);
-
+        this._updateSelectedRowStyles(event.target);
         this._updateDomElements();   
     }
 
@@ -57,6 +60,8 @@ export default class ManageTasks {
 
         this.checkBoxElements.forEach(checkbox => {
             checkbox.checked = isChecked;
+
+            this._updateSelectedRowStyles(checkbox);
         });
 
         this.data.selectedTasks = (isChecked ? this.checkBoxElements.length : 0);
@@ -85,21 +90,21 @@ export default class ManageTasks {
     this.editPanelDiv.classList.toggle('hide', true);
    }
 
-  _katesFunction() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange=function() {
-      if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("kate").innerHTML = this.responseText;
-      }
-    };
-    xhttp.open("GET", "/api/v1/teams/" + 14, true);
-    xhttp.send();
-    }
+  // _katesFunction() {
+  //   var xhttp = new XMLHttpRequest();
+  //   xhttp.onreadystatechange=function() {
+  //     if (this.readyState == 4 && this.status == 200) {
+  //       document.getElementById("kate").innerHTML = this.responseText;
+  //     }
+  //   };
+  //   xhttp.open("GET", "/api/v1/teams/" + 14, true);
+  //   xhttp.send();
+  //   }
 
-    _bindKatesFunction(element) {
-      this._katesFunction = this._katesFunction(this);
-      element.addEventListener('onchange', this._katesFunction);
-    }
+  //   _bindKatesFunction(element) {
+  //     this._katesFunction = this._katesFunction(this);
+  //     element.addEventListener('onchange', this._katesFunction);
+  //   }
    
 
 }

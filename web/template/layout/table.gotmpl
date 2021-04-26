@@ -33,8 +33,8 @@
             </label>
             <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
             <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
-              {{/* <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()"> */}}
-              <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="katesFunction()">
+              <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
+              {{/* <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="katesFunction()"> */}}
                 <option value=""disabled>Select a team</option>
                   {{ range .TeamSelection }}
                 <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>

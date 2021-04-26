@@ -8,10 +8,24 @@
     cursor: pointer;
     font-size: large;
   }
-  &__item--prev,
+  &__item--prev {
+    .moj-pagination__link {
+      &:before {
+        display: inline-block;
+        height: govuk-spacing(2);
+        width: govuk-spacing(2);
+        border-style: solid;
+        color: govuk-colour("black");
+        background: transparent;
+        -webkit-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        content: "";
+      }
+    }
+  }
   &__item--next {
     .moj-pagination__link {
-      &:before,
       &:after {
         display: inline-block;
         height: govuk-spacing(2);
