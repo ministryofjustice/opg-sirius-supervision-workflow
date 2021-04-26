@@ -7,7 +7,7 @@
 {{/* data-module="govuk-button" */}}
  
  
-<section data-module="manage-tasks">
+<section data-module="manage-tasks" class="moj-manage-tasks">
 
   <button id="edit-task" class="govuk-button govuk-button--blue hide" data-module="manage-tasks_edit-task-btn">
     Manage task
@@ -18,7 +18,7 @@
   {{ end }}
 
   <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
-    <section id="edit-panel">
+    <section class="moj-manage-tasks__edit-panel">
       <header>
         <div class="govuk-width-container">
           <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
@@ -142,7 +142,7 @@
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
         <tr class="govuk-table__row">
-          <td colspan="7" id="table-cell__noTasks">The team has no tasks</td> 
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td> 
         </tr>
       {{ end }}
     </tbody>

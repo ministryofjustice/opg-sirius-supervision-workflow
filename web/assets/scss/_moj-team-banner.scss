@@ -1,0 +1,28 @@
+.moj-team-banner {
+  background: govuk-colour("blue");
+  margin-bottom: 1em;
+  padding: govuk-spacing(3) 0;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+
+    .govuk-heading-m {
+      color: govuk-colour("white");
+      margin: 0;
+      line-height: 1.75;
+    }
+
+    .govuk-form-group {
+      float: right;
+      margin-bottom: 0;
+
+      .govuk-label {
+        color: govuk-colour("white");
+        font-weight: bold;
+        display: inline-block;
+        margin-right: govuk-spacing(2);
+      }
+    }
+  }
+}

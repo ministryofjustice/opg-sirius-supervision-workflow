@@ -1,0 +1,83 @@
+.app-c-option-select {
+  position: relative;
+  padding: 0 0 govuk-spacing(2);
+  margin-bottom: govuk-spacing(2);
+  border-bottom: 1px solid govuk-colour("mid-grey");
+
+  &__heading {
+    position: relative;
+    padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(1) govuk-spacing(7);
+    margin: 0;
+  }
+
+  &__button {
+    z-index: 1;
+    background: none;
+    border: 0;
+    text-align: left;
+    padding: 0;
+    cursor: pointer;
+    color: govuk-colour("blue");
+  }
+  &__title {
+    font-size: govuk-spacing(4);
+    line-height: 1.3157894737;
+  }
+  &__icon {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 9px;
+    width: 30px;
+    height: 40px;
+    fill: govuk-colour("black");
+
+    [aria-expanded="true"] ~ .&--up {
+      display: block;
+    }
+
+    [aria-expanded="false"] ~ .&--down {
+      display: block;
+    }
+  }
+
+  &__selected-counter {
+    font-size: 14px;
+    line-height: 1.4285714286;
+  }
+
+  &__filter {
+    position: relative;
+    background: govuk-colour("white");
+    padding: 13px 13px 10px 13px;
+
+    &-input {
+      font-family: "nta", arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.25;
+      padding-left: 33px;
+      background: url("/public/images/icon-search.svg") govuk-colour("white")
+        no-repeat -5px -3px;
+    }
+  }
+
+  &__container {
+    position: relative;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: govuk-colour("white");
+
+    &-inner {
+      padding: 5px 13px;
+    }
+  }
+
+  &.js-closed &__filter,
+  &.js-closed &__container {
+    display: none;
+  }
+}

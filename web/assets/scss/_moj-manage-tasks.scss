@@ -1,0 +1,83 @@
+.moj-manage-tasks {
+  .govuk-table {
+    .govuk-table__row {
+      .govuk-table__header,
+      .govuk-table__row {
+        &:first-child {
+          border-left: govuk-spacing(1) solid transparent;
+          padding-left: govuk-spacing(3);
+        }
+        &:last-child {
+          padding-right: govuk-spacing(3);
+        }
+        .govuk-table__select {
+          max-width: 15px;
+        }
+        .govuk-table__cell {
+          .secondary {
+            color: govuk-colour("black");
+            font-size: 16px;
+            font-size: 1rem;
+            line-height: 1.25;
+            display: block;
+          }
+          &--no-tasks {
+            width: 100%;
+            font-size: 150%;
+            text-align: center;
+          }
+        }
+        .govuk-checkboxes {
+          margin-top: -8px;
+        }
+        &.due {
+          color: govuk-colour("orange");
+          font-weight: bold;
+        }
+        &.overdue {
+          color: govuk-colour("red");
+          font-weight: bold;
+        }
+      }
+      &.selected {
+        background: $govuk-moj-table-background-color;
+        .govuk-table__cell {
+          &:first-child {
+            border-left: govuk-spacing(1) solid govuk-colour("blue") !important;
+          }
+        }
+      }
+    }
+  }
+
+  &__edit-panel {
+    background-color: govuk-colour("light-grey");
+
+    header {
+      background-color: govuk-colour("mid-grey");
+      .govuk-width-container {
+        padding: govuk-spacing(3);
+      }
+    }
+
+    .govuk-select {
+      min-width: 200px;
+    }
+
+    .govuk-button--cancel {
+      background: none !important;
+      color: govuk-colour("black");
+      border-color: transparent;
+      box-shadow: 0 2px 0 transparent !important;
+      text-decoration: underline;
+    }
+  }
+
+  .govuk-button--blue {
+    background: govuk-colour("blue");
+
+    &:hover {
+      background: govuk-colour("dark-blue");
+    }
+  }
+}

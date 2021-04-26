@@ -14,21 +14,21 @@
    
     <ul class="moj-pagination__list">
       <li class="moj-pagination__item moj-pagination__item--prev">
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
+        <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
       </li> 
       {{ if le .TaskList.Pages.PageTotal 1 }}
-        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="1" disabled>1</button></li> 
+        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="1" disabled>1</button></li> 
       {{ else if ge .TaskList.Pages.PageTotal 2}}
         {{ range .TaskDetails.ListOfPages }}
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link paginatiomoj-pagination__link--btnn_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
         {{ end }} 
       {{ end }}
 
        <li class="moj-pagination__item moj-pagination__item--next">
-        <button type="submit" a class="moj-pagination__link pagination_button_link" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
+        <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
       </li> 
     </ul>
-     <div id="bottom-change-view-number" class="govuk-form-group">
+     <div class="govuk-form-group moj-pagination__change-view-number">
       <label class="govuk-label" for="bottom-label-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" onchange="this.form.submit()">
         <option value="25"  id="bottom-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
         <option value="50"  id="bottom-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
