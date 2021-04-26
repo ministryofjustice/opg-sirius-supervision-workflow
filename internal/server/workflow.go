@@ -89,7 +89,21 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
-			newAssigneeIdForTask, err := strconv.Atoi(r.PostFormValue("assignCM"))
+
+			checkTaskHasIdForAssigning := r.PostFormValue("assignCM")
+			var newAssigneeIdForTask int
+
+			if checkTaskHasIdForAssigning != "" {
+				fmt.Println("checkTaskHasIdForAssigning")
+				fmt.Println(checkTaskHasIdForAssigning)
+				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
+			} else {
+				fmt.Println("vars.TeamSelected.Id")
+				fmt.Println(vars.TeamSelected.Id)
+				newAssigneeIdForTask = vars.TeamSelected.Id
+			}
+
+			// newAssigneeIdForTask, err := strconv.Atoi(r.PostFormValue("assignCM"))
 			r.ParseForm()
 			taskIdArray := (r.Form["selected-tasks"])
 
@@ -113,6 +127,9 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				return err
 			}
 
+			fmt.Println("newAssigneeIdForTask")
+			fmt.Println(newAssigneeIdForTask)
+
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 
@@ -135,8 +152,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			}
 
 			assignTaskVars.Success = true
-			vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned to Case Manager with ID %d", len(taskIdArray), newAssigneeIdForTask)
+			vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+
+			if err != nil {
+				return err
+			}
+
 			vars.TaskList = TaskList
 
 			return tmpl.ExecuteTemplate(w, "page", vars)

@@ -14,7 +14,7 @@
   </button>
 
   {{ if .SuccessMessage }}
-    <p class="govuk-body" id="success-message">Task Reassigned {{ .SuccessMessage }}</p>
+    {{ template "success-banner" .}}
   {{ end }}
 
   <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
@@ -36,7 +36,7 @@
               <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
                 <option value=""disabled>Select a team</option>
                   {{ range .TeamSelection }}
-                    <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
                   {{ end }}
               </select>
           </div>
@@ -46,9 +46,9 @@
               Assign to a case manager
             </label>
             <select class="govuk-select" id="assignCM" name="assignCM">
-            <option value=""disabled>Select a case manager</option>
+            <option value="" selected>Select a case manager</option>
               {{ range .TeamSelected.Members }}
-                <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
+                <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
               {{ end }}
             </select>
           </div>
