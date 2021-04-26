@@ -32,11 +32,11 @@
     height: 40px;
     fill: govuk-colour("black");
 
-    [aria-expanded="true"] ~ .&--up {
+    [aria-expanded="true"] ~ .app-c-option-select--up {
       display: block;
     }
 
-    [aria-expanded="false"] ~ .&--down {
+    [aria-expanded="false"] ~ .app-c-option-select--down {
       display: block;
     }
   }
