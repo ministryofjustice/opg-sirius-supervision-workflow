@@ -99,7 +99,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				newAssigneeIdForTask = vars.TeamSelected.Id
 			}
 
-			// newAssigneeIdForTask, err := strconv.Atoi(r.PostFormValue("assignCM"))
 			r.ParseForm()
 			taskIdArray := (r.Form["selected-tasks"])
 
@@ -111,8 +110,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 					taskIdForUrl += "+"
 				}
 			}
-
-			//add if case manager empty assign to the team logic
 
 			assignTaskVars := editTaskVars{
 				Path:      r.URL.Path,
