@@ -16,15 +16,12 @@
           {{ template "filters" . }}
         </div>
 
-          {{ template "success-banner" . }}
-
-          {{ template "pagination-top" . }}
+        {{ template "pagination-top" . }}
 
         <div id="table-column" class="govuk-grid-columns">
 
-          {{/* {{ template "edit-panel" . }} */}}
 
-          {{ template "table" . }}
+        {{ template "table" . }}
          
           {{ template "pagination-bottom" . }}
         </div>

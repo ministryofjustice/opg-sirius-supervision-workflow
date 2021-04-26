@@ -14,7 +14,7 @@
   </button>
 
   {{ if .SuccessMessage }}
-    <p class="govuk-body" id="success-message">Task Reassigned {{ .SuccessMessage }}</p>
+    {{ template "success-banner" .}}
   {{ end }}
 
   <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
