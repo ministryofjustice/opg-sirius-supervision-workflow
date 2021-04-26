@@ -19,7 +19,7 @@ it("should have a table with the column Task type", () => {
 })
 
 it("should have a table with the column Client", () => {
-  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(3)").should("contain", "Client Alexander Zacchaeus Client Wolfeschlegelsteinhausenbergerdorff caseRecNumber")
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(3)").should("contain", "Client Alexander Zacchaeus Client Wolfeschlegelsteinhausenbergerdorff")
 })
 
 it("should have a table with the column Case owner", () => {
@@ -27,7 +27,7 @@ it("should have a table with the column Case owner", () => {
 })
 
 it("should have a table with the column Assigned to", () => {
-  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "Assignee Duke Clive Henry Hetley Junior Jones Supervision - Team - Name")
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "Assignee Duke Clive Henry Hetley Junior Jones")
 })
 
 it("should have a table with the column Due date", () => {
