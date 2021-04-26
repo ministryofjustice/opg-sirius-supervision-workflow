@@ -1,5 +1,6 @@
 
 $govuk-include-default-font-face: false;
+$govuk-moj-table-background-color: #E7F2FB;
 
 @import "node_modules/govuk-frontend/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
@@ -48,7 +49,7 @@ $govuk-include-default-font-face: false;
             &.overdue {color: govuk-colour("red");font-weight: bold;}
           }
           &.selected {
-            background: #E7F2FB;
+            background: $govuk-moj-table-background-color;
             td {
               &:first-child {
               border-left: govuk-spacing(1) solid govuk-colour("blue")!important;
@@ -78,10 +79,10 @@ $govuk-include-default-font-face: false;
     }
   
     #edit-panel {
-      background-color: #f3f2f1;
+      background-color: govuk-colour("light-grey");
   
       header {
-        background-color: #b1b4b6;
+        background-color: govuk-colour("mid-grey");
       }
   
       .govuk-width-container {
@@ -94,7 +95,7 @@ $govuk-include-default-font-face: false;
   
       .govuk-button--cancel {
         background: none !important;
-        color: #0b0c0c;
+        color: govuk-colour("black");
         border-color: transparent;
         box-shadow: 0 2px 0 transparent !important;
         text-decoration: underline;
@@ -102,7 +103,7 @@ $govuk-include-default-font-face: false;
     }
   
     #team-banner {
-      background: #1d70b8;
+      background: govuk-colour("blue");
       margin-bottom: 1em;
       padding: 15px 0;
   
@@ -111,7 +112,7 @@ $govuk-include-default-font-face: false;
         justify-content: space-between;
   
         h2 {
-          color: white;
+          color: govuk-colour("white");
           margin: 0;
           line-height: 1.75;
         }
@@ -121,7 +122,7 @@ $govuk-include-default-font-face: false;
           margin-bottom: 0;
   
           label {
-            color: white;
+            color: govuk-colour("white");
             font-weight: bold;
             display: inline-block;
             margin-right: 10px;
@@ -132,7 +133,7 @@ $govuk-include-default-font-face: false;
   
     #overview {
       .govuk-grid-column-container {
-        background-color: #f3f2f1;
+        background-color: govuk-colour("light-grey");
         overflow: auto;
         padding: 30px;
       }
@@ -169,19 +170,11 @@ $govuk-include-default-font-face: false;
     }
   
     .govuk-button--blue {
-      background: #1d70b8;
+      background: govuk-colour("blue");
   
       &:hover {
-        background: #003078;
+        background: govuk-colour("dark-blue");
       }
-    }
-  
-    .autocomplete__menu {
-      font-family: "GDS Transport", arial, sans-serif;
-    }
-  
-    button.govuk-button {
-      margin-top: 1em;
     }
   
     .moj-filter-tags-list {
@@ -193,7 +186,7 @@ $govuk-include-default-font-face: false;
       border: none;
       padding: 0!important;
       font-family: arial, sans-serif;
-      color: #1d70b8;
+      color: govuk-colour("blue");
       cursor: pointer;
       font-size: large;
     }
@@ -227,7 +220,7 @@ $govuk-include-default-font-face: false;
       position: relative;
       padding: 0 0 10px;
       margin-bottom: 10px;
-      border-bottom: 1px solid #b1b4b6;
+      border-bottom: 1px solid govuk-colour("mid-grey");
   }
   
   .app-c-option-select__heading {
@@ -243,7 +236,7 @@ $govuk-include-default-font-face: false;
       text-align: left;
       padding: 0;
       cursor: pointer;
-      color: #1d70b8;
+      color: govuk-colour("blue");
   }
   .app-c-option-select__title {
       font-size: 19px;
@@ -256,7 +249,7 @@ $govuk-include-default-font-face: false;
       left: 9px;
       width: 30px;
       height: 40px;
-      fill: #0b0c0c;
+      fill: govuk-colour("black");
   }
   
   [aria-expanded="true"]~.app-c-option-select__icon--up {
@@ -274,7 +267,7 @@ $govuk-include-default-font-face: false;
   
   .app-c-option-select__filter {
       position: relative;
-      background: #fff;
+      background: govuk-colour("white");
       padding: 13px 13px 10px 13px;
   }
   
@@ -286,7 +279,7 @@ $govuk-include-default-font-face: false;
       font-size: 16px;
       line-height: 1.25;
       padding-left: 33px;
-      background: url("/public/images/icon-search.svg") #fff no-repeat -5px -3px;
+      background: url("/public/images/icon-search.svg") govuk-colour("white") no-repeat -5px -3px;
   }
   
   .app-c-option-select__container-inner {
@@ -298,7 +291,7 @@ $govuk-include-default-font-face: false;
       max-height: 200px;
       overflow-y: auto;
       overflow-x: hidden;
-      background-color: #fff;
+      background-color: govuk-colour("white");
   }
   
   .app-c-option-select.js-closed .app-c-option-select__filter,
