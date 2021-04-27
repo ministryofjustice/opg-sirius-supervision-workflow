@@ -20,7 +20,7 @@
         <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="1" disabled>1</button></li> 
       {{ else if ge .TaskList.Pages.PageTotal 2}}
         {{ range .TaskDetails.ListOfPages }}
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link paginatiomoj-pagination__link--btnn_button_link" name="page" value="{{ . }}">{{ . }}</button></li> 
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ . }}">{{ . }}</button></li> 
         {{ end }} 
       {{ end }}
 
