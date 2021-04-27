@@ -52,6 +52,11 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
+
+		if err != nil {
+			return err
+		}
+
 		loggedInTeamId := myDetails.Teams[0].TeamId
 
 		loadTaskTypes, err := client.GetTaskType(ctx)

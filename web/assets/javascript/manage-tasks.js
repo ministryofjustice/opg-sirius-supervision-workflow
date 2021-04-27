@@ -20,30 +20,7 @@ export default class ManageTasks {
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
-      
-        // this.callPlace();
     }
-
-    // async callPlace() {
-
-    //   fetch("http://localhost:8080/api/v1/teams?",
-    //   {
-    //     credentials: 'include',
-    //     headers: {
-    //     }
-    //   })
-    //   .then(response => {
-    //     console.log(response);
-    //     return response.json()
-    //   })
-    //   .then(data => {
-    //     console.log(data)
-    //     this.teamMemberData = data;
-    //     console.log(this.teamMemberData);
-    //   }).catch((error) => {
-    //     console.error('Error:', error);
-    //   });
-    // }
     
     numberOfTasksSelected() {
         return this.data.selectedTasks;
@@ -90,6 +67,7 @@ export default class ManageTasks {
     }
 
     _showManageTasksButton() {
+        console.log("_showManageTasksButton");
       this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
@@ -99,7 +77,8 @@ export default class ManageTasks {
     }
 
    _showEditTasksPanel(event) {
-    this.editPanelDiv.classList.toggle('hide', this.data.selectedTasks === 0);
+       console.log("_showEditTasksPanel")
+    this.editPanelDiv.classList.toggle('hide', false);
    }
 
    _bindCancelTasksButton(element) {
@@ -108,8 +87,8 @@ export default class ManageTasks {
   }
 
   _hideEditTasksPanel(event) {
+    console.log("_hideEditTasksPanel")
     this.editPanelDiv.classList.toggle('hide', true);
    }
-   
 
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -209,51 +210,110 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-// func TestWorkflowUnauthenticated(t *testing.T) {
-// 	assert := assert.New(t)
+func TestWorkflowUnauthenticated(t *testing.T) {
+	assert := assert.New(t)
 
-// 	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
-// 	template := &mockTemplates{}
+	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
+	template := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	assert.Equal(sirius.ErrUnauthorized, err)
+	assert.Equal(sirius.ErrUnauthorized, err)
 
-// 	assert.Equal(0, template.count)
-// }
+	assert.Equal(0, template.count)
+}
 
-// func TestWorkflowSiriusErrors(t *testing.T) {
-// 	assert := assert.New(t)
+func TestWorkflowSiriusErrors(t *testing.T) {
+	assert := assert.New(t)
 
-// 	client := &mockWorkflowInformation{err: errors.New("err")}
-// 	template := &mockTemplates{}
+	client := &mockWorkflowInformation{err: errors.New("err")}
+	template := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	assert.Equal("err", err.Error())
+	assert.Equal("err", err.Error())
 
-// 	assert.Equal(0, template.count)
-// }
+	assert.Equal(0, template.count)
+}
 
-// func TestPostWorkflow(t *testing.T) {
-// 	assert := assert.New(t)
-// 	template := &mockTemplates{}
+func TestPostWorkflowIsPermitted(t *testing.T) {
+	assert := assert.New(t)
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("POST", "", nil)
+	mockUserDetailsData := sirius.UserDetails{
+		ID:        123,
+		Firstname: "John",
+		Surname:   "Doe",
+		Teams: []sirius.MyDetailsTeam{
+			{
+				TeamId:      13,
+				DisplayName: "Lay Team 1 - (Supervision)",
+			},
+		},
+	}
 
-// 	handler := loggingInfoForWorflow(nil, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	mockTaskTypeData := sirius.TaskTypes{
+		TaskTypeList: sirius.ApiTaskTypes{
+			Handle:     "CDFC",
+			Incomplete: "Correspondence - Review failed draft",
+			Category:   "supervision",
+			Complete:   "Correspondence - Reviewed draft failure",
+			User:       true,
+		},
+	}
 
-// 	assert.Equal(StatusError(http.StatusMethodNotAllowed), err)
+	mockTaskListData := sirius.TaskList{
+		WholeTaskList: []sirius.ApiTask{
+			{
+				ApiTaskAssignee: sirius.AssigneeDetails{
+					AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+				},
+				ApiTaskType:    "Case work - General",
+				ApiTaskDueDate: "01/02/2021",
+				ApiTaskCaseItems: []sirius.CaseItemsDetails{
+					{
+						CaseItemClient: sirius.ClientDetails{
+							ClientCaseRecNumber: "caseRecNumber",
+							ClientFirstName:     "Client Alexander Zacchaeus",
+							ClientId:            3333,
+							ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+								SupervisionCaseOwnerName: "Supervision - Team - Name",
+							},
+							ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+						},
+					},
+				},
+			},
+		},
+	}
 
-// 	assert.Equal(0, template.count)
-// }
+	mockTeamSelectionData := []sirius.TeamCollection{
+		{
+			Id: 13,
+			Members: []sirius.TeamMembers{
+				{
+					TeamMembersId:   86,
+					TeamMembersName: "LayTeam1 User11",
+				},
+			},
+			Name: "Lay Team 1 - (Supervision)",
+		},
+	}
+
+	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
+
+	template := &mockTemplates{}
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "/path", nil)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Nil(err)
+}
