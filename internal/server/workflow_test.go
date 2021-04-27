@@ -119,7 +119,7 @@ func TestGetUserDetails(t *testing.T) {
 			Id: 13,
 			Members: []sirius.TeamMembers{
 				{
-					TeamMembersId:   96,
+					TeamMembersId:   86,
 					TeamMembersName: "LayTeam1 User11",
 				},
 			},
@@ -198,7 +198,7 @@ func TestGetUserDetails(t *testing.T) {
 				Id: 13,
 				Members: []sirius.TeamMembers{
 					{
-						TeamMembersId:   96,
+						TeamMembersId:   86,
 						TeamMembersName: "LayTeam1 User11",
 					},
 				},

@@ -24,6 +24,7 @@ type CaseItemsDetails struct {
 
 type AssigneeDetails struct {
 	AssigneeDisplayName string `json:"displayName"`
+	AssigneeId          int    `json:"id"`
 }
 
 type ApiTask struct {
@@ -83,8 +84,10 @@ func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int
 }
 
 func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
-	if TaskList.Pages.PageCurrent == 1 {
+	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
 		return 1
+	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
+		return 0
 	} else {
 		previousPageNumber := TaskList.Pages.PageCurrent - 1
 		return previousPageNumber*TaskDetails.StoredTaskLimit + 1

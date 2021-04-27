@@ -51,7 +51,7 @@ func TestTeamSelection(t *testing.T) {
 							"id":   dsl.Like(13),
 							"name": dsl.Like("Lay Team 1 - (Supervision)"),
 							"members": dsl.EachLike(map[string]interface{}{
-								"id":   dsl.Like(96),
+								"id":   dsl.Like(86),
 								"name": dsl.Like("LayTeam1 User11"),
 							}, 1),
 						}, 1),
@@ -67,7 +67,7 @@ func TestTeamSelection(t *testing.T) {
 					Name: "Lay Team 1 - (Supervision)",
 					Members: []TeamMembers{
 						{
-							TeamMembersId:   96,
+							TeamMembersId:   86,
 							TeamMembersName: "LayTeam1 User11",
 						},
 					},

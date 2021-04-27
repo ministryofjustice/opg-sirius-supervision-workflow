@@ -1,0 +1,13 @@
+.sirius-workflow {
+  .govuk-width-container,
+  .moj-header__container,
+  .moj-primary-navigation__container {
+    max-width: none;
+    padding: 0 govuk-spacing(3);
+  }
+
+  .flex-container {
+    display: flex;
+    justify-content: space-between;
+  }
+}

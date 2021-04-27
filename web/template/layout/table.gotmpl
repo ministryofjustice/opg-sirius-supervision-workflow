@@ -1,69 +1,91 @@
 {{ define "table" }}
 
-<section id="edit-panel">
-  <header>
-    <div class="govuk-width-container">
-      <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
-    </div>
-  </header>
+{{/* <button id="toggle-filters" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+            Show filters
+          </button>
+*/}}
+{{/* data-module="govuk-button" */}}
+ 
+ 
+<section data-module="manage-tasks" class="moj-manage-tasks">
 
-  <div class="govuk-width-container ">
-    <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
-    <div>
-    {{ if .SuccessMessage }}
-        <h3 class="govuk-heading-xl">Task Reassigned</h3>
-        <p class="govuk-body">{{ .SuccessMessage }}</p>
-    {{ end }}
+  <button id="edit-task" class="govuk-button govuk-button--blue hide" data-module="manage-tasks_edit-task-btn">
+    Manage task
+  </button>
 
-        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <label class="govuk-label" for="sort">
-            Assign to a team
-          </label>
-          <form class="form" action="" method="" id="assignTeam-form">
-          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
-            <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-              <option value=""disabled>Select a team</option>
-                {{ range .TeamSelection }}
-                  <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
-                {{ end }}
+  {{ if .SuccessMessage }}
+    {{ template "success-banner" .}}
+  {{ end }}
+
+  <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
+    <section class="moj-manage-tasks__edit-panel">
+      <header>
+        <div class="govuk-width-container">
+          <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
+        </div>
+      </header>
+      <div class="govuk-width-container">
+        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-module="manage-tasks_task-count">0</span> tasks selected</h4>
+          <h1 id="kate"  data-module="manage-tasks_kate"></h1>
+          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+            <label class="govuk-label" for="sort">
+              Assign to a team
+            </label>
+            <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
+            <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+              <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
+                <option value=""disabled>Select a team</option>
+                  {{ range .TeamSelection }}
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                  {{ end }}
+              </select>
+          </div>
+        
+          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+            <label class="govuk-label" for="sort">
+              Assign to a case manager
+            </label>
+            <select class="govuk-select" id="assignCM" name="assignCM">
+            <option value="" selected>Select a case manager</option>
+              {{ range .TeamSelected.Members }}
+                <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
+              {{ end }}
             </select>
-        </div>
-      
-        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <label class="govuk-label" for="sort">
-            Assign to a case manager
-          </label>
-          <select class="govuk-select" id="assignCM" name="assignCM">
-          <option value=""disabled>Select a case manager</option>
-            {{ range .TeamSelected.Members }}
-              <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
-            {{ end }}
-          </select>
-        </div>
+          </div>
 
-        {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <label class="govuk-label" for="sort">
-            Set priority
-          </label>
-          <select class="govuk-select" id="assignPriority" name="assignTeam">
-            <option value=""disabled selected>Select a priority</option>
-            <option value="Normal">Normal</option>
-            <option value="Urgent">Urgent</option>
-          </select>
-        </div> */}}
+          {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+            <label class="govuk-label" for="sort">
+              Set priority
+            </label>
+            <select class="govuk-select" id="assignPriority" name="assignTeam">
+              <option value=""disabled selected>Select a priority</option>
+              <option value="Normal">Normal</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div> */}}
+          <div>
+          <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
+
+          <a href="#" id="edit-cancel" data-module="manage-tasks_cancel-button" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
+        </div>
       </div>
-      <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
-
-      <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
-
-    </div>
-  </section>
+    </section>
+  </div>
 
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header govuk-table__select"></th>
+        <th scope="col" class="govuk-table__header govuk-table__select">
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" data-module="manage-tasks_all-checkboxes" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+              <label class="govuk-label govuk-checkboxes__label" for="organisation">
+                <span class="govuk-visually-hidden">Select</span>
+              </label>
+            </div>
+          </div>
+        </th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
@@ -79,8 +101,8 @@
             <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" onClick="addSelectedTask()" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
-              <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                <input class="govuk-checkboxes__input" data-module="manage-tasks_checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                 <span class="govuk-visually-hidden">Select</span>
                 </label>
               </div>
@@ -92,16 +114,20 @@
             <td class="govuk-table__cell">
               <label class="govuk-label" for="client-firstname-surname-caserec-number">
                 {{ range .ApiTaskCaseItems }}
-                  {{ .CaseItemClient.ClientFirstName }} {{ .CaseItemClient.ClientSurname }} {{ .CaseItemClient.ClientCaseRecNumber }}
+                  {{ .CaseItemClient.ClientFirstName }} {{ .CaseItemClient.ClientSurname }}
+                  <span class="secondary">{{ .CaseItemClient.ClientCaseRecNumber }}</span>
                 {{ end }}
               </label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}</label>
+              <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}
+               <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
+              </label>
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-name-and-team">
-                {{ .ApiTaskAssignee.AssigneeDisplayName }}{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}
+                {{ .ApiTaskAssignee.AssigneeDisplayName }}
+                <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
               </label>
             </td>
             <td class="govuk-table__cell">
@@ -109,14 +135,14 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
-              <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-button" id="hook-open-case">Open case</a>
+              <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-link" id="hook-open-case">Open case</a>
             </td>
             {{ end }}
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
         <tr class="govuk-table__row">
-          <td colspan="7" id="table-cell__noTasks">The team has no tasks</td> 
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td> 
         </tr>
       {{ end }}
     </tbody>

@@ -17,7 +17,7 @@
 <h2> Run the tests </h2>
 <p> Generate the pact file which mimics Sirius and tests files in Sirius folder</p>
 
- ### `go test ./... `
+ ### ` `
  
  <p> Run Cypress tests against the pact copy of the service </p>
  
