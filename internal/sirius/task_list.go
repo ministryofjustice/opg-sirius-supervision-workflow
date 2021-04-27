@@ -24,6 +24,7 @@ type CaseItemsDetails struct {
 
 type AssigneeDetails struct {
 	AssigneeDisplayName string `json:"displayName"`
+	AssigneeId          int    `json:"id"`
 }
 
 type ApiTask struct {

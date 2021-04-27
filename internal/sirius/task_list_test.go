@@ -50,6 +50,7 @@ func TestTaskList(t *testing.T) {
 							"tasks": dsl.EachLike(map[string]interface{}{
 								"assignee": dsl.Like(map[string]interface{}{
 									"displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
+									"id":          86,
 								}),
 								"name":    dsl.Like("Case work - General"),
 								"dueDate": dsl.Like("01/02/2021"),
@@ -82,6 +83,7 @@ func TestTaskList(t *testing.T) {
 					{
 						ApiTaskAssignee: AssigneeDetails{
 							AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+							AssigneeId:          86,
 						},
 						ApiTaskType:    "Case work - General",
 						ApiTaskDueDate: "01/02/2021",
