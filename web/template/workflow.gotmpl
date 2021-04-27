@@ -3,6 +3,7 @@
 {{ define "title" }} OPG Sirius Workflow {{ end }}
 
 {{ define "main" }}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
      <h1 class="govuk-heading-l">Supervision workflow</h1>
@@ -19,11 +20,11 @@
         {{ template "pagination-top" . }}
 
         <div id="table-column" class="govuk-grid-columns">
-
+        {{ template "error-summary" .Errors }}
 
         {{ template "table" . }}
          
-          {{ template "pagination-bottom" . }}
+        {{ template "pagination-bottom" . }}
         </div>
       </div>
     </div>

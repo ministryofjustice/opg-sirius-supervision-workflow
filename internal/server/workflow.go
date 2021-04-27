@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -28,6 +29,7 @@ type workflowVars struct {
 	TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
 	SuccessMessage string
+	Errors         sirius.ValidationErrors
 }
 
 type editTaskVars struct {
@@ -52,42 +54,47 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
 
+		vars := workflowVars{
+			Path:      r.URL.Path,
+			XSRFToken: ctx.XSRFToken,
+		}
+
 		myDetails, err := client.SiriusUserDetails(ctx)
+		vars.MyDetails = myDetails
 		if err != nil {
 			return err
 		}
 
+		if len(myDetails.Teams) < 1 {
+			err = errors.New("This user is not in a team")
+		}
+		if err != nil {
+			return err
+		}
 		loggedInTeamId := myDetails.Teams[0].TeamId
-
 		loadTaskTypes, err := client.GetTaskType(ctx)
+		vars.LoadTasks = loadTaskTypes
 		if err != nil {
 			return err
 		}
 
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+		vars.TaskList = taskList
+		vars.TaskDetails = taskdetails
 		if err != nil {
 			return err
 		}
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
+		vars.TeamSelected = selectedTeamMembers
 		if err != nil {
 			return err
 		}
 
 		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName, selectedTeamMembers)
+		vars.TeamSelection = teamSelection
 		if err != nil {
 			return err
-		}
-
-		vars := workflowVars{
-			Path:          r.URL.Path,
-			XSRFToken:     ctx.XSRFToken,
-			MyDetails:     myDetails,
-			TaskList:      taskList,
-			TaskDetails:   taskdetails,
-			LoadTasks:     loadTaskTypes,
-			TeamSelection: teamSelection,
-			TeamSelected:  selectedTeamMembers,
 		}
 
 		if err != nil {
