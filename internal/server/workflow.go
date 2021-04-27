@@ -41,6 +41,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+			fmt.Println(StatusError(http.StatusMethodNotAllowed))
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
@@ -52,7 +53,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
 
 		myDetails, err := client.SiriusUserDetails(ctx)
-
 		if err != nil {
 			return err
 		}
@@ -60,16 +60,21 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		loggedInTeamId := myDetails.Teams[0].TeamId
 
 		loadTaskTypes, err := client.GetTaskType(ctx)
+		if err != nil {
+			return err
+		}
+
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+		if err != nil {
+			return err
+		}
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
-
 		if err != nil {
 			return err
 		}
 
 		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName, selectedTeamMembers)
-
 		if err != nil {
 			return err
 		}
