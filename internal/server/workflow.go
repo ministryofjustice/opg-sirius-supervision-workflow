@@ -33,13 +33,6 @@ type workflowVars struct {
 	Errors         sirius.ValidationErrors
 }
 
-type editTaskVars struct {
-	Path      string
-	XSRFToken string
-	Success   bool
-	Errors    sirius.ValidationErrors
-}
-
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 
@@ -66,6 +59,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+
 		loggedInTeamId := myDetails.Teams[0].TeamId
 		loadTaskTypes, err := client.GetTaskType(ctx)
 		if err != nil {
@@ -129,40 +123,18 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				}
 			}
 
-			assignTaskVars := editTaskVars{
-				Path:      r.URL.Path,
-				XSRFToken: ctx.XSRFToken,
-			}
-
 			if err != nil {
 				return err
 			}
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
-
 			if err != nil {
 				return err
 			}
 
-			if _, ok := err.(sirius.ClientError); ok {
-				assignTaskVars.Errors = sirius.ValidationErrors{
-					"firstname": {
-						"": err.Error(),
-					},
-				}
-				w.WriteHeader(http.StatusBadRequest)
-				return tmpl.ExecuteTemplate(w, "page", vars)
-			}
-
-			if err != nil {
-				return err
-			}
-
-			assignTaskVars.Success = true
 			vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
-
 			if err != nil {
 				return err
 			}
