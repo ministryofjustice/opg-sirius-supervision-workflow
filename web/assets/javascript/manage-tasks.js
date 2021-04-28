@@ -39,7 +39,9 @@ export default class ManageTasks {
     }
 
     _updateDomElements() {
-        this.selectedCountElement.innerText = this.data.selectedTasks.toString();
+        this.selectedCountElement.forEach(element => {
+            element.innerText = this.data.selectedTasks.toString();
+        });
         this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
@@ -68,11 +70,15 @@ export default class ManageTasks {
     }
 
     _showEditTasksPanel(event) {
-        this.editPanelDiv.classList.toggle('hide', this.data.selectedTasks === 0);
+        this.editPanelDiv.forEach(element => {
+            element.classList.toggle('hide', this.data.selectedTasks === 0);
+        });
     }
 
     _hideEditTasksPanel(event) {
-        this.editPanelDiv.classList.toggle('hide', true);
+        this.editPanelDiv.forEach(element => {
+            element.classList.toggle('hide', true);
+        });
     }
 
 
