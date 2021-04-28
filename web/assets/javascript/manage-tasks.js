@@ -42,7 +42,10 @@ export default class ManageTasks {
         this.selectedCountElement.forEach(element => {
             element.innerText = this.data.selectedTasks.toString();
         });
-        this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
+
+        this.manageTasksButton.forEach(element => {
+            element.classList.toggle('hide', this.data.selectedTasks === 0);
+        })
     }
 
     _updateSelectedRowStyles(element) {
