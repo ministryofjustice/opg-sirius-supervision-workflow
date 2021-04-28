@@ -19,7 +19,6 @@ export default class ManageTasks {
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
-
     }
     
     numberOfTasksSelected() {
@@ -67,7 +66,6 @@ export default class ManageTasks {
     }
 
     _showManageTasksButton() {
-        console.log("_showManageTasksButton");
       this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
@@ -77,7 +75,6 @@ export default class ManageTasks {
     }
 
    _showEditTasksPanel(event) {
-       console.log("_showEditTasksPanel")
     this.editPanelDiv.classList.toggle('hide', false);
    }
 
