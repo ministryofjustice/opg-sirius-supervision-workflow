@@ -9,6 +9,6 @@ GOVUKFrontend.initAll();
 MojBannerAutoHide(document.querySelector('.app-main-class'));
 
 const manageTasks = document.querySelectorAll('[data-module="manage-tasks"]');
-  MOJFrontend.nodeListForEach(manageTasks, function (manageTask) {
-    new ManageTasks(manageTask);
-  });
+MOJFrontend.nodeListForEach(manageTasks, function (manageTask) {
+  new ManageTasks(manageTask);
+});

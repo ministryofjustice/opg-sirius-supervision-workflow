@@ -4,56 +4,58 @@ export default class ManageTasks {
             selectedTasks: 0
         }
         this.teamMemberData = [];
-        this.checkBoxElements = element.querySelectorAll('[data-module="manage-tasks_checkbox"]');
-        this.selectedCountElement = element.querySelectorAll('[data-module="manage-tasks_task-count"]')[0];
-        this.allcheckBoxElements = element.querySelectorAll('[data-module="manage-tasks_all-checkboxes"]')[0];
-        
-        this._bindAllCheckBox(this.allcheckBoxElements);
-        this.checkBoxElements.forEach(checkbox => {
-            this._bindCheckBox(checkbox);
-        });
-      
-        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_manage-task-btn"]')[0];
-        this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
-        this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
-      
-        this._bindShowManageTasksButton(this.manageTasksButton);
-        this._bindCancelTasksButton(this.cancelEditTasksButton);
+
+        this.checkBoxElements = element.querySelectorAll('.js-mt-checkbox');
+        this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
+        this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
+        this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
+
+        this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
+        this.editPanelDiv = element.querySelectorAll('.js-edit-panel');
+
+        this._setupEventListeners();
     }
-    
-    numberOfTasksSelected() {
-        return this.data.selectedTasks;
+
+    _setupEventListeners() {
+        this.checkBoxElements.forEach(element => {
+            this._updateSelectedState = this._updateSelectedState.bind(this);
+            element.addEventListener('click', this._updateSelectedState);
+        });
+
+        this.allcheckBoxElements.forEach(element => {
+            this._updateAllSelectedState = this._updateAllSelectedState.bind(this);
+            element.addEventListener('click', this._updateAllSelectedState);
+        });
+
+        this.manageTasksButton.forEach(element => {
+            this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
+            element.addEventListener('click', this._showEditTasksPanel);
+        });
+
+        this.cancelEditTasksButton.forEach(element => {
+            this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
+            element.addEventListener('click', this._hideEditTasksPanel);
+        });
     }
 
     _updateDomElements() {
-        this.selectedCountElement.innerText = this.numberOfTasksSelected().toString();
-        this._showManageTasksButton();
-    }
-
-    _bindCheckBox(element) {
-        this._updateSelectedState = this._updateSelectedState.bind(this);
-        element.addEventListener('click', this._updateSelectedState);
+        this.selectedCountElement.innerText = this.data.selectedTasks.toString();
+        this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
     _updateSelectedRowStyles(element) {
-      element.parentElement.parentElement.parentElement.classList.toggle('govuk-table__select', element.checked);
-      element.parentElement.parentElement.parentElement.parentElement.classList.toggle('selected', element.checked);
-
+        element.parentElement.parentElement.parentElement.classList.toggle('govuk-table__select', element.checked);
+        element.parentElement.parentElement.parentElement.parentElement.classList.toggle('selected', element.checked);
     }
 
     _updateSelectedState(event) {
         event.target.checked ? this.data.selectedTasks++ : this.data.selectedTasks--;
         this._updateSelectedRowStyles(event.target);
-        this._updateDomElements();   
-    }
-
-    _bindAllCheckBox(element) {
-        this._updateAllSelectedState = this._updateAllSelectedState.bind(this);
-        element.addEventListener('click', this._updateAllSelectedState);
+        this._updateDomElements();
     }
 
     _updateAllSelectedState(event) {
-        let isChecked = event.target.checked; 
+        let isChecked = event.target.checked;
 
         this.checkBoxElements.forEach(checkbox => {
             checkbox.checked = isChecked;
@@ -65,27 +67,13 @@ export default class ManageTasks {
         this._updateDomElements();
     }
 
-    _showManageTasksButton() {
-      this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
+    _showEditTasksPanel(event) {
+        this.editPanelDiv.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
-    _bindShowManageTasksButton(element) {
-      this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
-      element.addEventListener('click', this._showEditTasksPanel);
+    _hideEditTasksPanel(event) {
+        this.editPanelDiv.classList.toggle('hide', true);
     }
 
-   _showEditTasksPanel(event) {
-    this.editPanelDiv.classList.toggle('hide', false);
-   }
-
-   _bindCancelTasksButton(element) {
-    this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
-    element.addEventListener('click', this._hideEditTasksPanel);
-  }
-
-  _hideEditTasksPanel(event) {
-    console.log("_hideEditTasksPanel")
-    this.editPanelDiv.classList.toggle('hide', true);
-   }
 
 }

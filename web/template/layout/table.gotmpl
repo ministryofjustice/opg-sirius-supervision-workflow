@@ -9,7 +9,7 @@
  
 <section data-module="manage-tasks" class="moj-manage-tasks">
 
-  <button id="manage-task" class="govuk-button govuk-button--blue hide" data-module="manage-tasks_manage-task-btn">
+  <button id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
     Manage task
   </button>
 
@@ -17,7 +17,7 @@
     {{ template "success-banner" .}}
   {{ end }}
 
-  <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
+  <div class="govuk-width-container hide js-edit-panel">
     <section class="moj-manage-tasks__edit-panel">
       <header>
         <div class="govuk-width-container">
@@ -25,7 +25,7 @@
         </div>
       </header>
       <div class="govuk-width-container">
-        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-module="manage-tasks_task-count">0</span> tasks selected</h4>
+        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
           <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
             <label class="govuk-label" for="sort">
               Assign to a team
@@ -65,7 +65,7 @@
           <div>
           <button id="edit-save" class="govuk-button govuk-!-margin-right-1" type="submit" formmethod="post" >Save and continue</button>
 
-          <a href="#" id="edit-cancel" data-module="manage-tasks_cancel-button" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
+          <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
         </div>
       </div>
     </section>
@@ -78,7 +78,7 @@
         <th scope="col" class="govuk-table__header govuk-table__select">
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" data-module="manage-tasks_all-checkboxes" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+              <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" value="hmrc">
               <label class="govuk-label govuk-checkboxes__label" for="organisation">
                 <span class="govuk-visually-hidden">Select</span>
               </label>
@@ -100,7 +100,7 @@
             <td class="govuk-table__cell">
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" data-module="manage-tasks_checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
                 <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                 <span class="govuk-visually-hidden">Select</span>
                 </label>
