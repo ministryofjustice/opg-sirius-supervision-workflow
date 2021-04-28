@@ -83,6 +83,4 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
-
-
 }
