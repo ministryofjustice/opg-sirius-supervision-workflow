@@ -11,7 +11,7 @@ export default class ManageTasks {
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
 
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
-        this.editPanelDiv = element.querySelectorAll('.js-edit-panel');
+        this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
 
         this._setupEventListeners();
     }
