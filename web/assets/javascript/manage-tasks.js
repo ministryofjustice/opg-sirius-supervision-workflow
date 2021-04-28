@@ -14,7 +14,6 @@ export default class ManageTasks {
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
 
         this._setupEventListeners();
-    }
 
     _setupEventListeners() {
         this.checkBoxElements.forEach(element => {
@@ -73,13 +72,10 @@ export default class ManageTasks {
         this.editPanelDiv.forEach(element => {
             element.classList.toggle('hide', this.data.selectedTasks === 0);
         });
-    }
 
     _hideEditTasksPanel(event) {
         this.editPanelDiv.forEach(element => {
             element.classList.toggle('hide', true);
         });
     }
-
-
-}
+ }
