@@ -1,6 +1,8 @@
 package server
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -64,68 +66,69 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	return m.err
 }
 
-func TestGetUserDetails(t *testing.T) {
-	assert := assert.New(t)
+var mockUserDetailsData = sirius.UserDetails{
+	ID:        123,
+	Firstname: "John",
+	Surname:   "Doe",
+	Teams: []sirius.MyDetailsTeam{
+		{
+			TeamId:      13,
+			DisplayName: "Lay Team 1 - (Supervision)",
+		},
+	},
+}
 
-	mockUserDetailsData := sirius.UserDetails{
-		ID:        123,
-		Firstname: "John",
-		Surname:   "Doe",
-		Teams: []sirius.MyDetailsTeam{
-			{
-				TeamId:      13,
-				DisplayName: "Lay Team 1 - (Supervision)",
+var mockTaskTypeData = sirius.TaskTypes{
+	TaskTypeList: sirius.ApiTaskTypes{
+		Handle:     "CDFC",
+		Incomplete: "Correspondence - Review failed draft",
+		Category:   "supervision",
+		Complete:   "Correspondence - Reviewed draft failure",
+		User:       true,
+	},
+}
+
+var mockTaskListData = sirius.TaskList{
+	WholeTaskList: []sirius.ApiTask{
+		{
+			ApiTaskAssignee: sirius.AssigneeDetails{
+				AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
-		},
-	}
-
-	mockTaskTypeData := sirius.TaskTypes{
-		TaskTypeList: sirius.ApiTaskTypes{
-			Handle:     "CDFC",
-			Incomplete: "Correspondence - Review failed draft",
-			Category:   "supervision",
-			Complete:   "Correspondence - Reviewed draft failure",
-			User:       true,
-		},
-	}
-
-	mockTaskListData := sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{
-			{
-				ApiTaskAssignee: sirius.AssigneeDetails{
-					AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
-				},
-				ApiTaskType:    "Case work - General",
-				ApiTaskDueDate: "01/02/2021",
-				ApiTaskCaseItems: []sirius.CaseItemsDetails{
-					{
-						CaseItemClient: sirius.ClientDetails{
-							ClientCaseRecNumber: "caseRecNumber",
-							ClientFirstName:     "Client Alexander Zacchaeus",
-							ClientId:            3333,
-							ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
-								SupervisionCaseOwnerName: "Supervision - Team - Name",
-							},
-							ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+			ApiTaskType:    "Case work - General",
+			ApiTaskDueDate: "01/02/2021",
+			ApiTaskCaseItems: []sirius.CaseItemsDetails{
+				{
+					CaseItemClient: sirius.ClientDetails{
+						ClientCaseRecNumber: "caseRecNumber",
+						ClientFirstName:     "Client Alexander Zacchaeus",
+						ClientId:            3333,
+						ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+							SupervisionCaseOwnerName: "Supervision - Team - Name",
 						},
+						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},
 				},
 			},
 		},
-	}
+	},
+}
 
-	mockTeamSelectionData := []sirius.TeamCollection{
-		{
-			Id: 13,
-			Members: []sirius.TeamMembers{
-				{
-					TeamMembersId:   86,
-					TeamMembersName: "LayTeam1 User11",
-				},
+var mockTeamSelectionData = []sirius.TeamCollection{
+	{
+		Id: 13,
+		Members: []sirius.TeamMembers{
+			{
+				TeamMembersId:   86,
+				TeamMembersName: "LayTeam1 User11",
 			},
-			Name: "Lay Team 1 - (Supervision)",
 		},
-	}
+		Name: "Lay Team 1 - (Supervision)",
+	},
+}
+
+func TestGetUserDetails(t *testing.T) {
+	fmt.Println("TestGetUserDetails")
+	assert := assert.New(t)
 
 	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
 	template := &mockTemplates{}
@@ -209,51 +212,118 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-// func TestWorkflowUnauthenticated(t *testing.T) {
-// 	assert := assert.New(t)
+func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
+	assert := assert.New(t)
 
-// 	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
-// 	template := &mockTemplates{}
+	var mockTaskListData = sirius.TaskList{
+		WholeTaskList: []sirius.ApiTask{{}},
+	}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
+	template := &mockTemplates{}
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "/path", nil)
 
-// 	assert.Equal(sirius.ErrUnauthorized, err)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	assert.Equal(0, template.count)
-// }
+	assert.Nil(err)
 
-// func TestWorkflowSiriusErrors(t *testing.T) {
-// 	assert := assert.New(t)
+	resp := w.Result()
+	assert.Equal(http.StatusOK, resp.StatusCode)
+	assert.Equal(getContext(r), client.lastCtx)
 
-// 	client := &mockWorkflowInformation{err: errors.New("err")}
-// 	template := &mockTemplates{}
+	assert.Equal(5, client.count)
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("GET", "", nil)
+	assert.Equal(1, template.count)
+	assert.Equal("page", template.lastName)
+	assert.Equal(workflowVars{
+		Path: "/path",
+		MyDetails: sirius.UserDetails{
+			ID:        123,
+			Firstname: "John",
+			Surname:   "Doe",
+			Teams: []sirius.MyDetailsTeam{
+				{
+					TeamId:      13,
+					DisplayName: "Lay Team 1 - (Supervision)",
+				},
+			},
+		},
 
-// 	handler := loggingInfoForWorflow(client, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+		TaskList: sirius.TaskList{
+			WholeTaskList: []sirius.ApiTask{{}},
+		},
+		LoadTasks: sirius.TaskTypes{
+			TaskTypeList: sirius.ApiTaskTypes{
+				Handle:     "CDFC",
+				Incomplete: "Correspondence - Review failed draft",
+				Category:   "supervision",
+				Complete:   "Correspondence - Reviewed draft failure",
+				User:       true,
+			},
+		},
+		TeamSelection: []sirius.TeamCollection{
+			{
+				Id: 13,
+				Members: []sirius.TeamMembers{
+					{
+						TeamMembersId:   86,
+						TeamMembersName: "LayTeam1 User11",
+					},
+				},
+				Name: "Lay Team 1 - (Supervision)",
+			},
+		},
+	}, template.lastVars)
 
-// 	assert.Equal("err", err.Error())
+}
 
-// 	assert.Equal(0, template.count)
-// }
+func TestWorkflowUnauthenticated(t *testing.T) {
+	assert := assert.New(t)
 
-// func TestPostWorkflow(t *testing.T) {
-// 	assert := assert.New(t)
-// 	template := &mockTemplates{}
+	client := &mockWorkflowInformation{err: sirius.ErrUnauthorized}
+	template := &mockTemplates{}
 
-// 	w := httptest.NewRecorder()
-// 	r, _ := http.NewRequest("POST", "", nil)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
 
-// 	handler := loggingInfoForWorflow(nil, template)
-// 	err := handler(sirius.PermissionSet{}, w, r)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
 
-// 	assert.Equal(StatusError(http.StatusMethodNotAllowed), err)
+	assert.Equal(sirius.ErrUnauthorized, err)
 
-// 	assert.Equal(0, template.count)
-// }
+	assert.Equal(0, template.count)
+}
+
+func TestWorkflowSiriusErrors(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockWorkflowInformation{err: errors.New("err")}
+	template := &mockTemplates{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
+
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Equal("err", err.Error())
+
+	assert.Equal(0, template.count)
+}
+
+func TestPostWorkflowIsPermitted(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
+
+	template := &mockTemplates{}
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "/path", nil)
+	handler := loggingInfoForWorflow(client, template)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Nil(err)
+}
