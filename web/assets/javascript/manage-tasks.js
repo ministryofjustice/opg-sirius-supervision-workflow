@@ -13,39 +13,21 @@ export default class ManageTasks {
             this._bindCheckBox(checkbox);
         });
       
-        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_edit-task-btn"]')[0];
+        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_manage-task-btn"]')[0];
         this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
-        this.successBanner = element.querySelectorAll('[data-module="manage-tasks_success-banner"]')[0];
-        this.saveContinueButton = element.querySelectorAll('[data-module="manage-tasks_save-continue-btn"]')[0];
       
         this._bindShowManageTasksButton(this.manageTasksButton);
         this._bindCancelTasksButton(this.cancelEditTasksButton);
-        // this._bindSaveContinueButton(this.saveContinueButton);
+
     }
     
     numberOfTasksSelected() {
         return this.data.selectedTasks;
     }
 
-  //   _bindSaveContinueButton(element) {
-  //     console.log("bind remove")
-  //     this.removeSuccessBanner = this._removeSuccessBanner.bind(this);
-      
-  // }
-
-    _removeSuccessBanner() {
-    console.log("getting to remove banner function")
-    setInterval(kate(), 1000);
-  }
-
-  kate() {
-    this.successBanner.style.display = "hide";
-  }
-
     _updateDomElements() {
         this.selectedCountElement.innerText = this.numberOfTasksSelected().toString();
-        this._removeSuccessBanner();
         this._showManageTasksButton();
     }
 
