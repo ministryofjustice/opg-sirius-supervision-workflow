@@ -28,7 +28,6 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
-
 	if err != nil {
 		return v, err
 	}
@@ -63,7 +62,7 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}
 
-	for i, _ := range v {
+	for i := range v {
 		v[i].UserSelectedTeam = k.TeamId
 		v[i].SelectedTeamId = k.SelectedTeam
 	}
