@@ -19,6 +19,7 @@ type TaskTypes struct {
 
 func (c *Client) GetTaskType(ctx Context) (TaskTypes, error) {
 	var t TaskTypes
+
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return t, err
@@ -29,8 +30,6 @@ func (c *Client) GetTaskType(ctx Context) (TaskTypes, error) {
 		return t, err
 	}
 	defer resp.Body.Close()
-
-	// io.Copy(os.Stdout, resp.Body)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return t, ErrUnauthorized
