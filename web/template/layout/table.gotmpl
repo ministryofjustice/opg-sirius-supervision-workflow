@@ -9,7 +9,7 @@
  
 <section data-module="manage-tasks" class="moj-manage-tasks">
 
-  <button id="edit-task" class="govuk-button govuk-button--blue hide" data-module="manage-tasks_edit-task-btn">
+  <button id="manage-task" class="govuk-button govuk-button--blue hide" data-module="manage-tasks_manage-task-btn">
     Manage task
   </button>
 
@@ -26,7 +26,6 @@
       </header>
       <div class="govuk-width-container">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes" data-module="manage-tasks_task-count">0</span> tasks selected</h4>
-          <h1 id="kate"  data-module="manage-tasks_kate"></h1>
           <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
             <label class="govuk-label" for="sort">
               Assign to a team
@@ -36,7 +35,7 @@
               <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
                 <option value="" selected>Select a team</option>
                   {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}{{end}}>{{ .Name }}</option>
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
                   {{ end }}
               </select>
           </div>
@@ -64,7 +63,7 @@
             </select>
           </div> */}}
           <div>
-          <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
+          <button id="edit-save" class="govuk-button govuk-!-margin-right-1" type="submit" formmethod="post" >Save and continue</button>
 
           <a href="#" id="edit-cancel" data-module="manage-tasks_cancel-button" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
         </div>

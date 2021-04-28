@@ -9,12 +9,11 @@ export default class ManageTasks {
         this.allcheckBoxElements = element.querySelectorAll('[data-module="manage-tasks_all-checkboxes"]')[0];
         
         this._bindAllCheckBox(this.allcheckBoxElements);
-
         this.checkBoxElements.forEach(checkbox => {
             this._bindCheckBox(checkbox);
         });
       
-        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_edit-task-btn"]')[0];
+        this.manageTasksButton = element.querySelectorAll('[data-module="manage-tasks_manage-task-btn"]')[0];
         this.cancelEditTasksButton = element.querySelectorAll('[data-module="manage-tasks_cancel-button"]')[0];
         this.editPanelDiv = element.querySelectorAll('[data-module="manage-tasks_edit-panel"]')[0];
       
@@ -67,7 +66,6 @@ export default class ManageTasks {
     }
 
     _showManageTasksButton() {
-        console.log("_showManageTasksButton");
       this.manageTasksButton.classList.toggle('hide', this.data.selectedTasks === 0);
     }
 
@@ -77,7 +75,6 @@ export default class ManageTasks {
     }
 
    _showEditTasksPanel(event) {
-       console.log("_showEditTasksPanel")
     this.editPanelDiv.classList.toggle('hide', false);
    }
 
