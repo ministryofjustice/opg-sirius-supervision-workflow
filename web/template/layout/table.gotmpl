@@ -14,7 +14,15 @@
   </button>
 
   {{ if .SuccessMessage }}
-    {{ template "success-banner" .}}
+    <div class="moj-banner moj-banner--success" data-module="manage-tasks_success-banner">
+    <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
+      <path d="M25,6.2L8.7,23.2L0,14.1l4-4.2l4.7,4.9L21,2L25,6.2z" />
+    </svg>
+
+    <div class="moj-banner__message">
+      <span class="moj-banner__assistive">Success</span>{{ .SuccessMessage }}
+    </div>
+  </div>
   {{ end }}
 
   <div data-module="manage-tasks_edit-panel" class="govuk-width-container hide">
@@ -36,7 +44,7 @@
               <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
                 <option value="" selected>Select a team</option>
                   {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}{{end}}>{{ .Name }}</option>
+                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
                   {{ end }}
               </select>
           </div>
@@ -64,7 +72,7 @@
             </select>
           </div> */}}
           <div>
-          <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="submit" formmethod="post">Save and continue</button>
+          <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="manage-tasks_save-continue-btn" type="submit" formmethod="post" >Save and continue</button>
 
           <a href="#" id="edit-cancel" data-module="manage-tasks_cancel-button" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
         </div>
