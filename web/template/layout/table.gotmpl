@@ -26,29 +26,31 @@
       <div class="govuk-width-container">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
           <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
+            <label class="govuk-label" for="assignTeam">
               Assign to a team
-            </label>
-            <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
-            <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
-              <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-                <option value="" selected>Select a team</option>
-                  {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
-                  {{ end }}
-              </select>
+              <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
+              <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
+                <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()" type="submit">
+                  <option value="" selected>Select a team</option>
+                    {{ range .TeamSelection }}
+                  <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                    {{ end }}
+                </select>
+              </label>
           </div>
         
           <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
+            <label class="govuk-label" for="Assign-to-a-case-manager">
               Assign to a case manager
             </label>
-            <select class="govuk-select" id="assignCM" name="assignCM">
-            <option value="" selected>Select a case manager</option>
-              {{ range .TeamSelected.Members }}
-                <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
-              {{ end }}
-            </select>
+            <label class="govuk-label" for="assignCM">
+                <select class="govuk-select" id="assignCM" name="assignCM">
+                <option value="" selected>Select a case manager</option>
+                  {{ range .TeamSelected.Members }}
+                    <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
+                  {{ end }}
+                </select>
+              </label>
           </div>
 
           {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
@@ -77,9 +79,9 @@
         <th scope="col" class="govuk-table__header govuk-table__select">
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" value="hmrc">
               <label class="govuk-label govuk-checkboxes__label" for="organisation">
-                <span class="govuk-visually-hidden">Select</span>
+                <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" value="hmrc">
+                  <span class="govuk-visually-hidden">Select</span>
               </label>
             </div>
           </div>
