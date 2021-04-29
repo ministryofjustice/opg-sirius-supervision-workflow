@@ -43,7 +43,7 @@ jobs:
           PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
           PACT_BROKER_USERNAME: admin
           PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
-        run: PACT_TAG=${{ github.head_ref }} PACT_CONSUMER_VERSION=${{ github.sha	}} go run internal/pact/publish.go
+        run: PACT_TAG=${{ github.head_ref }} PACT_CONSUMER_VERSION=${{ github.event.pull_request.head.sha }} go run internal/pact/publish.go
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v1
         with:
