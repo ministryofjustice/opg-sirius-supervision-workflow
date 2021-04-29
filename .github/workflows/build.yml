@@ -87,10 +87,6 @@ jobs:
       - name: Run pa11y
         run: |
           docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
-      
-      - name: Run Lighthouse
-        run: |
-          docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
 
   cypress:
     name: Cypress
