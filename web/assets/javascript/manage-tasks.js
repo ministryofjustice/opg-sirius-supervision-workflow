@@ -11,6 +11,9 @@ export default class ManageTasks {
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
         this.kate = element.querySelectorAll('.manage-tasks_kate');
         this.nick = element.querySelectorAll('.option-value');
+        this.nickvalue = element.querySelectorAll('.option-value')[0].value;
+        console.log("nick value in header");
+        console.log(this.nickvalue);
 
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
@@ -91,13 +94,21 @@ export default class ManageTasks {
 
     _katesFunction(event) {
         console.log("_katesFunction");
-        console.log(this);
+        console.log(this.nick);
+        console.log("event.target");
+        console.log(event.target);
+        console.log("event.target.attributes");
+        console.log(event.target.attributes);
+        console.log("event.target.attributes.value");
+        console.log(event.target.attributes.value);
+        console.log("nick value in func");
+        console.log(this.nickvalue);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
             document.getElementById("kate").innerHTML = "loaded"
-            console.log(xhttp.responseText);
-            console.log(xhttp.response);
+            // console.log(xhttp.responseText);
+            // console.log(xhttp.response);
           }
         };
         xhttp.open("GET", "/api/v1/teams/" + 13, true);
