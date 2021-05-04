@@ -10,10 +10,10 @@ export default class ManageTasks {
         this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
         this.kate = element.querySelectorAll('.manage-tasks_kate');
+        this.nick = element.querySelectorAll('.option-value');
 
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-        this._bindKatesFunction(this.kate)
 
         this._setupEventListeners();
       }
@@ -37,6 +37,12 @@ export default class ManageTasks {
         this.cancelEditTasksButton.forEach(element => {
             this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
             element.addEventListener('click', this._hideEditTasksPanel);
+        });
+        
+        this.nick.forEach(element => {
+        console.log(element);
+            this._katesFunction = this._katesFunction.bind(this);
+            element.addEventListener('click', this._katesFunction);
         });
     }
 
@@ -83,7 +89,9 @@ export default class ManageTasks {
         });
     }
 
-    _katesFunction() {
+    _katesFunction(event) {
+        console.log("_katesFunction");
+        console.log(this);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
@@ -94,8 +102,10 @@ export default class ManageTasks {
         xhttp.send();
         }
     
-        _bindKatesFunction(element) {
-          this._katesFunction = this._katesFunction(this);
-          element.addEventListener('click', this._katesFunction());
-        }
+        // _bindKatesFunction(element) {
+        //     console.log(" _bindKatesFunction");
+        //     console.log(element);
+        //   this._katesFunction = this._katesFunction(this);
+        //   element.addEventListener('click', this._katesFunction());
+        // }
  }

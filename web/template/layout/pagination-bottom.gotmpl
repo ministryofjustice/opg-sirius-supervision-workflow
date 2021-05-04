@@ -1,7 +1,8 @@
 {{ define "pagination-bottom" }}
 <nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label"  role="navigation">
 <form action="{{ prefix "/" }}" method="GET">
-    <select class="govuk-select" style="display: none;" name="change-team" onchange="this.form.submit()">
+    {{/* <select class="govuk-select" style="display: none;" name="change-team" onchange="this.form.submit()"> */}}
+    <select class="govuk-select" style="display: none;" name="change-team">
                 {{ range .TeamSelection }}
                   <option value="{{ .Id }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
                 {{ end }}
@@ -29,7 +30,8 @@
       </li> 
     </ul>
      <div class="govuk-form-group moj-pagination__change-view-number">
-      <label class="govuk-label" for="bottom-label-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" onchange="this.form.submit()">
+      {{/* <label class="govuk-label" for="bottom-label-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" onchange="this.form.submit()"> */}}
+      <label class="govuk-label" for="bottom-label-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" >
         <option value="25"  id="bottom-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
         <option value="50"  id="bottom-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
         <option value="100"  id="bottom-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
