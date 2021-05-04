@@ -11,7 +11,8 @@
             <label class="govuk-label" for="change-team">
               Change view
             </label>
-            <select class="govuk-select" name="change-team" onchange="this.form.submit()">
+            {{/* <select class="govuk-select" name="change-team" onchange="this.form.submit()"> */}}
+            <select class="govuk-select" id="assignTeam" name="assignTeam" onclick="katesFunction()">
             {{ range .TeamSelection }}
               <option value="{{ .Id }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
             {{ end }}

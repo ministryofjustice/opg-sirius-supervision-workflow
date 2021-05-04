@@ -9,9 +9,11 @@ export default class ManageTasks {
         this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
         this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
+        this.kate = element.querySelectorAll('.manage-tasks_kate');
 
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
+        this._bindKatesFunction(this.kate)
 
         this._setupEventListeners();
       }
@@ -80,4 +82,20 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
+
+    _katesFunction() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange=function() {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("kate").innerHTML = this.responseText;
+          }
+        };
+        xhttp.open("GET", "/api/v1/teams/" + 13, true);
+        xhttp.send();
+        }
+    
+        _bindKatesFunction(element) {
+          this._katesFunction = this._katesFunction(this);
+          element.addEventListener('click', this._katesFunction());
+        }
  }
