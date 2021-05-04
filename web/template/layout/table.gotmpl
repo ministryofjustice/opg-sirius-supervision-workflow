@@ -33,10 +33,10 @@
             <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
             <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
               {{/* <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()"> */}}
-              <select class="govuk-select option-value" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+              <select class="govuk-select option-value-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
                 <option value="" selected>Select a team</option>
                   {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}} >{{ .Name }}</option>
+                <option class="option-value" value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}} >{{ .Name }}</option>
                   {{ end }}
               </select>
           </div>
