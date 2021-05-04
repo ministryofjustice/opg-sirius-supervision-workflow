@@ -94,15 +94,19 @@ export default class ManageTasks {
 
     _katesFunction(event) {
         console.log("_katesFunction");
-        console.log(this.nick);
-        console.log("event.target");
-        console.log(event.target);
-        console.log("event.target.attributes");
-        console.log(event.target.attributes);
-        console.log("event.target.attributes.value");
-        console.log(event.target.attributes.value);
-        console.log("nick value in func");
-        console.log(this.nickvalue);
+        console.log(this.nick.forEach(element => {
+            console.log(element);
+        }));
+        // console.log("event.target");
+        // console.log(event.target.forEach(element => {
+        //     console.log(element);
+        // }));
+        // console.log("event.target.attributes");
+        // console.log(event.target.attributes);
+        // console.log("event.target.attributes.value");
+        // console.log(event.target.attributes.value);
+        // console.log("nick value in func");
+        // console.log(this.nickvalue);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
