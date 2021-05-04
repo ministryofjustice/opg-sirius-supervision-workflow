@@ -14,7 +14,7 @@ export default class ManageTasks {
 
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-
+        // this._bindKatesFunction(this.nick);
         this._setupEventListeners();
       }
 
@@ -40,9 +40,9 @@ export default class ManageTasks {
         });
         
         this.nick.forEach(element => {
-        console.log(element);
+        console.log("nick bind func");
             this._katesFunction = this._katesFunction.bind(this);
-            element.addEventListener('click', this._katesFunction);
+            element.addEventListener('change', this._katesFunction);
         });
     }
 
@@ -95,17 +95,33 @@ export default class ManageTasks {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("kate").innerHTML = this.responseText;
+            document.getElementById("kate").innerHTML = "loaded"
+            console.log(xhttp.responseText);
+            console.log(xhttp.response);
           }
         };
         xhttp.open("GET", "/api/v1/teams/" + 13, true);
         xhttp.send();
         }
+
+        // _katesFunction(event) {
+        //   console.log("_katesFunction");
+        //   console.log(this);
+        //   var xhttp = new XMLHttpRequest();
+        //   xhttp.onreadystatechange=function() {
+        //     if (this.readyState == 4 && this.status == 200) {
+        //       document.getElementById("kate").innerHTML = "loaded"
+        //       console.log(this.response);
+        //       console.log(this.responseText);
+        //     }
+        //   };
+        //   xhttp.open("GET", "/api/v1/teams/" + 13, true);
+        //   xhttp.send();
+        //   }
     
-        // _bindKatesFunction(element) {
-        //     console.log(" _bindKatesFunction");
-        //     console.log(element);
-        //   this._katesFunction = this._katesFunction(this);
-        //   element.addEventListener('click', this._katesFunction());
-        // }
+    _bindKatesFunction(element) {
+
+      this._katesFunction = this._katesFunction(this);
+      element.addEventListener('change', this._katesFunction());
+    }
  }
