@@ -103,11 +103,12 @@ export default class ManageTasks {
               var items = obj.members
               console.log(obj);
           
-            var str = ""
+            var str = "<option value=''selected>Select a case manager</option>"
             items.forEach( item => {
               str += "<option value=" + item.id + ">" + item.displayName + "</option>"
               console.log(str)
             })
+
             document.getElementById("assignCM").innerHTML = str;
           }
         };
