@@ -1,5 +1,3 @@
-import { data } from "cypress/types/jquery";
-
 export default class ManageTasks {
     constructor(element) {
         this.data = {
@@ -12,13 +10,10 @@ export default class ManageTasks {
         this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
         this.kate = element.querySelectorAll('.manage-tasks_kate');
+        // this.cmselect = element.queryselectorAll('.js-assign-cm-select');
         this.nick = element.querySelectorAll('.option-value');
         this.nickSelect = element.querySelectorAll('.js-assign-team-select');
         this.xsrfToken = element.querySelector('.js-xsrfToken');
-        console.log("one");
-        console.log(this.nick)
-        console.log("two");
-        console.log(this.nickSelect)
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
         // this._bindKatesFunction(this.nick);
@@ -97,16 +92,23 @@ export default class ManageTasks {
     }
 
     _katesFunction(event) {
+      console.log("kate function")
         const value = event.target.value.toString();
         
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
-              data = this.response;
-              data.forEach(members => {
-                
-              })
-            document.getElementById("kate").innerHTML = "loaded"
+              console.log(this.response);
+              var obj = JSON.parse(this.response);
+              var items = obj.members
+              console.log(obj);
+          
+            var str = ""
+            items.forEach( item => {
+              str += "<option value=" + item.id + ">" + item.displayName + "</option>"
+              console.log(str)
+            })
+            document.getElementById("assignCM").innerHTML = str;
           }
         };
         xhttp.open("GET", `http://localhost:8080/api/v1/teams/${value}`, true);
@@ -116,21 +118,6 @@ export default class ManageTasks {
         xhttp.setRequestHeader("OPG-Bypass-Membrane", 1);
         xhttp.send();
         }
-
-        // _katesFunction(event) {
-        //   console.log("_katesFunction");
-        //   console.log(this);
-        //   var xhttp = new XMLHttpRequest();
-        //   xhttp.onreadystatechange=function() {
-        //     if (this.readyState == 4 && this.status == 200) {
-        //       document.getElementById("kate").innerHTML = "loaded"
-        //       console.log(this.response);
-        //       console.log(this.responseText);
-        //     }
-        //   };
-        //   xhttp.open("GET", "/api/v1/teams/" + 13, true);
-        //   xhttp.send();
-        //   }
     
     _bindKatesFunction(element) {
 
