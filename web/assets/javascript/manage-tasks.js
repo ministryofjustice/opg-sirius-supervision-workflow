@@ -1,3 +1,5 @@
+import { data } from "cypress/types/jquery";
+
 export default class ManageTasks {
     constructor(element) {
         this.data = {
@@ -11,8 +13,12 @@ export default class ManageTasks {
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
         this.kate = element.querySelectorAll('.manage-tasks_kate');
         this.nick = element.querySelectorAll('.option-value');
-        this.nickSelect = element.querySelectorAll('.option-value-select');
-
+        this.nickSelect = element.querySelectorAll('.js-assign-team-select');
+        this.xsrfToken = element.querySelector('.js-xsrfToken');
+        console.log("one");
+        console.log(this.nick)
+        console.log("two");
+        console.log(this.nickSelect)
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
         // this._bindKatesFunction(this.nick);
@@ -91,19 +97,23 @@ export default class ManageTasks {
     }
 
     _katesFunction(event) {
-        console.log("_katesFunction");
-        console.log("event target attributes value");
-        console.log(event.target.attributes.value);
-        this.nickSelect.forEach(element => { console.log(element) })
+        const value = event.target.value.toString();
+        
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
+              data = this.response;
+              data.forEach(members => {
+                
+              })
             document.getElementById("kate").innerHTML = "loaded"
-            // console.log(xhttp.responseText);
-            // console.log(xhttp.response);
           }
         };
-        xhttp.open("GET", "/api/v1/teams/" + 13, true);
+        xhttp.open("GET", `http://localhost:8080/api/v1/teams/${value}`, true);
+        xhttp.withCredentials = true;
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
+        xhttp.setRequestHeader("OPG-Bypass-Membrane", 1);
         xhttp.send();
         }
 
