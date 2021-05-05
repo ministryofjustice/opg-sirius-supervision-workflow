@@ -57,8 +57,7 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 	}
 
 	if selectedTeamMembers.selectedTeamToAssignTask == 0 && k.SelectedTeam == 0 {
-		// k.SelectedTeam = loggedInTeamId
-		k.SelectedTeam = 0
+		k.SelectedTeam = loggedInTeamId
 	} else {
 		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}
