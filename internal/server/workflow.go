@@ -43,10 +43,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		ctx := getContext(r)
 
+		vars := workflowVars{}
+
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
-		selectedTeamToAssignTask, _ := strconv.Atoi(r.FormValue("assignTeam"))
+		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
+		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		if err != nil {
@@ -81,7 +84,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		vars := workflowVars{
+		vars = workflowVars{
 			Path:          r.URL.Path,
 			XSRFToken:     ctx.XSRFToken,
 			MyDetails:     myDetails,
@@ -101,6 +104,14 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
+
+			if selectedTeamToAssignTaskString == "0" {
+				vars.Errors = sirius.ValidationErrors{
+					"selection": {"": "Please select a team"},
+				}
+
+				return tmpl.ExecuteTemplate(w, "page", vars)
+			}
 
 			checkTaskHasIdForAssigning := r.PostFormValue("assignCM")
 			var newAssigneeIdForTask int
@@ -132,15 +143,15 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-
-			vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
+			if vars.Errors == nil {
+				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
+			}
 			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
 			if err != nil {
 				return err
 			}
 
 			vars.TaskList = TaskList
-
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

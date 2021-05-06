@@ -9,10 +9,11 @@ export default class ManageTasks {
         this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
         this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
-
+        this.assignTeamSelect = element.querySelectorAll('.js-assign-team-select');
+        this.xsrfToken = element.querySelector('.js-xsrfToken');
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-
+        
         this._setupEventListeners();
       }
 
@@ -35,6 +36,11 @@ export default class ManageTasks {
         this.cancelEditTasksButton.forEach(element => {
             this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
             element.addEventListener('click', this._hideEditTasksPanel);
+        });
+        
+        this.assignTeamSelect.forEach(element => {
+            this._getCaseManagers = this._getCaseManagers.bind(this);
+            element.addEventListener('change', this._getCaseManagers);
         });
     }
 
@@ -80,4 +86,29 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
+
+    _getCaseManagers(event) {
+        const value = event.target.value.toString();
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange=function() {
+          if (this.readyState == 4 && this.status == 200) {
+              let result = JSON.parse(this.response);
+              let caseManagers = result.members
+          
+            let str = "<option value=''selected>Select a case manager</option>"
+            caseManagers.forEach( caseManager => {
+              str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
+            })
+
+            document.getElementById("assignCM").innerHTML = str;
+          }
+        };
+        xhttp.open("GET", `http://localhost:8080/api/v1/teams/${value}`, true);
+        xhttp.withCredentials = true;
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
+        xhttp.setRequestHeader("OPG-Bypass-Membrane", 1);
+        xhttp.send();
+        }
  }

@@ -6,7 +6,6 @@
 */}}
 {{/* data-module="govuk-button" */}}
  
- 
 <section data-module="manage-tasks" class="moj-manage-tasks">
   <button id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
     Manage task
@@ -30,11 +29,11 @@
               Assign to a team
             </label>
             <form class="form" action="{{ prefix "/" }}" method="" id="assignTeam-form">
-            <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}" />
-              <select class="govuk-select" data-module="assign-team-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-                <option value="" selected>Select a team</option>
+            <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
+              <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+                <option value="0" selected>Select a team</option>
                   {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+                <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
                   {{ end }}
               </select>
           </div>
@@ -44,10 +43,7 @@
               Assign to a case manager
             </label>
             <select class="govuk-select" id="assignCM" name="assignCM">
-            <option value="" selected>Select a case manager</option>
-              {{ range .TeamSelected.Members }}
-                <option value="{{ .TeamMembersId  }}">{{ .TeamMembersName }}</option>
-              {{ end }}
+              <option value="" selected>Select a case manager</option>
             </select>
           </div>
 

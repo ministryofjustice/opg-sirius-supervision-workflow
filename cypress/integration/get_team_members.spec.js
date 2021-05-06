@@ -9,8 +9,8 @@ describe("Get team Members", () => {
   cy.get("#assignTeam").should('contain', "Lay Team 1 - (Supervision)")
 })
 
-it("should show the users from a team displaying the last one in the list", () => {
-  cy.get("#assignCM").should("contain", "LayTeam1 User11")
-})
+// it("should show the users from a team displaying the last one in the list", () => {
+//   cy.get("#assignCM").should("contain", "LayTeam1 User11")
+// })
 
 });
