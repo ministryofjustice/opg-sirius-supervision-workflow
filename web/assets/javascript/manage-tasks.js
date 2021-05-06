@@ -9,14 +9,11 @@ export default class ManageTasks {
         this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
         this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
         this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
-        this.kate = element.querySelectorAll('.manage-tasks_kate');
-        // this.cmselect = element.queryselectorAll('.js-assign-cm-select');
-        this.nick = element.querySelectorAll('.option-value');
-        this.nickSelect = element.querySelectorAll('.js-assign-team-select');
+        this.assignTeamSelect = element.querySelectorAll('.js-assign-team-select');
         this.xsrfToken = element.querySelector('.js-xsrfToken');
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-        // this._bindKatesFunction(this.nick);
+        
         this._setupEventListeners();
       }
 
@@ -41,10 +38,9 @@ export default class ManageTasks {
             element.addEventListener('click', this._hideEditTasksPanel);
         });
         
-        this.nickSelect.forEach(element => {
-        console.log("nick bind func");
-            this._katesFunction = this._katesFunction.bind(this);
-            element.addEventListener('change', this._katesFunction);
+        this.assignTeamSelect.forEach(element => {
+            this._getCaseManagers = this._getCaseManagers.bind(this);
+            element.addEventListener('change', this._getCaseManagers);
         });
     }
 
@@ -91,22 +87,18 @@ export default class ManageTasks {
         });
     }
 
-    _katesFunction(event) {
-      console.log("kate function")
+    _getCaseManagers(event) {
         const value = event.target.value.toString();
-        
-        var xhttp = new XMLHttpRequest();
+        let xhttp = new XMLHttpRequest();
+
         xhttp.onreadystatechange=function() {
           if (this.readyState == 4 && this.status == 200) {
-              console.log(this.response);
-              var obj = JSON.parse(this.response);
-              var items = obj.members
-              console.log(obj);
+              let result = JSON.parse(this.response);
+              let caseManagers = result.members
           
-            var str = "<option value=''selected>Select a case manager</option>"
-            items.forEach( item => {
-              str += "<option value=" + item.id + ">" + item.displayName + "</option>"
-              console.log(str)
+            let str = "<option value=''selected>Select a case manager</option>"
+            caseManagers.forEach( caseManager => {
+              str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
             })
 
             document.getElementById("assignCM").innerHTML = str;
@@ -119,10 +111,4 @@ export default class ManageTasks {
         xhttp.setRequestHeader("OPG-Bypass-Membrane", 1);
         xhttp.send();
         }
-    
-    _bindKatesFunction(element) {
-
-      this._katesFunction = this._katesFunction(this);
-      element.addEventListener('change', this._katesFunction());
-    }
  }
