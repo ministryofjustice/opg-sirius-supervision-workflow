@@ -48,20 +48,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
-
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
-		if selectedTeamToAssignTaskString == "select-a-team-placeholder" {
-			fmt.Println("placeholder if")
-			fmt.Println(selectedTeamToAssignTaskString)
-			vars.Errors = sirius.ValidationErrors{
-				"Error Type": {"": "Please select a team"},
-			}
-
-			fmt.Println(vars.Errors)
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		kate := vars.Errors
-
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
@@ -106,7 +93,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			LoadTasks:     loadTaskTypes,
 			TeamSelection: teamSelection,
 			TeamSelected:  selectedTeamMembers,
-			Errors:        kate,
 		}
 
 		if err != nil {
@@ -118,6 +104,14 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
+
+			if selectedTeamToAssignTaskString == "0" {
+				vars.Errors = sirius.ValidationErrors{
+					"selection": {"": "Please select a team"},
+				}
+
+				return tmpl.ExecuteTemplate(w, "page", vars)
+			}
 
 			checkTaskHasIdForAssigning := r.PostFormValue("assignCM")
 			var newAssigneeIdForTask int
@@ -158,8 +152,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			}
 
 			vars.TaskList = TaskList
-			fmt.Println("end of workflow")
-			fmt.Println(vars.Errors)
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
