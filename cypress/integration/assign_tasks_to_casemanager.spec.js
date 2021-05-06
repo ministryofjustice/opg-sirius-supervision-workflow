@@ -15,6 +15,15 @@ describe("Reassign Tasks", () => {
   // cy.get(".moj-banner").should('not.be.visible') 
   // })
 
+  it("throws error when task is not assigned to a team", () => {
+    cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").check('0')
+    cy.get("#manage-task").click()
+    cy.get("#edit-save").click()
+    cy.get(".govuk-error-summary").contains("Please select a team")
+    cy.wait(5000)
+    cy.get(".govuk-error-summary").should('not.be.visible') 
+    })
+
   it("can cancel out of reassigning a task", () => {
     cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").check('0')
     cy.get("#manage-task").click()
