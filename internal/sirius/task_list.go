@@ -50,6 +50,10 @@ type TaskDetails struct {
 	ListOfPages       []int
 	PreviousPage      int
 	NextPage          int
+	FiveLess          int
+	FiveMore          []int
+	FirstPage         int
+	LastPage          int
 	StoredTaskLimit   int
 	ShowingUpperLimit int
 	ShowingLowerLimit int
@@ -102,6 +106,24 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 	}
 }
 
+//2 before current page, current page, 2 ahead current page
+func getFiveMoreLimit(TaskList TaskList, TaskDetails TaskDetails) []int {
+	var twoBeforeCurrentPage int
+	var twoAfterCurrentPage int
+	if TaskList.Pages.PageCurrent > 2 {
+		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
+	} else {
+		twoBeforeCurrentPage = 0
+	}
+	if TaskList.Pages.PageCurrent+2 < len(TaskDetails.ListOfPages)-1 {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
+	} else {
+		twoAfterCurrentPage = 0
+	}
+	fmt.Println(TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage])
+	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+}
+
 var teamID int
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int) (TaskList, TaskDetails, error) {
@@ -114,7 +136,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamMembers
 	}
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, 1, search), nil)
 	if err != nil {
 		return v, k, err
 	}
@@ -153,6 +175,14 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+
+	// TaskDetails.FiveLess = getFiveLessLimit
+
+	TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
+	TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
+
+	TaskDetails.FiveMore = getFiveMoreLimit(TaskList, TaskDetails)
+	fmt.Println(TaskDetails.FiveMore)
 
 	return TaskList, TaskDetails, err
 }
