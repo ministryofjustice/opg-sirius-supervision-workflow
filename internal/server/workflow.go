@@ -43,8 +43,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		ctx := getContext(r)
 
-		vars := workflowVars{}
-
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
@@ -84,7 +82,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		vars = workflowVars{
+		vars := workflowVars{
 			Path:          r.URL.Path,
 			XSRFToken:     ctx.XSRFToken,
 			MyDetails:     myDetails,
