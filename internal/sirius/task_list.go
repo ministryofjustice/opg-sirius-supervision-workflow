@@ -50,8 +50,7 @@ type TaskDetails struct {
 	ListOfPages       []int
 	PreviousPage      int
 	NextPage          int
-	FiveLess          int
-	FiveMore          []int
+	LimitedPagination []int
 	FirstPage         int
 	LastPage          int
 	StoredTaskLimit   int
@@ -106,8 +105,7 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 	}
 }
 
-//2 before current page, current page, 2 ahead current page
-func getFiveMoreLimit(TaskList TaskList, TaskDetails TaskDetails) []int {
+func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
 	if TaskList.Pages.PageCurrent > 2 {
@@ -115,10 +113,12 @@ func getFiveMoreLimit(TaskList TaskList, TaskDetails TaskDetails) []int {
 	} else {
 		twoBeforeCurrentPage = 0
 	}
-	if TaskList.Pages.PageCurrent+2 < len(TaskDetails.ListOfPages)-1 {
+	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
 		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
+	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
 	} else {
-		twoAfterCurrentPage = 0
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent
 	}
 	fmt.Println(TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage])
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
@@ -136,7 +136,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamMembers
 	}
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, 1, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
 	if err != nil {
 		return v, k, err
 	}
@@ -176,13 +176,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
 
-	// TaskDetails.FiveLess = getFiveLessLimit
-
 	TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
 	TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
-
-	TaskDetails.FiveMore = getFiveMoreLimit(TaskList, TaskDetails)
-	fmt.Println(TaskDetails.FiveMore)
+	TaskDetails.LimitedPagination = getPaginationLimits(TaskList, TaskDetails)
 
 	return TaskList, TaskDetails, err
 }

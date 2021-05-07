@@ -39,17 +39,20 @@
               <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ . }}">{{ . }}</button></li> 
             {{ end }} 
           {{ end }} */}}
+          {{$currentPage := .TaskList.Pages.PageCurrent}}
 
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.FirstPage }}">{{ .TaskDetails.FirstPage }}</button></li> 
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value=""> . . .</button></li> 
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.FirstPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.FirstPage }}">{{ .TaskDetails.FirstPage }}</button></li> 
+          <li class="moj-pagination__item moj-pagination__item--dots">...</li> 
    
-          {{ range .TaskDetails.FiveMore }}
-            <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ . }}">{{ . }}</button></li> 
+          {{ range .TaskDetails.FiveMore }}     
+            <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq . $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ . }}">{{ . }}</button></li> 
           {{ end }}
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value=""> . . .</button></li>    
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
+          <li class="moj-pagination__item moj-pagination__item--dots">...</li>  
 
-          <li class="moj-pagination__item moj-pagination__item--next">
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
+
+          <li class="moj-pagination__item">
+            <li class="moj-pagination__item moj-pagination__item--next">
             <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
           </li> 
         </ul>
