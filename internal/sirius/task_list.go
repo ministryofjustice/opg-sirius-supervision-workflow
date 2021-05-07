@@ -50,6 +50,9 @@ type TaskDetails struct {
 	ListOfPages       []int
 	PreviousPage      int
 	NextPage          int
+	LimitedPagination []int
+	FirstPage         int
+	LastPage          int
 	StoredTaskLimit   int
 	ShowingUpperLimit int
 	ShowingLowerLimit int
@@ -100,6 +103,25 @@ func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int 
 	} else {
 		return TaskList.Pages.PageCurrent * TaskDetails.StoredTaskLimit
 	}
+}
+
+func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
+	var twoBeforeCurrentPage int
+	var twoAfterCurrentPage int
+	if TaskList.Pages.PageCurrent > 2 {
+		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
+	} else {
+		twoBeforeCurrentPage = 0
+	}
+	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
+	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
+	} else {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent
+	}
+	fmt.Println(TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage])
+	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
 var teamID int
@@ -153,6 +175,10 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+
+	TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
+	TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
+	TaskDetails.LimitedPagination = getPaginationLimits(TaskList, TaskDetails)
 
 	return TaskList, TaskDetails, err
 }

@@ -12,26 +12,18 @@ describe("Pagination", () => {
   })
 
   it("changes url when top page numbers is clicked", () => {
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(3) > .moj-pagination__link").click()
+    cy.get('#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link').click()
     cy.url().should('include', 'page=2&tasksPerPage=25')
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(4) > .moj-pagination__link").click()
-    cy.url().should('include', 'page=3&tasksPerPage=25')
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link").click()
-    cy.url().should('include', 'page=4&tasksPerPage=25')
   })
 
   it("changes url when top next button is clicked", () => {
     cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > .moj-pagination__item--next > .moj-pagination__link").click()
-    cy.url().should('include', 'page=2&tasksPerPage=25')
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > .moj-pagination__item--next > .moj-pagination__link").click()
-    cy.url().should('include', 'page=3&tasksPerPage=25')
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > .moj-pagination__item--next > .moj-pagination__link").click()
-    cy.url().should('include', 'page=4&tasksPerPage=25')  
+    cy.url().should('include', 'page=2&tasksPerPage=25') 
   })
 
   it("reloads final page if you are on the final page and press top next", () => {
     // get to page 4
-    cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link").click()
+    cy.get('#top-pagination-label > .flex-container > .moj-pagination__list > :nth-child(8) > .moj-pagination__link').click()
     cy.get("#top-pagination-label > .flex-container > .moj-pagination__list > .moj-pagination__item--next > .moj-pagination__link").click()
     cy.url().should('include', 'page=4&tasksPerPage=25')
   })
@@ -59,15 +51,11 @@ describe("Pagination", () => {
     cy.get("#top-display-rows").should('have.value', '25')
   })
 
-  
-
   it("changes url when bottom page numbers is clicked", () => {
-    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(3) > .moj-pagination__link").click()
+    cy.get('#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link').click()
     cy.url().should('include', 'page=2&tasksPerPage=25')
-    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(4) > .moj-pagination__link").click()
+    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(6) > .moj-pagination__link").click()
     cy.url().should('include', 'page=3&tasksPerPage=25')
-    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link").click()
-    cy.url().should('include', 'page=4&tasksPerPage=25')
   })
 
   it("changes url when bottom next button is clicked", () => {
@@ -81,7 +69,7 @@ describe("Pagination", () => {
 
   it("reloads final page if you are on the final page and press bottom next", () => {
     // get to page 4
-    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link").click()
+    cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > :nth-child(8) > .moj-pagination__link").click()
     cy.get("#bottom-pagination-label > .flex-container > .moj-pagination__list > .moj-pagination__item--next > .moj-pagination__link").click()
     cy.url().should('include', 'page=4&tasksPerPage=25')
   })
