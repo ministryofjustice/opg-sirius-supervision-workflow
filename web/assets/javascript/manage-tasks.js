@@ -104,7 +104,7 @@ export default class ManageTasks {
             document.getElementById("assignCM").innerHTML = str;
           }
         };
-        xhttp.open("GET", `http://localhost:8080/api/v1/teams/${value}`, true);
+        xhttp.open("GET", `/api/v1/teams/${value}`, true);
         xhttp.withCredentials = true;
         xhttp.setRequestHeader("Content-Type", "application/json");
         xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
