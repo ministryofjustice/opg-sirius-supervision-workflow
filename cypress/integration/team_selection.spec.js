@@ -10,7 +10,7 @@ describe("Team Selection", () => {
 })
 
 it("should show the persons team thats logged in", () => {
-  cy.get("h2 > .govuk-heading-m").should("contain", "Lay Team 1 - (Supervision)")
+  cy.get(".moj-team-banner__container").should("contain", "Lay Team 1 - (Supervision)")
 })
 
 });
