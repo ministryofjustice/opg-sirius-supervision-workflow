@@ -1,7 +1,7 @@
 {{ define "pagination-bottom" }}
-{{/* <nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label"  role="navigation">
 <form action="{{ prefix "/" }}" method="GET">
-    <select class="govuk-select" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
+ <nav class="moj-pagination govuk-!-margin-bottom-5" id="bottom-pagination-label"  role="navigation">
+    {{/*<select class="govuk-select" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
 
       {{ range .TeamSelection }}
         <option value="{{ .Id }}" id="change-team-selected-bottom" label="bottom-team-selected-{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
@@ -41,7 +41,8 @@
         <option value="100"  id="bottom-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
       </select>
     </div> */}}
-  {{/* </form> */}}
   </div>
 </nav>
+</form>
+
 {{ end }}
