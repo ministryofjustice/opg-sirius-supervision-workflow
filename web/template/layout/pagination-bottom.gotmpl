@@ -1,4 +1,5 @@
 {{ define "pagination-bottom" }}
+<div id="sadFace">
 <form action="{{ prefix "/" }}" method="GET" class="ignore-pagination-bottom">
  <nav class="moj-pagination govuk-!-margin-bottom-5 ignore-pagination-bottom" id="bottom-pagination-label"  role="navigation">
     <select class="govuk-select ignore-pagination-bottom" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
@@ -44,5 +45,5 @@
   </div>
 </nav>
 </form>
-
+</div>
 {{ end }}
