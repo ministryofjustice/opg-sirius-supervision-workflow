@@ -13,14 +13,14 @@
             </label>
             <select class="govuk-select" label="top-team-select" name="change-team" onchange="this.form.submit()">
             {{ range .TeamSelection }}
-              <option value="{{ .Id }}" label="top-team-selected-{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
+              <option value="{{ .Id }}" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
             {{ end }}
             </select>
           </div>
         </div>
       </div>
     </div>
-    <nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label"  role="navigation">
+    <nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label">
 
       <p class="govuk-visually-hidden" id="top-pagination-form-heading">Pagination navigation</p>
 
@@ -30,7 +30,7 @@
       
         <ul class="moj-pagination__list">
           <li class="moj-pagination__item moj-pagination__item--prev">
-            <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
+            <input type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </input>
           </li> 
           {{$currentPage := .TaskList.Pages.PageCurrent}}
 
