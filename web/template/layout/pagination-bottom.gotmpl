@@ -1,49 +1,49 @@
-{{ define "pagination-bottom" }}
+{{/* {{ define "pagination-bottom" }}
 <div id="sadFace">
-<form action="{{ prefix "/" }}" method="GET" class="ignore-pagination-bottom">
- <nav class="moj-pagination govuk-!-margin-bottom-5 ignore-pagination-bottom" id="bottom-pagination-label"  role="navigation">
-    <select class="govuk-select ignore-pagination-bottom" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
+  <form action="{{ prefix "/" }}" method="GET" class="ignore-pagination-bottom">
+    <nav class="moj-pagination govuk-!-margin-bottom-5 ignore-pagination-bottom" id="bottom-pagination-label"  role="navigation">
+        <select class="govuk-select ignore-pagination-bottom" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
 
-      {{ range .TeamSelection }}
-        <option class="ignore-pagination-bottom" value="{{ .Id }}" id="change-team-selected-bottom" label="bottom-team-selected-{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
-      {{ end }}
-    </select>
-  <p class="govuk-visually-hidden ignore-pagination-bottom" id="bottom-pagination-form-heading">Pagination navigation</p>
+          {{ range .TeamSelection }}
+            <option class="ignore-pagination-bottom" value="{{ .Id }}" id="change-team-selected-bottom" label="bottom-team-selected-{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
+          {{ end }}
+        </select>
+      <p class="govuk-visually-hidden ignore-pagination-bottom" id="bottom-pagination-form-heading">Pagination navigation</p>
 
-  <div class="flex-container ignore-pagination-bottom">
+      <div class="flex-container ignore-pagination-bottom">
 
-    <p class="moj-pagination__results ignore-pagination-bottom">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
-   
-    <ul class="moj-pagination__list ignore-pagination-bottom">
-      <li class="moj-pagination__item moj-pagination__item--prev ignore-pagination-bottom">
-        <button type="submit" a class="moj-pagination__link moj-pagination__link--btn ignore-pagination-bottom" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
-      </li> 
-      {{$currentPage := .TaskList.Pages.PageCurrent}}
+        <p class="moj-pagination__results ignore-pagination-bottom">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
+      
+        <ul class="moj-pagination__list ignore-pagination-bottom">
+          <li class="moj-pagination__item moj-pagination__item--prev ignore-pagination-bottom">
+            <button type="submit" a class="moj-pagination__link moj-pagination__link--btn ignore-pagination-bottom" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
+          </li> 
+          {{$currentPage := .TaskList.Pages.PageCurrent}}
 
-        <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.FirstPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.FirstPage }}">{{ .TaskDetails.FirstPage }}</button></li> 
-        <li class="moj-pagination__item moj-pagination__item--dots ignore-pagination-bottom">...</li> 
-  
-        {{ range .TaskDetails.LimitedPagination }}     
-          <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn {{if eq . $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ . }}">{{ . }}</button></li> 
-        {{ end }}
-        
-        <li class="moj-pagination__item moj-pagination__item--dots ignore-pagination-bottom">...</li>  
-        <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
+            <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.FirstPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.FirstPage }}">{{ .TaskDetails.FirstPage }}</button></li> 
+            <li class="moj-pagination__item moj-pagination__item--dots ignore-pagination-bottom">...</li> 
+      
+            {{ range .TaskDetails.LimitedPagination }}     
+              <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn {{if eq . $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ . }}">{{ . }}</button></li> 
+            {{ end }}
+            
+            <li class="moj-pagination__item moj-pagination__item--dots ignore-pagination-bottom">...</li>  
+            <li class="moj-pagination__item ignore-pagination-bottom"><button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
 
-        <li class="moj-pagination__item ignore-pagination-bottom">
-          <li class="moj-pagination__item moj-pagination__item--next ignore-pagination-bottom">
-          <button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
-        </li> 
-    </ul>
-     <div class="govuk-form-group moj-pagination__change-view-number ignore-pagination-bottom">
-      <label class="govuk-label ignore-pagination-bottom" for="bottom-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" onchange="this.form.submit()">
-        <option value="25" class="ignore-pagination-bottom" id="bottom-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
-        <option value="50" class="ignore-pagination-bottom" id="bottom-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
-        <option value="100" class="ignore-pagination-bottom" id="bottom-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
-      </select>
-    </div>
-  </div>
-</nav>
-</form>
+            <li class="moj-pagination__item ignore-pagination-bottom">
+              <li class="moj-pagination__item moj-pagination__item--next ignore-pagination-bottom">
+              <button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
+            </li> 
+        </ul>
+        <div class="govuk-form-group moj-pagination__change-view-number ignore-pagination-bottom">
+          <label class="govuk-label ignore-pagination-bottom" for="bottom-display-rows">View</label><select class="govuk-select" id="bottom-display-rows" name="tasksPerPage" aria-labelledby="bottom-display-rows" aria-label="bottom-display-rows" onchange="this.form.submit()">
+            <option value="25" class="ignore-pagination-bottom" id="bottom-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</option>
+            <option value="50" class="ignore-pagination-bottom" id="bottom-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</option>
+            <option value="100" class="ignore-pagination-bottom" id="bottom-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</option> 
+          </select>
+        </div>
+      </div>
+    </nav>
+  </form>
 </div>
-{{ end }}
+{{ end }} */}}
