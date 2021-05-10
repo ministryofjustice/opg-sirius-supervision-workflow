@@ -12,7 +12,7 @@
           "WCAG2AA.Principle1.Guideline1_3.1_3_1.F92,ARIA4",
           "definition-list"
       ],
-      "hideElements": ".ignore-pagination-bottom, #select-task-0",
+      "hideElements": ".ignore-pagination-bottom, #select-task-0, #hook-open-case",
       "runners": [
           "axe",
           "htmlcs"
