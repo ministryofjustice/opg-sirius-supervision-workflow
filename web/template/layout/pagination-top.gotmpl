@@ -1,5 +1,5 @@
 {{ define "pagination-top" }}
-<form action="{{ prefix "/" }}" method="GET" id="pagination-top-form">
+<form action="{{ prefix "/" }}" method="GET" id="pagination-top-form ignore-pagination-bottom">
     <div class="govuk-grid-column-full moj-team-banner">
         <div class="moj-team-banner__container govuk-grid-column-full">
         {{ range .TeamSelection }}
@@ -11,7 +11,7 @@
             <label class="govuk-label" for="change-team">
               Change view
             </label>
-            <select class="govuk-select" label for="top-pagination-selected-team" name="change-team" onchange="this.form.submit()">
+            <select class="govuk-select ignore-pagination-bottom" label for="top-pagination-selected-team" name="change-team" onchange="this.form.submit()">
             {{ range .TeamSelection }}
               <option value="{{ .Id }}" id="top-pagination-selected-team" name="change-team-option" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
             {{ end }}
@@ -49,7 +49,7 @@
             <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
           </li> 
         </ul>
-          <div class="ignore-pagination-bottom govuk-form-group moj-pagination__change-view-number">
+          <div class="govuk-form-group moj-pagination__change-view-number">
             <label class="govuk-label" for="top-label-display-rows">View</label>
             <select class="govuk-select" id="top-display-rows" name="tasksPerPage"  aria-labelledby="top-display-rows" aria-label="top-display-rows" onchange="this.form.submit()">
               <option value="25" id="top-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
