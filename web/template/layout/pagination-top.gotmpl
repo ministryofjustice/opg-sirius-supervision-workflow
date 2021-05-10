@@ -30,7 +30,7 @@
       
         <ul class="moj-pagination__list">
           <li class="moj-pagination__item moj-pagination__item--prev">
-            <input type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </input>
+            <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
           </li> 
           {{$currentPage := .TaskList.Pages.PageCurrent}}
 

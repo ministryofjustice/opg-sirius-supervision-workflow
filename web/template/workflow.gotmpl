@@ -23,8 +23,10 @@
         {{ template "error-summary" .Errors }}
 
         {{ template "table" . }}
+
+        {{ template "pagination-top" . }}
          
-        {{ template "pagination-bottom" . }}
+        {{/* {{ template "pagination-bottom" . }} */}}
         </div>
       </div>
     </div>
