@@ -1,5 +1,5 @@
 {{ define "pagination-bottom" }}
-  <form action="{{ prefix "/" }}" method="GET" class="ignore-pagination-bottom">
+  <form action="{{ prefix "/" }}" method="GET">
     <nav class="moj-pagination govuk-!-margin-bottom-5 ignore-pagination-bottom" id="bottom-pagination-label"  role="navigation">
         <select class="govuk-select ignore-pagination-bottom" style="display: none;" label for="change-team-selected-bottom" name="change-team" onchange="this.form.submit()">
 
@@ -13,7 +13,7 @@
 
         <p class="moj-pagination__results">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
       
-        <ul class="moj-pagination__list ignore-pagination-bottom">
+        <ul class="moj-pagination__list">
           <li class="moj-pagination__item moj-pagination__item--prev">
             <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
           </li> 

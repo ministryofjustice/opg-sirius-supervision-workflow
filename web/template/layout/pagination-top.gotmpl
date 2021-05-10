@@ -1,5 +1,5 @@
 {{ define "pagination-top" }}
-<form action="{{ prefix "/" }}" method="GET" id="pagination-top-form" class="ignore-pagination-bottom">
+<form action="{{ prefix "/" }}" method="GET" id="pagination-top-form">
     <div class="govuk-grid-column-full moj-team-banner">
         <div class="moj-team-banner__container govuk-grid-column-full">
         {{ range .TeamSelection }}
@@ -28,7 +28,7 @@
 
         <p class="moj-pagination__results">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
       
-        <ul class="moj-pagination__list ignore-pagination-bottom">
+        <ul class="moj-pagination__list">
           <li class="moj-pagination__item moj-pagination__item--prev">
             <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
           </li> 
@@ -44,9 +44,9 @@
           <li class="moj-pagination__item moj-pagination__item--dots">...</li>  
           <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
 
-          <li class="moj-pagination__item ignore-pagination-bottom">
+          <li class="moj-pagination__item">
             <li class="moj-pagination__item moj-pagination__item--next">
-            <button type="submit" a class="ignore-pagination-bottom moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
+            <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
           </li> 
         </ul>
           <div class="ignore-pagination-bottom govuk-form-group moj-pagination__change-view-number">
