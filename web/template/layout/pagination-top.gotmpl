@@ -4,7 +4,7 @@
         <div class="moj-team-banner__container govuk-grid-column-full ignore-pagination-bottom">
         {{ range .TeamSelection }}
           {{if eq .Id .UserSelectedTeam}}
-         <h2 class="govuk-heading-m ignore-pagination-bottom" id="{{ .Name }}">{{ .Name }}</h2>
+         <h2 class="govuk-heading-m" id="{{ .Name }}">{{ .Name }}</h2>
           {{end}}
         {{ end }}
           <div class="govuk-form-group ignore-pagination-bottom">
@@ -22,9 +22,9 @@
     </div>
     <nav class="ignore-pagination-bottom moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1" id="top-pagination-label">
 
-      <p class="govuk-visually-hidden ignore-pagination-bottom" id="top-pagination-form-heading">Pagination navigation</p>
+      <p class="govuk-visually-hidden" id="top-pagination-form-heading">Pagination navigation</p>
 
-      <div class="flex-container ignore-pagination-bottom">
+      <div class="flex-container">
 
         <p class="moj-pagination__results ignore-pagination-bottom">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
       
