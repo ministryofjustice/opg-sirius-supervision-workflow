@@ -120,7 +120,6 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 	} else {
 		twoAfterCurrentPage = TaskList.Pages.PageCurrent
 	}
-	fmt.Println(TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage])
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
@@ -176,9 +175,15 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
 
-	TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
-	TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
-	TaskDetails.LimitedPagination = getPaginationLimits(TaskList, TaskDetails)
+	if len(TaskDetails.ListOfPages) != 0 {
+		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
+		TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
+		TaskDetails.LimitedPagination = getPaginationLimits(TaskList, TaskDetails)
+	} else {
+		TaskDetails.FirstPage = 0
+		TaskDetails.LastPage = 0
+		TaskDetails.LimitedPagination = []int{0}
+	}
 
 	return TaskList, TaskDetails, err
 }
