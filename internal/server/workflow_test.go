@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,7 +19,6 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.TeamCollection
-	teamStoredData    sirius.TeamStoredData
 	teamSelected      sirius.TeamSelected
 }
 
@@ -127,7 +125,6 @@ var mockTeamSelectionData = []sirius.TeamCollection{
 }
 
 func TestGetUserDetails(t *testing.T) {
-	fmt.Println("TestGetUserDetails")
 	assert := assert.New(t)
 
 	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}

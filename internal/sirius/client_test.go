@@ -17,14 +17,6 @@ func teapotServer() *httptest.Server {
 	)
 }
 
-func invalidJSONServer() *httptest.Server {
-	return httptest.NewServer(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte("1a is not valid json"))
-		}),
-	)
-}
-
 func getContext(cookies []*http.Cookie) Context {
 	return Context{
 		Context:   context.Background(),

@@ -2,16 +2,7 @@ package server
 
 import (
 	"io"
-	"net/http"
 )
-
-type mockAuthenticateClient struct {
-	authenticated bool
-}
-
-func (m *mockAuthenticateClient) Authenticate(w http.ResponseWriter, r *http.Request) {
-	m.authenticated = true
-}
 
 type mockTemplates struct {
 	count    int

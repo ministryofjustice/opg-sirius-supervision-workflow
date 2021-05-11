@@ -37,7 +37,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			fmt.Println(StatusError(http.StatusMethodNotAllowed))
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
@@ -120,7 +119,10 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				newAssigneeIdForTask = vars.TeamSelected.Id
 			}
 
-			r.ParseForm()
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
 			taskIdArray := (r.Form["selected-tasks"])
 
 			taskIdForUrl := ""
