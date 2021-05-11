@@ -19,7 +19,6 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.TeamCollection
-	teamStoredData    sirius.TeamStoredData
 	teamSelected      sirius.TeamSelected
 }
 

@@ -119,7 +119,10 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				newAssigneeIdForTask = vars.TeamSelected.Id
 			}
 
-			r.ParseForm()
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
 			taskIdArray := (r.Form["selected-tasks"])
 
 			taskIdForUrl := ""
