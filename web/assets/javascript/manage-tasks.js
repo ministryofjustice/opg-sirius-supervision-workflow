@@ -89,6 +89,8 @@ export default class ManageTasks {
 
     _getCaseManagers(event) {
         const value = event.target.value.toString();
+        let siriusURL = sirius.toString();
+        console.log(siriusURL);
         let xhttp = new XMLHttpRequest();
 
         xhttp.onreadystatechange=function() {
@@ -104,7 +106,7 @@ export default class ManageTasks {
             document.getElementById("assignCM").innerHTML = str;
           }
         };
-        xhttp.open("GET", `/api/v1/teams/${value}`, true);
+        xhttp.open("GET", `${siriusURL}/api/v1/teams/${value}`, true);
         xhttp.withCredentials = true;
         xhttp.setRequestHeader("Content-Type", "application/json");
         xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
