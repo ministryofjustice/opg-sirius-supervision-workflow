@@ -120,7 +120,6 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 	} else {
 		twoAfterCurrentPage = TaskList.Pages.PageCurrent
 	}
-	fmt.Println(TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage])
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
