@@ -87,31 +87,29 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
-
+    
     _getCaseManagers(event) {
         const value = event.target.value.toString();
-        let siriusURL = sirius.toString();
-        console.log(siriusURL);
-        let xhttp = new XMLHttpRequest();
 
-        xhttp.onreadystatechange=function() {
-          if (this.readyState == 4 && this.status == 200) {
-              let result = JSON.parse(this.response);
-              let caseManagers = result.members
-          
+        fetch(`${this.baseUrl}/api/v1/teams/${value}`, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-type": "application/json",
+                "X-XSRF-TOKEN": this.xsrfToken.value.toString(),
+                "OPG-Bypass-Membrane": 1,
+            }
+        })
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
             let str = "<option value=''selected>Select a case manager</option>"
-            caseManagers.forEach( caseManager => {
-              str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
+            data.members.forEach( caseManager => {
+               str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
             })
-
+        
             document.getElementById("assignCM").innerHTML = str;
-          }
-        };        
-        xhttp.open("GET", `${this.baseUrl}/api/v1/teams/${value}`, true);
-        xhttp.withCredentials = true;
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
-        xhttp.setRequestHeader("OPG-Bypass-Membrane", 1);
-        xhttp.send();
-        }
+        });
+    }
  }
