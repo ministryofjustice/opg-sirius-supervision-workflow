@@ -13,7 +13,8 @@ export default class ManageTasks {
         this.xsrfToken = element.querySelector('.js-xsrfToken');
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-        
+        this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content')
+  
         this._setupEventListeners();
       }
 
@@ -105,8 +106,8 @@ export default class ManageTasks {
 
             document.getElementById("assignCM").innerHTML = str;
           }
-        };
-        xhttp.open("GET", `${siriusURL}/api/v1/teams/${value}`, true);
+        };        
+        xhttp.open("GET", `${this.baseUrl}/api/v1/teams/${value}`, true);
         xhttp.withCredentials = true;
         xhttp.setRequestHeader("Content-Type", "application/json");
         xhttp.setRequestHeader("X-XSRF-TOKEN", this.xsrfToken.value.toString());
