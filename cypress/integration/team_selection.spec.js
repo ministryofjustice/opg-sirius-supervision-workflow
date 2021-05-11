@@ -10,7 +10,7 @@ describe("Team Selection", () => {
 })
 
 it("should show the persons team thats logged in", () => {
-  cy.get("#hook-team-name").should("contain", "Lay Team 1 - (Supervision)")
+  cy.get(".moj-team-banner__container").should("contain", "Lay Team 1 - (Supervision)")
 })
 
 });
