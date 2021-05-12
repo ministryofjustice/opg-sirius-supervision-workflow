@@ -59,13 +59,22 @@ jobs:
         run: |
           gotestsum --junitfile /tmp/test-results/unit-tests.xml -- ./... -coverprofile=/tmp/test-coverage.txt
 
+      - name: Define Pact tag
+        id: pact_tag
+        run: |
+          if [ $GITHUB_EVENT_NAME == "pull_request" ]; then
+              echo "::set-output name=TAG::${{github.event.pull_request.head.sha}}"
+          else
+              echo "::set-output name=TAG::${{github.sha}}"
+          fi
+
       - name: Publish pacts
         env:
           PACT_DIR: ./pacts
           PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
           PACT_BROKER_USERNAME: admin
           PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
-        run: PACT_TAG=${{ github.head_ref }} PACT_CONSUMER_VERSION=${{ github.event.pull_request.head.sha	}} go run internal/pact/publish.go
+        run: PACT_TAG=${{ github.head_ref }} PACT_CONSUMER_VERSION=${{ steps.pact_tag.outputs.TAG	}} go run internal/pact/publish.go
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v1
         with:
