@@ -148,15 +148,6 @@ jobs:
         run: echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@v1
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SHARED }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SHARED }}
-          aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::311462405659:role/shared-ci
-          role-duration-seconds: 3600
-          role-session-name: GitHubActions
 
       - name: Build Container
         run: |
@@ -175,6 +166,16 @@ jobs:
           PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
           RELEASE_BRANCHES: main
           WITH_V: true
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::311462405659:role/sirius-actions-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
       
       - name: ECR Login
         id: login-ecr
@@ -206,10 +207,10 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_SHARED }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_SHARED }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
           aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::997462338508:role/shared-ci
+          role-to-assume: arn:aws:iam::997462338508:role/sirius-actions-ci
           role-duration-seconds: 3600
           role-session-name: GitHubActions
 
