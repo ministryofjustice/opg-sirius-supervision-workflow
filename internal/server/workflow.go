@@ -35,6 +35,7 @@ type workflowVars struct {
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
+		fmt.Println("hi im in workflow")
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -47,6 +48,13 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
+
+		err := r.ParseForm()
+		if err != nil {
+			return err
+		}
+		taskTypeSelected := (r.Form["selected-task-type"])
+		fmt.Println(taskTypeSelected)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		if err != nil {
@@ -65,8 +73,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
-		fmt.Println("loadTaskTypes")
-		fmt.Println(loadTaskTypes)
 
 		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
 		if err != nil {
@@ -126,6 +132,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				return err
 			}
 			taskIdArray := (r.Form["selected-tasks"])
+			fmt.Println(taskIdArray)
 
 			taskIdForUrl := ""
 
