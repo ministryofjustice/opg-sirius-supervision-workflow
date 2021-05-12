@@ -1,0 +1,227 @@
+name: Test & Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Test Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - uses: unfor19/install-aws-cli-action@v1
+
+      - name: Resolve GO mod cache
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Resolve GO Dependencies
+        run: |
+          go mod download
+      - name: Setup gotestsum
+        uses: autero1/action-gotestsum@v1.0.0
+        with:
+          gotestsum_version: 1.6.4
+
+      - run: mkdir -p /tmp/test-results
+
+      - name: Cache Pact
+        id: cache-pact
+        uses: actions/cache@v2
+        with:
+          path: ./pact/
+          key: ${{ runner.os }}-pact-1.88.6
+      - name: Add Pact to Path
+        if: steps.cache-pact.outputs.cache-hit == 'true'
+        run: |
+          echo "$PWD/pact/bin" >> $GITHUB_PATH
+      - name: Download pact tools
+        if: steps.cache-pact.outputs.cache-hit != 'true'
+        run: |
+          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
+          tar xzf pact-1.88.6-linux-x86_64.tar.gz
+          echo "$PWD/pact/bin" >> $GITHUB_PATH
+      
+      - name: Run Tests
+        run: |
+          gotestsum --junitfile /tmp/test-results/unit-tests.xml -- ./... -coverprofile=/tmp/test-coverage.txt
+
+      - name: Publish pacts
+        env:
+          PACT_DIR: ./pacts
+          PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
+          PACT_BROKER_USERNAME: admin
+          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+        run: PACT_TAG=${{ github.head_ref }} PACT_CONSUMER_VERSION=${{ github.event.pull_request.head.sha	}} go run internal/pact/publish.go
+      - name: Upload Code Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: /tmp/test-coverage.txt
+          fail_ci_if_error: true
+          verbose: true
+      - name: Persist Pacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: pacts
+          path: |
+            ./pacts/sirius-workflow-sirius.json
+            ./pacts/ignored-ignored.json
+
+  lint:
+    name: GO lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run linting
+        uses: golangci/golangci-lint-action@v2
+  
+  acceptance-test:
+    name: Acceptance Testing
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: pacts
+          path: ./pacts
+      - name: Retrieve pact
+        run: |
+          docker container create --name temp -v pacts_data:/root hello-world
+          docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
+          docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
+          
+      - name: Run pa11y
+        run: |
+          docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
+      
+      - name: Run Lighthouse
+        run: |
+          docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
+
+  cypress:
+    name: Cypress
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: pacts
+          path: ./pacts
+      - name: Retrieve pact
+        run: |
+          docker container create --name temp -v pacts_data:/root hello-world
+          docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
+          docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
+      - name: Run cypress
+        run: |
+          docker-compose -f docker/docker-compose.ci.yml run cypress
+
+  build:
+    name: "Build & Push Containers"
+    runs-on: ubuntu-latest
+    needs: ['test', 'lint', 'acceptance-test', 'cypress']
+    outputs:
+      branch: ${{ steps.set-outputs.outputs.branch }}
+      tag: ${{ steps.bump_version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Extract branch name
+        run: echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
+        id: extract_branch
+      - uses: unfor19/install-aws-cli-action@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::311462405659:role/sirius-actions-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
+
+      - name: Build Container
+        run: |
+          docker build --tag sirius/sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
+      - name: Scan
+        run: |
+          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy sirius/sirius-workflow:latest
+
+      - name: Bump version
+        id: bump_version
+        uses: anothrNick/github-tag-action@1.33.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INITIAL_VERSION: 1.0.0
+          DEFAULT_BUMP: minor
+          PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
+          RELEASE_BRANCHES: main
+          WITH_V: true
+      
+      - name: ECR Login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 311462405659
+      
+      - name: Push Container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          WORKFLOW_ECR_REPOSITORY: sirius/sirius-workflow
+        run: |
+          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:latest
+          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          if [ $BRANCH_NAME == "main" ]; then
+            # We want all of the tags pushed
+            docker push $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY
+          else
+            docker push $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          fi
+      
+  push-tags:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ACTIONS }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ACTIONS }}
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::997462338508:role/sirius-actions-ci
+          role-duration-seconds: 3600
+          role-session-name: GitHubActions
+
+      - name: Install AWS CLI
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@v1
+
+      - name: Push Tag to Parameter Store
+        run: |
+          aws ssm put-parameter --name "opg-sirius-workflow-latest-green-build" --type "String" --value "${{ needs.build.outputs.tag}}" --overwrite --region=eu-west-1
+
+      - name: Trigger Dev Deploy
+        shell: bash
+        run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-sirius-workflow"
+
