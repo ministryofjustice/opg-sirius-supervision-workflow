@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   test:
-    name: Test User Management
+    name: Test Workflow
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -185,15 +185,15 @@ jobs:
       - name: Push Container
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          USER_MANAGEMENT_ECR_REPOSITORY: sirius/sirius-workflow
+          WORKFLOW_ECR_REPOSITORY: sirius/sirius-workflow
         run: |
-          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$USER_MANAGEMENT_ECR_REPOSITORY:latest
-          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$USER_MANAGEMENT_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:latest
+          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
           if [ $BRANCH_NAME == "main" ]; then
             # We want all of the tags pushed
-            docker push $ECR_REGISTRY/$USER_MANAGEMENT_ECR_REPOSITORY
+            docker push $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY
           else
-            docker push $ECR_REGISTRY/$USER_MANAGEMENT_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+            docker push $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
           fi
       
   push-tags:
