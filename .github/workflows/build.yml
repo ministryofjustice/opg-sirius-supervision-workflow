@@ -20,14 +20,36 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
       - uses: unfor19/install-aws-cli-action@v1
-      - name: Install modules
-        run: go mod download
+
+      - name: Resolve GO mod cache
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Resolve GO Dependencies
+        run: |
+          go mod download
       - name: Setup gotestsum
         uses: autero1/action-gotestsum@v1.0.0
         with:
           gotestsum_version: 1.6.4
+
       - run: mkdir -p /tmp/test-results
+
+      - name: Cache Pact
+        id: cache-pact
+        uses: actions/cache@v2
+        with:
+          path: ./pact/
+          key: ${{ runner.os }}-pact-1.88.6
+      - name: Add Pact to Path
+        if: steps.cache-pact.outputs.cache-hit == 'true'
+        run: |
+          echo "$PWD/pact/bin" >> $GITHUB_PATH
       - name: Download pact tools
+        if: steps.cache-pact.outputs.cache-hit != 'true'
         run: |
           curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
           tar xzf pact-1.88.6-linux-x86_64.tar.gz
