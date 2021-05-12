@@ -3,10 +3,10 @@
   ### `yarn install`
   <p> install dependencies </p>
 
-  ### `test-sirius`
+  ### `yarn test-sirius`
   <p> test sirius files </p>
 
-   ### `test-server`
+   ### `yarn test-server`
   <p> test server files </p>
 
 <h2> Set up the service </h2>
