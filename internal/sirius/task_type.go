@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 )
 
 type ApiTaskTypes struct {
@@ -54,9 +55,12 @@ func (c *Client) GetTaskType(ctx Context) ([]ApiTaskTypes, error) {
 			Complete:   u.Complete,
 			User:       u.User,
 		}
-
 		taskTypeList = append(taskTypeList, taskType)
 	}
+
+	sort.Slice(taskTypeList, func(i, j int) bool {
+		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
+	})
 
 	return taskTypeList, err
 }
