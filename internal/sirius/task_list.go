@@ -141,7 +141,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	// }
 
 	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc&filter=type:CWRD", teamID, displayTaskLimit, search), nil)
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Started", teamID), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=type:ORAL,type:CWGN", teamID), nil)
+
 	if err != nil {
 		return v, k, err
 	}
