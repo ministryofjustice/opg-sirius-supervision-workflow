@@ -124,8 +124,9 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 }
 
 var teamID int
+var taskType string
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int) (TaskList, TaskDetails, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
 
@@ -135,7 +136,12 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamMembers
 	}
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	// if len(taskTypeSelected) != 0 {
+	// 	taskType = taskTypeSelected[0]
+	// }
+
+	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc&filter=type:CWRD", teamID, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Started", teamID), nil)
 	if err != nil {
 		return v, k, err
 	}
