@@ -129,6 +129,7 @@ var taskType string
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
+	var taskTypeFilters string
 
 	if selectedTeamMembers == 0 {
 		teamID = loggedInTeamId
@@ -136,12 +137,23 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamMembers
 	}
 
-	// if len(taskTypeSelected) != 0 {
-	// 	taskType = taskTypeSelected[0]
-	// }
+	if len(taskTypeSelected) == 0 {
+		taskTypeFilters = ""
+	} else if len(taskTypeSelected) == 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s
+		}
+	} else if len(taskTypeSelected) > 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s + ","
+		}
+		taskTypeFilterLength := len(taskTypeFilters)
+		length := taskTypeFilterLength - 1
+		taskTypeFilters = taskTypeFilters[0:length]
+	}
 
 	// req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc&filter=type:CWRD", teamID, displayTaskLimit, search), nil)
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=type:ORAL,type:CWGN", teamID), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=%s", teamID, taskTypeFilters), nil)
 
 	if err != nil {
 		return v, k, err
