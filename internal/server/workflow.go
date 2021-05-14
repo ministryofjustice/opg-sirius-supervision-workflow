@@ -11,7 +11,7 @@ import (
 
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskType(sirius.Context) ([]sirius.ApiTaskTypes, error)
+	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string) (sirius.TaskList, sirius.TaskDetails, error)
 	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
 	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
@@ -35,7 +35,6 @@ type workflowVars struct {
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
-		fmt.Println("hi im in workflow")
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -54,6 +53,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 		taskTypeSelected := (r.Form["selected-task-type"])
+		fmt.Println("taskTypeSelected")
 		fmt.Println(taskTypeSelected)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
@@ -69,7 +69,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		loggedInTeamId := myDetails.Teams[0].TeamId
-		loadTaskTypes, err := client.GetTaskType(ctx)
+		loadTaskTypes, err := client.GetTaskType(ctx, taskTypeSelected)
 		if err != nil {
 			return err
 		}
@@ -132,7 +132,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				return err
 			}
 			taskIdArray := (r.Form["selected-tasks"])
-			fmt.Println(taskIdArray)
 
 			taskIdForUrl := ""
 

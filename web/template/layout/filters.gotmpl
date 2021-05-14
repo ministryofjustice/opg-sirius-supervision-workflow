@@ -67,7 +67,7 @@
             {{ range .LoadTasks }}
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item filter__checkbox">
-                  <input class="govuk-checkboxes__input task-type" id="input-element-tasktype-filter" name="selected-task-type" name="taskType" type="checkbox" value="{{ .Handle }}">
+                  <input class="govuk-checkboxes__input task-type" id="input-element-tasktype-filter" name="selected-task-type" name="taskType" type="checkbox" value="{{ .Handle }}" {{if .IsSelected }}checked{{end}}>
                   <label class="govuk-label govuk-checkboxes__label" for="">{{ .Incomplete }}</label>
                   </input>
                 </div>

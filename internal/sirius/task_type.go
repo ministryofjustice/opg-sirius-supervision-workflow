@@ -12,13 +12,14 @@ type ApiTaskTypes struct {
 	Category   string `json:"category"`
 	Complete   string `json:"complete"`
 	User       bool   `json:"user"`
+	IsSelected bool
 }
 
 type WholeTaskList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskType(ctx Context) ([]ApiTaskTypes, error) {
+func (c *Client) GetTaskType(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 	if err != nil {
 		return nil, err
@@ -54,6 +55,7 @@ func (c *Client) GetTaskType(ctx Context) ([]ApiTaskTypes, error) {
 			Category:   u.Category,
 			Complete:   u.Complete,
 			User:       u.User,
+			IsSelected: false,
 		}
 		taskTypeList = append(taskTypeList, taskType)
 	}
@@ -61,6 +63,16 @@ func (c *Client) GetTaskType(ctx Context) ([]ApiTaskTypes, error) {
 	sort.Slice(taskTypeList, func(i, j int) bool {
 		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
 	})
+
+	if len(taskTypeSelected) != 0 {
+		for i := range taskTypeList {
+			for _, q := range taskTypeSelected {
+				if taskTypeList[i].Handle == q {
+					taskTypeList[i].IsSelected = true
+				}
+			}
+		}
+	}
 
 	return taskTypeList, err
 }

@@ -56,6 +56,7 @@ type TaskDetails struct {
 	StoredTaskLimit   int
 	ShowingUpperLimit int
 	ShowingLowerLimit int
+	LastFilter        string
 }
 
 func getPreviousPageNumber(search int) int {
@@ -139,6 +140,14 @@ func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 	return taskTypeFilters
 }
 
+func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
+	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
+		return ""
+	} else {
+		return taskTypeFilters
+	}
+}
+
 var teamID int
 var taskType string
 
@@ -195,6 +204,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
 
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+
+	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
 
 	if len(TaskDetails.ListOfPages) != 0 {
 		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]

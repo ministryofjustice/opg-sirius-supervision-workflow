@@ -89,8 +89,6 @@ export default class ManageTasks {
         });
     }
 
-
-    
     _getCaseManagers(event) {
         const value = event.target.value.toString();
 
