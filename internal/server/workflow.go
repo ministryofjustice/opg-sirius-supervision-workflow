@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -47,11 +48,28 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
+		var taskType []string
 
 		err := r.ParseForm()
 		if err != nil {
 			return err
 		}
+
+		if len(r.URL.Query()) < 1 {
+			taskType, _ = r.URL.Query()["selected-task-type"]
+			taskTypeFinal := taskType[0]
+
+			log.Println("Url Param 'key' is: " + string(taskTypeFinal))
+		}
+
+		// if !err {
+		// 	log.Println("Url Param 'key' is missing")
+		// 	return err
+		// }
+
+		// Query()["key"] will return an array of items,
+		// we only want the single item.
+
 		taskTypeSelected := (r.Form["selected-task-type"])
 		fmt.Println("taskTypeSelected")
 		fmt.Println(taskTypeSelected)
