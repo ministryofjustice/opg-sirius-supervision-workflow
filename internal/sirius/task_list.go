@@ -79,31 +79,30 @@ func getNextPageNumber(TaskList TaskList, search int) int {
 	}
 }
 
-func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
-		return 25
-	} else {
-		return displayTaskLimit
-	}
+// func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
+// 	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
+// 		return 25
+// 	} else {
+// 		return displayTaskLimit
+// 	}
+// }
 
-}
-
-func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
+func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
 	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
 		return 1
 	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
 		return 0
 	} else {
 		previousPageNumber := TaskList.Pages.PageCurrent - 1
-		return previousPageNumber*TaskDetails.StoredTaskLimit + 1
+		return previousPageNumber*displayTaskLimit + 1
 	}
 }
 
-func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
-	if TaskList.Pages.PageCurrent*TaskDetails.StoredTaskLimit > TaskList.TotalTasks {
+func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
 		return TaskList.TotalTasks
 	} else {
-		return TaskList.Pages.PageCurrent * TaskDetails.StoredTaskLimit
+		return TaskList.Pages.PageCurrent * displayTaskLimit
 	}
 }
 
@@ -200,13 +199,13 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
 
-	TaskDetails.StoredTaskLimit = getStoredTaskLimitNumber(TaskDetails, displayTaskLimit)
-	fmt.Println("in tasklist func StoredTaskLimit")
-	fmt.Println(TaskDetails.StoredTaskLimit)
+	TaskDetails.StoredTaskLimit = displayTaskLimit
+	// fmt.Println("in tasklist func StoredTaskLimit")
+	// fmt.Println(TaskDetails.StoredTaskLimit)
 
-	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
 

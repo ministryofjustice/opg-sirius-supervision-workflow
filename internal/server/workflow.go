@@ -35,6 +35,7 @@ type workflowVars struct {
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
+		var displayTaskLimit int
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -43,8 +44,23 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
-		fmt.Println(displayTaskLimit)
+		bothDisplayTaskLimits := r.Form["tasksPerPage"]
+		currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
+		//move to JS
+		if len(bothDisplayTaskLimits) != 0 {
+			topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
+			bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
+			if topDisplayTaskLimit != currentTaskDisplay {
+				displayTaskLimit = topDisplayTaskLimit
+			} else if bottomDisplayTaskLimit != currentTaskDisplay {
+				displayTaskLimit = bottomDisplayTaskLimit
+			} else {
+				displayTaskLimit = currentTaskDisplay
+			}
+		} else {
+			displayTaskLimit = 25
+		}
+
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
