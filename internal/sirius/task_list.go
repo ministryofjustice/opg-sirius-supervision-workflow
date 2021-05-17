@@ -85,6 +85,7 @@ func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int
 	} else {
 		return displayTaskLimit
 	}
+
 }
 
 func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
@@ -200,6 +201,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
 
 	TaskDetails.StoredTaskLimit = getStoredTaskLimitNumber(TaskDetails, displayTaskLimit)
+	fmt.Println("in tasklist func StoredTaskLimit")
+	fmt.Println(TaskDetails.StoredTaskLimit)
 
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
 

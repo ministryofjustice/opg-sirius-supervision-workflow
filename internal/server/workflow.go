@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -44,32 +43,18 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
+		displayTaskLimitTop, _ := strconv.Atoi(r.FormValue("tasksPerPageTop"))
+		displayTaskLimitBottom, _ := strconv.Atoi(r.FormValue("tasksPerPageBottom"))
+		if displayTaskLimitTop == taskdetails.
+		fmt.Println(displayTaskLimit)
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
-		var taskType []string
 
 		err := r.ParseForm()
 		if err != nil {
 			return err
 		}
-
-		if len(r.URL.Query()) < 1 {
-			taskType, _ = r.URL.Query()["selected-task-type"]
-			taskTypeFinal := taskType[0]
-
-			log.Println("Url Param 'key' is: " + string(taskTypeFinal))
-		}
-
-		// if !err {
-		// 	log.Println("Url Param 'key' is missing")
-		// 	return err
-		// }
-
-		// Query()["key"] will return an array of items,
-		// we only want the single item.
-
 		taskTypeSelected := (r.Form["selected-task-type"])
 		fmt.Println("taskTypeSelected")
 		fmt.Println(taskTypeSelected)
@@ -96,6 +81,8 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+		fmt.Println("in workflow task details")
+		fmt.Println(taskdetails.StoredTaskLimit)
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
 		if err != nil {
