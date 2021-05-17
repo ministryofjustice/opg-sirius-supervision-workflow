@@ -43,9 +43,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimitTop, _ := strconv.Atoi(r.FormValue("tasksPerPageTop"))
-		displayTaskLimitBottom, _ := strconv.Atoi(r.FormValue("tasksPerPageBottom"))
-		if displayTaskLimitTop == taskdetails.
+		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
 		fmt.Println(displayTaskLimit)
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")

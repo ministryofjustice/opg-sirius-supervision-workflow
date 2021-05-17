@@ -1,28 +1,5 @@
 {{ define "pagination-top" }}
 {{/* <form action="{{ prefix "/" }}" method="GET" id="pagination-top-form" class="ignore-pagination-bottom"> */}}
-
-//return this to team banner?
-
-    <div class="govuk-grid-column-full moj-team-banner">
-        <div class="moj-team-banner__container govuk-grid-column-full">
-        {{ range .TeamSelection }}
-          {{if eq .Id .UserSelectedTeam}}
-         <h2 class="govuk-heading-m" id="{{ .Name }}">{{ .Name }}</h2>
-          {{end}}
-        {{ end }}
-          <div class="govuk-form-group">
-            <label class="govuk-label" for="change-team">
-              Change view
-            </label>
-            <select class="govuk-select ignore-pagination-bottom" label for="top-pagination-selected-team" name="change-team" onchange="this.form.submit()">
-            {{ range .TeamSelection }}
-              <option value="{{ .Id }}" id="top-pagination-selected-team" name="change-team-option" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
-            {{ end }}
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
     <nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="top-pagination-label">
 
       <p class="govuk-visually-hidden" id="top-pagination-form-heading">Pagination navigation</p>
@@ -54,7 +31,7 @@
         </ul>
           <div class="govuk-form-group moj-pagination__change-view-number">
             <label class="govuk-label" for="top-label-display-rows">View</label>
-            <select class="govuk-select" id="top-display-rows" name="tasksPerPageTop"  aria-labelledby="top-display-rows" aria-label="top-display-rows" onchange="this.form.submit()">
+            <select class="govuk-select" id="top-display-rows" name="tasksPerPage"  aria-labelledby="top-display-rows" aria-label="top-display-rows" onchange="this.form.submit()">
               <option value="25" id="top-display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
               <option value="50" id="top-display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
               <option value="100" id="top-display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option> 
