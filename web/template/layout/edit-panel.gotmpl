@@ -18,28 +18,27 @@
       </header>
       <div class="govuk-width-container">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
-          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
-              Assign to a team
-            </label>
-            {{/* <form class="form ignore-pagination-bottom" action="{{ prefix "/" }}" method="" id="assignTeam-form"> */}}
-              <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
-                <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
-                  <option value="0" selected>Select a team</option>
-                    {{ range .TeamSelection }}
-                  <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
-                    {{ end }}
-                </select>
-          </div>
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a team
+          </label>
+          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
+          <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+            <option value="0" selected>Select a team</option>
+              {{ range .TeamSelection }}
+            <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
+              {{ end }}
+          </select>
+        </div>
 
-          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
-              Assign to a case manager
-            </label>
-            <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
-              <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
-            </select>
-          </div>
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a case manager
+          </label>
+          <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
+            <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
+          </select>
+        </div>
 
           {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
             <label class="govuk-label" for="sort">
@@ -53,12 +52,14 @@
           </div> */}}
           {{/* <div> */}}
           <br>
-          <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
+        <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
 
-          <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
+        <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
       </div>
     </section>
   </div>
+</section>
+  
 
 
 {{ end }}

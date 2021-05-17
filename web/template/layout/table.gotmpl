@@ -31,19 +31,19 @@
         <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
       </tr>
     </thead>
-      <tbody class="govuk-table__body">
+    <tbody class="govuk-table__body">
       {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">
-            <div class="govuk-checkboxes govuk-checkboxes--small">
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
-                <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
-                <span class="govuk-visually-hidden">Select</span>
-                </label>
+              <div class="govuk-checkboxes govuk-checkboxes--small">
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                    <span class="govuk-visually-hidden">Select</span>
+                  </label>
+                </div>
               </div>
-            </div>
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
@@ -58,7 +58,7 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}
-               <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
+                <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
               </label>
             </td>
             <td class="govuk-table__cell">
@@ -74,9 +74,7 @@
               <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
               <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-link {{ if eq .CaseItemClient.ClientId 0 }}hide{{ end }}" id="hook-open-case">Open case</a>
             </td>
-            
             {{ end }}
-            
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
@@ -86,5 +84,5 @@
       {{ end }}
     </tbody>
   </table>
-{{/* <form> */}}
+</section>
 {{ end }}
