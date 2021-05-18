@@ -149,7 +149,6 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 }
 
 var teamID int
-var taskType string
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
 	var v TaskList
