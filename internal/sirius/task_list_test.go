@@ -9,6 +9,99 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetPreviousPageNumber(t *testing.T) {
+	assert.Equal(t, getPreviousPageNumber(0), 1)
+	assert.Equal(t, getPreviousPageNumber(1), 1)
+	assert.Equal(t, getPreviousPageNumber(2), 1)
+	assert.Equal(t, getPreviousPageNumber(3), 2)
+	assert.Equal(t, getPreviousPageNumber(5), 4)
+}
+
+func TestGetNextPageNumber(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 1,
+			PageTotal:   5,
+		},
+	}
+
+	assert.Equal(t, getNextPageNumber(testTaskList, 0), 2)
+	assert.Equal(t, getNextPageNumber(testTaskList, 2), 3)
+	assert.Equal(t, getNextPageNumber(testTaskList, 15), 5)
+}
+
+func TestGetShowingLowerLimitNumberAlwaysReturns1IfOnly1Page(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 1,
+		},
+		TotalTasks: 13,
+	}
+	testTaskDetails := TaskDetails{
+		NextPage: 1,
+	}
+
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 1)
+}
+
+func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 1,
+		},
+		TotalTasks: 0,
+	}
+	testTaskDetails := TaskDetails{}
+
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 0)
+}
+
+func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 2,
+		},
+		TotalTasks: 100,
+	}
+	testTaskDetails := TaskDetails{}
+
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 26)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 51)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 101)
+}
+
+func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 5,
+		},
+		TotalTasks: 5000,
+	}
+	testTaskDetails := TaskDetails{}
+
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 101)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 201)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 401)
+}
+
+func TestGetShowingUpperLimitNumberWillReturnMaxTasksIfOnFinalPage(t *testing.T) {
+	testTaskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: 1,
+		},
+		TotalTasks: 100,
+	}
+	testTaskDetails := TaskDetails{}
+
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 25), 25)
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 50), 50)
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 100), 100)
+}
+
 func TestTaskList(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
