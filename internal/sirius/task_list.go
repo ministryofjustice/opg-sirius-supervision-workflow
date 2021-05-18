@@ -99,6 +99,9 @@ func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, disp
 }
 
 func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
+	// fmt.Println(TaskList.Pages.PageCurrent)
+	// fmt.Println(displayTaskLimit)
+	// fmt.Println(TaskList.TotalTasks)
 	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
 		return TaskList.TotalTasks
 	} else {
@@ -205,7 +208,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	// fmt.Println(TaskDetails.StoredTaskLimit)
 
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
-
+	fmt.Println("TaskDetails.ShowingUpperLimit")
+	fmt.Println(TaskDetails.ShowingUpperLimit)
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)

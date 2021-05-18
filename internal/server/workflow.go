@@ -70,8 +70,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 		taskTypeSelected := (r.Form["selected-task-type"])
-		fmt.Println("taskTypeSelected")
-		fmt.Println(taskTypeSelected)
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		if err != nil {
@@ -95,8 +93,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
-		fmt.Println("in workflow task details")
-		fmt.Println(taskdetails.StoredTaskLimit)
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
 		if err != nil {
