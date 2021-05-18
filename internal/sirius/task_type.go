@@ -2,9 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
-	"os"
 	"sort"
 )
 
@@ -32,7 +30,6 @@ func (c *Client) GetTaskType(ctx Context, taskTypeSelected []string) ([]ApiTaskT
 	if err != nil {
 		return nil, err
 	}
-	io.Copy(os.Stdout, resp.Body)
 
 	defer resp.Body.Close()
 

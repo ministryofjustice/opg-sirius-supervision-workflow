@@ -15,7 +15,7 @@ type mockWorkflowInformation struct {
 	lastCtx           sirius.Context
 	err               error
 	userData          sirius.UserDetails
-	taskTypeData      sirius.TaskTypes
+	taskTypeData      []sirius.ApiTaskTypes
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.TeamCollection
@@ -29,14 +29,14 @@ func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context) (sirius.TaskTypes, error) {
+func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int) (sirius.TaskList, sirius.TaskDetails, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string) (sirius.TaskList, sirius.TaskDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -76,8 +76,8 @@ var mockUserDetailsData = sirius.UserDetails{
 	},
 }
 
-var mockTaskTypeData = sirius.TaskTypes{
-	TaskTypeList: sirius.ApiTaskTypes{
+var mockTaskTypeData = []sirius.ApiTaskTypes{
+	{
 		Handle:     "CDFC",
 		Incomplete: "Correspondence - Review failed draft",
 		Category:   "supervision",
@@ -184,8 +184,8 @@ func TestGetUserDetails(t *testing.T) {
 				},
 			},
 		},
-		LoadTasks: sirius.TaskTypes{
-			TaskTypeList: sirius.ApiTaskTypes{
+		LoadTasks: []sirius.ApiTaskTypes{
+			{
 				Handle:     "CDFC",
 				Incomplete: "Correspondence - Review failed draft",
 				Category:   "supervision",
@@ -252,8 +252,8 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 		TaskList: sirius.TaskList{
 			WholeTaskList: []sirius.ApiTask{{}},
 		},
-		LoadTasks: sirius.TaskTypes{
-			TaskTypeList: sirius.ApiTaskTypes{
+		LoadTasks: []sirius.ApiTaskTypes{
+			{
 				Handle:     "CDFC",
 				Incomplete: "Correspondence - Review failed draft",
 				Category:   "supervision",
