@@ -32,7 +32,7 @@ func TestGetTaskType(t *testing.T) {
 				pact.
 					AddInteraction().
 					Given("User is logged in").
-					UponReceiving("A request to get all task types").
+					UponReceiving("A request to get all task CWGN types").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/tasktypes/supervision"),
@@ -46,12 +46,22 @@ func TestGetTaskType(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"task_types": dsl.EachLike(map[string]interface{}{
-								"handle":     dsl.Like("Case work - General"),
-								"incomplete": dsl.Like("Case work - General"),
-								"category":   dsl.Like("Case work - General"),
-								"complete":   dsl.Like("Case work - General"),
-							}, 1),
+							"task_types": dsl.Like(map[string]interface{}{
+								"CWGN": dsl.Like(map[string]interface{}{
+									"handle":     "CWGN",
+									"incomplete": "Casework - General",
+									"complete":   "Casework - General",
+									"user":       true,
+									"category":   "supervision",
+								}),
+								"ORAL": dsl.Like(map[string]interface{}{
+									"handle":     "ORAL",
+									"incomplete": "Casework - General",
+									"complete":   "Casework - General",
+									"user":       true,
+									"category":   "supervision",
+								}),
+							}),
 						}),
 					})
 			},
@@ -61,7 +71,20 @@ func TestGetTaskType(t *testing.T) {
 			},
 			expectedResponse: []ApiTaskTypes{
 				{
-					Handle: "Case work - General",
+					Handle:     "CWGN",
+					Incomplete: "Casework - General",
+					Complete:   "Casework - General",
+					User:       true,
+					Category:   "supervision",
+					IsSelected: true,
+				},
+				{
+					Handle:     "ORAL",
+					Incomplete: "Casework - General",
+					Complete:   "Casework - General",
+					User:       true,
+					Category:   "supervision",
+					IsSelected: false,
 				},
 			},
 		},
@@ -71,8 +94,8 @@ func TestGetTaskType(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskTypeList, _ := client.GetTaskType(getContext(tc.cookies), []string{"CWGN", "CNC"})
-				assert.Equal(t, tc.expectedResponse, taskTypeList[0].Handle)
+				taskTypeList, _ := client.GetTaskType(getContext(tc.cookies), []string{"CWGN"})
+				assert.Equal(t, tc.expectedResponse, taskTypeList)
 				assert.Equal(t, tc.expectedError, nil)
 				return nil
 			}))
