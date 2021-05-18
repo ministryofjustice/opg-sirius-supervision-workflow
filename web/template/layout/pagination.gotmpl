@@ -5,7 +5,17 @@
 
     <div class="flex-container">
 
-      <p class="moj-pagination__results">Showing <b>{{ .TaskDetails.ShowingLowerLimit }}</b> to <b>{{ .TaskDetails.ShowingUpperLimit }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
+      <p class="moj-pagination__results">Showing <b>
+      {{ if le .TaskDetails.ShowingLowerLimit .TaskList.TotalTasks }}
+        {{ .TaskDetails.ShowingLowerLimit }}
+      {{ else }}
+        {{.TaskList.TotalTasks}}
+      {{ end }}</b> to <b>
+      {{ if le .TaskDetails.ShowingUpperLimit .TaskList.TotalTasks }}
+        {{ .TaskDetails.ShowingUpperLimit }}
+      {{ else }}
+        {{.TaskList.TotalTasks}}
+      {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
     
       <ul class="moj-pagination__list">
         <li class="moj-pagination__item moj-pagination__item--prev">

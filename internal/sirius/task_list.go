@@ -79,14 +79,6 @@ func getNextPageNumber(TaskList TaskList, search int) int {
 	}
 }
 
-// func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
-// 	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
-// 		return 25
-// 	} else {
-// 		return displayTaskLimit
-// 	}
-// }
-
 func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
 	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
 		return 1
@@ -99,9 +91,6 @@ func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, disp
 }
 
 func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
-	// fmt.Println(TaskList.Pages.PageCurrent)
-	// fmt.Println(displayTaskLimit)
-	// fmt.Println(TaskList.TotalTasks)
 	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
 		return TaskList.TotalTasks
 	} else {
@@ -157,8 +146,6 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	var v TaskList
 	var k TaskDetails
 	var taskTypeFilters string
-	fmt.Println("taskTypeSelected")
-	fmt.Println(taskTypeSelected)
 
 	if selectedTeamMembers == 0 {
 		teamID = loggedInTeamId
@@ -204,12 +191,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
 
 	TaskDetails.StoredTaskLimit = displayTaskLimit
-	// fmt.Println("in tasklist func StoredTaskLimit")
-	// fmt.Println(TaskDetails.StoredTaskLimit)
 
 	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
-	fmt.Println("TaskDetails.ShowingUpperLimit")
-	fmt.Println(TaskDetails.ShowingUpperLimit)
+
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)

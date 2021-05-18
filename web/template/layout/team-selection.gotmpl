@@ -1,5 +1,5 @@
 {{ define "team-selection" }}  
-  <div class="moj-team-banner__container govuk-grid-column-full">
+  <div class="moj-team-banner__container govuk-grid-column-full govuk-!-padding-right-6 govuk-!-padding-left-6">
     {{ range .TeamSelection }}
       {{if eq .Id .UserSelectedTeam}}
       <h2 class="govuk-heading-m" id="{{ .Name }}">{{ .Name }}</h2>
