@@ -155,6 +155,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	var v TaskList
 	var k TaskDetails
 	var taskTypeFilters string
+	fmt.Println("taskTypeSelected")
+	fmt.Println(taskTypeSelected)
 
 	if selectedTeamMembers == 0 {
 		teamID = loggedInTeamId

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTaskTypes(t *testing.T) {
+func TestGetTaskType(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
 		Provider:          "sirius",
@@ -19,12 +19,11 @@ func TestTaskTypes(t *testing.T) {
 		PactDir:           "../../pacts",
 	}
 	defer pact.Teardown()
-
 	testCases := []struct {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse TaskTypes
+		expectedResponse []ApiTaskTypes
 		expectedError    error
 	}{
 		{
@@ -32,8 +31,8 @@ func TestTaskTypes(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User logged in").
-					UponReceiving("A request to get task types").
+					Given("User is logged in").
+					UponReceiving("A request to get all task types").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/tasktypes/supervision"),
@@ -47,13 +46,12 @@ func TestTaskTypes(t *testing.T) {
 						Status:  http.StatusOK,
 						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
 						Body: dsl.Like(map[string]interface{}{
-							"task_types": dsl.Like(map[string]interface{}{
-								"handle":     dsl.Like("CDFC"),
-								"incomplete": dsl.Like("Correspondence - Review failed draft"),
-								"category":   dsl.Like("supervision"),
-								"complete":   dsl.Like("Correspondence - Reviewed draft failure"),
-								"user":       dsl.Like(true),
-							}),
+							"task_types": dsl.EachLike(map[string]interface{}{
+								"handle":     dsl.Like("Case work - General"),
+								"incomplete": dsl.Like("Case work - General"),
+								"category":   dsl.Like("Case work - General"),
+								"complete":   dsl.Like("Case work - General"),
+							}, 1),
 						}),
 					})
 			},
@@ -61,28 +59,21 @@ func TestTaskTypes(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: TaskTypes{
-				TaskTypeList: ApiTaskTypes{
-					Handle:     "CDFC",
-					Incomplete: "Correspondence - Review failed draft",
-					Category:   "supervision",
-					Complete:   "Correspondence - Reviewed draft failure",
-					User:       true,
+			expectedResponse: []ApiTaskTypes{
+				{
+					Handle: "Case work - General",
 				},
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.setup()
-
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-
-				myTaskTypes, err := client.GetTaskType(getContext(tc.cookies))
-				assert.Equal(t, tc.expectedResponse, myTaskTypes)
-				assert.Equal(t, tc.expectedError, err)
+				taskTypeList, _ := client.GetTaskType(getContext(tc.cookies), []string{"CWGN", "CNC"})
+				assert.Equal(t, tc.expectedResponse, taskTypeList[0].Handle)
+				assert.Equal(t, tc.expectedError, nil)
 				return nil
 			}))
 		})

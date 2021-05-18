@@ -2,7 +2,9 @@ package sirius
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"os"
 	"sort"
 )
 
@@ -21,6 +23,7 @@ type WholeTaskList struct {
 
 func (c *Client) GetTaskType(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
+
 	if err != nil {
 		return nil, err
 	}
@@ -29,6 +32,8 @@ func (c *Client) GetTaskType(ctx Context, taskTypeSelected []string) ([]ApiTaskT
 	if err != nil {
 		return nil, err
 	}
+	io.Copy(os.Stdout, resp.Body)
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
