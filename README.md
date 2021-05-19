@@ -11,6 +11,7 @@
 
 <h2> Set up the service </h2>
   <p> Make sure Sirius is running </p>
+  <p> Once Sirius is running the run below command </p>
   
   ### `docker-compose -f docker/docker-compose.yml up -d --build `
 
