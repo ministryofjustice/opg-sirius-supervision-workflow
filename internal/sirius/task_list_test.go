@@ -37,13 +37,10 @@ func TestGetShowingLowerLimitNumberAlwaysReturns1IfOnly1Page(t *testing.T) {
 		},
 		TotalTasks: 13,
 	}
-	testTaskDetails := TaskDetails{
-		NextPage: 1,
-	}
 
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 25), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 50), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 100), 1)
 }
 
 func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
@@ -53,11 +50,10 @@ func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
 		},
 		TotalTasks: 0,
 	}
-	testTaskDetails := TaskDetails{}
 
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 25), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 50), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 100), 0)
 }
 
 func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
@@ -67,11 +63,10 @@ func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
 		},
 		TotalTasks: 100,
 	}
-	testTaskDetails := TaskDetails{}
 
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 26)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 51)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 101)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 25), 26)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 50), 51)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 100), 101)
 }
 
 func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
@@ -81,25 +76,23 @@ func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
 		},
 		TotalTasks: 5000,
 	}
-	testTaskDetails := TaskDetails{}
 
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 101)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 201)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 401)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 25), 101)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 50), 201)
+	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, 100), 401)
 }
 
-func TestGetShowingUpperLimitNumberWillReturnMaxTasksIfOnFinalPage(t *testing.T) {
+func TestGetShowingUpperLimitNumberWillReturnTotalTasksIfOnFinalPage(t *testing.T) {
 	testTaskList := TaskList{
 		Pages: PageDetails{
 			PageCurrent: 1,
 		},
-		TotalTasks: 100,
+		TotalTasks: 10,
 	}
-	testTaskDetails := TaskDetails{}
 
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 25), 25)
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 50), 50)
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 100), 100)
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, 25), 10)
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, 50), 10)
+	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, 100), 10)
 }
 
 func TestTaskList(t *testing.T) {

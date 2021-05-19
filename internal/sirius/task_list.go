@@ -59,45 +59,6 @@ type TaskDetails struct {
 	LastFilter        string
 }
 
-func getPreviousPageNumber(search int) int {
-	if search <= 1 {
-		return 1
-	} else {
-		return search - 1
-	}
-}
-
-func getNextPageNumber(TaskList TaskList, search int) int {
-	if search < TaskList.Pages.PageTotal {
-		if search == 0 {
-			return search + 2
-		} else {
-			return search + 1
-		}
-	} else {
-		return TaskList.Pages.PageTotal
-	}
-}
-
-func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
-		return 1
-	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
-		return 0
-	} else {
-		previousPageNumber := TaskList.Pages.PageCurrent - 1
-		return previousPageNumber*displayTaskLimit + 1
-	}
-}
-
-func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
-		return TaskList.TotalTasks
-	} else {
-		return TaskList.Pages.PageCurrent * displayTaskLimit
-	}
-}
-
 func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
@@ -192,9 +153,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.StoredTaskLimit = displayTaskLimit
 
-	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
 
@@ -209,4 +170,43 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	return TaskList, TaskDetails, err
+}
+
+func getPreviousPageNumber(search int) int {
+	if search <= 1 {
+		return 1
+	} else {
+		return search - 1
+	}
+}
+
+func getNextPageNumber(TaskList TaskList, search int) int {
+	if search < TaskList.Pages.PageTotal {
+		if search == 0 {
+			return search + 2
+		} else {
+			return search + 1
+		}
+	} else {
+		return TaskList.Pages.PageTotal
+	}
+}
+
+func getShowingLowerLimitNumber(TaskList TaskList, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
+		return 1
+	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
+		return 0
+	} else {
+		previousPageNumber := TaskList.Pages.PageCurrent - 1
+		return previousPageNumber*displayTaskLimit + 1
+	}
+}
+
+func getShowingUpperLimitNumber(TaskList TaskList, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
+		return TaskList.TotalTasks
+	} else {
+		return TaskList.Pages.PageCurrent * displayTaskLimit
+	}
 }
