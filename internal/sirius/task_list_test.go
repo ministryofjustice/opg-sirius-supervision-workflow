@@ -131,6 +131,30 @@ func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T)
 	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{3, 4, 5})
 }
 
+func TestCreateTaskTypeFilter(t *testing.T) {
+	assert.Equal(t, createTaskTypeFilter([]string{}, ""), "")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST")
+}
+
+func TestGetStoredTaskFilterReturnsNilIfNoLastFilterOrIfHasNewTaskFilter(t *testing.T) {
+	taskDetails := TaskDetails{
+		LastFilter: "",
+	}
+
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, ""), "")
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{"ORAL"}, ""), "")
+}
+
+func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
+	taskDetails := TaskDetails{
+		LastFilter: "CWGN",
+	}
+
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
+}
+
 func TestTaskList(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",

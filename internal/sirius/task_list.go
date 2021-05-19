@@ -59,30 +59,6 @@ type TaskDetails struct {
 	LastFilter        string
 }
 
-func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-	if len(taskTypeSelected) == 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s
-		}
-	} else if len(taskTypeSelected) > 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s + ","
-		}
-		taskTypeFilterLength := len(taskTypeFilters)
-		length := taskTypeFilterLength - 1
-		taskTypeFilters = taskTypeFilters[0:length]
-	}
-	return taskTypeFilters
-}
-
-func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
-	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
-		return ""
-	} else {
-		return taskTypeFilters
-	}
-}
-
 var teamID int
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
@@ -209,4 +185,28 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 		twoAfterCurrentPage = TaskList.Pages.PageCurrent
 	}
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+}
+
+func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+	if len(taskTypeSelected) == 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s
+		}
+	} else if len(taskTypeSelected) > 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s + ","
+		}
+		taskTypeFilterLength := len(taskTypeFilters)
+		length := taskTypeFilterLength - 1
+		taskTypeFilters = taskTypeFilters[0:length]
+	}
+	return taskTypeFilters
+}
+
+func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
+	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
+		return ""
+	} else {
+		return taskTypeFilters
+	}
 }
