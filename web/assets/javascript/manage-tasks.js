@@ -14,6 +14,8 @@ export default class ManageTasks {
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
         this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content')
+        this.taskTypeCheckBox
+        this.taskTypeButton = element.querySelectorAll('.js-container-button');
   
         this._setupEventListeners();
       }
@@ -42,6 +44,11 @@ export default class ManageTasks {
         this.assignTeamSelect.forEach(element => {
             this._getCaseManagers = this._getCaseManagers.bind(this);
             element.addEventListener('change', this._getCaseManagers);
+        });    
+
+        this.taskTypeButton.forEach(element => {
+            this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
+            element.addEventListener('click', this._toggleTasktypeFilter);
         });
     }
 
@@ -87,7 +94,7 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
-    
+
     _getCaseManagers(event) {
         const value = event.target.value.toString();
 
@@ -111,5 +118,10 @@ export default class ManageTasks {
         
             document.getElementById("assignCM").innerHTML = str;
         });
+    }
+
+    _toggleTasktypeFilter(event) {
+        const innerContainer = event.parentElement.querySelector(".js-options-container");
+        innerContainer.classList.toggle("hide")
     }
  }
