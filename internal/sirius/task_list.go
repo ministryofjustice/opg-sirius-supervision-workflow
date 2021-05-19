@@ -56,6 +56,7 @@ type TaskDetails struct {
 	StoredTaskLimit   int
 	ShowingUpperLimit int
 	ShowingLowerLimit int
+	LastFilter        string
 }
 
 func getPreviousPageNumber(search int) int {
@@ -78,30 +79,22 @@ func getNextPageNumber(TaskList TaskList, search int) int {
 	}
 }
 
-func getStoredTaskLimitNumber(TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskDetails.StoredTaskLimit == 0 && displayTaskLimit == 0 {
-		return 25
-	} else {
-		return displayTaskLimit
-	}
-}
-
-func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
+func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
 	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
 		return 1
 	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
 		return 0
 	} else {
 		previousPageNumber := TaskList.Pages.PageCurrent - 1
-		return previousPageNumber*TaskDetails.StoredTaskLimit + 1
+		return previousPageNumber*displayTaskLimit + 1
 	}
 }
 
-func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails) int {
-	if TaskList.Pages.PageCurrent*TaskDetails.StoredTaskLimit > TaskList.TotalTasks {
+func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
 		return TaskList.TotalTasks
 	} else {
-		return TaskList.Pages.PageCurrent * TaskDetails.StoredTaskLimit
+		return TaskList.Pages.PageCurrent * displayTaskLimit
 	}
 }
 
@@ -123,11 +116,36 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
+func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+	if len(taskTypeSelected) == 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s
+		}
+	} else if len(taskTypeSelected) > 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s + ","
+		}
+		taskTypeFilterLength := len(taskTypeFilters)
+		length := taskTypeFilterLength - 1
+		taskTypeFilters = taskTypeFilters[0:length]
+	}
+	return taskTypeFilters
+}
+
+func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
+	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
+		return ""
+	} else {
+		return taskTypeFilters
+	}
+}
+
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int) (TaskList, TaskDetails, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
+	var taskTypeFilters string
 
 	if selectedTeamMembers == 0 {
 		teamID = loggedInTeamId
@@ -135,7 +153,10 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamMembers
 	}
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc", teamID, displayTaskLimit, search), nil)
+	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
+
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc&filter=%s", teamID, displayTaskLimit, search, taskTypeFilters), nil)
+
 	if err != nil {
 		return v, k, err
 	}
@@ -169,11 +190,13 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.NextPage = getNextPageNumber(TaskList, search)
 
-	TaskDetails.StoredTaskLimit = getStoredTaskLimitNumber(TaskDetails, displayTaskLimit)
+	TaskDetails.StoredTaskLimit = displayTaskLimit
 
-	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails)
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails)
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
+
+	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
 
 	if len(TaskDetails.ListOfPages) != 0 {
 		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]

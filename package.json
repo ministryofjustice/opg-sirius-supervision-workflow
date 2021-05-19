@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "watch": "webpack --watch",
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
     "cypress": "cypress open"
