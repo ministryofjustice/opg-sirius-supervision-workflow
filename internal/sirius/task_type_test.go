@@ -9,6 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsSelected(t *testing.T) {
+	assert.Equal(t, isSelected("ORAL", []string{"ORAL"}), true)
+	assert.Equal(t, isSelected("CWGN", []string{"CWGN", "ORAL"}), true)
+	assert.Equal(t, isSelected("TEST", []string{"CWGN", "ORAL"}), false)
+}
+
 func TestGetTaskType(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
