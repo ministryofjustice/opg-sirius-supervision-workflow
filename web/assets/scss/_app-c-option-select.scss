@@ -3,6 +3,7 @@
   padding: 0 0 govuk-spacing(2);
   margin-bottom: govuk-spacing(2);
   border-bottom: 1px solid govuk-colour("mid-grey");
+  
 
   &__heading {
     position: relative;
@@ -18,13 +19,18 @@
     padding: 0;
     cursor: pointer;
     color: govuk-colour("blue");
+    display: flex;
+    width: fit-content;
+
+    &:hover{
+      cursor: pointer;
+    }
   }
   &__title {
     font-size: govuk-spacing(4);
     line-height: 1.3157894737;
   }
   &__icon {
-    display: none;
     position: absolute;
     top: 0;
     left: 9px;
