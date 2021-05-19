@@ -59,24 +59,6 @@ type TaskDetails struct {
 	LastFilter        string
 }
 
-func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
-	var twoBeforeCurrentPage int
-	var twoAfterCurrentPage int
-	if TaskList.Pages.PageCurrent > 2 {
-		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
-	} else {
-		twoBeforeCurrentPage = 0
-	}
-	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
-	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
-	} else {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent
-	}
-	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
-}
-
 func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
 	if len(taskTypeSelected) == 1 {
 		for _, s := range taskTypeSelected {
@@ -209,4 +191,22 @@ func getShowingUpperLimitNumber(TaskList TaskList, displayTaskLimit int) int {
 	} else {
 		return TaskList.Pages.PageCurrent * displayTaskLimit
 	}
+}
+
+func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
+	var twoBeforeCurrentPage int
+	var twoAfterCurrentPage int
+	if TaskList.Pages.PageCurrent > 2 {
+		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
+	} else {
+		twoBeforeCurrentPage = 0
+	}
+	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
+	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
+	} else {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent
+	}
+	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
