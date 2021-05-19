@@ -52,7 +52,9 @@
   ### `test-server`
   <p> test server files </p>
 
-  <p> Noted issues: </p>
+    -------------------------------------------------------------------
+
+  <h2> Noted issues: </h2>
   <ul>
   <li> Can't run locally if the pact stub is still running </li>
   </ul>

@@ -18,17 +18,18 @@ export default class ManageFilters {
 
     _toggleTasktypeFilter() {
         const hiddenState = this.innerContainer.classList.contains('hide');
+        console.log(hiddenState)
         this.innerContainer.classList.toggle("hide", !hiddenState)
         if (hiddenState) {
             this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
             this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-            this.taskTypeFilterArrowUp.classList.toggle("hide", true)
-            this.taskTypeFilterArrowDown.classList.toggle("hide", false)
+            this.taskTypeFilterArrowUp.classList.toggle("hide", false)
+            this.taskTypeFilterArrowDown.classList.toggle("hide", true)
         } else {
             this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
             this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-            this.taskTypeFilterArrowUp.classList.toggle("hide", false)
-            this.taskTypeFilterArrowDown.classList.toggle("hide", true)
+            this.taskTypeFilterArrowUp.classList.toggle("hide", true)
+            this.taskTypeFilterArrowDown.classList.toggle("hide", false)
         }
     }
  }

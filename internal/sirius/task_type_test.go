@@ -62,8 +62,8 @@ func TestGetTaskType(t *testing.T) {
 								}),
 								"ORAL": dsl.Like(map[string]interface{}{
 									"handle":     "ORAL",
-									"incomplete": "Casework - General",
-									"complete":   "Casework - General",
+									"incomplete": "Order - Allocate to team",
+									"complete":   "Order - Allocate to team",
 									"user":       true,
 									"category":   "supervision",
 								}),
@@ -86,8 +86,8 @@ func TestGetTaskType(t *testing.T) {
 				},
 				{
 					Handle:     "ORAL",
-					Incomplete: "Casework - General",
-					Complete:   "Casework - General",
+					Incomplete: "Order - Allocate to team",
+					Complete:   "Order - Allocate to team",
 					User:       true,
 					Category:   "supervision",
 					IsSelected: false,
