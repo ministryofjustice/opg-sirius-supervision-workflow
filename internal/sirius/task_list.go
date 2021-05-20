@@ -59,87 +59,6 @@ type TaskDetails struct {
 	LastFilter        string
 }
 
-func getPreviousPageNumber(search int) int {
-	if search <= 1 {
-		return 1
-	} else {
-		return search - 1
-	}
-}
-
-func getNextPageNumber(TaskList TaskList, search int) int {
-	if search < TaskList.Pages.PageTotal {
-		if search == 0 {
-			return search + 2
-		} else {
-			return search + 1
-		}
-	} else {
-		return TaskList.Pages.PageTotal
-	}
-}
-
-func getShowingLowerLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
-		return 1
-	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
-		return 0
-	} else {
-		previousPageNumber := TaskList.Pages.PageCurrent - 1
-		return previousPageNumber*displayTaskLimit + 1
-	}
-}
-
-func getShowingUpperLimitNumber(TaskList TaskList, TaskDetails TaskDetails, displayTaskLimit int) int {
-	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
-		return TaskList.TotalTasks
-	} else {
-		return TaskList.Pages.PageCurrent * displayTaskLimit
-	}
-}
-
-func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
-	var twoBeforeCurrentPage int
-	var twoAfterCurrentPage int
-	if TaskList.Pages.PageCurrent > 2 {
-		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
-	} else {
-		twoBeforeCurrentPage = 0
-	}
-	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
-	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
-	} else {
-		twoAfterCurrentPage = TaskList.Pages.PageCurrent
-	}
-	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
-}
-
-func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-	if len(taskTypeSelected) == 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s
-		}
-	} else if len(taskTypeSelected) > 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s + ","
-		}
-		taskTypeFilterLength := len(taskTypeFilters)
-		length := taskTypeFilterLength - 1
-		taskTypeFilters = taskTypeFilters[0:length]
-	}
-	return taskTypeFilters
-}
-
-func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
-	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
-		return ""
-	} else {
-		return taskTypeFilters
-	}
-}
-
 var teamID int
 
 func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
@@ -192,9 +111,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskDetails.StoredTaskLimit = displayTaskLimit
 
-	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, TaskDetails, displayTaskLimit)
+	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(TaskList, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, TaskDetails, displayTaskLimit)
+	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
 
@@ -209,4 +128,85 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	return TaskList, TaskDetails, err
+}
+
+func getPreviousPageNumber(search int) int {
+	if search <= 1 {
+		return 1
+	} else {
+		return search - 1
+	}
+}
+
+func getNextPageNumber(TaskList TaskList, search int) int {
+	if search < TaskList.Pages.PageTotal {
+		if search == 0 {
+			return search + 2
+		} else {
+			return search + 1
+		}
+	} else {
+		return TaskList.Pages.PageTotal
+	}
+}
+
+func getShowingLowerLimitNumber(TaskList TaskList, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks != 0 {
+		return 1
+	} else if TaskList.Pages.PageCurrent == 1 && TaskList.TotalTasks == 0 {
+		return 0
+	} else {
+		previousPageNumber := TaskList.Pages.PageCurrent - 1
+		return previousPageNumber*displayTaskLimit + 1
+	}
+}
+
+func getShowingUpperLimitNumber(TaskList TaskList, displayTaskLimit int) int {
+	if TaskList.Pages.PageCurrent*displayTaskLimit > TaskList.TotalTasks {
+		return TaskList.TotalTasks
+	} else {
+		return TaskList.Pages.PageCurrent * displayTaskLimit
+	}
+}
+
+func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
+	var twoBeforeCurrentPage int
+	var twoAfterCurrentPage int
+	if TaskList.Pages.PageCurrent > 2 {
+		twoBeforeCurrentPage = TaskList.Pages.PageCurrent - 3
+	} else {
+		twoBeforeCurrentPage = 0
+	}
+	if TaskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 2
+	} else if TaskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent + 1
+	} else {
+		twoAfterCurrentPage = TaskList.Pages.PageCurrent
+	}
+	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+}
+
+func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+	if len(taskTypeSelected) == 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s
+		}
+	} else if len(taskTypeSelected) > 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s + ","
+		}
+		taskTypeFilterLength := len(taskTypeFilters)
+		length := taskTypeFilterLength - 1
+		taskTypeFilters = taskTypeFilters[0:length]
+	}
+	return taskTypeFilters
+}
+
+func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
+	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
+		return ""
+	} else {
+		return taskTypeFilters
+	}
 }

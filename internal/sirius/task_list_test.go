@@ -9,99 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetPreviousPageNumber(t *testing.T) {
-	assert.Equal(t, getPreviousPageNumber(0), 1)
-	assert.Equal(t, getPreviousPageNumber(1), 1)
-	assert.Equal(t, getPreviousPageNumber(2), 1)
-	assert.Equal(t, getPreviousPageNumber(3), 2)
-	assert.Equal(t, getPreviousPageNumber(5), 4)
-}
-
-func TestGetNextPageNumber(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 1,
-			PageTotal:   5,
-		},
-	}
-
-	assert.Equal(t, getNextPageNumber(testTaskList, 0), 2)
-	assert.Equal(t, getNextPageNumber(testTaskList, 2), 3)
-	assert.Equal(t, getNextPageNumber(testTaskList, 15), 5)
-}
-
-func TestGetShowingLowerLimitNumberAlwaysReturns1IfOnly1Page(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 1,
-		},
-		TotalTasks: 13,
-	}
-	testTaskDetails := TaskDetails{
-		NextPage: 1,
-	}
-
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 1)
-}
-
-func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 1,
-		},
-		TotalTasks: 0,
-	}
-	testTaskDetails := TaskDetails{}
-
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 0)
-}
-
-func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 2,
-		},
-		TotalTasks: 100,
-	}
-	testTaskDetails := TaskDetails{}
-
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 26)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 51)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 101)
-}
-
-func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 5,
-		},
-		TotalTasks: 5000,
-	}
-	testTaskDetails := TaskDetails{}
-
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 25), 101)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 50), 201)
-	assert.Equal(t, getShowingLowerLimitNumber(testTaskList, testTaskDetails, 100), 401)
-}
-
-func TestGetShowingUpperLimitNumberWillReturnMaxTasksIfOnFinalPage(t *testing.T) {
-	testTaskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: 1,
-		},
-		TotalTasks: 100,
-	}
-	testTaskDetails := TaskDetails{}
-
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 25), 25)
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 50), 50)
-	assert.Equal(t, getShowingUpperLimitNumber(testTaskList, testTaskDetails, 100), 100)
-}
-
 func TestTaskList(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
@@ -215,4 +122,150 @@ func TestTaskList(t *testing.T) {
 			}))
 		})
 	}
+}
+
+func TestGetPreviousPageNumber(t *testing.T) {
+	assert.Equal(t, getPreviousPageNumber(0), 1)
+	assert.Equal(t, getPreviousPageNumber(1), 1)
+	assert.Equal(t, getPreviousPageNumber(2), 1)
+	assert.Equal(t, getPreviousPageNumber(3), 2)
+	assert.Equal(t, getPreviousPageNumber(5), 4)
+}
+
+func setUpGetNextPageNumber(pageCurrent int, pageTotal int, totalTasks int) TaskList {
+	taskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: pageCurrent,
+			PageTotal:   pageTotal,
+		},
+		TotalTasks: totalTasks,
+	}
+	return taskList
+}
+
+func TestGetNextPageNumber(t *testing.T) {
+	taskList := setUpGetNextPageNumber(1, 5, 0)
+
+	assert.Equal(t, getNextPageNumber(taskList, 0), 2)
+	assert.Equal(t, getNextPageNumber(taskList, 2), 3)
+	assert.Equal(t, getNextPageNumber(taskList, 15), 5)
+}
+
+func TestGetShowingLowerLimitNumberAlwaysReturns1IfOnly1Page(t *testing.T) {
+	taskList := setUpGetNextPageNumber(1, 0, 13)
+
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 1)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 1)
+}
+
+func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
+	taskList := setUpGetNextPageNumber(1, 0, 0)
+
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 0)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 0)
+}
+
+func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
+	taskList := setUpGetNextPageNumber(2, 0, 100)
+
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 26)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 51)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 101)
+}
+
+func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
+	taskList := setUpGetNextPageNumber(5, 0, 5000)
+
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 101)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 201)
+	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 401)
+}
+
+func TestGetShowingUpperLimitNumberWillReturnTotalTasksIfOnFinalPage(t *testing.T) {
+	taskList := setUpGetNextPageNumber(1, 0, 10)
+
+	assert.Equal(t, getShowingUpperLimitNumber(taskList, 25), 10)
+	assert.Equal(t, getShowingUpperLimitNumber(taskList, 50), 10)
+	assert.Equal(t, getShowingUpperLimitNumber(taskList, 100), 10)
+}
+
+func makeListOfPagesRange(min, max int) []int {
+	a := make([]int, max-min+1)
+	for i := range a {
+		a[i] = min + i
+	}
+	return a
+}
+
+func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
+
+	ListOfPages := makeListOfPagesRange(1, lastPage)
+
+	taskList := TaskList{
+		Pages: PageDetails{
+			PageCurrent: pageCurrent,
+		},
+	}
+	taskDetails := TaskDetails{
+		LastPage:    lastPage,
+		ListOfPages: ListOfPages,
+	}
+
+	return taskList, taskDetails
+}
+
+func TestGetPaginationLimitsWillReturnARangeTwoBelowAndTwoAboveCurrentPage(t *testing.T) {
+	taskList, taskDetails := setUpPagesTests(3, 10)
+
+	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4, 5})
+}
+
+func TestGetPaginationLimitsWillReturnARangeOnlyTwoAboveCurrentPage(t *testing.T) {
+	taskList, taskDetails := setUpPagesTests(1, 10)
+
+	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3})
+}
+
+func TestGetPaginationLimitsWillReturnARangeOneBelowAndTwoAboveCurrentPage(t *testing.T) {
+	taskList, taskDetails := setUpPagesTests(2, 10)
+
+	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4})
+}
+
+func TestGetPaginationLimitsWillReturnARangeTwoBelowAndOneAboveCurrentPage(t *testing.T) {
+	taskList, taskDetails := setUpPagesTests(4, 5)
+
+	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{2, 3, 4, 5})
+}
+
+func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T) {
+	taskList, taskDetails := setUpPagesTests(5, 5)
+
+	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{3, 4, 5})
+}
+
+func TestCreateTaskTypeFilter(t *testing.T) {
+	assert.Equal(t, createTaskTypeFilter([]string{}, ""), "")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST")
+}
+
+func TestGetStoredTaskFilterReturnsNilIfNoLastFilterOrIfHasNewTaskFilter(t *testing.T) {
+	taskDetails := TaskDetails{
+		LastFilter: "",
+	}
+
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, ""), "")
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{"ORAL"}, ""), "")
+}
+
+func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
+	taskDetails := TaskDetails{
+		LastFilter: "CWGN",
+	}
+
+	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
 }
