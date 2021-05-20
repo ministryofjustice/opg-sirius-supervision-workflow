@@ -14,6 +14,7 @@ export default class ManageTasks {
         this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
         this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
         this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content')
+        this.taskTypeCheckBox
   
         this._setupEventListeners();
       }
@@ -87,7 +88,7 @@ export default class ManageTasks {
             element.classList.toggle('hide', true);
         });
     }
-    
+
     _getCaseManagers(event) {
         const value = event.target.value.toString();
 

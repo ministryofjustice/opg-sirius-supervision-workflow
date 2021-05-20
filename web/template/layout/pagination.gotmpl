@@ -1,0 +1,56 @@
+{{ define "pagination" }}
+  <nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label">
+
+    <p class="govuk-visually-hidden" id="pagination-form-heading">Pagination navigation</p>
+
+    <div class="flex-container">
+
+      <p class="moj-pagination__results">Showing <b>
+      {{ if le .TaskDetails.ShowingLowerLimit .TaskList.TotalTasks }}
+        {{ .TaskDetails.ShowingLowerLimit }}
+      {{ else }}
+        {{.TaskList.TotalTasks}}
+      {{ end }}</b> to <b>
+      {{ if le .TaskDetails.ShowingUpperLimit .TaskList.TotalTasks }}
+        {{ .TaskDetails.ShowingUpperLimit }}
+      {{ else }}
+        {{.TaskList.TotalTasks}}
+      {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
+    
+      <ul class="moj-pagination__list">
+        <li class="moj-pagination__item moj-pagination__item--prev">
+          <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
+        </li> 
+        {{$currentPage := .TaskList.Pages.PageCurrent}}
+
+        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.FirstPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.FirstPage }}">{{ .TaskDetails.FirstPage }}</button></li> 
+        <li class="moj-pagination__item moj-pagination__item--dots">...</li> 
+  
+        {{ range .TaskDetails.LimitedPagination }}     
+          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq . $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ . }}">{{ . }}</button></li> 
+        {{ end }}
+        
+        <li class="moj-pagination__item moj-pagination__item--dots">...</li>  
+        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .TaskDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .TaskDetails.LastPage }}">{{ .TaskDetails.LastPage }}</button></li> 
+
+        <li class="moj-pagination__item">
+          <li class="moj-pagination__item moj-pagination__item--next">
+          <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .TaskDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
+        </li> 
+      </ul>
+        <div class="govuk-form-group moj-pagination__change-view-number">
+          <label class="govuk-label" for="label-display-rows">View</label>
+          <select style="display: none;" name="currentTaskDisplay">
+            <option value="{{ .TaskDetails.StoredTaskLimit }}"></option>
+          </select>
+          <div style="display: none;" name="currentTaskDisplay">{{.TaskDetails.StoredTaskLimit}}</div>
+          <select class="govuk-select" id="display-rows" name="tasksPerPage" aria-labelledby="display-rows" aria-label="display-rows" onchange="this.form.submit()">
+            <option value="25" id="display-rows_25"{{if eq .TaskDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
+            <option value="50" id="display-rows_50"{{if eq .TaskDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
+            <option value="100" id="display-rows_100"{{if eq .TaskDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option> 
+          </select>
+        </div>
+    </div>
+  </nav>
+    
+{{ end }}
