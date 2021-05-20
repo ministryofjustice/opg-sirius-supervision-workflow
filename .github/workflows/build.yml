@@ -206,7 +206,7 @@ jobs:
           docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
           if [ $BRANCH_NAME == "main" ]; then
             # We want all of the tags pushed
-            docker pushh --all-tags $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY
+            docker push --all-tags $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY
           else
             docker push $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
           fi
@@ -239,4 +239,3 @@ jobs:
       - name: Trigger Dev Deploy
         shell: bash
         run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-sirius-workflow"
-
