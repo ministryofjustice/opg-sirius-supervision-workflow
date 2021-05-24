@@ -16,37 +16,38 @@ export default class ManageFilters {
           element.addEventListener('click', this._toggleTasktypeFilter);
       });
       if (window.localStorage.getItem("Open") == "true") {
-        // this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
-        // this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-        // this.taskTypeFilterArrowUp.classList.toggle("hide", !hiddenState)
-        // this.taskTypeFilterArrowDown.classList.toggle("hide", !hiddenState)
+        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
+        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
+        this.taskTypeFilterArrowUp.classList.toggle('hide', false)
+        this.taskTypeFilterArrowDown.classList.toggle('hide', true)
 
         const hiddenState = this.innerContainer.classList.contains('hide');
-        this.innerContainer.classList.toggle("hide", !hiddenState)
+        this.innerContainer.classList.toggle('hide', !hiddenState)
       } else {
-        // this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
-        // this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-        // this.taskTypeFilterArrowUp.classList.toggle("hide", 'true')
-        // this.taskTypeFilterArrowDown.classList.toggle("hide", 'false')
+        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
+        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
+        this.taskTypeFilterArrowUp.classList.toggle('hide', true)
+        this.taskTypeFilterArrowDown.classList.toggle('hide', false)
 
       }
   }
 
   _toggleTasktypeFilter() {
       const hiddenState = this.innerContainer.classList.contains('hide');
-      this.innerContainer.classList.toggle("hide", !hiddenState)
+      this.innerContainer.classList.toggle('hide', !hiddenState)
       if (hiddenState) {
           this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
           this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-          this.taskTypeFilterArrowUp.classList.toggle("hide", 'false')
-          this.taskTypeFilterArrowDown.classList.toggle("hide", 'true')
+          
+          this.taskTypeFilterArrowUp.classList.toggle('hide', false);
+          this.taskTypeFilterArrowDown.classList.toggle('hide', true)
           
           window.localStorage.setItem("Open", "true")
       } else {
           this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
           this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-          this.taskTypeFilterArrowUp.classList.toggle("hide", 'true')
-          this.taskTypeFilterArrowDown.classList.toggle("hide", 'false')
+          this.taskTypeFilterArrowUp.classList.toggle('hide', true)
+          this.taskTypeFilterArrowDown.classList.toggle('hide', false)
 
           window.localStorage.setItem("Open", "false")
       }
