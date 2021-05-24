@@ -15,21 +15,7 @@ export default class ManageFilters {
           this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
           element.addEventListener('click', this._toggleTasktypeFilter);
       });
-      if (window.localStorage.getItem("Open") == "true") {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-        this.taskTypeFilterArrowUp.classList.toggle('hide', false)
-        this.taskTypeFilterArrowDown.classList.toggle('hide', true)
-
-        const hiddenState = this.innerContainer.classList.contains('hide');
-        this.innerContainer.classList.toggle('hide', !hiddenState)
-      } else {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowUp.classList.toggle('hide', true)
-        this.taskTypeFilterArrowDown.classList.toggle('hide', false)
-
-      }
+    this._retainTaskFilterMenuStateWhenReloadingPage()
   }
 
   _toggleTasktypeFilter() {
@@ -51,5 +37,23 @@ export default class ManageFilters {
 
           window.localStorage.setItem("Open", "false")
       }
+  }
+
+  _retainTaskFilterMenuStateWhenReloadingPage() {
+    if (window.localStorage.getItem("Open") == "true") {
+      this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
+      this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
+      this.taskTypeFilterArrowUp.classList.toggle('hide', false)
+      this.taskTypeFilterArrowDown.classList.toggle('hide', true)
+
+      const hiddenState = this.innerContainer.classList.contains('hide');
+      this.innerContainer.classList.toggle('hide', !hiddenState)
+    } else {
+      this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
+      this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
+      this.taskTypeFilterArrowUp.classList.toggle('hide', true)
+      this.taskTypeFilterArrowDown.classList.toggle('hide', false)
+
+    }
   }
 }
