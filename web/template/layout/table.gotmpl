@@ -79,7 +79,7 @@
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
         <tr class="govuk-table__row">
-          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td> 
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks of type: {{ range .LoadTasks }}{{if .IsSelected }}<br>{{ .Incomplete }}{{ end }}{{ end }}</td>
         </tr>
       {{ end }}
     </tbody>

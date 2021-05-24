@@ -16,7 +16,7 @@ describe("Reassign Tasks", () => {
     cy.get('app-c-option-select__container-inner').should('not.be.visible') 
   })
 
-  it("can apply a filters", () => {
+  it("can apply a filter", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get(':nth-child(2) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
     cy.get('#actionFilter').click()
