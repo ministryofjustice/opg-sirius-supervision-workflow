@@ -11,8 +11,8 @@ import (
 
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskType(sirius.Context) (sirius.TaskTypes, error)
-	GetTaskList(sirius.Context, int, int, int, int) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
+	GetTaskList(sirius.Context, int, int, int, int, []string) (sirius.TaskList, sirius.TaskDetails, error)
 	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
 	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
@@ -24,7 +24,7 @@ type workflowVars struct {
 	MyDetails      sirius.UserDetails
 	TaskList       sirius.TaskList
 	TaskDetails    sirius.TaskDetails
-	LoadTasks      sirius.TaskTypes
+	LoadTasks      []sirius.ApiTaskTypes
 	TeamSelection  []sirius.TeamCollection
 	TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
@@ -35,6 +35,7 @@ type workflowVars struct {
 
 func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
+		var displayTaskLimit int
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -43,10 +44,32 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		displayTaskLimit, _ := strconv.Atoi(r.FormValue("tasksPerPage"))
+		bothDisplayTaskLimits := r.Form["tasksPerPage"]
+		currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
+		//move to JS
+		if len(bothDisplayTaskLimits) != 0 {
+			topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
+			bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
+			if topDisplayTaskLimit != currentTaskDisplay {
+				displayTaskLimit = topDisplayTaskLimit
+			} else if bottomDisplayTaskLimit != currentTaskDisplay {
+				displayTaskLimit = bottomDisplayTaskLimit
+			} else {
+				displayTaskLimit = currentTaskDisplay
+			}
+		} else {
+			displayTaskLimit = 25
+		}
+
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
+
+		err := r.ParseForm()
+		if err != nil {
+			return err
+		}
+		taskTypeSelected := (r.Form["selected-task-type"])
 
 		myDetails, err := client.SiriusUserDetails(ctx)
 		if err != nil {
@@ -61,12 +84,12 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		loggedInTeamId := myDetails.Teams[0].TeamId
-		loadTaskTypes, err := client.GetTaskType(ctx)
+		loadTaskTypes, err := client.GetTaskType(ctx, taskTypeSelected)
 		if err != nil {
 			return err
 		}
 
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected)
 		if err != nil {
 			return err
 		}
@@ -146,7 +169,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
-			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId)
+			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected)
 			if err != nil {
 				return err
 			}
