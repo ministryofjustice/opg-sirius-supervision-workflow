@@ -155,7 +155,7 @@ jobs:
           fetch-depth: '0'
       - name: Extract branch name
         run: |
-          if [ "$GITHUB_EVENT_NAME" == "push" ]; then
+          if [ "${{ github.head_ref }}" == "" ]; then
             echo BRANCH_NAME=main >> $GITHUB_ENV
           else
             echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
@@ -202,9 +202,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           WORKFLOW_ECR_REPOSITORY: sirius/sirius-workflow
         run: |
-          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:latest
           docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:${{ steps.bump_version.outputs.tag }}
+          docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:latest
           if [ $BRANCH_NAME == "main" ]; then
+            docker tag sirius/sirius-workflow:latest $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY:main-${{ steps.bump_version.outputs.tag }}
             # We want all of the tags pushed
             docker push --all-tags $ECR_REGISTRY/$WORKFLOW_ECR_REPOSITORY
           else
