@@ -31,11 +31,11 @@ describe("Reassign Tasks", () => {
     cy.url().should('include', 'selected-task-type=CWGN&selected-task-type=ORAL')
   })
   
-  it("retains task type filter when changing pages", () => {
+  it("retains task type filter when changing views", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get(':nth-child(2) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
     cy.get('#actionFilter').click()
-    cy.get('#pagination-label > .flex-container > .moj-pagination__list > :nth-child(5) > .moj-pagination__link').last().click()
+    cy.get("#display-rows").select('100')
     cy.url().should('include', 'selected-task-type=CWGN')
   })
 

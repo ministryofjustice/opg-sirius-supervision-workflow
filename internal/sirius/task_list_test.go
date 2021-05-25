@@ -65,12 +65,12 @@ func TestTaskList(t *testing.T) {
 										"surname": "Client Wolfeschlegelsteinhausenbergerdorff",
 									}),
 								}, 1),
-							}, 100),
+							}, 1),
 							"pages": dsl.Like(map[string]interface{}{
 								"current": 1,
-								"total":   4,
+								"total":   1,
 							}),
-							"total": dsl.Like(100),
+							"total": dsl.Like(1),
 						}),
 					})
 			},
@@ -104,9 +104,9 @@ func TestTaskList(t *testing.T) {
 				},
 				Pages: PageDetails{
 					PageCurrent: 1,
-					PageTotal:   4,
+					PageTotal:   1,
 				},
-				TotalTasks: 100,
+				TotalTasks: 1,
 			},
 		},
 	}
