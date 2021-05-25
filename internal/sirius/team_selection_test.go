@@ -50,10 +50,6 @@ func TestTeamSelection(t *testing.T) {
 						Body: dsl.EachLike(map[string]interface{}{
 							"id":   dsl.Like(13),
 							"name": dsl.Like("Lay Team 1 - (Supervision)"),
-							"members": dsl.EachLike(map[string]interface{}{
-								"id":   dsl.Like(86),
-								"name": dsl.Like("LayTeam1 User11"),
-							}, 1),
 						}, 1),
 					})
 			},
@@ -63,14 +59,8 @@ func TestTeamSelection(t *testing.T) {
 			},
 			expectedResponse: []TeamCollection{
 				{
-					Id:   13,
-					Name: "Lay Team 1 - (Supervision)",
-					Members: []TeamMembers{
-						{
-							TeamMembersId:   86,
-							TeamMembersName: "LayTeam1 User11",
-						},
-					},
+					Id:               13,
+					Name:             "Lay Team 1 - (Supervision)",
 					UserSelectedTeam: 13,
 					SelectedTeamId:   13,
 				},
