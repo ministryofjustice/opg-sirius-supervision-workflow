@@ -35,7 +35,7 @@ func TestAssignTasks(t *testing.T) {
 					UponReceiving("A request to reassign the task").
 					WithRequest(dsl.Request{
 						Method: http.MethodPut,
-						Path:   dsl.String("/api/v1/users/86/tasks/0"),
+						Path:   dsl.String("/api/v1/users/86/tasks/1"),
 						Headers: dsl.MapMatcher{
 							"X-XSRF-TOKEN":        dsl.String("abcde"),
 							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
@@ -62,7 +62,7 @@ func TestAssignTasks(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				err := client.AssignTasksToCaseManager(getContext(tc.cookies), 86, "0")
+				err := client.AssignTasksToCaseManager(getContext(tc.cookies), 86, "1")
 
 				assert.Equal(t, tc.expectedError(pact.Server.Port), err)
 				return nil
