@@ -57,6 +57,7 @@ type TaskDetails struct {
 	ShowingUpperLimit int
 	ShowingLowerLimit int
 	LastFilter        string
+	TaskTypeFilters   int
 }
 
 var teamID int
@@ -116,6 +117,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
+
+	TaskDetails.TaskTypeFilters = len(taskTypeSelected)
 
 	if len(TaskDetails.ListOfPages) != 0 {
 		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
