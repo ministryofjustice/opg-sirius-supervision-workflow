@@ -31,8 +31,8 @@ func TestGetTaskType(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User is logged in").
-					UponReceiving("A request to get all task CWGN types").
+					Given("User exists").
+					UponReceiving("A request to get all task types").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
 						Path:   dsl.String("/api/v1/tasktypes/supervision"),
@@ -56,8 +56,8 @@ func TestGetTaskType(t *testing.T) {
 								}),
 								"ORAL": dsl.Like(map[string]interface{}{
 									"handle":     "ORAL",
-									"incomplete": "Casework - General",
-									"complete":   "Casework - General",
+									"incomplete": "Order - Allocate to team",
+									"complete":   "Order - Allocate to team",
 									"user":       true,
 									"category":   "supervision",
 								}),
@@ -80,8 +80,8 @@ func TestGetTaskType(t *testing.T) {
 				},
 				{
 					Handle:     "ORAL",
-					Incomplete: "Casework - General",
-					Complete:   "Casework - General",
+					Incomplete: "Order - Allocate to team",
+					Complete:   "Order - Allocate to team",
 					User:       true,
 					Category:   "supervision",
 					IsSelected: false,
@@ -101,4 +101,10 @@ func TestGetTaskType(t *testing.T) {
 			}))
 		})
 	}
+}
+
+func TestIsSelected(t *testing.T) {
+	assert.Equal(t, isSelected("ORAL", []string{"ORAL"}), true)
+	assert.Equal(t, isSelected("CWGN", []string{"CWGN", "ORAL"}), true)
+	assert.Equal(t, isSelected("TEST", []string{"CWGN", "ORAL"}), false)
 }

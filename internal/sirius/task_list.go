@@ -57,30 +57,7 @@ type TaskDetails struct {
 	ShowingUpperLimit int
 	ShowingLowerLimit int
 	LastFilter        string
-}
-
-func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-	if len(taskTypeSelected) == 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s
-		}
-	} else if len(taskTypeSelected) > 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s + ","
-		}
-		taskTypeFilterLength := len(taskTypeFilters)
-		length := taskTypeFilterLength - 1
-		taskTypeFilters = taskTypeFilters[0:length]
-	}
-	return taskTypeFilters
-}
-
-func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
-	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
-		return ""
-	} else {
-		return taskTypeFilters
-	}
+	TaskTypeFilters   int
 }
 
 var teamID int
@@ -140,6 +117,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(TaskList, displayTaskLimit)
 
 	TaskDetails.LastFilter = getStoredTaskFilter(TaskDetails, taskTypeSelected, taskTypeFilters)
+
+	TaskDetails.TaskTypeFilters = len(taskTypeSelected)
 
 	if len(TaskDetails.ListOfPages) != 0 {
 		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
@@ -209,4 +188,28 @@ func getPaginationLimits(TaskList TaskList, TaskDetails TaskDetails) []int {
 		twoAfterCurrentPage = TaskList.Pages.PageCurrent
 	}
 	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+}
+
+func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+	if len(taskTypeSelected) == 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s
+		}
+	} else if len(taskTypeSelected) > 1 {
+		for _, s := range taskTypeSelected {
+			taskTypeFilters += "type:" + s + ","
+		}
+		taskTypeFilterLength := len(taskTypeFilters)
+		length := taskTypeFilterLength - 1
+		taskTypeFilters = taskTypeFilters[0:length]
+	}
+	return taskTypeFilters
+}
+
+func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
+	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
+		return ""
+	} else {
+		return taskTypeFilters
+	}
 }
