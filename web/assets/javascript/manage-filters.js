@@ -63,14 +63,41 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown.classList.toggle('hide', false)
 
     }
+    // let append = ""
+    // let text = JSON.parse(window.localStorage.getItem("kate"))
+    // text.forEach( value => {
+    //              append += "<li>" + text.id + "</li>"
+    //           })
+    // document.getElementById("ul-filter-tags").innerHTML = append;
   }
 
   _selectedTasktypeFilter() {
     let count = 0;
+    let array = [];
     this.inputElementTasktypeFilter.forEach(taskType => {
-      window.localStorage.setItem(count++, JSON.stringify(taskType.id))
+      if (taskType.checked) {
+        array.push(JSON.stringify(taskType.id))
+      }
+      window.localStorage.setItem("kate", JSON.stringify(array))
     })
-    console.log(window.localStorage.getItem("taskType"))
+    console.log(window.localStorage.getItem("kate"))
+
+    let append = ""
+    let text = window.localStorage.getItem("kate");
+    console.log("text")
+    console.log(text)
+    let parsedText = JSON.parse(text)
+    setTimeout(function(){ alert("Hello"); }, 20000);
+    parsedText.forEach( value => {
+                 append += "<li>" + value.id + "</li><br>"
+              })
+    console.log("parsedText")
+    console.log(parsedText)
+    document.getElementById("replaceme").innerHTML = append;
+    console.log("should be appended")
+    console.log(document.getElementById("replaceme"))
+
+    
   }
  
   // let str = "<option value=''selected>Select a case manager</option>"
