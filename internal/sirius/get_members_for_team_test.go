@@ -49,10 +49,6 @@ func TestGetMembersForTeam(t *testing.T) {
 						Body: dsl.Like(map[string]interface{}{
 							"id":   dsl.Like(13),
 							"name": dsl.Like("Lay Team 1 - (Supervision)"),
-							"members": dsl.EachLike(map[string]interface{}{
-								"id":          dsl.Like(86),
-								"displayName": dsl.Like("LayTeam1 User11"),
-							}, 1),
 						}),
 					})
 			},
@@ -61,14 +57,8 @@ func TestGetMembersForTeam(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedResponse: TeamSelected{
-				Id:   13,
-				Name: "Lay Team 1 - (Supervision)",
-				Members: []TeamSelectedMembers{
-					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
-					},
-				},
+				Id:                       13,
+				Name:                     "Lay Team 1 - (Supervision)",
 				selectedTeamToAssignTask: 13,
 			},
 		},
