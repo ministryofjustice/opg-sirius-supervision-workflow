@@ -1,65 +1,65 @@
-{{/* {{ define "edit-panel" }}
+{{ define "edit-panel" }}
 
 <section id="edit-panel">
-  <header>
-    <div class="govuk-width-container">
-      <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
-    </div>
-  </header>
+ <button type="button" id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
+    Manage task
+  </button>
 
-  <div class="govuk-width-container ">
-    <h4 class="govuk-heading-s"><span class="count-checked-checkboxes">0</span> tasks selected</h4>
-    <div>
+  {{ if .SuccessMessage }}
+    {{ template "success-banner" .}}
+  {{ end }}
 
-      <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-        <label class="govuk-label" for="sort">
-          Assign to a team
-        </label>
-        <form action="{{ prefix "/" }}" method="GET" id="assignTeam-form">
-          <select class="govuk-select" id="assignTeam" name="assignTeam" onchange="this.form.submit()">
-            <option value=""disabled>Select a team</option>
+  <div class="govuk-width-container hide js-mt-edit-panel">
+    <section class="moj-manage-tasks__edit-panel">
+      <header>
+        <div class="govuk-width-container">
+          <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
+        </div>
+      </header>
+      <div class="govuk-width-container">
+        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a team
+          </label>
+          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
+          <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+            <option value="0" selected>Select a team</option>
               {{ range .TeamSelection }}
-                <option value="{{ .Id }}" {{if eq .Id .SelectedTeamId}}selected{{end}}>{{ .Name }}</option>
+            <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
           </select>
-          </form>
+        </div>
+
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a case manager
+          </label>
+          <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
+            <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
+          </select>
+        </div>
+
+          {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+            <label class="govuk-label" for="sort">
+              Set priority
+            </label>
+            <select class="govuk-select" id="assignPriority" name="assignTeam">
+              <option value=""disabled selected>Select a priority</option>
+              <option value="Normal">Normal</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+          </div> */}}
+          {{/* <div> */}}
+          <br>
+        <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
+
+        <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
       </div>
-
-      <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-        <label class="govuk-label" for="sort">
-          Assign to a case manager
-        </label>
-        <select class="govuk-select" id="assignCM" name="assignTeam">
-        <option value=""disabled>Select a case manager</option>
-          {{ range .TeamSelected.Members }}
-            <option value="{{ .TeamMembersId  }}"selected>{{ .TeamMembersName }}</option>
-          {{ end }}
-          
-          <h1> for caseManager in data.caseManagers </h1>
-          <h1> caseManager </h1>
-      
-        </select>
-      </div>
-
-      <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-        <label class="govuk-label" for="sort">
-          Set priority
-        </label>
-        <select class="govuk-select" id="assignPriority" name="assignTeam">
-          <option value=""disabled selected>Select a priority</option>
-          <option value="Normal">Normal</option>
-          <option value="Urgent">Urgent</option>
-        </select>
-      </div>
-    </div>
-    <button id="edit-save" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button">
-      Save and continue
-    </button>
-
-    <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1">Cancel</a>
-
-
+    </section>
   </div>
 </section>
+  
 
-{{ end }} */}}
+
+{{ end }}

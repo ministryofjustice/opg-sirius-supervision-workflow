@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 )
 
 type ApiTaskTypes struct {
@@ -11,39 +12,68 @@ type ApiTaskTypes struct {
 	Category   string `json:"category"`
 	Complete   string `json:"complete"`
 	User       bool   `json:"user"`
+	IsSelected bool
 }
 
-type TaskTypes struct {
-	TaskTypeList ApiTaskTypes `json:"task_types"`
+type WholeTaskList struct {
+	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskType(ctx Context) (TaskTypes, error) {
-	var t TaskTypes
-
+func (c *Client) GetTaskType(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
+
 	if err != nil {
-		return t, err
+		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return t, err
+		return nil, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return t, ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return t, newStatusError(resp)
+		return nil, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&t); err != nil {
-		return t, err
+	var v WholeTaskList
+	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		return nil, err
 	}
 
-	wholeTaskList := t
+	WholeTaskList := v.AllTaskList
 
-	return wholeTaskList, err
+	var taskTypeList []ApiTaskTypes
+
+	for _, u := range WholeTaskList {
+		taskType := ApiTaskTypes{
+			Handle:     u.Handle,
+			Incomplete: u.Incomplete,
+			Category:   u.Category,
+			Complete:   u.Complete,
+			User:       u.User,
+			IsSelected: isSelected(u.Handle, taskTypeSelected),
+		}
+		taskTypeList = append(taskTypeList, taskType)
+	}
+
+	sort.Slice(taskTypeList, func(i, j int) bool {
+		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
+	})
+
+	return taskTypeList, err
+}
+
+func isSelected(handle string, taskTypeSelected []string) bool {
+	for _, q := range taskTypeSelected {
+		if handle == q {
+			return true
+		}
+	}
+	return false
 }
