@@ -5,8 +5,10 @@ export default class ManageFilters {
       this.innerContainer = element.querySelector(".js-options-container");
       this.taskTypeFilterArrowUp = element.querySelector(".app-c-option-select__icon--up");
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
-      
-      
+      this.taskTypeFilterTags = element.querySelector(".task-type-filter-tags");
+      this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
+      this.actionFilter = element.querySelectorAll("#actionFilter");
+      console.log(actionFilter)
       this._setupEventListeners();
     }
 
@@ -14,7 +16,13 @@ export default class ManageFilters {
       this.taskTypeButton.forEach(element => {
           this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
           element.addEventListener('click', this._toggleTasktypeFilter);
+      });      
+      
+      this.actionFilter.forEach(element => {
+          this._selectedTasktypeFilter = this._selectedTasktypeFilter.bind(this);
+          element.addEventListener('click', this._selectedTasktypeFilter);
       });
+
     this._retainTaskFilterMenuStateWhenReloadingPage()
   }
 
@@ -56,4 +64,21 @@ export default class ManageFilters {
 
     }
   }
+
+  _selectedTasktypeFilter() {
+    let count = 0;
+    this.inputElementTasktypeFilter.forEach(taskType => {
+      window.localStorage.setItem(count++, JSON.stringify(taskType.id))
+    })
+    console.log(window.localStorage.getItem("taskType"))
+  }
+ 
+  // let str = "<option value=''selected>Select a case manager</option>"
+  //         data.members.forEach( caseManager => {
+  //            str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
+  //         })
+      
+  //         document.getElementById("assignCM").innerHTML = str;
+
+  // <li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>Report: lodge report</a></li>
 }
