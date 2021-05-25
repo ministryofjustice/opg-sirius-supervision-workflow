@@ -7,67 +7,8 @@
 {{/* data-module="govuk-button" */}}
  
 <section data-module="manage-tasks" class="moj-manage-tasks">
-  <button id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
-    Manage task
-  </button>
-
-  {{ if .SuccessMessage }}
-    {{ template "success-banner" .}}
-  {{ end }}
-
-  <div class="govuk-width-container hide js-mt-edit-panel">
-    <section class="moj-manage-tasks__edit-panel">
-      <header>
-        <div class="govuk-width-container">
-          <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
-        </div>
-      </header>
-      <div class="govuk-width-container">
-        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
-          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
-              Assign to a team
-            </label>
-            <form class="form ignore-pagination-bottom" action="{{ prefix "/" }}" method="" id="assignTeam-form">
-              <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
-                <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
-                  <option value="0" selected>Select a team</option>
-                    {{ range .TeamSelection }}
-                  <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
-                    {{ end }}
-                </select>
-            </div>
-
-          <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
-              Assign to a case manager
-            </label>
-            <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
-              <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
-            </select>
-          </div>
-
-          {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-            <label class="govuk-label" for="sort">
-              Set priority
-            </label>
-            <select class="govuk-select" id="assignPriority" name="assignTeam">
-              <option value=""disabled selected>Select a priority</option>
-              <option value="Normal">Normal</option>
-              <option value="Urgent">Urgent</option>
-            </select>
-          </div> */}}
-          <div>
-          <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
-
-          <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
-        </div>
-      </div>
-    </section>
-  </div>
-
-    
-
+ 
+  {{ template "edit-panel" . }}
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
     <thead class="govuk-table__head">
@@ -90,19 +31,19 @@
         <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
       </tr>
     </thead>
-      <tbody class="govuk-table__body">
+    <tbody class="govuk-table__body">
       {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">
-            <div class="govuk-checkboxes govuk-checkboxes--small">
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
-                <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
-                <span class="govuk-visually-hidden">Select</span>
-                </label>
+              <div class="govuk-checkboxes govuk-checkboxes--small">
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                    <span class="govuk-visually-hidden">Select</span>
+                  </label>
+                </div>
               </div>
-            </div>
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="api-tasktype">{{ .ApiTaskType }}</label>
@@ -117,7 +58,7 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-display-name">{{ .ApiTaskAssignee.AssigneeDisplayName }}
-               <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
+                <span class="secondary">{{ range .ApiTaskCaseItems }} {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}{{ end }}</span>
               </label>
             </td>
             <td class="govuk-table__cell">
@@ -133,17 +74,19 @@
               <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
               <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-link {{ if eq .CaseItemClient.ClientId 0 }}hide{{ end }}" id="hook-open-case">Open case</a>
             </td>
-            
             {{ end }}
-            
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
         <tr class="govuk-table__row">
-          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td> 
+        {{ if eq .TaskDetails.TaskTypeFilters 0 }}
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
+        {{ else }}
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks of type: {{ range .LoadTasks }}{{if .IsSelected }}<br>{{ .Incomplete }}{{ end }}{{ end }}</td>
         </tr>
+        {{ end }}
       {{ end }}
     </tbody>
   </table>
-<form>
+</section>
 {{ end }}
