@@ -73,12 +73,12 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 }
 
 func filterOutNonLayTeams(v []TeamCollection) []TeamCollection {
-	var new []TeamCollection
+	var filteredTeams []TeamCollection
 	for _, s := range v {
 		matched, _ := regexp.MatchString(`Lay Team`, s.Name)
 		if matched == true {
-			new = append(new, s)
+			filteredTeams = append(filteredTeams, s)
 		}
 	}
-	return new
+	return filteredTeams
 }
