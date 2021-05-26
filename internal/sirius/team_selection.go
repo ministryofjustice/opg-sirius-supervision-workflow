@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
+	"regexp"
 )
 
 type TeamMembers struct {
@@ -62,10 +63,22 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}
 
-	for i := range v {
+	for i, _ := range v {
 		v[i].UserSelectedTeam = k.TeamId
 		v[i].SelectedTeamId = k.SelectedTeam
-	}
 
+	}
+	v = filterOutNonLayTeams(v)
 	return v, err
+}
+
+func filterOutNonLayTeams(v []TeamCollection) []TeamCollection {
+	var new []TeamCollection
+	for _, s := range v {
+		matched, _ := regexp.MatchString(`Lay Team`, s.Name)
+		if matched == true {
+			new = append(new, s)
+		}
+	}
+	return new
 }
