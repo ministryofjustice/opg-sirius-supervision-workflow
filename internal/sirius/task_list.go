@@ -32,7 +32,10 @@ type ApiTask struct {
 	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
 	ApiTaskDueDate   string             `json:"dueDate"`
 	ApiTaskId        int                `json:"id"`
-	ApiTaskType      string             `json:"name"`
+	ApiTaskHandle    string             `json:"type"`
+	// this name for task type
+	ApiTaskType  string `json:"name"`
+	TaskTypeName string
 }
 
 type PageDetails struct {
@@ -62,7 +65,7 @@ type TaskDetails struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
 	var taskTypeFilters string
@@ -130,6 +133,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		TaskDetails.LimitedPagination = []int{0}
 	}
 
+	TaskList.WholeTaskList = setTaskTypeName(v, LoadTasks)
 	return TaskList, TaskDetails, err
 }
 
@@ -212,4 +216,34 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 	} else {
 		return taskTypeFilters
 	}
+}
+
+func setTaskTypeName(v TaskList, LoadTasks []ApiTaskTypes) []ApiTask {
+	var list []ApiTask
+	fmt.Println("in kates function v")
+	for _, s := range v.WholeTaskList {
+
+		task := ApiTask{
+			ApiTaskAssignee:  s.ApiTaskAssignee,
+			ApiTaskCaseItems: s.ApiTaskCaseItems,
+			ApiTaskDueDate:   s.ApiTaskDueDate,
+			ApiTaskId:        s.ApiTaskId,
+			ApiTaskHandle:    s.ApiTaskHandle,
+			ApiTaskType:      s.ApiTaskType,
+			TaskTypeName:     getTaskName(s.ApiTaskHandle, LoadTasks),
+		}
+		list = append(list, task)
+		fmt.Println("task")
+		fmt.Println(task)
+	}
+	return list
+}
+
+func getTaskName(ApiTaskHandle string, LoadTasks []ApiTaskTypes) string {
+	for i := range LoadTasks {
+		if ApiTaskHandle == LoadTasks[i].Handle {
+			return LoadTasks[i].Incomplete
+		}
+	}
+	return ""
 }
