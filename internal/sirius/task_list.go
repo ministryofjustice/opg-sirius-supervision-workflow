@@ -33,9 +33,8 @@ type ApiTask struct {
 	ApiTaskDueDate   string             `json:"dueDate"`
 	ApiTaskId        int                `json:"id"`
 	ApiTaskHandle    string             `json:"type"`
-	// this name for task type
-	ApiTaskType  string `json:"name"`
-	TaskTypeName string
+	ApiTaskType      string             `json:"name"`
+	TaskTypeName     string
 }
 
 type PageDetails struct {
@@ -133,7 +132,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		TaskDetails.LimitedPagination = []int{0}
 	}
 
-	TaskList.WholeTaskList = setTaskTypeName(v, LoadTasks)
+	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
 	return TaskList, TaskDetails, err
 }
 
@@ -218,11 +217,10 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 	}
 }
 
-func setTaskTypeName(v TaskList, LoadTasks []ApiTaskTypes) []ApiTask {
+func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask
-	fmt.Println("in kates function v")
-	for _, s := range v.WholeTaskList {
 
+	for _, s := range v {
 		task := ApiTask{
 			ApiTaskAssignee:  s.ApiTaskAssignee,
 			ApiTaskCaseItems: s.ApiTaskCaseItems,
@@ -230,20 +228,18 @@ func setTaskTypeName(v TaskList, LoadTasks []ApiTaskTypes) []ApiTask {
 			ApiTaskId:        s.ApiTaskId,
 			ApiTaskHandle:    s.ApiTaskHandle,
 			ApiTaskType:      s.ApiTaskType,
-			TaskTypeName:     getTaskName(s.ApiTaskHandle, LoadTasks),
+			TaskTypeName:     getTaskName(s, loadTasks),
 		}
 		list = append(list, task)
-		fmt.Println("task")
-		fmt.Println(task)
 	}
 	return list
 }
 
-func getTaskName(ApiTaskHandle string, LoadTasks []ApiTaskTypes) string {
-	for i := range LoadTasks {
-		if ApiTaskHandle == LoadTasks[i].Handle {
-			return LoadTasks[i].Incomplete
+func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
+	for i := range loadTasks {
+		if task.ApiTaskHandle == loadTasks[i].Handle {
+			return loadTasks[i].Incomplete
 		}
 	}
-	return ""
+	return task.ApiTaskType
 }
