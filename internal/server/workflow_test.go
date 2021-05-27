@@ -36,7 +36,7 @@ func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context, taskTypeSelect
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string) (sirius.TaskList, sirius.TaskDetails, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes) (sirius.TaskList, sirius.TaskDetails, error) {
 	m.count += 1
 	m.lastCtx = ctx
 

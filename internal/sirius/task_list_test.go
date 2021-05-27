@@ -61,7 +61,7 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{})
+				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{})
 				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList, taskDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
@@ -214,4 +214,148 @@ func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
 	}
 
 	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
+}
+
+func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
+	v := []ApiTask{
+		{
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: "Unassigned",
+				AssigneeId:          0,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: ClientDetails{
+					ClientCaseRecNumber: "13636617",
+					ClientFirstName:     "Pamela",
+					ClientId:            37259351,
+					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+						SupervisionCaseOwnerName: "Richard Fox",
+					},
+					ClientSurname: "Pragnell",
+				},
+			}},
+			ApiTaskDueDate: "01/06/2021",
+			ApiTaskId:      40904862,
+			ApiTaskHandle:  "CWGN",
+			ApiTaskType:    "",
+		},
+	}
+
+	loadTasks := []ApiTaskTypes{
+		{
+			Handle:     "CWGN",
+			Incomplete: "Casework - General",
+			Complete:   "Casework - General",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: true,
+		},
+		{
+			Handle:     "ORAL",
+			Incomplete: "Order - Allocate to team",
+			Complete:   "Order - Allocate to team",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: false,
+		},
+	}
+
+	expectedResult := []ApiTask{
+		{
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: "Unassigned",
+				AssigneeId:          0,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: ClientDetails{
+					ClientCaseRecNumber: "13636617",
+					ClientFirstName:     "Pamela",
+					ClientId:            37259351,
+					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+						SupervisionCaseOwnerName: "Richard Fox",
+					},
+					ClientSurname: "Pragnell",
+				},
+			}},
+			ApiTaskDueDate: "01/06/2021",
+			ApiTaskId:      40904862,
+			ApiTaskHandle:  "CWGN",
+			ApiTaskType:    "",
+			TaskTypeName:   "Casework - General",
+		},
+	}
+
+	assert.Equal(t, setTaskTypeName(v, loadTasks), expectedResult)
+}
+
+func TestSetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
+	v := []ApiTask{
+		{
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: "Unassigned",
+				AssigneeId:          0,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: ClientDetails{
+					ClientCaseRecNumber: "13636617",
+					ClientFirstName:     "Pamela",
+					ClientId:            37259351,
+					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+						SupervisionCaseOwnerName: "Richard Fox",
+					},
+					ClientSurname: "Pragnell",
+				},
+			}},
+			ApiTaskDueDate: "01/06/2021",
+			ApiTaskId:      40904862,
+			ApiTaskHandle:  "FAKE",
+			ApiTaskType:    "Fake type",
+		},
+	}
+
+	loadTasks := []ApiTaskTypes{
+		{
+			Handle:     "CWGN",
+			Incomplete: "Casework - General",
+			Complete:   "Casework - General",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: true,
+		},
+		{
+			Handle:     "ORAL",
+			Incomplete: "Order - Allocate to team",
+			Complete:   "Order - Allocate to team",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: false,
+		},
+	}
+
+	expectedResult := []ApiTask{
+		{
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: "Unassigned",
+				AssigneeId:          0,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: ClientDetails{
+					ClientCaseRecNumber: "13636617",
+					ClientFirstName:     "Pamela",
+					ClientId:            37259351,
+					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
+						SupervisionCaseOwnerName: "Richard Fox",
+					},
+					ClientSurname: "Pragnell",
+				},
+			}},
+			ApiTaskDueDate: "01/06/2021",
+			ApiTaskId:      40904862,
+			ApiTaskHandle:  "FAKE",
+			ApiTaskType:    "Fake type",
+			TaskTypeName:   "Fake type",
+		},
+	}
+
+	assert.Equal(t, setTaskTypeName(v, loadTasks), expectedResult)
 }
