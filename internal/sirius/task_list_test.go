@@ -216,7 +216,7 @@ func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
 	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
 }
 
-func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
+func SetUpTaskType(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string) []ApiTask {
 	v := []ApiTask{
 		{
 			ApiTaskAssignee: AssigneeDetails{
@@ -236,11 +236,15 @@ func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 			}},
 			ApiTaskDueDate: "01/06/2021",
 			ApiTaskId:      40904862,
-			ApiTaskHandle:  "CWGN",
-			ApiTaskType:    "",
+			ApiTaskHandle:  ApiTaskHandleInput,
+			ApiTaskType:    ApiTaskTypeInput,
+			TaskTypeName:   TaskTypeNameInput,
 		},
 	}
+	return v
+}
 
+func SetUpLoadTasks() []ApiTaskTypes {
 	loadTasks := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -259,103 +263,30 @@ func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 			IsSelected: false,
 		},
 	}
+	return loadTasks
+}
 
-	expectedResult := []ApiTask{
-		{
-			ApiTaskAssignee: AssigneeDetails{
-				AssigneeDisplayName: "Unassigned",
-				AssigneeId:          0,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: ClientDetails{
-					ClientCaseRecNumber: "13636617",
-					ClientFirstName:     "Pamela",
-					ClientId:            37259351,
-					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-						SupervisionCaseOwnerName: "Richard Fox",
-					},
-					ClientSurname: "Pragnell",
-				},
-			}},
-			ApiTaskDueDate: "01/06/2021",
-			ApiTaskId:      40904862,
-			ApiTaskHandle:  "CWGN",
-			ApiTaskType:    "",
-			TaskTypeName:   "Casework - General",
-		},
-	}
+func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 
-	assert.Equal(t, setTaskTypeName(v, loadTasks), expectedResult)
+	taskType := SetUpTaskType("CWGN", "", "")
+	loadTasks := SetUpLoadTasks()
+	expectedResult := SetUpTaskType("CWGN", "", "Casework - General")
+
+	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
 }
 
 func TestSetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
-	v := []ApiTask{
-		{
-			ApiTaskAssignee: AssigneeDetails{
-				AssigneeDisplayName: "Unassigned",
-				AssigneeId:          0,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: ClientDetails{
-					ClientCaseRecNumber: "13636617",
-					ClientFirstName:     "Pamela",
-					ClientId:            37259351,
-					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-						SupervisionCaseOwnerName: "Richard Fox",
-					},
-					ClientSurname: "Pragnell",
-				},
-			}},
-			ApiTaskDueDate: "01/06/2021",
-			ApiTaskId:      40904862,
-			ApiTaskHandle:  "FAKE",
-			ApiTaskType:    "Fake type",
-		},
-	}
+	taskType := SetUpTaskType("FAKE", "Fake type", "")
+	loadTasks := SetUpLoadTasks()
+	expectedResult := SetUpTaskType("FAKE", "Fake type", "Fake type")
 
-	loadTasks := []ApiTaskTypes{
-		{
-			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
-			IsSelected: true,
-		},
-		{
-			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
-			IsSelected: false,
-		},
-	}
+	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+}
 
-	expectedResult := []ApiTask{
-		{
-			ApiTaskAssignee: AssigneeDetails{
-				AssigneeDisplayName: "Unassigned",
-				AssigneeId:          0,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: ClientDetails{
-					ClientCaseRecNumber: "13636617",
-					ClientFirstName:     "Pamela",
-					ClientId:            37259351,
-					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-						SupervisionCaseOwnerName: "Richard Fox",
-					},
-					ClientSurname: "Pragnell",
-				},
-			}},
-			ApiTaskDueDate: "01/06/2021",
-			ApiTaskId:      40904862,
-			ApiTaskHandle:  "FAKE",
-			ApiTaskType:    "Fake type",
-			TaskTypeName:   "Fake type",
-		},
-	}
+func TestSetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
+	taskType := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "")
+	loadTasks := SetUpLoadTasks()
+	expectedResult := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "Casework - General")
 
-	assert.Equal(t, setTaskTypeName(v, loadTasks), expectedResult)
+	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
 }
