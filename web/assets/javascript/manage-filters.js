@@ -7,8 +7,8 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.taskTypeFilterTags = element.querySelector(".task-type-filter-tags");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
-      this.actionFilter = element.querySelectorAll("#actionFilter");
-      console.log(actionFilter)
+      this.taskTypeFilterTags = element.querySelectorAll(".task-type-filter-tags");
+      this._isFiltered();
       this._setupEventListeners();
     }
 
@@ -16,12 +16,12 @@ export default class ManageFilters {
       this.taskTypeButton.forEach(element => {
           this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
           element.addEventListener('click', this._toggleTasktypeFilter);
-      });      
+      }); 
       
-      this.actionFilter.forEach(element => {
-          this._selectedTasktypeFilter = this._selectedTasktypeFilter.bind(this);
-          element.addEventListener('click', this._selectedTasktypeFilter);
-      });
+      this.taskTypeFilterTags.forEach(element => {
+        this._toggleTasktypeFilter = this._selectedTaskTypes.bind(this);
+        element.addEventListener('click', this._selectedTaskTypes);
+    });  
 
     this._retainTaskFilterMenuStateWhenReloadingPage()
   }
@@ -63,49 +63,21 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown.classList.toggle('hide', false)
 
     }
-    // let append = ""
-    // let text = JSON.parse(window.localStorage.getItem("kate"))
-    // text.forEach( value => {
-    //              append += "<li>" + text.id + "</li>"
-    //           })
-    // document.getElementById("ul-filter-tags").innerHTML = append;
   }
 
-  _selectedTasktypeFilter() {
-    let count = 0;
+  _isFiltered() {
     let array = [];
     this.inputElementTasktypeFilter.forEach(taskType => {
       if (taskType.checked) {
-        array.push(JSON.stringify(taskType.id))
+        array.push(taskType.id);
       }
-      window.localStorage.setItem("kate", JSON.stringify(array))
     })
-    console.log(window.localStorage.getItem("kate"))
 
-    let append = ""
-    let text = window.localStorage.getItem("kate");
-    console.log("text")
-    console.log(text)
-    let parsedText = JSON.parse(text)
-    setTimeout(function(){ alert("Hello"); }, 20000);
-    parsedText.forEach( value => {
-                 append += "<li>" + value.id + "</li><br>"
+    let append = "";
+    array.forEach(value => {
+      let id = value.split(" ").join("");
+                 append += `<li id=${id}><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>` + value + "</li>"
               })
-    console.log("parsedText")
-    console.log(parsedText)
     document.getElementById("replaceme").innerHTML = append;
-    console.log("should be appended")
-    console.log(document.getElementById("replaceme"))
-
-    
   }
- 
-  // let str = "<option value=''selected>Select a case manager</option>"
-  //         data.members.forEach( caseManager => {
-  //            str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
-  //         })
-      
-  //         document.getElementById("assignCM").innerHTML = str;
-
-  // <li><a class="moj-filter__tag" href="#"><span class="govuk-visually-hidden">Remove this filter</span>Report: lodge report</a></li>
 }
