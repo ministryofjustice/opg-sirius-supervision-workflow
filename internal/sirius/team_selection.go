@@ -3,12 +3,16 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
 )
 
 type TeamMembers struct {
 	TeamMembersId   int    `json:"id"`
 	TeamMembersName string `json:"name"`
+}
+
+type TeamType struct {
+	Handle string `json:"handle"`
+	Label  string `json:"label"`
 }
 
 type TeamCollection struct {
@@ -17,6 +21,9 @@ type TeamCollection struct {
 	Name             string        `json:"name"`
 	UserSelectedTeam int
 	SelectedTeamId   int
+	Type             string
+	TypeLabel        string
+	TeamType         TeamType `json:"teamType"`
 }
 
 type TeamStoredData struct {
@@ -63,21 +70,20 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}
 
-	for i, _ := range v {
+	for i := range v {
 		v[i].UserSelectedTeam = k.TeamId
 		v[i].SelectedTeamId = k.SelectedTeam
 
 	}
 	v = filterOutNonLayTeams(v)
+
 	return v, err
 }
 
 func filterOutNonLayTeams(v []TeamCollection) []TeamCollection {
 	var filteredTeams []TeamCollection
 	for _, s := range v {
-		matched, _ := regexp.MatchString(`Lay Team`, s.Name)
-		supervision, _ := regexp.MatchString(`Supervision`, s.Name)
-		if matched == true || supervision == true {
+		if len(s.TeamType.Handle) != 0 {
 			filteredTeams = append(filteredTeams, s)
 		}
 	}

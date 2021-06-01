@@ -83,3 +83,45 @@ func TestTeamSelection(t *testing.T) {
 		})
 	}
 }
+
+func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
+	teamCollection := []TeamCollection{
+		{
+			Name: "Supervision Team",
+			TeamType: TeamType{
+				Handle: "Supervison",
+				Label:  "Only",
+			},
+		},
+		{
+			Name: "LPA Team",
+			TeamType: TeamType{
+				Handle: "",
+				Label:  "",
+			},
+		},
+	}
+
+	expectedTeamCollection := []TeamCollection{
+		{
+			Name: "Supervision Team",
+			TeamType: TeamType{
+				Handle: "Supervison",
+				Label:  "Only",
+			},
+		},
+	}
+
+	notExpectedTeamCollection := []TeamCollection{
+		{
+			Name: "LPA Team",
+			TeamType: TeamType{
+				Handle: "",
+				Label:  "",
+			},
+		},
+	}
+
+	assert.Equal(t, filterOutNonLayTeams(teamCollection), expectedTeamCollection)
+	assert.NotEqual(t, filterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
+}
