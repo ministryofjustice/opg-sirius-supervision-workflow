@@ -76,7 +76,8 @@ func filterOutNonLayTeams(v []TeamCollection) []TeamCollection {
 	var filteredTeams []TeamCollection
 	for _, s := range v {
 		matched, _ := regexp.MatchString(`Lay Team`, s.Name)
-		if matched == true {
+		supervision, _ := regexp.MatchString(`Supervision`, s.Name)
+		if matched == true || supervision == true {
 			filteredTeams = append(filteredTeams, s)
 		}
 	}
