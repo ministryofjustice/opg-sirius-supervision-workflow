@@ -46,7 +46,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		bothDisplayTaskLimits := r.Form["tasksPerPage"]
 		currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
-		//move to JS
+
 		if len(bothDisplayTaskLimits) != 0 {
 			topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
 			bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
