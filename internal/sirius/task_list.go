@@ -32,7 +32,9 @@ type ApiTask struct {
 	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
 	ApiTaskDueDate   string             `json:"dueDate"`
 	ApiTaskId        int                `json:"id"`
+	ApiTaskHandle    string             `json:"type"`
 	ApiTaskType      string             `json:"name"`
+	TaskTypeName     string
 }
 
 type PageDetails struct {
@@ -62,7 +64,7 @@ type TaskDetails struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string) (TaskList, TaskDetails, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes) (TaskList, TaskDetails, error) {
 	var v TaskList
 	var k TaskDetails
 	var taskTypeFilters string
@@ -75,7 +77,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?limit=%d&page=%d&sort=dueDate:asc&filter=%s", teamID, displayTaskLimit, search, taskTypeFilters), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
 		return v, k, err
@@ -130,6 +132,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		TaskDetails.LimitedPagination = []int{0}
 	}
 
+	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
 	return TaskList, TaskDetails, err
 }
 
@@ -212,4 +215,31 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 	} else {
 		return taskTypeFilters
 	}
+}
+
+func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
+	var list []ApiTask
+
+	for _, s := range v {
+		task := ApiTask{
+			ApiTaskAssignee:  s.ApiTaskAssignee,
+			ApiTaskCaseItems: s.ApiTaskCaseItems,
+			ApiTaskDueDate:   s.ApiTaskDueDate,
+			ApiTaskId:        s.ApiTaskId,
+			ApiTaskHandle:    s.ApiTaskHandle,
+			ApiTaskType:      s.ApiTaskType,
+			TaskTypeName:     getTaskName(s, loadTasks),
+		}
+		list = append(list, task)
+	}
+	return list
+}
+
+func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
+	for i := range loadTasks {
+		if task.ApiTaskHandle == loadTasks[i].Handle {
+			return loadTasks[i].Incomplete
+		}
+	}
+	return task.ApiTaskType
 }
