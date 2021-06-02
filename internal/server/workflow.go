@@ -13,7 +13,7 @@ type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes) (sirius.TaskList, sirius.TaskDetails, error)
-	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.TeamCollection, error)
+	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.ReturnedTeamCollection, error)
 	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
@@ -25,7 +25,7 @@ type workflowVars struct {
 	TaskList       sirius.TaskList
 	TaskDetails    sirius.TaskDetails
 	LoadTasks      []sirius.ApiTaskTypes
-	TeamSelection  []sirius.TeamCollection
+	TeamSelection  []sirius.ReturnedTeamCollection
 	TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
 	SuccessMessage string
