@@ -8,6 +8,7 @@ import (
 
 type SupervisionCaseOwnerDetail struct {
 	SupervisionCaseOwnerName string `json:"displayName"`
+	SupervisionId            int    `json:"id"`
 }
 
 type ClientDetails struct {
