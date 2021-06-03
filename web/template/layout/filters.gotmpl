@@ -1,6 +1,6 @@
 {{ define "filters" }}
 
-<div class="moj-filter">
+<div class="moj-filter" data-module="moj-manage-filters">
   <div class="moj-filter__header">
     <div class="moj-filter__header-title">
       <h2 class="govuk-heading-m">Filter the list</h2>
@@ -24,11 +24,10 @@
 
       <div id="task-type-tags-section" class="moj-filter-tags-list">
         <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Task type</h3>
-        <ul class="moj-filter-tags task-type-filter-tags">
+        <ul class="moj-filter-tags task-type-filter-tags" id="replaceme">
         </ul>
       </div>
     </div>
-
 
       {{ template "task-type" . }}
       {{/* {{ template "assigned" . }}

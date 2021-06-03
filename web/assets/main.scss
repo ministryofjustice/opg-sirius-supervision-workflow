@@ -1,5 +1,6 @@
 $govuk-include-default-font-face: false;
 $govuk-moj-table-background-color: #e7f2fb;
+$moj-assets-path: "/supervision/workflow/assets/";
 
 @import "node_modules/govuk-frontend/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
@@ -31,4 +32,3 @@ $govuk-moj-table-background-color: #e7f2fb;
     overflow-y: scroll;
   }
 }
-

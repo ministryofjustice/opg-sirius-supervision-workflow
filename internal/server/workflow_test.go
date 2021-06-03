@@ -18,7 +18,7 @@ type mockWorkflowInformation struct {
 	taskTypeData      []sirius.ApiTaskTypes
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
-	teamSelectionData []sirius.TeamCollection
+	teamSelectionData []sirius.ReturnedTeamCollection
 	teamSelected      sirius.TeamSelected
 }
 
@@ -50,7 +50,7 @@ func (m *mockWorkflowInformation) GetMembersForTeam(ctx sirius.Context, loggedIn
 	return m.teamSelected, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers sirius.TeamSelected) ([]sirius.TeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers sirius.TeamSelected) ([]sirius.ReturnedTeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -111,7 +111,7 @@ var mockTaskListData = sirius.TaskList{
 	},
 }
 
-var mockTeamSelectionData = []sirius.TeamCollection{
+var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
 	{
 		Id: 13,
 		Members: []sirius.TeamMembers{
@@ -261,7 +261,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				User:       true,
 			},
 		},
-		TeamSelection: []sirius.TeamCollection{
+		TeamSelection: []sirius.ReturnedTeamCollection{
 			{
 				Id: 13,
 				Members: []sirius.TeamMembers{
