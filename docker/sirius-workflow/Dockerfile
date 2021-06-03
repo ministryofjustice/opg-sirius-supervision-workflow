@@ -9,7 +9,8 @@ COPY webpack.config.js .
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn && yarn build
+RUN yarn install
+RUN yarn build
 
 FROM golang:1.14 as build-env
 
