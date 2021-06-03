@@ -18,22 +18,22 @@ describe("Reassign Tasks", () => {
 
   it("can apply a filter", () => {
     cy.get('#option-select-title-task-type').click()
-    cy.get(':nth-child(2) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
+    cy.get('[type="checkbox"]').eq(0).check()
     cy.get('#actionFilter').click()
     cy.url().should('include', 'selected-task-type=CWGN')
   })
 
   it("can apply two filters", () => {
     cy.get('#option-select-title-task-type').click()
-    cy.get(':nth-child(2) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
-    cy.get(':nth-child(3) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
+    cy.get('[type="checkbox"]').eq(0).check()
+    cy.get('[type="checkbox"]').eq(1).check()
     cy.get('#actionFilter').click()
     cy.url().should('include', 'selected-task-type=CWGN&selected-task-type=ORAL')
   })
   
   it("retains task type filter when changing views", () => {
     cy.get('#option-select-title-task-type').click()
-    cy.get(':nth-child(2) > .govuk-checkboxes__item > #input-element-tasktype-filter').click()
+    cy.get('[type="checkbox"]').eq(0).check()
     cy.get('#actionFilter').click()
     cy.get("#display-rows").select('100')
     cy.url().should('include', 'selected-task-type=CWGN')
