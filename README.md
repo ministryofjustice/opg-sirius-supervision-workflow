@@ -12,6 +12,11 @@
   ### `go mod download `
 
 -------------------------------------------------------------------
+  ### `yarn test-sirius`
+  <p> test sirius files </p>
+
+   ### `yarn test-server`
+  <p> test server files </p>
 
 <h2> Set up the service </h2>
   <p> Make sure Sirius is running on localhost:8080 </p>
