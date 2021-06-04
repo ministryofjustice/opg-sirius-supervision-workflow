@@ -146,11 +146,6 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
-
-	fmt.Println("end of task list")
-	fmt.Println(TaskList)
-	fmt.Println("task details")
-	fmt.Println(TaskDetails)
 	return TaskList, TaskDetails, err
 }
 
