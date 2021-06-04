@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -34,8 +35,6 @@ type ReturnedTeamCollection struct {
 	SelectedTeamId   int
 	Type             string
 	TypeLabel        string
-	// TeamTypeHandle   string
-	// TeamTypeLabel    string
 }
 
 type TeamStoredData struct {
