@@ -6,9 +6,20 @@ import (
 	"net/http"
 )
 
+type AssigneeTeam struct {
+	AssigneeTeamDisplayName string `json:"displayName"`
+	AssigneeTeamId          int    `json:"id"`
+}
+
+type SupervisionTeam struct {
+	SupervisionTeamDisplayName string `json:"displayName"`
+	SupervisionTeamId          int    `json:"id"`
+}
+
 type SupervisionCaseOwnerDetail struct {
-	SupervisionCaseOwnerName string `json:"displayName"`
-	SupervisionId            int    `json:"id"`
+	SupervisionCaseOwnerName string            `json:"displayName"`
+	SupervisionId            int               `json:"id"`
+	SupervisionTeam          []SupervisionTeam `json:"teams"`
 }
 
 type ClientDetails struct {
@@ -24,8 +35,9 @@ type CaseItemsDetails struct {
 }
 
 type AssigneeDetails struct {
-	AssigneeDisplayName string `json:"displayName"`
-	AssigneeId          int    `json:"id"`
+	AssigneeDisplayName string         `json:"displayName"`
+	AssigneeId          int            `json:"id"`
+	AssigneeTeams       []AssigneeTeam `json:"teams"`
 }
 
 type ApiTask struct {
@@ -134,6 +146,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
+
+	fmt.Println("end of task list")
+	fmt.Println(TaskList)
+	fmt.Println("task details")
+	fmt.Println(TaskDetails)
 	return TaskList, TaskDetails, err
 }
 
