@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -35,8 +34,6 @@ type ReturnedTeamCollection struct {
 	SelectedTeamId   int
 	Type             string
 	TypeLabel        string
-	TeamTypeHandle   string
-	TeamTypeLabel    string
 }
 
 type TeamStoredData struct {
@@ -85,11 +82,7 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 	}
 
 	teams := make([]ReturnedTeamCollection, len(v))
-	fmt.Println(v)
 	for i, t := range v {
-
-		fmt.Println("v i teamtype")
-		fmt.Println(v[i].TeamType)
 		teams[i] = ReturnedTeamCollection{
 			Id:   t.ID,
 			Name: t.DisplayName,

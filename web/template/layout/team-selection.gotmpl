@@ -9,9 +9,9 @@
       <label class="govuk-label" for="change-team">
         Change view
       </label>
-      <select class="govuk-select ignore-pagination-bottom" label for="top-pagination-selected-team" name="change-team" onchange="this.form.submit()">
+      <select class="govuk-select ignore-pagination-bottom" label for="pagination-selected-team" name="change-team" onchange="this.form.submit()">
         {{ range .TeamSelection }}
-          <option value="{{ .Id }}" id="top-pagination-selected-team" name="change-team-option" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
+          <option value="{{ .Id }}" id="pagination-selected-team" name="change-team-option" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
         {{ end }}
       </select>
     </div>
