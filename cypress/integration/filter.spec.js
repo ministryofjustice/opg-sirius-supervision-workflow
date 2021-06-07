@@ -16,11 +16,12 @@ describe("Reassign Tasks", () => {
     cy.get('app-c-option-select__container-inner').should('not.be.visible') 
   })
 
-  it("can apply a filter", () => {
+  it("can apply a filter which adds task type heading", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('[type="checkbox"]').eq(0).check()
     cy.get('#actionFilter').click()
     cy.url().should('include', 'selected-task-type=CWGN')
+    cy.get('.moj-filter__selected').should('contain','Task type')
   })
 
   it("can apply two filters", () => {
