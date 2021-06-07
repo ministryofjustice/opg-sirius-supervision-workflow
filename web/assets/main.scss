@@ -32,3 +32,13 @@ $moj-assets-path: "/supervision/workflow/assets/";
     overflow-y: scroll;
   }
 }
+
+.moj-filter__selected-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.moj-filter__heading-action {
+  line-height: 1.3157894737;
+}

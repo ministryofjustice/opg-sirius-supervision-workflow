@@ -71,11 +71,22 @@ export default class ManageFilters {
 
       let append = "";
 
-      array.forEach(taskType => {
-          var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
-          append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
-      })
-      document.getElementById("replaceme").innerHTML = append;
+      if(array.length === 0) {
+        append += '<p class="govuk-heading-s govuk-!-margin-bottom-0">No filters selected</p>'
+      }else {
+        array.forEach(taskType => {
+            var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
+            append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
+        })
+        
+      }
+
+      if(array.length === 0){
+        document.getElementById("replaceme").innerHTML = append
+      }else {
+        document.getElementById("replaceme").innerHTML = '<h3 class="govuk-heading-s govuk-!-margin-bottom-0">Task type</h3>'+append;
+      }
+
   }
 
   _clearFilters() {
