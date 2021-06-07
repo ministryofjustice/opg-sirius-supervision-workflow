@@ -34,8 +34,6 @@ type ReturnedTeamCollection struct {
 	SelectedTeamId   int
 	Type             string
 	TypeLabel        string
-	TeamTypeHandle   string
-	TeamTypeLabel    string
 }
 
 type TeamStoredData struct {
@@ -85,7 +83,6 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 
 	teams := make([]ReturnedTeamCollection, len(v))
 	for i, t := range v {
-
 		teams[i] = ReturnedTeamCollection{
 			Id:   t.ID,
 			Name: t.DisplayName,
