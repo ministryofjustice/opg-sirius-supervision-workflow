@@ -7,7 +7,6 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.urlForPage = window.location.search;
-    //   this.clearFiltersLink = element.querySelectorAll("#clear-filters");
       this._clearFilters();
       this._isFiltered();
       this._setupEventListeners();
@@ -20,12 +19,6 @@ export default class ManageFilters {
       });
 
       this._retainTaskFilterMenuStateWhenReloadingPage()
-      this._clearFilters();
-
-    //   this.clearFiltersLink.forEach(element => {
-    //     this._clearFilters = this._clearFilters.bind(this);
-    //     element.addEventListener('click', this._clearFilters);
-    // });
   }
 
   _toggleTasktypeFilter() {
