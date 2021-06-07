@@ -7,6 +7,8 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.urlForPage = window.location.search;
+      this.clearFiltersLink = element.querySelectorAll("#clear-filters");
+      // this._clearFilters();
       this._isFiltered();
       this._setupEventListeners();
   }
@@ -18,6 +20,12 @@ export default class ManageFilters {
       });
 
       this._retainTaskFilterMenuStateWhenReloadingPage()
+      this._clearFilters();
+
+    //   this.clearFiltersLink.forEach(element => {
+    //     this._clearFilters = this._clearFilters.bind(this);
+    //     element.addEventListener('click', this._clearFilters);
+    // });
   }
 
   _toggleTasktypeFilter() {
@@ -75,6 +83,17 @@ export default class ManageFilters {
           append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
       })
       document.getElementById("replaceme").innerHTML = append;
+  }
+
+  _clearFilters() {
+    var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    this.clearFiltersLink.href = hrefValue;
+    console.log("h ref value")
+    console.log(hrefValue)
+    console.log("this.clearFilters h ref")
+    console.log(this.clearFiltersLink.href)
+    console.log("clear filters element")
+    console.log(this.clearFiltersLink)
   }
 
 }
