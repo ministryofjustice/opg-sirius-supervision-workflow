@@ -53,10 +53,10 @@ describe("Reassign Tasks", () => {
     cy.get('[type="checkbox"]').eq(0).check()
     cy.get('[type="checkbox"]').eq(1).check()
     cy.get('#actionFilter').click()
-    cy.get('.moj-filter__tag').eq(0).should('contain', 'Casework - General')
-    cy.get('.moj-filter__tag').eq(1).should('contain', 'Order - Allocate to team')
     cy.get('#clear-filters').click()
     cy.get('.moj-filter__tag').should('not.exist');
+    cy.get('[type="checkbox"]').eq(0).should('not.be.checked') 
+    cy.get('[type="checkbox"]').eq(1).should('not.be.checked') 
   })
 
 })
