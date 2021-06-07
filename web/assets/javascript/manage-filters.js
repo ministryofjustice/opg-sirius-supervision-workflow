@@ -7,8 +7,8 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.urlForPage = window.location.search;
-      this.clearFiltersLink = element.querySelectorAll("#clear-filters");
-      // this._clearFilters();
+    //   this.clearFiltersLink = element.querySelectorAll("#clear-filters");
+      this._clearFilters();
       this._isFiltered();
       this._setupEventListeners();
   }
@@ -86,14 +86,8 @@ export default class ManageFilters {
   }
 
   _clearFilters() {
-    var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
-    this.clearFiltersLink.href = hrefValue;
-    console.log("h ref value")
-    console.log(hrefValue)
-    console.log("this.clearFilters h ref")
-    console.log(this.clearFiltersLink.href)
-    console.log("clear filters element")
-    console.log(this.clearFiltersLink)
+    let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    document.getElementById("clear-filters").setAttribute('href', hrefValue);
   }
 
 }
