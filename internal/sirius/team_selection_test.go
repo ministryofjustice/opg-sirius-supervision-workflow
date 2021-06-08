@@ -77,50 +77,36 @@ func TestTeamSelection(t *testing.T) {
 	}
 }
 
-// func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
-// 	teamCollection := []TeamCollection{
-// 		{
-// 			Name: "Supervision Team",
-// 			TeamType: {
-// 				Handle: "Supervison",
-// 				Label:  "Only",
-// 			},
-// 		},
-// 		{
-// 			Name: "LPA Team",
-// 			TeamType: {
-// 				Handle: "",
-// 				Label:  "",
-// 			},
-// 		},
-// 	}
+func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
+	teamCollection := []ReturnedTeamCollection{
+		{
+			Name:      "Supervision Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+		},
+		{
+			Name:      "LPA Team",
+			Type:      "",
+			TypeLabel: "",
+		},
+	}
 
-// 	expectedTeamCollection := []TeamCollection{
-// 		{
-// 			Name: "Supervision Team",
-// 			TeamType: {
-// 				Handle: "Supervison",
-// 				Label:  "Only",
-// 			},
-// 		},
-// 	}
+	expectedTeamCollection := []ReturnedTeamCollection{
+		{
+			Name:      "Supervision Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+		},
+	}
 
-// 	notExpectedTeamCollection := []TeamCollection{
-// 		{
-// 			Name: "LPA Team",
-// 			TeamType: {
-// 				Handle: "",
-// 				Label:  "",
-// 			},
-// 		},
-// 	}
+	notExpectedTeamCollection := []ReturnedTeamCollection{
+		{
+			Name:      "LPA Team",
+			Type:      "",
+			TypeLabel: "",
+		},
+	}
 
-// 	// 	"teamType": dsl.Like(map[string]interface{}{
-// 	// 		"handle": "ALLOCATIONS",
-// 	// 		"label":  "Allocations",
-// 	// 	}),
-// 	// }, 1),
-
-// 	assert.Equal(t, filterOutNonLayTeams(teamCollection), expectedTeamCollection)
-// 	assert.NotEqual(t, filterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
-// }
+	assert.Equal(t, filterOutNonLayTeams(teamCollection), expectedTeamCollection)
+	assert.NotEqual(t, filterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
+}
