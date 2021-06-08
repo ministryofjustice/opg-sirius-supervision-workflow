@@ -7,6 +7,7 @@ export default class ManageFilters {
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.urlForPage = window.location.search;
+      this._clearFilters();
       this._isFiltered();
       this._setupEventListeners();
   }
@@ -70,11 +71,21 @@ export default class ManageFilters {
 
       let append = "";
 
-      array.forEach(taskType => {
-          var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
-          append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
-      })
-      document.getElementById("replaceme").innerHTML = append;
+      if(array.length === 0) {
+        append += '<p class="govuk-heading-s govuk-!-margin-bottom-0">No filters selected</p>'
+      }else {
+        append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Task-type-hook">Task type</h3>';
+        array.forEach(taskType => {
+            var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
+            append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
+        }) 
+      }
+      document.getElementById("applied-task-type-filters").innerHTML = append
+  }
+
+  _clearFilters() {
+    let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    document.getElementById("clear-filters").setAttribute('href', hrefValue);
   }
 
 }
