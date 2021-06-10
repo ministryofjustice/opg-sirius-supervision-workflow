@@ -244,21 +244,23 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 				AssigneeDisplayName: anotherFunc(s),
 				AssigneeId:          anotherFuncId(s),
 			},
-			ApiTaskCaseItems: s.ApiTaskCaseItems,
-			ApiClients:       s.ApiClients,
-			ApiTaskDueDate:   s.ApiTaskDueDate,
-			ApiTaskId:        s.ApiTaskId,
-			ApiTaskHandle:    s.ApiTaskHandle,
-			ApiTaskType:      s.ApiTaskType,
-			TaskTypeName:     getTaskName(s, loadTasks),
+			ApiTaskCaseItems: []CaseItemsDetails{
+				CaseItemClient: []Clients{
+					ClientId:                   anotherFuncClientId(s),
+					ClientCaseRecNumber:        anotherFuncClient(s),
+					ClientFirstName:            anotherFuncClient(s),
+					ClientSurname:              anotherFuncClient(s),
+					ClientSupervisionCaseOwner: anotherFuncClient(s),
+				},
+			},
+			ApiTaskDueDate: s.ApiTaskDueDate,
+			ApiTaskId:      s.ApiTaskId,
+			ApiTaskHandle:  s.ApiTaskHandle,
+			ApiTaskType:    s.ApiTaskType,
+			TaskTypeName:   getTaskName(s, loadTasks),
 		}
-		fmt.Println("new task")
-		fmt.Println(task)
 		list = append(list, task)
-
 	}
-	fmt.Println("list")
-	fmt.Println(list)
 	return list
 }
 
@@ -272,30 +274,23 @@ func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
 }
 
 func anotherFunc(s ApiTask) string {
-
-	if len(s.ApiTaskAssignee.AssigneeDisplayName) == 0 {
-		return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
-	} else {
-		return s.ApiTaskAssignee.AssigneeDisplayName
+	if s.ApiTaskAssignee.AssigneeDisplayName == "Unassigned" {
+		if len(s.ApiClients) != 0 {
+			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+		} else if len(s.ApiTaskCaseItems) != 0 {
+			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+		}
 	}
+	return s.ApiTaskAssignee.AssigneeDisplayName
 }
 
 func anotherFuncId(s ApiTask) int {
-
 	if s.ApiTaskAssignee.AssigneeId == 0 {
-		if len(s.ApiClients) > 1 {
+		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionId
+		} else if len(s.ApiTaskCaseItems) != 0 {
+			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionId
 		}
-		return 0
-	} else {
-		return s.ApiTaskAssignee.AssigneeId
 	}
+	return s.ApiTaskAssignee.AssigneeId
 }
-
-// func getAssigneeInfo(s ApiTask) AssigneeDetails {
-// 	newElement := AssigneeDetails{
-// 		AssigneeDisplayName: anotherFunc(s),
-// 		AssigneeId:          anotherFuncId(s),
-// 	}
-// 	return newElement
-// }
