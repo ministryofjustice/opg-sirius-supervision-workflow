@@ -141,13 +141,8 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			TaskTypeName:      getTaskName(s, loadTasks),
 			ClientInformation: getClientInformation(s),
 		}
-		fmt.Println("new task")
-		fmt.Println(task)
 		list = append(list, task)
-
 	}
-	fmt.Println("list")
-	fmt.Println(list)
 	return list
 }
 
