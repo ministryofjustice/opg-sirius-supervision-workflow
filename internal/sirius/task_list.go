@@ -78,7 +78,6 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	if err != nil {
 		return v, err
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
