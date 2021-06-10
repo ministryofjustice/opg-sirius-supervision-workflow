@@ -72,12 +72,12 @@
             <td class="govuk-table__cell">
               {{ range .ApiClients }}
                 <label class="govuk-label" for="assignee-display-name"> {{ .ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}
-                {{/* {{ if .ClientSupervisionCaseOwner.SupervisionTeam }}
+                {{ if .ClientSupervisionCaseOwner.SupervisionTeam }}
                   {{ range .CaseItemClient.ClientSupervisionCaseOwner.SupervisionTeam }}
                   <span class="secondary">{{ .SupervisionTeamDisplayName }}</span>
                   {{ end }}
                   </label>
-                {{ end }} */}}
+                {{ end }}
               {{ end }}
             </td>
             <td class="govuk-table__cell">
