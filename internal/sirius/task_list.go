@@ -78,6 +78,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	if err != nil {
 		return v, err
 	}
+	// io.Copy(os.Stdout, resp.Body)
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -139,8 +141,13 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			TaskTypeName:      getTaskName(s, loadTasks),
 			ClientInformation: getClientInformation(s),
 		}
+		fmt.Println("new task")
+		fmt.Println(task)
 		list = append(list, task)
+
 	}
+	fmt.Println("list")
+	fmt.Println(list)
 	return list
 }
 

@@ -9,6 +9,20 @@
 <section data-module="manage-tasks" class="moj-manage-tasks">
  
   {{ template "edit-panel" . }}
+<<<<<<< HEAD
+=======
+
+  {{/* {{ range .TaskList.WholeTaskList }} 
+  {{ . }}
+    {{ end }}
+  <br>
+  {{ end }}
+  <br> */}}
+
+  {{ range .TaskList.WholeTaskList }}
+    {{ . }}
+  {{ end }}
+>>>>>>> sir-308 trying to overwrite unassigned assignee tasks lots of logs and weirdness
   
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
@@ -39,13 +53,13 @@
         {{ $teamInDropDown = .Name }}
       {{ end }}
     {{ end }}
-      {{if ne .TaskList.TotalTasks 0}} 
+      {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}"> 
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
                   <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                     <span class="govuk-visually-hidden">Select</span>
                   </label>
@@ -81,7 +95,7 @@
                       {{ range .ApiTaskAssignee.Team }}
                         <span class="secondary">{{ .Name }} </span>
                   {{ end }}
-                {{ end }} 
+                {{ end }}
               </label>
             </td>
             <td class="govuk-table__cell">
