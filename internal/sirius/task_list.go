@@ -23,7 +23,7 @@ type SupervisionCaseOwner struct {
 }
 
 type CaseItemsDetails struct {
-	CaseItemClient Clients `json:"client"`
+	CaseItemClient []Clients `json:"client"`
 }
 
 type AssigneeDetails struct {
@@ -245,12 +245,17 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 				AssigneeId:          anotherFuncId(s),
 			},
 			ApiTaskCaseItems: []CaseItemsDetails{
-				CaseItemClient: []Clients{
-					ClientId:                   anotherFuncClientId(s),
-					ClientCaseRecNumber:        anotherFuncClient(s),
-					ClientFirstName:            anotherFuncClient(s),
-					ClientSurname:              anotherFuncClient(s),
-					ClientSupervisionCaseOwner: anotherFuncClient(s),
+				{
+					CaseItemClient: []Clients{
+						{
+							ClientCaseRecNumber: anotherFuncClient(s),
+							// ClientFirstName:     anotherFuncClient(s, "string"),
+							// ClientSurname:       anotherFuncClient(s, "string"),
+							// ClientSupervisionCaseOwner: SupervisionCaseOwner{
+							// 	SupervisionId: ,
+							// },
+						},
+					},
 				},
 			},
 			ApiTaskDueDate: s.ApiTaskDueDate,
@@ -278,7 +283,7 @@ func anotherFunc(s ApiTask) string {
 		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
 		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+			return s.ApiTaskCaseItems[0].CaseItemClient[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
 		}
 	}
 	return s.ApiTaskAssignee.AssigneeDisplayName
@@ -289,8 +294,15 @@ func anotherFuncId(s ApiTask) int {
 		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionId
 		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionId
+			return s.ApiTaskCaseItems[0].CaseItemClient[0].ClientSupervisionCaseOwner.SupervisionId
 		}
 	}
 	return s.ApiTaskAssignee.AssigneeId
+}
+
+func anotherFuncClient(s ApiTask) string {
+	if len(s.ApiTaskCaseItems) == 0 {
+		return "case items are empty"
+	}
+	return "case items not empty"
 }
