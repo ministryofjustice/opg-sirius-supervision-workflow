@@ -3,7 +3,9 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 )
 
 type AssigneeTeam struct {
@@ -16,18 +18,18 @@ type SupervisionTeam struct {
 	SupervisionTeamId          int    `json:"id"`
 }
 
-type SupervisionCaseOwnerDetail struct {
+type SupervisionCaseOwner struct {
 	SupervisionCaseOwnerName string            `json:"displayName"`
 	SupervisionId            int               `json:"id"`
 	SupervisionTeam          []SupervisionTeam `json:"teams"`
 }
 
 type ClientDetails struct {
-	ClientCaseRecNumber        string                     `json:"caseRecNumber"`
-	ClientFirstName            string                     `json:"firstname"`
-	ClientId                   int                        `json:"id"`
-	ClientSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
-	ClientSurname              string                     `json:"surname"`
+	ClientCaseRecNumber        string               `json:"caseRecNumber"`
+	ClientFirstName            string               `json:"firstname"`
+	ClientId                   int                  `json:"id"`
+	ClientSupervisionCaseOwner SupervisionCaseOwner `json:"supervisionCaseOwner"`
+	ClientSurname              string               `json:"surname"`
 }
 
 type CaseItemsDetails struct {
@@ -39,14 +41,30 @@ type AssigneeDetails struct {
 	AssigneeId          int            `json:"id"`
 	AssigneeTeams       []AssigneeTeam `json:"teams"`
 }
+type Clients struct {
+	ClientId                   int                  `json:"id"`
+	ClientCaseRecNumber        string               `json:"caseRecNumber"`
+	ClientFirstName            string               `json:"firstname"`
+	ClientSurname              string               `json:"surname"`
+	ClientSupervisionCaseOwner SupervisionCaseOwner `json:"supervisionCaseOwner"`
+}
+
+type Persons struct {
+	PersonId                   int                  `json:"id"`
+	PersonCaseRecNumber        string               `json:"caseRecNumber"`
+	PersonSupervisionCaseOwner SupervisionCaseOwner `json:"supervisionCaseOwner"`
+}
 
 type ApiTask struct {
 	ApiTaskAssignee  AssigneeDetails    `json:"assignee"`
 	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
+	ApiClients       []Clients          `json:"clients"`
+	ApiPersons       []Persons          `json:"persons"`
 	ApiTaskDueDate   string             `json:"dueDate"`
 	ApiTaskId        int                `json:"id"`
 	ApiTaskHandle    string             `json:"type"`
 	ApiTaskType      string             `json:"name"`
+	ApiCaseOwnerTask bool               `json:"caseOwnerTask"`
 	TaskTypeName     string
 }
 
@@ -100,6 +118,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	if err != nil {
 		return v, k, err
 	}
+	io.Copy(os.Stdout, resp.Body)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -235,13 +254,13 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 
 	for _, s := range v {
 		task := ApiTask{
-			ApiTaskAssignee:  s.ApiTaskAssignee,
-			ApiTaskCaseItems: s.ApiTaskCaseItems,
-			ApiTaskDueDate:   s.ApiTaskDueDate,
-			ApiTaskId:        s.ApiTaskId,
-			ApiTaskHandle:    s.ApiTaskHandle,
-			ApiTaskType:      s.ApiTaskType,
-			TaskTypeName:     getTaskName(s, loadTasks),
+			ApiTaskAssignee: s.ApiTaskAssignee,
+			ApiClients:      s.ApiClients,
+			ApiTaskDueDate:  s.ApiTaskDueDate,
+			ApiTaskId:       s.ApiTaskId,
+			ApiTaskHandle:   s.ApiTaskHandle,
+			ApiTaskType:     s.ApiTaskType,
+			TaskTypeName:    getTaskName(s, loadTasks),
 		}
 		list = append(list, task)
 	}
