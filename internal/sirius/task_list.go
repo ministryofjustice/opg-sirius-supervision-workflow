@@ -102,6 +102,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	if err != nil {
 		return v, k, err
 	}
+	// io.Copy(os.Stdout, resp.Body)
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -148,6 +150,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
+	fmt.Println(TaskList.WholeTaskList)
+
 	return TaskList, TaskDetails, err
 }
 
@@ -234,10 +238,12 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 
 func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask
-
 	for _, s := range v {
 		task := ApiTask{
-			ApiTaskAssignee:  s.ApiTaskAssignee,
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: anotherFunc(s),
+				AssigneeId:          anotherFuncId(s),
+			},
 			ApiTaskCaseItems: s.ApiTaskCaseItems,
 			ApiClients:       s.ApiClients,
 			ApiTaskDueDate:   s.ApiTaskDueDate,
@@ -246,8 +252,13 @@ func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			ApiTaskType:      s.ApiTaskType,
 			TaskTypeName:     getTaskName(s, loadTasks),
 		}
+		fmt.Println("new task")
+		fmt.Println(task)
 		list = append(list, task)
+
 	}
+	fmt.Println("list")
+	fmt.Println(list)
 	return list
 }
 
@@ -259,3 +270,32 @@ func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
 	}
 	return task.ApiTaskType
 }
+
+func anotherFunc(s ApiTask) string {
+
+	if len(s.ApiTaskAssignee.AssigneeDisplayName) == 0 {
+		return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+	} else {
+		return s.ApiTaskAssignee.AssigneeDisplayName
+	}
+}
+
+func anotherFuncId(s ApiTask) int {
+
+	if s.ApiTaskAssignee.AssigneeId == 0 {
+		if len(s.ApiClients) > 1 {
+			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionId
+		}
+		return 0
+	} else {
+		return s.ApiTaskAssignee.AssigneeId
+	}
+}
+
+// func getAssigneeInfo(s ApiTask) AssigneeDetails {
+// 	newElement := AssigneeDetails{
+// 		AssigneeDisplayName: anotherFunc(s),
+// 		AssigneeId:          anotherFuncId(s),
+// 	}
+// 	return newElement
+// }
