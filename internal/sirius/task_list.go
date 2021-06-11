@@ -19,7 +19,7 @@ type UserTeam struct {
 }
 
 type CaseItemsDetails struct {
-	CaseItemClient []Clients `json:"client"`
+	CaseItemClient Clients `json:"client"`
 }
 
 type Clients struct {
