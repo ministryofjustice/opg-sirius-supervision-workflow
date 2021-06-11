@@ -216,30 +216,56 @@ func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
 	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
 }
 
-func SetUpTaskType(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string) []ApiTask {
-	v := []ApiTask{
-		{
-			ApiTaskAssignee: AssigneeDetails{
-				AssigneeDisplayName: "Unassigned",
-				AssigneeId:          0,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: ClientDetails{
-					ClientCaseRecNumber: "13636617",
-					ClientFirstName:     "Pamela",
-					ClientId:            37259351,
-					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-						SupervisionCaseOwnerName: "Richard Fox",
-					},
-					ClientSurname: "Pragnell",
-				},
-			}},
-			ApiTaskDueDate: "01/06/2021",
-			ApiTaskId:      40904862,
-			ApiTaskHandle:  ApiTaskHandleInput,
-			ApiTaskType:    ApiTaskTypeInput,
-			TaskTypeName:   TaskTypeNameInput,
+func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: AssigneeDetails{
+			AssigneeDisplayName: AssigneeDisplayNameInput,
+			AssigneeId:          AssigneeIdInput,
 		},
+		ApiTaskCaseItems: []CaseItemsDetails{{
+			CaseItemClient: Clients{
+				ClientCaseRecNumber: "13636617",
+				ClientFirstName:     "Pamela",
+				ClientId:            37259351,
+				ClientSupervisionCaseOwner: SupervisionCaseOwner{
+					SupervisionId:            4321,
+					SupervisionCaseOwnerName: "Richard Fox",
+				},
+				ClientSurname: "Pragnell",
+			},
+		}},
+		ApiTaskDueDate: "01/06/2021",
+		ApiTaskId:      40904862,
+		ApiTaskHandle:  ApiTaskHandleInput,
+		ApiTaskType:    ApiTaskTypeInput,
+		TaskTypeName:   TaskTypeNameInput,
+	}
+	return v
+}
+
+func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: AssigneeDetails{
+			AssigneeDisplayName: AssigneeDisplayNameInput,
+			AssigneeId:          AssigneeIdInput,
+		},
+		ApiClients: []Clients{
+			{
+				ClientCaseRecNumber: "13636617",
+				ClientFirstName:     "WithoutACase",
+				ClientId:            37259351,
+				ClientSupervisionCaseOwner: SupervisionCaseOwner{
+					SupervisionId:            1234,
+					SupervisionCaseOwnerName: "Richard Fox",
+				},
+				ClientSurname: "WithoutACase",
+			},
+		},
+		ApiTaskDueDate: "01/06/2021",
+		ApiTaskId:      40904862,
+		ApiTaskHandle:  ApiTaskHandleInput,
+		ApiTaskType:    ApiTaskTypeInput,
+		TaskTypeName:   TaskTypeNameInput,
 	}
 	return v
 }
@@ -266,27 +292,98 @@ func SetUpLoadTasks() []ApiTaskTypes {
 	return loadTasks
 }
 
-func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
+func TestGetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 
-	taskType := SetUpTaskType("CWGN", "", "")
+	taskType := SetUpTaskTypeWithACase("CWGN", "", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("CWGN", "", "Casework - General")
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), "Casework - General")
 }
 
-func TestSetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
-	taskType := SetUpTaskType("FAKE", "Fake type", "")
+func TestGetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("FAKE", "Fake type", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("FAKE", "Fake type", "Fake type")
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), "Fake type")
 }
 
-func TestSetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
-	taskType := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "")
+func TestGetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("CWGN", "Fake name that doesnt match handle", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "Casework - General")
+	expectedResult := "Casework - General"
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), expectedResult)
+}
+
+func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheCaseItems(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Unassigned", 0)
+	expectedResult := "Richard Fox"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Unassigned", 0)
+	expectedResult := "Richard Fox"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+
+func TestGetAssigneeDisplayNameIfTaskIsNotAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
+	expectedResult := "Go Taskforce"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithOutACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
+	expectedResult := 1234
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 0)
+	expectedResult := 4321
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithACaseAndAssignneNotToCaseOwner(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := 1122
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetClientInformationWithACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := Clients{
+		ClientId:            37259351,
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "Pamela",
+		ClientSurname:       "Pragnell",
+		ClientSupervisionCaseOwner: SupervisionCaseOwner{
+			SupervisionCaseOwnerName: "Richard Fox",
+			SupervisionId:            4321,
+		},
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
+}
+
+func TestGetClientInformationWithoutACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := Clients{
+		ClientId:            37259351,
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "WithoutACase",
+		ClientSurname:       "WithoutACase",
+		ClientSupervisionCaseOwner: SupervisionCaseOwner{
+			SupervisionCaseOwnerName: "Richard Fox",
+			SupervisionId:            1234,
+		},
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
 }

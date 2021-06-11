@@ -16,22 +16,14 @@ type SupervisionTeam struct {
 	SupervisionTeamId          int    `json:"id"`
 }
 
-type SupervisionCaseOwnerDetail struct {
+type SupervisionCaseOwner struct {
 	SupervisionCaseOwnerName string            `json:"displayName"`
 	SupervisionId            int               `json:"id"`
 	SupervisionTeam          []SupervisionTeam `json:"teams"`
 }
 
-type ClientDetails struct {
-	ClientCaseRecNumber        string                     `json:"caseRecNumber"`
-	ClientFirstName            string                     `json:"firstname"`
-	ClientId                   int                        `json:"id"`
-	ClientSupervisionCaseOwner SupervisionCaseOwnerDetail `json:"supervisionCaseOwner"`
-	ClientSurname              string                     `json:"surname"`
-}
-
 type CaseItemsDetails struct {
-	CaseItemClient ClientDetails `json:"client"`
+	CaseItemClient Clients `json:"client"`
 }
 
 type AssigneeDetails struct {
@@ -40,14 +32,25 @@ type AssigneeDetails struct {
 	AssigneeTeams       []AssigneeTeam `json:"teams"`
 }
 
+type Clients struct {
+	ClientId                   int                  `json:"id"`
+	ClientCaseRecNumber        string               `json:"caseRecNumber"`
+	ClientFirstName            string               `json:"firstname"`
+	ClientSurname              string               `json:"surname"`
+	ClientSupervisionCaseOwner SupervisionCaseOwner `json:"supervisionCaseOwner"`
+}
+
 type ApiTask struct {
-	ApiTaskAssignee  AssigneeDetails    `json:"assignee"`
-	ApiTaskCaseItems []CaseItemsDetails `json:"caseItems"`
-	ApiTaskDueDate   string             `json:"dueDate"`
-	ApiTaskId        int                `json:"id"`
-	ApiTaskHandle    string             `json:"type"`
-	ApiTaskType      string             `json:"name"`
-	TaskTypeName     string
+	ApiTaskAssignee   AssigneeDetails    `json:"assignee"`
+	ApiTaskCaseItems  []CaseItemsDetails `json:"caseItems"`
+	ApiClients        []Clients          `json:"clients"`
+	ApiTaskDueDate    string             `json:"dueDate"`
+	ApiTaskId         int                `json:"id"`
+	ApiTaskHandle     string             `json:"type"`
+	ApiTaskType       string             `json:"name"`
+	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
+	TaskTypeName      string
+	ClientInformation Clients
 }
 
 type PageDetails struct {
@@ -100,6 +103,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	if err != nil {
 		return v, k, err
 	}
+	// io.Copy(os.Stdout, resp.Body)
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -146,6 +151,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
+	fmt.Println(TaskList.WholeTaskList)
+
 	return TaskList, TaskDetails, err
 }
 
@@ -232,16 +239,19 @@ func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, tas
 
 func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask
-
 	for _, s := range v {
 		task := ApiTask{
-			ApiTaskAssignee:  s.ApiTaskAssignee,
-			ApiTaskCaseItems: s.ApiTaskCaseItems,
-			ApiTaskDueDate:   s.ApiTaskDueDate,
-			ApiTaskId:        s.ApiTaskId,
-			ApiTaskHandle:    s.ApiTaskHandle,
-			ApiTaskType:      s.ApiTaskType,
-			TaskTypeName:     getTaskName(s, loadTasks),
+			ApiTaskAssignee: AssigneeDetails{
+				AssigneeDisplayName: getAssigneeDisplayName(s),
+				AssigneeId:          getAssigneeId(s),
+				AssigneeTeams:       s.ApiTaskAssignee.AssigneeTeams,
+			},
+			ApiTaskDueDate:    s.ApiTaskDueDate,
+			ApiTaskId:         s.ApiTaskId,
+			ApiTaskHandle:     s.ApiTaskHandle,
+			ApiTaskType:       s.ApiTaskType,
+			TaskTypeName:      getTaskName(s, loadTasks),
+			ClientInformation: getClientInformation(s),
 		}
 		list = append(list, task)
 	}
@@ -255,4 +265,33 @@ func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
 		}
 	}
 	return task.ApiTaskType
+}
+
+func getAssigneeDisplayName(s ApiTask) string {
+	if s.ApiTaskAssignee.AssigneeDisplayName == "Unassigned" {
+		if len(s.ApiClients) != 0 {
+			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+		} else if len(s.ApiTaskCaseItems) != 0 {
+			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName
+		}
+	}
+	return s.ApiTaskAssignee.AssigneeDisplayName
+}
+
+func getAssigneeId(s ApiTask) int {
+	if s.ApiTaskAssignee.AssigneeId == 0 {
+		if len(s.ApiClients) != 0 {
+			return s.ApiClients[0].ClientSupervisionCaseOwner.SupervisionId
+		} else if len(s.ApiTaskCaseItems) != 0 {
+			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.SupervisionId
+		}
+	}
+	return s.ApiTaskAssignee.AssigneeId
+}
+
+func getClientInformation(s ApiTask) Clients {
+	if len(s.ApiTaskCaseItems) != 0 {
+		return s.ApiTaskCaseItems[0].CaseItemClient
+	}
+	return s.ApiClients[0]
 }
