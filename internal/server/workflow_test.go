@@ -96,11 +96,11 @@ var mockTaskListData = sirius.TaskList{
 			ApiTaskDueDate: "01/02/2021",
 			ApiTaskCaseItems: []sirius.CaseItemsDetails{
 				{
-					CaseItemClient: sirius.ClientDetails{
+					CaseItemClient: sirius.Clients{
 						ClientCaseRecNumber: "caseRecNumber",
 						ClientFirstName:     "Client Alexander Zacchaeus",
 						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+						ClientSupervisionCaseOwner: sirius.SupervisionCaseOwner{
 							SupervisionCaseOwnerName: "Supervision - Team - Name",
 						},
 						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
