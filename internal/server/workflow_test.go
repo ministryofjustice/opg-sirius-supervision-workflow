@@ -36,11 +36,18 @@ func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context, taskTypeSelect
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes) (sirius.TaskList, sirius.TaskDetails, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes) (sirius.TaskList, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
-	return m.taskListData, m.taskDetailsData, m.err
+	return m.taskListData, m.err
+}
+
+func (m *mockWorkflowInformation) GetTaskDetails(ctx sirius.Context, taskList sirius.TaskList, search int, displayTaskLimit int) sirius.TaskDetails {
+	m.count += 1
+	m.lastCtx = ctx
+
+	return m.taskDetailsData
 }
 
 func (m *mockWorkflowInformation) GetMembersForTeam(ctx sirius.Context, loggedInTeamId int, selectedTeamToAssignTask int) (sirius.TeamSelected, error) {
@@ -231,7 +238,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(5, client.count)
+	assert.Equal(6, client.count)
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)

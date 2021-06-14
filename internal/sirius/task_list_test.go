@@ -361,7 +361,7 @@ func TestGetClientInformationWithoutACase(t *testing.T) {
 }
 
 func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
-	taskType := SetUpUserTeamStruct("", 0)
+	taskType := SetUpUserTeamStruct("Test Team Name", 11)
 	expectedResult := []UserTeam{
 		{
 			Name: "Test Team Name",

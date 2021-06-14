@@ -14,7 +14,7 @@ type TaskDetails struct {
 	TaskTypeFilters   int
 }
 
-func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes) TaskDetails {
+func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int) TaskDetails {
 	var k TaskDetails
 
 	TaskDetails := k
