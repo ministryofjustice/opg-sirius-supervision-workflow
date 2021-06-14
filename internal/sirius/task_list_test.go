@@ -257,6 +257,12 @@ func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput strin
 				ClientSupervisionCaseOwner: CaseManagement{
 					Id:              1234,
 					CaseManagerName: "Richard Fox",
+					Team: []UserTeam{
+						{
+							Name: "Go TaskForce Team",
+							Id:   999,
+						},
+					},
 				},
 				ClientSurname: "WithoutACase",
 			},
@@ -266,6 +272,26 @@ func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput strin
 		ApiTaskHandle:  ApiTaskHandleInput,
 		ApiTaskType:    ApiTaskTypeInput,
 		TaskTypeName:   TaskTypeNameInput,
+	}
+	return v
+}
+
+func SetUpTaskTypeWithoutAClient() ApiTask {
+	v := ApiTask{
+		ApiTaskCaseItems: []CaseItemsDetails{
+			{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Team: []UserTeam{
+							{
+								Name: "Go TaskForce Team",
+								Id:   888,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	return v
 }
@@ -372,6 +398,21 @@ func TestGetClientInformationWithACase(t *testing.T) {
 	assert.Equal(t, getClientInformation(taskType), expectedResult)
 }
 
+func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: CaseManagement{
+			Team: []UserTeam{
+				{
+					Name: TeamName,
+					Id:   TeamId,
+				},
+			},
+		},
+	}
+
+	return v
+}
+
 func TestGetClientInformationWithoutACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
 	expectedResult := Clients{
@@ -386,4 +427,40 @@ func TestGetClientInformationWithoutACase(t *testing.T) {
 	}
 
 	assert.Equal(t, getClientInformation(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
+	taskType := SetUpUserTeamStruct("", 0)
+	expectedResult := []UserTeam{
+		{
+			Name: "Test Team Name",
+			Id:   11,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReplacesContentWithAPIClientsInfoIfNoTeam(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
+	expectedResult := []UserTeam{
+		{
+			Name: "Go TaskForce Team",
+			Id:   999,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutAClient()
+	expectedResult := []UserTeam{
+		{
+			Name: "Go TaskForce Team",
+			Id:   888,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
 }

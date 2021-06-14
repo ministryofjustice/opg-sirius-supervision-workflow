@@ -268,7 +268,9 @@ func getAssigneeDisplayName(s ApiTask) string {
 
 func getAssigneeTeams(s ApiTask) []UserTeam {
 	if len(s.ApiTaskAssignee.Team) == 0 {
-		if len(s.ApiTaskCaseItems) != 0 {
+		if len(s.ApiClients) != 0 {
+			return s.ApiClients[0].ClientSupervisionCaseOwner.Team
+		} else if len(s.ApiTaskCaseItems) != 0 {
 			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Team
 		}
 	}
