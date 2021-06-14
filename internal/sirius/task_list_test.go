@@ -61,88 +61,13 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, taskDetails, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{})
-				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList, taskDetails)
+				taskList, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{})
+				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
 			}))
 		})
 	}
-}
-
-func TestGetPreviousPageNumber(t *testing.T) {
-	assert.Equal(t, getPreviousPageNumber(0), 1)
-	assert.Equal(t, getPreviousPageNumber(1), 1)
-	assert.Equal(t, getPreviousPageNumber(2), 1)
-	assert.Equal(t, getPreviousPageNumber(3), 2)
-	assert.Equal(t, getPreviousPageNumber(5), 4)
-}
-
-func setUpGetNextPageNumber(pageCurrent int, pageTotal int, totalTasks int) TaskList {
-	taskList := TaskList{
-		Pages: PageDetails{
-			PageCurrent: pageCurrent,
-			PageTotal:   pageTotal,
-		},
-		TotalTasks: totalTasks,
-	}
-	return taskList
-}
-
-func TestGetNextPageNumber(t *testing.T) {
-	taskList := setUpGetNextPageNumber(1, 5, 0)
-
-	assert.Equal(t, getNextPageNumber(taskList, 0), 2)
-	assert.Equal(t, getNextPageNumber(taskList, 2), 3)
-	assert.Equal(t, getNextPageNumber(taskList, 15), 5)
-}
-
-func TestGetShowingLowerLimitNumberAlwaysReturns1IfOnly1Page(t *testing.T) {
-	taskList := setUpGetNextPageNumber(1, 0, 13)
-
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 1)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 1)
-}
-
-func TestGetShowingLowerLimitNumberAlwaysReturns0If0Tasks(t *testing.T) {
-	taskList := setUpGetNextPageNumber(1, 0, 0)
-
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 0)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 0)
-}
-
-func TestGetShowingLowerLimitNumberCanIncrementOnPages(t *testing.T) {
-	taskList := setUpGetNextPageNumber(2, 0, 100)
-
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 26)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 51)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 101)
-}
-
-func TestGetShowingLowerLimitNumberCanIncrementOnManyPages(t *testing.T) {
-	taskList := setUpGetNextPageNumber(5, 0, 5000)
-
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 25), 101)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 50), 201)
-	assert.Equal(t, getShowingLowerLimitNumber(taskList, 100), 401)
-}
-
-func TestGetShowingUpperLimitNumberWillReturnTotalTasksIfOnFinalPage(t *testing.T) {
-	taskList := setUpGetNextPageNumber(1, 0, 10)
-
-	assert.Equal(t, getShowingUpperLimitNumber(taskList, 25), 10)
-	assert.Equal(t, getShowingUpperLimitNumber(taskList, 50), 10)
-	assert.Equal(t, getShowingUpperLimitNumber(taskList, 100), 10)
-}
-
-func makeListOfPagesRange(min, max int) []int {
-	a := make([]int, max-min+1)
-	for i := range a {
-		a[i] = min + i
-	}
-	return a
 }
 
 func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
@@ -216,29 +141,81 @@ func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
 	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
 }
 
-func SetUpTaskType(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string) []ApiTask {
-	v := []ApiTask{
-		{
-			ApiTaskAssignee: AssigneeDetails{
-				AssigneeDisplayName: "Unassigned",
-				AssigneeId:          0,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: ClientDetails{
-					ClientCaseRecNumber: "13636617",
-					ClientFirstName:     "Pamela",
-					ClientId:            37259351,
-					ClientSupervisionCaseOwner: SupervisionCaseOwnerDetail{
-						SupervisionCaseOwnerName: "Richard Fox",
-					},
-					ClientSurname: "Pragnell",
+func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: CaseManagement{
+			CaseManagerName: AssigneeDisplayNameInput,
+			Id:              AssigneeIdInput,
+		},
+		ApiTaskCaseItems: []CaseItemsDetails{{
+			CaseItemClient: Clients{
+				ClientCaseRecNumber: "13636617",
+				ClientFirstName:     "Pamela",
+				ClientId:            37259351,
+				ClientSupervisionCaseOwner: CaseManagement{
+					Id:              4321,
+					CaseManagerName: "Richard Fox",
 				},
-			}},
-			ApiTaskDueDate: "01/06/2021",
-			ApiTaskId:      40904862,
-			ApiTaskHandle:  ApiTaskHandleInput,
-			ApiTaskType:    ApiTaskTypeInput,
-			TaskTypeName:   TaskTypeNameInput,
+				ClientSurname: "Pragnell",
+			},
+		}},
+		ApiTaskDueDate: "01/06/2021",
+		ApiTaskId:      40904862,
+		ApiTaskHandle:  ApiTaskHandleInput,
+		ApiTaskType:    ApiTaskTypeInput,
+		TaskTypeName:   TaskTypeNameInput,
+	}
+	return v
+}
+
+func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: CaseManagement{
+			CaseManagerName: AssigneeDisplayNameInput,
+			Id:              AssigneeIdInput,
+		},
+		ApiClients: []Clients{
+			{
+				ClientCaseRecNumber: "13636617",
+				ClientFirstName:     "WithoutACase",
+				ClientId:            37259351,
+				ClientSupervisionCaseOwner: CaseManagement{
+					Id:              1234,
+					CaseManagerName: "Richard Fox",
+					Team: []UserTeam{
+						{
+							Name: "Go TaskForce Team",
+							Id:   999,
+						},
+					},
+				},
+				ClientSurname: "WithoutACase",
+			},
+		},
+		ApiTaskDueDate: "01/06/2021",
+		ApiTaskId:      40904862,
+		ApiTaskHandle:  ApiTaskHandleInput,
+		ApiTaskType:    ApiTaskTypeInput,
+		TaskTypeName:   TaskTypeNameInput,
+	}
+	return v
+}
+
+func SetUpTaskTypeWithoutAClient() ApiTask {
+	v := ApiTask{
+		ApiTaskCaseItems: []CaseItemsDetails{
+			{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Team: []UserTeam{
+							{
+								Name: "Go TaskForce Team",
+								Id:   888,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 	return v
@@ -266,27 +243,155 @@ func SetUpLoadTasks() []ApiTaskTypes {
 	return loadTasks
 }
 
-func TestSetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
+func TestGetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 
-	taskType := SetUpTaskType("CWGN", "", "")
+	taskType := SetUpTaskTypeWithACase("CWGN", "", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("CWGN", "", "Casework - General")
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), "Casework - General")
 }
 
-func TestSetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
-	taskType := SetUpTaskType("FAKE", "Fake type", "")
+func TestGetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("FAKE", "Fake type", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("FAKE", "Fake type", "Fake type")
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), "Fake type")
 }
 
-func TestSetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
-	taskType := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "")
+func TestGetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("CWGN", "Fake name that doesnt match handle", "", "", 0)
 	loadTasks := SetUpLoadTasks()
-	expectedResult := SetUpTaskType("CWGN", "Fake name that doesnt match handle", "Casework - General")
+	expectedResult := "Casework - General"
 
-	assert.Equal(t, setTaskTypeName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, getTaskName(taskType, loadTasks), expectedResult)
+}
+
+func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheCaseItems(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Unassigned", 0)
+	expectedResult := "Richard Fox"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Unassigned", 0)
+	expectedResult := "Richard Fox"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+
+func TestGetAssigneeDisplayNameIfTaskIsNotAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
+	expectedResult := "Go Taskforce"
+
+	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithOutACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
+	expectedResult := 1234
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 0)
+	expectedResult := 4321
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetAssigneeIdWithACaseAndAssignneNotToCaseOwner(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := 1122
+
+	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+}
+
+func TestGetClientInformationWithACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := Clients{
+		ClientId:            37259351,
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "Pamela",
+		ClientSurname:       "Pragnell",
+		ClientSupervisionCaseOwner: CaseManagement{
+			CaseManagerName: "Richard Fox",
+			Id:              4321,
+		},
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
+}
+
+func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
+	v := ApiTask{
+		ApiTaskAssignee: CaseManagement{
+			Team: []UserTeam{
+				{
+					Name: TeamName,
+					Id:   TeamId,
+				},
+			},
+		},
+	}
+
+	return v
+}
+
+func TestGetClientInformationWithoutACase(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
+	expectedResult := Clients{
+		ClientId:            37259351,
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "WithoutACase",
+		ClientSurname:       "WithoutACase",
+		ClientSupervisionCaseOwner: CaseManagement{
+			CaseManagerName: "Richard Fox",
+			Id:              1234,
+			Team: []UserTeam{
+				{
+					Name: "Go TaskForce Team",
+					Id:   999,
+				},
+			},
+		},
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
+	taskType := SetUpUserTeamStruct("Test Team Name", 11)
+	expectedResult := []UserTeam{
+		{
+			Name: "Test Team Name",
+			Id:   11,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReplacesContentWithAPIClientsInfoIfNoTeam(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
+	expectedResult := []UserTeam{
+		{
+			Name: "Go TaskForce Team",
+			Id:   999,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+}
+
+func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutAClient()
+	expectedResult := []UserTeam{
+		{
+			Name: "Go TaskForce Team",
+			Id:   888,
+		},
+	}
+
+	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
 }
