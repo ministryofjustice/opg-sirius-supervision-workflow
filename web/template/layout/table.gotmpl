@@ -9,6 +9,7 @@
 <section data-module="manage-tasks" class="moj-manage-tasks">
  
   {{ template "edit-panel" . }}
+  
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
     <thead class="govuk-table__head">
@@ -56,35 +57,29 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="client-firstname-surname-caserec-number">
-                {{ range .ApiTaskCaseItems }}
-                  {{ .CaseItemClient.ClientFirstName }} {{ .CaseItemClient.ClientSurname }}
-                  <span class="secondary">{{ .CaseItemClient.ClientCaseRecNumber }}</span>
-                {{ end }}
-              
+                  {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
+                  <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
               </label>
             </td>
             <td class="govuk-table__cell">
-              {{ range .ApiTaskCaseItems }}
-              <label class="govuk-label" for="assignee-display-name"> {{ .CaseItemClient.ClientSupervisionCaseOwner.SupervisionCaseOwnerName }}
-              
-                {{ if .CaseItemClient.ClientSupervisionCaseOwner.SupervisionTeam }}
-                  {{ range .CaseItemClient.ClientSupervisionCaseOwner.SupervisionTeam }}
-                  <span class="secondary">{{ .SupervisionTeamDisplayName }}</span>
+              <label class="govuk-label" for="assignee-display-name"> {{ .ClientInformation.ClientSupervisionCaseOwner.CaseManagerName }}
+                {{ if .ClientInformation.ClientSupervisionCaseOwner.Team }}
+                  {{ range .ClientInformation.ClientSupervisionCaseOwner.Team }}
+                  <span class="secondary">{{ .Name }}</span>
                   {{ end }}
                   </label>
                 {{ end }}
-              {{ end }}
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-name-and-team">
-                {{ if eq .ApiTaskAssignee.AssigneeDisplayName $teamInDropDown}}
+                {{ if eq .ApiTaskAssignee.CaseManagerName $teamInDropDown}}
                   Not assigned
                 {{ else }} 
-                  {{ .ApiTaskAssignee.AssigneeDisplayName }}
+                  {{ .ApiTaskAssignee.CaseManagerName }}
                 {{ end }}
-                {{ if .ApiTaskAssignee.AssigneeTeams }} 
-                  {{ range .ApiTaskAssignee.AssigneeTeams }}
-                <span class="secondary">{{ .AssigneeTeamDisplayName }} </span>
+                {{ if .ApiTaskAssignee.Team }} 
+                  {{ range .ApiTaskAssignee.Team }}
+                <span class="secondary">{{ .Name }} </span>
                   {{ end }}
                 {{ end }}
               </label>
@@ -93,10 +88,9 @@
               <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="open-case-in-sirius">{{ range .ApiTaskCaseItems }}</label>
-              <a href="{{ sirius (printf "/supervision/#/clients/%d" .CaseItemClient.ClientId) }}" class="govuk-link {{ if eq .CaseItemClient.ClientId 0 }}hide{{ end }}" id="hook-open-case">Open case</a>
+              <label class="govuk-label" for="open-case-in-sirius"></label>
+              <a href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}" class="govuk-link {{ if eq .ClientInformation.ClientId 0 }}hide{{ end }}" id="hook-open-case">Open case</a>
             </td>
-            {{ end }}
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
