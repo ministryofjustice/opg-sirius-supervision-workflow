@@ -89,8 +89,8 @@ var mockTaskTypeData = []sirius.ApiTaskTypes{
 var mockTaskListData = sirius.TaskList{
 	WholeTaskList: []sirius.ApiTask{
 		{
-			ApiTaskAssignee: sirius.AssigneeDetails{
-				AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
+			ApiTaskAssignee: sirius.CaseManagement{
+				CaseManagerName: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
 			ApiTaskType:    "Case work - General",
 			ApiTaskDueDate: "01/02/2021",
@@ -100,8 +100,8 @@ var mockTaskListData = sirius.TaskList{
 						ClientCaseRecNumber: "caseRecNumber",
 						ClientFirstName:     "Client Alexander Zacchaeus",
 						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.SupervisionCaseOwner{
-							SupervisionCaseOwnerName: "Supervision - Team - Name",
+						ClientSupervisionCaseOwner: sirius.CaseManagement{
+							CaseManagerName: "Supervision - Team - Name",
 						},
 						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},

@@ -218,18 +218,18 @@ func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
 	v := ApiTask{
-		ApiTaskAssignee: AssigneeDetails{
-			AssigneeDisplayName: AssigneeDisplayNameInput,
-			AssigneeId:          AssigneeIdInput,
+		ApiTaskAssignee: CaseManagement{
+			CaseManagerName: AssigneeDisplayNameInput,
+			Id:              AssigneeIdInput,
 		},
 		ApiTaskCaseItems: []CaseItemsDetails{{
 			CaseItemClient: Clients{
 				ClientCaseRecNumber: "13636617",
 				ClientFirstName:     "Pamela",
 				ClientId:            37259351,
-				ClientSupervisionCaseOwner: SupervisionCaseOwner{
-					SupervisionId:            4321,
-					SupervisionCaseOwnerName: "Richard Fox",
+				ClientSupervisionCaseOwner: CaseManagement{
+					Id:              4321,
+					CaseManagerName: "Richard Fox",
 				},
 				ClientSurname: "Pragnell",
 			},
@@ -245,18 +245,18 @@ func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, 
 
 func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
 	v := ApiTask{
-		ApiTaskAssignee: AssigneeDetails{
-			AssigneeDisplayName: AssigneeDisplayNameInput,
-			AssigneeId:          AssigneeIdInput,
+		ApiTaskAssignee: CaseManagement{
+			CaseManagerName: AssigneeDisplayNameInput,
+			Id:              AssigneeIdInput,
 		},
 		ApiClients: []Clients{
 			{
 				ClientCaseRecNumber: "13636617",
 				ClientFirstName:     "WithoutACase",
 				ClientId:            37259351,
-				ClientSupervisionCaseOwner: SupervisionCaseOwner{
-					SupervisionId:            1234,
-					SupervisionCaseOwnerName: "Richard Fox",
+				ClientSupervisionCaseOwner: CaseManagement{
+					Id:              1234,
+					CaseManagerName: "Richard Fox",
 				},
 				ClientSurname: "WithoutACase",
 			},
@@ -363,9 +363,9 @@ func TestGetClientInformationWithACase(t *testing.T) {
 		ClientCaseRecNumber: "13636617",
 		ClientFirstName:     "Pamela",
 		ClientSurname:       "Pragnell",
-		ClientSupervisionCaseOwner: SupervisionCaseOwner{
-			SupervisionCaseOwnerName: "Richard Fox",
-			SupervisionId:            4321,
+		ClientSupervisionCaseOwner: CaseManagement{
+			CaseManagerName: "Richard Fox",
+			Id:              4321,
 		},
 	}
 
@@ -379,9 +379,9 @@ func TestGetClientInformationWithoutACase(t *testing.T) {
 		ClientCaseRecNumber: "13636617",
 		ClientFirstName:     "WithoutACase",
 		ClientSurname:       "WithoutACase",
-		ClientSupervisionCaseOwner: SupervisionCaseOwner{
-			SupervisionCaseOwnerName: "Richard Fox",
-			SupervisionId:            1234,
+		ClientSupervisionCaseOwner: CaseManagement{
+			CaseManagerName: "Richard Fox",
+			Id:              1234,
 		},
 	}
 
