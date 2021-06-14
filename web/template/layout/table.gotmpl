@@ -77,9 +77,9 @@
                 {{ else }} 
                   {{ .ApiTaskAssignee.CaseManagerName }}
                 {{ end }}
-                {{ if .ApiTaskAssignee.Team }} 
-                  {{ range .ApiTaskAssignee.Team }}
-                <span class="secondary">{{ .Name }} </span>
+                {{ if .ApiTaskAssignee.Team }}
+                      {{ range .ApiTaskAssignee.Team }}
+                        <span class="secondary">{{ .Name }} </span>
                   {{ end }}
                 {{ end }}
               </label>

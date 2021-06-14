@@ -267,16 +267,8 @@ func getAssigneeDisplayName(s ApiTask) string {
 }
 
 func getAssigneeTeams(s ApiTask) []UserTeam {
-
-	fmt.Println(s.ApiTaskAssignee.Team)
 	if len(s.ApiTaskAssignee.Team) == 0 {
-		if len(s.ApiClients) != 0 {
-			fmt.Println("api clients")
-			fmt.Println(s.ApiClients[0].ClientSupervisionCaseOwner)
-			return s.ApiClients[0].ClientSupervisionCaseOwner.Team
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			fmt.Println("api case items")
-			fmt.Println(s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner)
+		if len(s.ApiTaskCaseItems) != 0 {
 			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Team
 		}
 	}
