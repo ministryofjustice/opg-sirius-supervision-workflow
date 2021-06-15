@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type AssigneesTeam struct {
@@ -52,24 +53,27 @@ func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selected
 
 	var assigneeList []AssigneeTeamMembers
 
-	for _, u := range v.Members {
+	for i, u := range v.Members {
 		Members := []AssigneeTeamMembers{
 			{
 				TeamMembersId:          u.TeamMembersId,
 				TeamMembersName:        u.TeamMembersName,
 				TeamMembersDisplayName: u.TeamMembersDisplayName,
-				IsSelected:             isSelected(u.TeamMembersId, assigneeSelected),
+				IsSelected:             isAssigneeSelected(u.TeamMembersId, assigneeSelected),
 			},
 		}
-		assigneeList = append(assigneeList, Members)
+		assigneeList = append(assigneeList, Members[i])
 	}
+
+	v.Members = assigneeList
+
 	return v, err
 }
 
-func isSelected(TeamMembersId int, assigneeSelected []string) bool {
+func isAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
 	for _, q := range assigneeSelected {
-		//convert int to str to compare
-		if TeamMembersId == q {
+		assigneeSelectedAsAString, _ := strconv.Atoi(q)
+		if TeamMembersId == assigneeSelectedAsAString {
 			return true
 		}
 	}

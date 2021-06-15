@@ -37,7 +37,7 @@
         {{ range .Assignees.Members }}
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
-            <input class="govuk-checkboxes__input assigned" id="" name="selected-assignee" type="checkbox" value="{{ .TeamMembersId }}">
+            <input class="govuk-checkboxes__input assigned" id="" name="selected-assignee" type="checkbox" value="{{ .TeamMembersId }}" {{if .IsSelected }}checked{{end}}>
             <label class="govuk-label govuk-checkboxes__label" for="">
               {{ .TeamMembersDisplayName }}
             </label>

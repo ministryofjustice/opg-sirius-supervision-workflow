@@ -69,11 +69,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = createAssigneeFilter(assigneeSelected, assigneeFilters)
-	fmt.Println("assignee filter post func")
-	fmt.Println(assigneeFilters)
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
-	fmt.Println(req)
+
 	if err != nil {
 		return v, err
 	}
@@ -98,8 +96,6 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList := v
-	fmt.Println("data returned")
-	fmt.Println(v)
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
 
@@ -134,8 +130,6 @@ func createAssigneeFilter(assigneeSelected []string, assigneeFilters string) str
 		length := assigneeFilterLength - 1
 		assigneeFilters = assigneeFilters[0:length]
 	}
-	fmt.Println("create assignee filter func")
-	fmt.Println(assigneeFilters)
 	return assigneeFilters
 }
 
