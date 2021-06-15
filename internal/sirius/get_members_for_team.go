@@ -7,12 +7,18 @@ import (
 )
 
 type AssigneesTeam struct {
-	Id      int           `json:"id"`
-	Members []TeamMembers `json:"members"`
-	Name    string        `json:"name"`
+	Id      int                   `json:"id"`
+	Members []AssigneeTeamMembers `json:"members"`
+	Name    string                `json:"name"`
+}
+type AssigneeTeamMembers struct {
+	TeamMembersId          int    `json:"id"`
+	TeamMembersName        string `json:"name"`
+	TeamMembersDisplayName string `json:"displayName"`
+	IsSelected             bool
 }
 
-func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selectedTeam int) (AssigneesTeam, error) {
+func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selectedTeam int, assigneeSelected []string) (AssigneesTeam, error) {
 	var v AssigneesTeam
 	teamId := loggedInTeamId
 
@@ -44,5 +50,28 @@ func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selected
 		return v, err
 	}
 
+	var assigneeList []AssigneeTeamMembers
+
+	for _, u := range v.Members {
+		Members := []AssigneeTeamMembers{
+			{
+				TeamMembersId:          u.TeamMembersId,
+				TeamMembersName:        u.TeamMembersName,
+				TeamMembersDisplayName: u.TeamMembersDisplayName,
+				IsSelected:             isSelected(u.TeamMembersId, assigneeSelected),
+			},
+		}
+		assigneeList = append(assigneeList, Members)
+	}
 	return v, err
+}
+
+func isSelected(TeamMembersId int, assigneeSelected []string) bool {
+	for _, q := range assigneeSelected {
+		//convert int to str to compare
+		if TeamMembersId == q {
+			return true
+		}
+	}
+	return false
 }

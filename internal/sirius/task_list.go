@@ -56,9 +56,10 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, error) {
 	var v TaskList
 	var taskTypeFilters string
+	var assigneeFilters string
 
 	if selectedTeamMembers == 0 {
 		teamID = loggedInTeamId
@@ -67,9 +68,12 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
+	assigneeFilters = createAssigneeFilter(assigneeSelected, assigneeFilters)
+	fmt.Println("assignee filter post func")
+	fmt.Println(assigneeFilters)
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,assignee:88,assignee:87,%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, displayTaskLimit, search), nil)
-
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
+	fmt.Println(req)
 	if err != nil {
 		return v, err
 	}
@@ -94,6 +98,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	TaskList := v
+	fmt.Println("data returned")
+	fmt.Println(v)
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
 
@@ -101,36 +107,37 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 }
 
 func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-	if len(taskTypeSelected) == 1 {
+	if len(taskTypeSelected) == 0 {
+		taskTypeFilters += ","
+	} else if len(taskTypeSelected) == 1 {
 		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s
+			taskTypeFilters += "type:" + s + ","
 		}
 	} else if len(taskTypeSelected) > 1 {
 		for _, s := range taskTypeSelected {
 			taskTypeFilters += "type:" + s + ","
 		}
-		taskTypeFilterLength := len(taskTypeFilters)
-		length := taskTypeFilterLength - 1
-		taskTypeFilters = taskTypeFilters[0:length]
 	}
 	return taskTypeFilters
 }
 
-// func createAssigneeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-// 	if len(taskTypeSelected) == 1 {
-// 		for _, s := range taskTypeSelected {
-// 			taskTypeFilters += "type:" + s
-// 		}
-// 	} else if len(taskTypeSelected) > 1 {
-// 		for _, s := range taskTypeSelected {
-// 			taskTypeFilters += "type:" + s + ","
-// 		}
-// 		taskTypeFilterLength := len(taskTypeFilters)
-// 		length := taskTypeFilterLength - 1
-// 		taskTypeFilters = taskTypeFilters[0:length]
-// 	}
-// 	return taskTypeFilters
-// }
+func createAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
+	if len(assigneeSelected) == 1 {
+		for _, s := range assigneeSelected {
+			assigneeFilters += "assignee:" + s
+		}
+	} else if len(assigneeSelected) > 1 {
+		for _, s := range assigneeSelected {
+			assigneeFilters += "assignee:" + s + ","
+		}
+		assigneeFilterLength := len(assigneeFilters)
+		length := assigneeFilterLength - 1
+		assigneeFilters = assigneeFilters[0:length]
+	}
+	fmt.Println("create assignee filter func")
+	fmt.Println(assigneeFilters)
+	return assigneeFilters
+}
 
 func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask
