@@ -19,28 +19,29 @@
       <input name="option-select-filter" id="assignedSearch" class="filterCheckboxes app-c-option-select__filter-input govuk-input" type="text" aria-describedby="checkboxes-19682d1b-count" aria-controls="checkboxes-19682d1b">
     </div> */}}
 
-    <div role="group" aria-labelledby="option-select-title-countries" class="app-c-option-select__container js-options-container" id="list_of_countries_to_filter" tabindex="-1" style="height: 254.333px;">
-      <div class="app-c-option-select__container-inner js-auto-height-inner">
-        <fieldset class="govuk-fieldset">
-          {{ range .TaskList.WholeTaskList }}
-          <div class="govuk-checkboxes govuk-checkboxes--small">
-            <div class="govuk-checkboxes__item filter__checkbox">
-              <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="Not assigned">
-              <label class="govuk-label govuk-checkboxes__label" for="">
-                Not assigned
-              </label>
-            </div>
-            <h1> for caseManager in data.caseManagers </h1>
-            <div class="govuk-checkboxes__item filter__checkbox">
-              <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox">
-              <label class="govuk-label govuk-checkboxes__label" for="">
-                <h1> {{.ApiTaskAssignee.CaseManagerName}} </h1>
-              </label>
-            </div>
+  <div role="group" aria-labelledby="option-select-title-countries" class="app-c-option-select__container js-options-container" id="list_of_countries_to_filter" tabindex="-1" style="height: 254.333px;">
+    <div class="app-c-option-select__container-inner js-auto-height-inner">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          <div class="govuk-checkboxes__item filter__checkbox">
+            <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="">
+            <label class="govuk-label govuk-checkboxes__label" for="">
+              {{ .TeamSelected.Id }}
+            </label>
           </div>
-          {{ end }}
-        </fieldset>
-      </div>
+        </div>
+        {{ range .TeamSelected.Members }}
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          <div class="govuk-checkboxes__item filter__checkbox">
+            <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="{{ .TeamMembersId }}">
+            <label class="govuk-label govuk-checkboxes__label" for="">
+              {{ .TeamMembersName }}
+            </label>
+          </div>
+        </div>
+        {{ end }}
+        
+      </fieldset>
     </div>
   </div>
 </div>

@@ -20,14 +20,14 @@ type WorkflowInformation interface {
 }
 
 type workflowVars struct {
-	Path           string
-	XSRFToken      string
-	MyDetails      sirius.UserDetails
-	TaskList       sirius.TaskList
-	TaskDetails    sirius.TaskDetails
-	LoadTasks      []sirius.ApiTaskTypes
-	TeamSelection  []sirius.ReturnedTeamCollection
-	TeamStoredData sirius.TeamStoredData
+	Path          string
+	XSRFToken     string
+	MyDetails     sirius.UserDetails
+	TaskList      sirius.TaskList
+	TaskDetails   sirius.TaskDetails
+	LoadTasks     []sirius.ApiTaskTypes
+	TeamSelection []sirius.ReturnedTeamCollection
+	// TeamStoredData sirius.TeamStoredData
 	TeamSelected   sirius.TeamSelected
 	SuccessMessage string
 	Error          string

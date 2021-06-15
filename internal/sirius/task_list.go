@@ -31,17 +31,16 @@ type Clients struct {
 }
 
 type ApiTask struct {
-	ApiTaskAssignee       CaseManagement     `json:"assignee"`
-	ApiTaskCaseItems      []CaseItemsDetails `json:"caseItems"`
-	ApiClients            []Clients          `json:"clients"`
-	ApiTaskDueDate        string             `json:"dueDate"`
-	ApiTaskId             int                `json:"id"`
-	ApiTaskHandle         string             `json:"type"`
-	ApiTaskType           string             `json:"name"`
-	ApiCaseOwnerTask      bool               `json:"caseOwnerTask"`
-	TaskTypeName          string
-	ClientInformation     Clients
-	AssigneesForFiltering []string
+	ApiTaskAssignee   CaseManagement     `json:"assignee"`
+	ApiTaskCaseItems  []CaseItemsDetails `json:"caseItems"`
+	ApiClients        []Clients          `json:"clients"`
+	ApiTaskDueDate    string             `json:"dueDate"`
+	ApiTaskId         int                `json:"id"`
+	ApiTaskHandle     string             `json:"type"`
+	ApiTaskType       string             `json:"name"`
+	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
+	TaskTypeName      string
+	ClientInformation Clients
 }
 
 type PageDetails struct {
