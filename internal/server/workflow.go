@@ -12,7 +12,8 @@ import (
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes) (sirius.TaskList, sirius.TaskDetails, error)
+	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes) (sirius.TaskList, error)
+	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
 	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.ReturnedTeamCollection, error)
 	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
@@ -89,10 +90,12 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		taskList, taskdetails, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes)
+		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes)
 		if err != nil {
 			return err
 		}
+
+		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
 		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
 		if err != nil {
@@ -169,7 +172,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
-			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes)
+			TaskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes)
 			if err != nil {
 				return err
 			}
