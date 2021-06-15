@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTaskList(t *testing.T) {
+func TestGetTaskList(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
 		Provider:          "sirius",
@@ -231,7 +231,7 @@ func SetUpLoadTasks() []ApiTaskTypes {
 	return loadTasks
 }
 
-func TestGetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
+func TestGetTaskTypesNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 
 	taskType := SetUpTaskTypeWithACase("CWGN", "", "", "", 0)
 	loadTasks := SetUpLoadTasks()
@@ -239,14 +239,14 @@ func TestGetTaskTypeNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 	assert.Equal(t, getTaskName(taskType, loadTasks), "Casework - General")
 }
 
-func TestGetTaskTypeNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
+func TestGetTaskTypesNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("FAKE", "Fake type", "", "", 0)
 	loadTasks := SetUpLoadTasks()
 
 	assert.Equal(t, getTaskName(taskType, loadTasks), "Fake type")
 }
 
-func TestGetTaskTypeNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
+func TestGetTaskTypesNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("CWGN", "Fake name that doesnt match handle", "", "", 0)
 	loadTasks := SetUpLoadTasks()
 	expectedResult := "Casework - General"
@@ -382,4 +382,42 @@ func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t 
 	}
 
 	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+}
+
+func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
+	taskType := SetUpTaskTypeWithACase("", "", "", "", 0)
+	expectedResult := Clients{
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "Pamela",
+		ClientId:            37259351,
+		ClientSupervisionCaseOwner: CaseManagement{
+			Id:              4321,
+			CaseManagerName: "Richard Fox",
+		},
+		ClientSurname: "Pragnell",
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
+}
+
+func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
+	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
+	expectedResult := Clients{
+		ClientCaseRecNumber: "13636617",
+		ClientFirstName:     "WithoutACase",
+		ClientSurname:       "WithoutACase",
+		ClientId:            37259351,
+		ClientSupervisionCaseOwner: CaseManagement{
+			Id:              1234,
+			CaseManagerName: "Richard Fox",
+			Team: []UserTeam{
+				{
+					Name: "Go TaskForce Team",
+					Id:   999,
+				},
+			},
+		},
+	}
+
+	assert.Equal(t, getClientInformation(taskType), expectedResult)
 }

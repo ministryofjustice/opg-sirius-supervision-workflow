@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetTaskType(t *testing.T) {
+func TestGetTaskTypes(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
 		Provider:          "sirius",
@@ -94,7 +94,7 @@ func TestGetTaskType(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskTypeList, _ := client.GetTaskType(getContext(tc.cookies), []string{"CWGN"})
+				taskTypeList, _ := client.GetTaskTypes(getContext(tc.cookies), []string{"CWGN"})
 				assert.Equal(t, tc.expectedResponse, taskTypeList)
 				assert.Equal(t, tc.expectedError, nil)
 				return nil

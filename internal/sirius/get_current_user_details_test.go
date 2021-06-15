@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMyDetails(t *testing.T) {
+func TestGetCurrentUserDetails(t *testing.T) {
 	pact := &dsl.Pact{
 		Consumer:          "sirius-workflow",
 		Provider:          "sirius",
@@ -28,7 +28,7 @@ func TestMyDetails(t *testing.T) {
 		expectedError     error
 	}{
 		{
-			name: "Test Workflow",
+			name: "Test Get Current Details",
 			setup: func() {
 				pact.
 					AddInteraction().
@@ -119,7 +119,7 @@ func TestMyDetails(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myDetails, err := client.SiriusUserDetails(getContext(tc.cookies))
+				myDetails, err := client.GetCurrentUserDetails(getContext(tc.cookies))
 				assert.Equal(t, tc.expectedMyDetails, myDetails)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
@@ -134,7 +134,7 @@ func TestMyDetailsStatusError(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, s.URL)
 
-	_, err := client.SiriusUserDetails(getContext(nil))
+	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{
 		Code:   http.StatusTeapot,
 		URL:    s.URL + "/api/v1/users/current",

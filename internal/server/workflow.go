@@ -11,10 +11,10 @@ import (
 
 type WorkflowInformation interface {
 	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
-	GetTeamSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
+	GetTeamsForSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
@@ -84,7 +84,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		loggedInTeamId := myDetails.Teams[0].TeamId
-		loadTaskTypes, err := client.GetTaskType(ctx, taskTypeSelected)
+		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
 			return err
 		}
@@ -96,7 +96,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
-		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName)
+		teamSelection, err := client.GetTeamsForSelection(ctx, loggedInTeamId, selectedTeamName)
 		if err != nil {
 			return err
 		}

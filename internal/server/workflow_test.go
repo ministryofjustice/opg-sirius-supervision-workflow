@@ -29,7 +29,7 @@ func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
+func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -57,7 +57,7 @@ func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, logg
 	return m.assignees, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int) ([]sirius.ReturnedTeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 

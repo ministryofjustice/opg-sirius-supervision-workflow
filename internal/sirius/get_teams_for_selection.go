@@ -42,7 +42,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamName int) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamsForSelection(ctx Context, loggedInTeamId int, selectedTeamName int) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData
