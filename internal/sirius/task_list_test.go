@@ -61,7 +61,7 @@ func TestTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{})
+				taskList, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{}, []string{})
 				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
@@ -118,27 +118,10 @@ func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T)
 }
 
 func TestCreateTaskTypeFilter(t *testing.T) {
-	assert.Equal(t, createTaskTypeFilter([]string{}, ""), "")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST")
-}
-
-func TestGetStoredTaskFilterReturnsNilIfNoLastFilterOrIfHasNewTaskFilter(t *testing.T) {
-	taskDetails := TaskDetails{
-		LastFilter: "",
-	}
-
-	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, ""), "")
-	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{"ORAL"}, ""), "")
-}
-
-func TestGetStoredTaskFilterReturnsLastFilter(t *testing.T) {
-	taskDetails := TaskDetails{
-		LastFilter: "CWGN",
-	}
-
-	assert.Equal(t, getStoredTaskFilter(taskDetails, []string{}, "type:CWGN"), "type:CWGN")
+	assert.Equal(t, createTaskTypeFilter([]string{}, ""), ",")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN,")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL,")
+	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST,")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {

@@ -19,7 +19,7 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
-	teamSelected      sirius.TeamSelected
+	assignees         sirius.AssigneesTeam
 }
 
 func (m *mockWorkflowInformation) SiriusUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -36,7 +36,7 @@ func (m *mockWorkflowInformation) GetTaskType(ctx sirius.Context, taskTypeSelect
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamName int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -50,14 +50,14 @@ func (m *mockWorkflowInformation) GetTaskDetails(ctx sirius.Context, taskList si
 	return m.taskDetailsData
 }
 
-func (m *mockWorkflowInformation) GetMembersForTeam(ctx sirius.Context, loggedInTeamId int, selectedTeamToAssignTask int) (sirius.TeamSelected, error) {
+func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, loggedInTeamId int, selectedTeamToAssignTask int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
-	return m.teamSelected, m.err
+	return m.assignees, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers sirius.TeamSelected) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamSelection(ctx sirius.Context, loggedInTeamId int, selectedTeamName int) ([]sirius.ReturnedTeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 

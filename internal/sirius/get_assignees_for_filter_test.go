@@ -24,7 +24,7 @@ func TestGetMembersForTeam(t *testing.T) {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse TeamSelected
+		expectedResponse AssigneesTeam
 		expectedError    error
 	}{
 		{
@@ -56,10 +56,9 @@ func TestGetMembersForTeam(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: TeamSelected{
-				Id:                       13,
-				Name:                     "Lay Team 1 - (Supervision)",
-				selectedTeamToAssignTask: 13,
+			expectedResponse: AssigneesTeam{
+				Id:   13,
+				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
 	}
@@ -71,7 +70,7 @@ func TestGetMembersForTeam(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamMembers, err := client.GetMembersForTeam(getContext(tc.cookies), 13, 13)
+				myTeamMembers, err := client.GetAssigneesForFilter(getContext(tc.cookies), 13, 13, []string{""})
 				assert.Equal(t, tc.expectedResponse, myTeamMembers)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

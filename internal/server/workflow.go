@@ -140,7 +140,10 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if checkTaskHasIdForAssigning != "" {
 				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
 			} else {
-				newAssigneeIdForTask = vars.Assignees.Members[0].TeamMembersId
+				if len(vars.Assignees.Members) > 1 {
+					newAssigneeIdForTask = vars.Assignees.Members[0].TeamMembersId
+				}
+
 			}
 
 			err := r.ParseForm()
