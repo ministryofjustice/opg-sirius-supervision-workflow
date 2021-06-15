@@ -14,21 +14,20 @@ type WorkflowInformation interface {
 	GetTaskType(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes) (sirius.TaskList, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
-	GetTeamSelection(sirius.Context, int, int, sirius.TeamSelected) ([]sirius.ReturnedTeamCollection, error)
-	GetMembersForTeam(sirius.Context, int, int) (sirius.TeamSelected, error)
+	GetTeamSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
+	GetAssigneesForFilter(sirius.Context, int, int) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
 
 type workflowVars struct {
-	Path          string
-	XSRFToken     string
-	MyDetails     sirius.UserDetails
-	TaskList      sirius.TaskList
-	TaskDetails   sirius.TaskDetails
-	LoadTasks     []sirius.ApiTaskTypes
-	TeamSelection []sirius.ReturnedTeamCollection
-	// TeamStoredData sirius.TeamStoredData
-	TeamSelected   sirius.TeamSelected
+	Path           string
+	XSRFToken      string
+	MyDetails      sirius.UserDetails
+	TaskList       sirius.TaskList
+	TaskDetails    sirius.TaskDetails
+	LoadTasks      []sirius.ApiTaskTypes
+	TeamSelection  []sirius.ReturnedTeamCollection
+	Assignees      sirius.AssigneesTeam
 	SuccessMessage string
 	Error          string
 	Errors         sirius.ValidationErrors
@@ -64,7 +63,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
-		selectedTeamToAssignTask, _ := strconv.Atoi(selectedTeamToAssignTaskString)
 
 		err := r.ParseForm()
 		if err != nil {
@@ -97,12 +95,12 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
-		selectedTeamMembers, err := client.GetMembersForTeam(ctx, loggedInTeamId, selectedTeamToAssignTask)
+		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName)
 		if err != nil {
 			return err
 		}
 
-		teamSelection, err := client.GetTeamSelection(ctx, loggedInTeamId, selectedTeamName, selectedTeamMembers)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamSelection[0].Id, selectedTeamName)
 		if err != nil {
 			return err
 		}
@@ -115,7 +113,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			TaskDetails:   taskdetails,
 			LoadTasks:     loadTaskTypes,
 			TeamSelection: teamSelection,
-			TeamSelected:  selectedTeamMembers,
+			Assignees:     assigneesForFilter,
 		}
 
 		if err != nil {
@@ -124,7 +122,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		switch r.Method {
 		case http.MethodGet:
-
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
 
@@ -142,7 +139,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if checkTaskHasIdForAssigning != "" {
 				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
 			} else {
-				newAssigneeIdForTask = vars.TeamSelected.Id
+				newAssigneeIdForTask = vars.Assignees.Members[0].TeamMembersId
 			}
 
 			err := r.ParseForm()

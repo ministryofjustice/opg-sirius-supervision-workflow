@@ -68,7 +68,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,assignee:88,assignee:87,%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
 		return v, err
@@ -116,13 +116,21 @@ func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 	return taskTypeFilters
 }
 
-func getStoredTaskFilter(TaskDetails TaskDetails, taskTypeSelected []string, taskTypeFilters string) string {
-	if TaskDetails.LastFilter == "" && len(taskTypeSelected) == 0 {
-		return ""
-	} else {
-		return taskTypeFilters
-	}
-}
+// func createAssigneeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+// 	if len(taskTypeSelected) == 1 {
+// 		for _, s := range taskTypeSelected {
+// 			taskTypeFilters += "type:" + s
+// 		}
+// 	} else if len(taskTypeSelected) > 1 {
+// 		for _, s := range taskTypeSelected {
+// 			taskTypeFilters += "type:" + s + ","
+// 		}
+// 		taskTypeFilterLength := len(taskTypeFilters)
+// 		length := taskTypeFilterLength - 1
+// 		taskTypeFilters = taskTypeFilters[0:length]
+// 	}
+// 	return taskTypeFilters
+// }
 
 func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask

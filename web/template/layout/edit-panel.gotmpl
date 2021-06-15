@@ -26,7 +26,7 @@
           <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
             <option value="0" selected>Select a team</option>
               {{ range .TeamSelection }}
-            <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
+              <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
           </select>
         </div>

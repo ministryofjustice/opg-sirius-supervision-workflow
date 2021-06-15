@@ -6,26 +6,21 @@ import (
 	"net/http"
 )
 
-type TeamSelectedMembers struct {
-	TeamMembersId   int    `json:"id"`
-	TeamMembersName string `json:"displayName"`
+type AssigneesTeam struct {
+	Id      int           `json:"id"`
+	Members []TeamMembers `json:"members"`
+	Name    string        `json:"name"`
 }
 
-type TeamSelected struct {
-	Id                       int                   `json:"id"`
-	Members                  []TeamSelectedMembers `json:"members"`
-	Name                     string                `json:"name"`
-	selectedTeamToAssignTask int
-}
+func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selectedTeam int) (AssigneesTeam, error) {
+	var v AssigneesTeam
+	teamId := loggedInTeamId
 
-func (c *Client) GetMembersForTeam(ctx Context, loggedInTeamId int, selectedTeamToAssignTask int) (TeamSelected, error) {
-	var v TeamSelected
-
-	if selectedTeamToAssignTask == 0 && v.selectedTeamToAssignTask == 0 {
-		selectedTeamToAssignTask = loggedInTeamId
+	if selectedTeam != 0 {
+		teamId = selectedTeam
 	}
 
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", selectedTeamToAssignTask), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
 
 	if err != nil {
 		return v, err
@@ -35,7 +30,6 @@ func (c *Client) GetMembersForTeam(ctx Context, loggedInTeamId int, selectedTeam
 	if err != nil {
 		return v, err
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -49,8 +43,6 @@ func (c *Client) GetMembersForTeam(ctx Context, loggedInTeamId int, selectedTeam
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
-
-	v.selectedTeamToAssignTask = selectedTeamToAssignTask
 
 	return v, err
 }

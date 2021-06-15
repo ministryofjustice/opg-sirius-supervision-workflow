@@ -23,24 +23,27 @@
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset">
         <div class="govuk-checkboxes govuk-checkboxes--small">
+          {{ range .TeamSelection }}
+          {{if eq .Id .UserSelectedTeam}}
           <div class="govuk-checkboxes__item filter__checkbox">
-            <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="">
+            <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="{{ .UserSelectedTeam }}">
+          {{end}}
+          {{ end }}
             <label class="govuk-label govuk-checkboxes__label" for="">
-              {{ .TeamSelected.Id }}
+            Not Assigned
             </label>
           </div>
         </div>
-        {{ range .TeamSelected.Members }}
+        {{ range .Assignees.Members }}
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
             <input class="govuk-checkboxes__input assigned" id="" name="assigedTo" type="checkbox" value="{{ .TeamMembersId }}">
             <label class="govuk-label govuk-checkboxes__label" for="">
-              {{ .TeamMembersName }}
+              {{ .TeamMembersDisplayName }}
             </label>
           </div>
         </div>
         {{ end }}
-        
       </fieldset>
     </div>
   </div>

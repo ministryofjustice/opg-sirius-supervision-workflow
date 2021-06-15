@@ -6,8 +6,9 @@ import (
 )
 
 type TeamMembers struct {
-	TeamMembersId   int    `json:"id"`
-	TeamMembersName string `json:"name"`
+	TeamMembersId          int    `json:"id"`
+	TeamMembersName        string `json:"name"`
+	TeamMembersDisplayName string `json:"displayName"`
 }
 
 type TeamCollection struct {
@@ -41,7 +42,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamName int, selectedTeamMembers TeamSelected) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamName int) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData
@@ -73,12 +74,6 @@ func (c *Client) GetTeamSelection(ctx Context, loggedInTeamId int, selectedTeamN
 		k.TeamId = loggedInTeamId
 	} else {
 		k.TeamId = selectedTeamName
-	}
-
-	if selectedTeamMembers.selectedTeamToAssignTask == 0 && k.SelectedTeam == 0 {
-		k.SelectedTeam = loggedInTeamId
-	} else {
-		k.SelectedTeam = selectedTeamMembers.selectedTeamToAssignTask
 	}
 
 	teams := make([]ReturnedTeamCollection, len(v))
