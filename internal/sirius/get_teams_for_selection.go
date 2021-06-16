@@ -44,32 +44,32 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected []string, appliedFilters []string) ([]ReturnedTeamCollection, []string, error) {
+func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected []string) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
-		return q, []string{}, err
+		return q, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return q, []string{}, err
+		return q, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return q, []string{}, ErrUnauthorized
+		return q, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return q, []string{}, newStatusError(resp)
+		return q, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return q, []string{}, err
+		return q, err
 	}
 
 	k.TeamId = teamId
@@ -103,13 +103,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 
 	teams = FilterOutNonLayTeams(teams)
 
-	for _, u := range teams {
-		if u.IsTeamSelected == true && teamId == u.Id {
-			appliedFilters = append(appliedFilters, u.Name)
-		}
-	}
-
-	return teams, appliedFilters, err
+	return teams, err
 }
 
 func FilterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {

@@ -11,12 +11,13 @@ import (
 
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, []string, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
-	GetTeamsForSelection(sirius.Context, int, []string, []string) ([]sirius.ReturnedTeamCollection, []string, error)
-	GetAssigneesForFilter(sirius.Context, int, []string, []string) (sirius.AssigneesTeam, []string, error)
+	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
+	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
+	GetAppliedFilters(sirius.Context, int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
 type workflowVars struct {
@@ -84,7 +85,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		loggedInTeamId := myDetails.Teams[0].TeamId
-		loadTaskTypes, appliedFilters, err := client.GetTaskTypes(ctx, taskTypeSelected)
+		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
 			return err
 		}
@@ -96,15 +97,17 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
-		teamSelection, appliedFilters, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected, appliedFilters)
+		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
 
-		assigneesForFilter, appliedFilters, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected, appliedFilters)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
+
+		appliedFilters := client.GetAppliedFilters(ctx, teamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
 			Path:           r.URL.Path,

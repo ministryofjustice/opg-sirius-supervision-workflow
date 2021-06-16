@@ -19,31 +19,31 @@ type AssigneeTeamMembers struct {
 	IsSelected             bool
 }
 
-func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected []string, appliedFilters []string) (AssigneesTeam, []string, error) {
+func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected []string) (AssigneesTeam, error) {
 	var v AssigneesTeam
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
 
 	if err != nil {
-		return v, []string{}, err
+		return v, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, []string{}, err
+		return v, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, []string{}, ErrUnauthorized
+		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, []string{}, newStatusError(resp)
+		return v, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, []string{}, err
+		return v, err
 	}
 
 	assigneeList := make([]AssigneeTeamMembers, len(v.Members))
@@ -57,15 +57,9 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 		}
 	}
 
-	for _, u := range assigneeList {
-		if u.IsSelected == true {
-			appliedFilters = append(appliedFilters, u.TeamMembersDisplayName)
-		}
-	}
-
 	v.Members = assigneeList
 
-	return v, appliedFilters, err
+	return v, err
 }
 
 func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {

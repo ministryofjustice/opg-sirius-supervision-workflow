@@ -19,31 +19,31 @@ type WholeTaskList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, []string, error) {
+func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
-		return nil, []string{}, err
+		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return nil, []string{}, err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return nil, []string{}, ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, []string{}, newStatusError(resp)
+		return nil, newStatusError(resp)
 	}
 
 	var v WholeTaskList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return nil, []string{}, err
+		return nil, err
 	}
 
 	WholeTaskList := v.AllTaskList
@@ -62,19 +62,11 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 		taskTypeList = append(taskTypeList, taskType)
 	}
 
-	var AppliedFilters []string
-	// append all selected tasks
-	for _, u := range taskTypeList {
-		if u.IsSelected == true {
-			AppliedFilters = append(AppliedFilters, u.Incomplete)
-		}
-	}
-
 	sort.Slice(taskTypeList, func(i, j int) bool {
 		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
 	})
 
-	return taskTypeList, AppliedFilters, err
+	return taskTypeList, err
 }
 
 func IsSelected(handle string, taskTypeSelected []string) bool {
