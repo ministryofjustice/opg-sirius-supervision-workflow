@@ -56,15 +56,15 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
 
-	if selectedTeamMembers == 0 {
+	if selectedTeamId == 0 {
 		teamID = loggedInTeamId
 	} else {
-		teamID = selectedTeamMembers
+		teamID = selectedTeamId
 	}
 
 	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)

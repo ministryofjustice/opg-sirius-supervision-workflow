@@ -42,7 +42,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context, loggedInTeamId int, selectedTeamName int) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamsForSelection(ctx Context, teamId int, loggedInTeamId int) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData
@@ -69,12 +69,14 @@ func (c *Client) GetTeamsForSelection(ctx Context, loggedInTeamId int, selectedT
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return q, err
 	}
+	// can probably replace this with teamId
+	// if selectedTeamName == 0 && k.TeamId == 0 {
+	// 	k.TeamId = loggedInTeamId
+	// } else {
+	// 	k.TeamId = selectedTeamName
+	// }
 
-	if selectedTeamName == 0 && k.TeamId == 0 {
-		k.TeamId = loggedInTeamId
-	} else {
-		k.TeamId = selectedTeamName
-	}
+	k.TeamId = teamId
 
 	teams := make([]ReturnedTeamCollection, len(v))
 	for i, t := range v {
@@ -103,6 +105,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, loggedInTeamId int, selectedT
 	}
 
 	teams = filterOutNonLayTeams(teams)
+
 	return teams, err
 }
 

@@ -57,8 +57,9 @@ func TestGetMembersForTeam(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedResponse: AssigneesTeam{
-				Id:   13,
-				Name: "Lay Team 1 - (Supervision)",
+				Id:      13,
+				Name:    "Lay Team 1 - (Supervision)",
+				Members: []AssigneeTeamMembers{},
 			},
 		},
 	}
@@ -70,7 +71,7 @@ func TestGetMembersForTeam(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamMembers, err := client.GetAssigneesForFilter(getContext(tc.cookies), 13, 13, []string{""})
+				myTeamMembers, err := client.GetAssigneesForFilter(getContext(tc.cookies), 13, []string{""})
 				assert.Equal(t, tc.expectedResponse, myTeamMembers)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

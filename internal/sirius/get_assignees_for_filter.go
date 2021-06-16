@@ -19,13 +19,8 @@ type AssigneeTeamMembers struct {
 	IsSelected             bool
 }
 
-func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selectedTeam int, assigneeSelected []string) (AssigneesTeam, error) {
+func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected []string) (AssigneesTeam, error) {
 	var v AssigneesTeam
-	teamId := loggedInTeamId
-
-	if selectedTeam != 0 {
-		teamId = selectedTeam
-	}
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
 

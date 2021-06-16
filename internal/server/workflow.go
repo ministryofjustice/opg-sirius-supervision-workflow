@@ -15,7 +15,7 @@ type WorkflowInformation interface {
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
 	GetTeamsForSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
-	GetAssigneesForFilter(sirius.Context, int, int, []string) (sirius.AssigneesTeam, error)
+	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
 
@@ -61,7 +61,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			displayTaskLimit = 25
 		}
 
-		selectedTeamName, _ := strconv.Atoi(r.FormValue("change-team"))
+		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 
 		err := r.ParseForm()
@@ -77,7 +77,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		if len(myDetails.Teams) < 1 {
-			err = errors.New("This user is not in a team")
+			err = errors.New("this user is not in a team")
 		}
 		if err != nil {
 			return err
@@ -89,19 +89,19 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
 			return err
 		}
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
-		teamSelection, err := client.GetTeamsForSelection(ctx, loggedInTeamId, selectedTeamName)
+		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, loggedInTeamId)
 		if err != nil {
 			return err
 		}
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, selectedTeamName, assigneeSelected)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
@@ -140,10 +140,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if checkTaskHasIdForAssigning != "" {
 				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
 			} else {
-				if len(vars.Assignees.Members) > 1 {
-					newAssigneeIdForTask = vars.Assignees.Members[0].TeamMembersId
-				}
-
+				newAssigneeIdForTask, _ = strconv.Atoi(selectedTeamToAssignTaskString)
 			}
 
 			err := r.ParseForm()
@@ -173,7 +170,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
-			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				return err
 			}
