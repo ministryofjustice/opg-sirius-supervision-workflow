@@ -80,7 +80,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 			Id:             t.ID,
 			Name:           t.DisplayName,
 			Type:           "",
-			IsTeamSelected: IsTeamSelected(teamId, assigneeSelected),
+			IsTeamSelected: IsTeamSelected(teamId, assigneeSelected, t.ID),
 		}
 
 		for _, m := range t.Members {
@@ -116,10 +116,10 @@ func FilterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {
 	return filteredTeams
 }
 
-func IsTeamSelected(teamId int, assigneeSelected []string) bool {
+func IsTeamSelected(teamId int, assigneeSelected []string, myTeamId int) bool {
 	for _, q := range assigneeSelected {
 		assigneeSelectedAsAString, _ := strconv.Atoi(q)
-		if teamId == assigneeSelectedAsAString {
+		if teamId == assigneeSelectedAsAString && teamId == myTeamId {
 			return true
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type CaseManagement struct {
@@ -52,11 +53,12 @@ type TaskList struct {
 	WholeTaskList []ApiTask   `json:"tasks"`
 	Pages         PageDetails `json:"pages"`
 	TotalTasks    int         `json:"total"`
+	ActiveFilters []string
 }
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string, AppliedFilters []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
@@ -69,7 +71,6 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
-
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
@@ -98,7 +99,9 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskList := v
 
 	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
-
+	TaskList.ActiveFilters = CreativeActiveFilters(v.WholeTaskList, assigneeSelected, AppliedFilters)
+	fmt.Println("in get task list")
+	fmt.Println(TaskList.ActiveFilters)
 	return TaskList, teamID, err
 }
 
@@ -201,4 +204,15 @@ func GetClientInformation(s ApiTask) Clients {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}
 	return s.ApiClients[0]
+}
+
+func CreativeActiveFilters(TaskList []ApiTask, assigneeSelected []string, AppliedFilters []string) []string {
+	for _, u := range assigneeSelected {
+		for _, k := range TaskList {
+			if u == strconv.Itoa(k.ApiTaskAssignee.Id) {
+				AppliedFilters = append(AppliedFilters, k.ApiTaskAssignee.CaseManagerName)
+			}
+		}
+	}
+	return AppliedFilters
 }

@@ -11,7 +11,6 @@ type TaskDetails struct {
 	ShowingUpperLimit int
 	ShowingLowerLimit int
 	LastFilter        string
-	TaskTypeFilters   int
 }
 
 func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int) TaskDetails {

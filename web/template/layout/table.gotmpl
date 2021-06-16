@@ -94,14 +94,17 @@
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
-        <tr class="govuk-table__row">
-        {{ if eq .TaskDetails.TaskTypeFilters 0 }}
-          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
-        {{ else }}
-          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks of type: {{ range .LoadTasks }}{{if .IsSelected }}<br>{{ .Incomplete }}{{ end }}{{ end }}</td>
-        </tr>
+        {{ $length := len .TaskList.ActiveFilters }}
+        {{ if eq $length 0 }}
+          <tr class="govuk-table__row">
+              <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
+          </tr>
+        {{ else if ne $length 0}}
+          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks of type: {{ range .TaskList.ActiveFilters }}{{ . }}{{ end }}</td>
         {{ end }}
       {{ end }}
+      
+      
     </tbody>
   </table>
 </section>
