@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 type CaseManagement struct {
@@ -58,7 +57,7 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string, AppliedFilters []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
@@ -99,9 +98,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskList := v
 
 	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
-	TaskList.ActiveFilters = CreativeActiveFilters(v.WholeTaskList, assigneeSelected, AppliedFilters)
-	fmt.Println("in get task list")
-	fmt.Println(TaskList.ActiveFilters)
+
 	return TaskList, teamID, err
 }
 
@@ -204,15 +201,4 @@ func GetClientInformation(s ApiTask) Clients {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}
 	return s.ApiClients[0]
-}
-
-func CreativeActiveFilters(TaskList []ApiTask, assigneeSelected []string, AppliedFilters []string) []string {
-	for _, u := range assigneeSelected {
-		for _, k := range TaskList {
-			if u == strconv.Itoa(k.ApiTaskAssignee.Id) {
-				AppliedFilters = append(AppliedFilters, k.ApiTaskAssignee.CaseManagerName)
-			}
-		}
-	}
-	return AppliedFilters
 }

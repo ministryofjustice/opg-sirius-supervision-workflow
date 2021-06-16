@@ -19,7 +19,7 @@ type WholeTaskList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string, AppliedFilters []string) ([]ApiTaskTypes, []string, error) {
+func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, []string, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
@@ -61,9 +61,11 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string, AppliedFil
 		}
 		taskTypeList = append(taskTypeList, taskType)
 	}
+
+	var AppliedFilters []string
 	// append all selected tasks
-	for _, u := range WholeTaskList {
-		if u.IsSelected {
+	for _, u := range taskTypeList {
+		if u.IsSelected == true {
 			AppliedFilters = append(AppliedFilters, u.Incomplete)
 		}
 	}
