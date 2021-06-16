@@ -67,7 +67,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamCollection, err := client.GetTeamsForSelection(getContext(tc.cookies), 13, 13)
+				myTeamCollection, err := client.GetTeamsForSelection(getContext(tc.cookies), 13)
 				assert.Equal(t, tc.expectedResponse, myTeamCollection)
 				assert.Equal(t, tc.expectedError, err)
 				return nil

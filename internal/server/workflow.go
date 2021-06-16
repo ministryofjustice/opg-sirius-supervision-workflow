@@ -14,7 +14,7 @@ type WorkflowInformation interface {
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
-	GetTeamsForSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
+	GetTeamsForSelection(sirius.Context, int) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
 }
@@ -62,7 +62,6 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		}
 
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
-		selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 
 		err := r.ParseForm()
 		if err != nil {
@@ -96,7 +95,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
 
-		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, loggedInTeamId)
+		teamSelection, err := client.GetTeamsForSelection(ctx, teamId)
 		if err != nil {
 			return err
 		}
@@ -125,6 +124,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		case http.MethodGet:
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
+			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 
 			if selectedTeamToAssignTaskString == "0" {
 				vars.Errors = sirius.ValidationErrors{
@@ -134,11 +134,11 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 
-			checkTaskHasIdForAssigning := r.PostFormValue("assignCM")
+			checkTaskHasIdForAssigning := r.FormValue("assignCM")
 			var newAssigneeIdForTask int
 
 			if checkTaskHasIdForAssigning != "" {
-				newAssigneeIdForTask, _ = strconv.Atoi(r.PostFormValue("assignCM"))
+				newAssigneeIdForTask, _ = strconv.Atoi(r.FormValue("assignCM"))
 			} else {
 				newAssigneeIdForTask, _ = strconv.Atoi(selectedTeamToAssignTaskString)
 			}

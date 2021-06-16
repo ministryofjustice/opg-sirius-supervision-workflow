@@ -50,14 +50,14 @@ func (m *mockWorkflowInformation) GetTaskDetails(ctx sirius.Context, taskList si
 	return m.taskDetailsData
 }
 
-func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, loggedInTeamId int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
+func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, teamId int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.assignees, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamId int, loggedInTeamId int) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamId int) ([]sirius.ReturnedTeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
