@@ -51,18 +51,15 @@ func (c *Client) GetAssigneesForFilter(ctx Context, loggedInTeamId int, selected
 		return v, err
 	}
 
-	var assigneeList []AssigneeTeamMembers
+	assigneeList := make([]AssigneeTeamMembers, len(v.Members))
 
 	for i, u := range v.Members {
-		Members := []AssigneeTeamMembers{
-			{
-				TeamMembersId:          u.TeamMembersId,
-				TeamMembersName:        u.TeamMembersName,
-				TeamMembersDisplayName: u.TeamMembersDisplayName,
-				IsSelected:             isAssigneeSelected(u.TeamMembersId, assigneeSelected),
-			},
+		assigneeList[i] = AssigneeTeamMembers{
+			TeamMembersId:          u.TeamMembersId,
+			TeamMembersName:        u.TeamMembersName,
+			TeamMembersDisplayName: u.TeamMembersDisplayName,
+			IsSelected:             isAssigneeSelected(u.TeamMembersId, assigneeSelected),
 		}
-		assigneeList = append(assigneeList, Members[i])
 	}
 
 	v.Members = assigneeList

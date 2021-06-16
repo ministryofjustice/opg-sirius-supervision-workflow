@@ -56,7 +56,7 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamMembers int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
@@ -73,33 +73,33 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
-		return v, err
+		return v, 0, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return v, err
+		return v, 0, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return v, ErrUnauthorized
+		return v, 0, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return v, newStatusError(resp)
+		return v, 0, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		return v, err
+		return v, 0, err
 	}
 
 	TaskList := v
 
 	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
 
-	return TaskList, err
+	return TaskList, teamID, err
 }
 
 func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
@@ -120,11 +120,11 @@ func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 func createAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
 	if len(assigneeSelected) == 1 {
 		for _, s := range assigneeSelected {
-			assigneeFilters += "assignee:" + s
+			assigneeFilters += "assigneeid:" + s
 		}
 	} else if len(assigneeSelected) > 1 {
 		for _, s := range assigneeSelected {
-			assigneeFilters += "assignee:" + s + ","
+			assigneeFilters += "assigneeid:" + s + ","
 		}
 		assigneeFilterLength := len(assigneeFilters)
 		length := assigneeFilterLength - 1

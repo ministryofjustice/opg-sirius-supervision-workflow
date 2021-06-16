@@ -10,9 +10,9 @@ import (
 )
 
 type WorkflowInformation interface {
-	SiriusUserDetails(sirius.Context) (sirius.UserDetails, error)
+	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
 	GetTeamsForSelection(sirius.Context, int, int) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, int, []string) (sirius.AssigneesTeam, error)
@@ -71,7 +71,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		taskTypeSelected := (r.Form["selected-task-type"])
 		assigneeSelected := (r.Form["selected-assignee"])
 
-		myDetails, err := client.SiriusUserDetails(ctx)
+		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
 			return err
 		}
@@ -89,7 +89,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
 			return err
 		}
@@ -101,7 +101,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			return err
 		}
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamSelection[0].Id, selectedTeamName, assigneeSelected)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, selectedTeamName, assigneeSelected)
 		if err != nil {
 			return err
 		}
@@ -173,7 +173,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
-			TaskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			TaskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamName, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				return err
 			}
