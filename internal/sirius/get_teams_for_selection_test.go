@@ -67,7 +67,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
 
-				myTeamCollection, err := client.GetTeamsForSelection(getContext(tc.cookies), 13)
+				myTeamCollection, err := client.GetTeamsForSelection(getContext(tc.cookies), 13, []string{})
 				assert.Equal(t, tc.expectedResponse, myTeamCollection)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
@@ -106,6 +106,14 @@ func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, filterOutNonLayTeams(teamCollection), expectedTeamCollection)
-	assert.NotEqual(t, filterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
+	assert.Equal(t, FilterOutNonLayTeams(teamCollection), expectedTeamCollection)
+	assert.NotEqual(t, FilterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
+}
+
+func TestGetIsTeamSelected(t *testing.T) {
+	assigneeSelectedWithTeam := []string{"15", "88", "89"}
+	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam), true)
+
+	assigneeSelectedWithoutTeam := []string{"99", "88", "89"}
+	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithoutTeam), false)
 }

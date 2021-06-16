@@ -104,7 +104,7 @@ func TestGetTaskTypes(t *testing.T) {
 }
 
 func TestIsSelected(t *testing.T) {
-	assert.Equal(t, isSelected("ORAL", []string{"ORAL"}), true)
-	assert.Equal(t, isSelected("CWGN", []string{"CWGN", "ORAL"}), true)
-	assert.Equal(t, isSelected("TEST", []string{"CWGN", "ORAL"}), false)
+	assert.Equal(t, IsSelected("ORAL", []string{"ORAL"}), true)
+	assert.Equal(t, IsSelected("CWGN", []string{"CWGN", "ORAL"}), true)
+	assert.Equal(t, IsSelected("TEST", []string{"CWGN", "ORAL"}), false)
 }

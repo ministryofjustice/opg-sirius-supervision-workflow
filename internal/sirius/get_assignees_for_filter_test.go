@@ -79,3 +79,11 @@ func TestGetMembersForTeam(t *testing.T) {
 		})
 	}
 }
+
+func TestIsAssigneeSelected(t *testing.T) {
+	teamMembersSelected := []string{"15", "88", "89", "90"}
+	assert.Equal(t, IsAssigneeSelected(90, teamMembersSelected), true)
+
+	teamMembersNotSelected := []string{"99", "88", "89"}
+	assert.Equal(t, IsAssigneeSelected(90, teamMembersNotSelected), false)
+}

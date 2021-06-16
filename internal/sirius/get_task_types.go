@@ -57,7 +57,7 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 			Category:   u.Category,
 			Complete:   u.Complete,
 			User:       u.User,
-			IsSelected: isSelected(u.Handle, taskTypeSelected),
+			IsSelected: IsSelected(u.Handle, taskTypeSelected),
 		}
 		taskTypeList = append(taskTypeList, taskType)
 	}
@@ -69,7 +69,7 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	return taskTypeList, err
 }
 
-func isSelected(handle string, taskTypeSelected []string) bool {
+func IsSelected(handle string, taskTypeSelected []string) bool {
 	for _, q := range taskTypeSelected {
 		if handle == q {
 			return true

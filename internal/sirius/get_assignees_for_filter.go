@@ -53,7 +53,7 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 			TeamMembersId:          u.TeamMembersId,
 			TeamMembersName:        u.TeamMembersName,
 			TeamMembersDisplayName: u.TeamMembersDisplayName,
-			IsSelected:             isAssigneeSelected(u.TeamMembersId, assigneeSelected),
+			IsSelected:             IsAssigneeSelected(u.TeamMembersId, assigneeSelected),
 		}
 	}
 
@@ -62,7 +62,7 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	return v, err
 }
 
-func isAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
+func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
 	for _, q := range assigneeSelected {
 		assigneeSelectedAsAString, _ := strconv.Atoi(q)
 		if TeamMembersId == assigneeSelectedAsAString {

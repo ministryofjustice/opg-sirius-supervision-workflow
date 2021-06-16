@@ -57,7 +57,7 @@ func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, team
 	return m.assignees, m.err
 }
 
-func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamId int) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamId int, assigneeSelected []string) ([]sirius.ReturnedTeamCollection, error) {
 	m.count += 1
 	m.lastCtx = ctx
 

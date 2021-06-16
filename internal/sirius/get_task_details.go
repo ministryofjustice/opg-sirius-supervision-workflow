@@ -23,20 +23,20 @@ func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, disp
 		TaskDetails.ListOfPages = append(TaskDetails.ListOfPages, i)
 	}
 
-	TaskDetails.PreviousPage = getPreviousPageNumber(search)
+	TaskDetails.PreviousPage = GetPreviousPageNumber(search)
 
-	TaskDetails.NextPage = getNextPageNumber(taskList, search)
+	TaskDetails.NextPage = GetNextPageNumber(taskList, search)
 
 	TaskDetails.StoredTaskLimit = displayTaskLimit
 
-	TaskDetails.ShowingUpperLimit = getShowingUpperLimitNumber(taskList, displayTaskLimit)
+	TaskDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(taskList, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = getShowingLowerLimitNumber(taskList, displayTaskLimit)
+	TaskDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(taskList, displayTaskLimit)
 
 	if len(TaskDetails.ListOfPages) != 0 {
 		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
 		TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
-		TaskDetails.LimitedPagination = getPaginationLimits(taskList, TaskDetails)
+		TaskDetails.LimitedPagination = GetPaginationLimits(taskList, TaskDetails)
 	} else {
 		TaskDetails.FirstPage = 0
 		TaskDetails.LastPage = 0
@@ -46,7 +46,7 @@ func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, disp
 	return TaskDetails
 }
 
-func getPreviousPageNumber(search int) int {
+func GetPreviousPageNumber(search int) int {
 	if search <= 1 {
 		return 1
 	} else {
@@ -54,7 +54,7 @@ func getPreviousPageNumber(search int) int {
 	}
 }
 
-func getNextPageNumber(taskList TaskList, search int) int {
+func GetNextPageNumber(taskList TaskList, search int) int {
 	if search < taskList.Pages.PageTotal {
 		if search == 0 {
 			return search + 2
@@ -66,7 +66,7 @@ func getNextPageNumber(taskList TaskList, search int) int {
 	}
 }
 
-func getShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
+func GetShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	if taskList.Pages.PageCurrent == 1 && taskList.TotalTasks != 0 {
 		return 1
 	} else if taskList.Pages.PageCurrent == 1 && taskList.TotalTasks == 0 {
@@ -77,7 +77,7 @@ func getShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	}
 }
 
-func getShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
+func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	if taskList.Pages.PageCurrent*displayTaskLimit > taskList.TotalTasks {
 		return taskList.TotalTasks
 	} else {
@@ -85,7 +85,7 @@ func getShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	}
 }
 
-func getPaginationLimits(taskList TaskList, TaskDetails TaskDetails) []int {
+func GetPaginationLimits(taskList TaskList, TaskDetails TaskDetails) []int {
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
 	if taskList.Pages.PageCurrent > 2 {

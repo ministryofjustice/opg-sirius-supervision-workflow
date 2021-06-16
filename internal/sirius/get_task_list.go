@@ -67,8 +67,8 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		teamID = selectedTeamId
 	}
 
-	taskTypeFilters = createTaskTypeFilter(taskTypeSelected, taskTypeFilters)
-	assigneeFilters = createAssigneeFilter(assigneeSelected, assigneeFilters)
+	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
+	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
 
@@ -97,12 +97,12 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskList := v
 
-	TaskList.WholeTaskList = setTaskTypeName(v.WholeTaskList, LoadTasks)
+	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
 
 	return TaskList, teamID, err
 }
 
-func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
+func CreateTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
 	if len(taskTypeSelected) == 0 {
 		taskTypeFilters += ","
 	} else if len(taskTypeSelected) == 1 {
@@ -117,7 +117,7 @@ func createTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 	return taskTypeFilters
 }
 
-func createAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
+func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
 	if len(assigneeSelected) == 1 {
 		for _, s := range assigneeSelected {
 			assigneeFilters += "assigneeid:" + s
@@ -133,28 +133,28 @@ func createAssigneeFilter(assigneeSelected []string, assigneeFilters string) str
 	return assigneeFilters
 }
 
-func setTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
+func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	var list []ApiTask
 	for _, s := range v {
 		task := ApiTask{
 			ApiTaskAssignee: CaseManagement{
-				CaseManagerName: getAssigneeDisplayName(s),
-				Id:              getAssigneeId(s),
-				Team:            getAssigneeTeams(s),
+				CaseManagerName: GetAssigneeDisplayName(s),
+				Id:              GetAssigneeId(s),
+				Team:            GetAssigneeTeams(s),
 			},
 			ApiTaskDueDate:    s.ApiTaskDueDate,
 			ApiTaskId:         s.ApiTaskId,
 			ApiTaskHandle:     s.ApiTaskHandle,
 			ApiTaskType:       s.ApiTaskType,
-			TaskTypeName:      getTaskName(s, loadTasks),
-			ClientInformation: getClientInformation(s),
+			TaskTypeName:      GetTaskName(s, loadTasks),
+			ClientInformation: GetClientInformation(s),
 		}
 		list = append(list, task)
 	}
 	return list
 }
 
-func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
+func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
 	for i := range loadTasks {
 		if task.ApiTaskHandle == loadTasks[i].Handle {
 			return loadTasks[i].Incomplete
@@ -163,7 +163,7 @@ func getTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
 	return task.ApiTaskType
 }
 
-func getAssigneeDisplayName(s ApiTask) string {
+func GetAssigneeDisplayName(s ApiTask) string {
 	if s.ApiTaskAssignee.CaseManagerName == "Unassigned" {
 		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.CaseManagerName
@@ -174,7 +174,7 @@ func getAssigneeDisplayName(s ApiTask) string {
 	return s.ApiTaskAssignee.CaseManagerName
 }
 
-func getAssigneeTeams(s ApiTask) []UserTeam {
+func GetAssigneeTeams(s ApiTask) []UserTeam {
 	if len(s.ApiTaskAssignee.Team) == 0 {
 		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.Team
@@ -185,7 +185,7 @@ func getAssigneeTeams(s ApiTask) []UserTeam {
 	return s.ApiTaskAssignee.Team
 }
 
-func getAssigneeId(s ApiTask) int {
+func GetAssigneeId(s ApiTask) int {
 	if s.ApiTaskAssignee.Id == 0 {
 		if len(s.ApiClients) != 0 {
 			return s.ApiClients[0].ClientSupervisionCaseOwner.Id
@@ -196,7 +196,7 @@ func getAssigneeId(s ApiTask) int {
 	return s.ApiTaskAssignee.Id
 }
 
-func getClientInformation(s ApiTask) Clients {
+func GetClientInformation(s ApiTask) Clients {
 	if len(s.ApiTaskCaseItems) != 0 {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}

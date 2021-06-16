@@ -72,7 +72,7 @@ func TestGetTaskList(t *testing.T) {
 
 func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
 
-	ListOfPages := makeListOfPagesRange(1, lastPage)
+	ListOfPages := MakeListOfPagesRange(1, lastPage)
 
 	taskList := TaskList{
 		Pages: PageDetails{
@@ -90,38 +90,45 @@ func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndTwoAboveCurrentPage(t *testing.T) {
 	taskList, taskDetails := setUpPagesTests(3, 10)
 
-	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4, 5})
 }
 
 func TestGetPaginationLimitsWillReturnARangeOnlyTwoAboveCurrentPage(t *testing.T) {
 	taskList, taskDetails := setUpPagesTests(1, 10)
 
-	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3})
 }
 
 func TestGetPaginationLimitsWillReturnARangeOneBelowAndTwoAboveCurrentPage(t *testing.T) {
 	taskList, taskDetails := setUpPagesTests(2, 10)
 
-	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4})
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndOneAboveCurrentPage(t *testing.T) {
 	taskList, taskDetails := setUpPagesTests(4, 5)
 
-	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{2, 3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{2, 3, 4, 5})
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T) {
 	taskList, taskDetails := setUpPagesTests(5, 5)
 
-	assert.Equal(t, getPaginationLimits(taskList, taskDetails), []int{3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{3, 4, 5})
 }
 
 func TestCreateTaskTypeFilter(t *testing.T) {
-	assert.Equal(t, createTaskTypeFilter([]string{}, ""), ",")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN,")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL,")
-	assert.Equal(t, createTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST,")
+	assert.Equal(t, CreateTaskTypeFilter([]string{}, ""), ",")
+	assert.Equal(t, CreateTaskTypeFilter([]string{"CWGN"}, ""), "type:CWGN,")
+	assert.Equal(t, CreateTaskTypeFilter([]string{"CWGN", "ORAL"}, ""), "type:CWGN,type:ORAL,")
+	assert.Equal(t, CreateTaskTypeFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, ""), "type:CWGN,type:ORAL,type:FAKE,type:TEST,")
+}
+
+func TestCreateAssigneeFilter(t *testing.T) {
+	assert.Equal(t, CreateAssigneeFilter([]string{}, ""), "")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1"}, ""), "assigneeid:LayTeam1")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User2", "LayTeam1 User3"}, ""), "assigneeid:LayTeam1 User2,assigneeid:LayTeam1 User3")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User3"}, ""), "assigneeid:LayTeam1 User3")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
@@ -236,14 +243,14 @@ func TestGetTaskTypesNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("CWGN", "", "", "", 0)
 	loadTasks := SetUpLoadTasks()
 
-	assert.Equal(t, getTaskName(taskType, loadTasks), "Casework - General")
+	assert.Equal(t, GetTaskName(taskType, loadTasks), "Casework - General")
 }
 
 func TestGetTaskTypesNameWillReturnOrginalTaskNameIfNoMatchToHandle(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("FAKE", "Fake type", "", "", 0)
 	loadTasks := SetUpLoadTasks()
 
-	assert.Equal(t, getTaskName(taskType, loadTasks), "Fake type")
+	assert.Equal(t, GetTaskName(taskType, loadTasks), "Fake type")
 }
 
 func TestGetTaskTypesNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
@@ -251,48 +258,48 @@ func TestGetTaskTypesNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T
 	loadTasks := SetUpLoadTasks()
 	expectedResult := "Casework - General"
 
-	assert.Equal(t, getTaskName(taskType, loadTasks), expectedResult)
+	assert.Equal(t, GetTaskName(taskType, loadTasks), expectedResult)
 }
 
 func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheCaseItems(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "Unassigned", 0)
 	expectedResult := "Richard Fox"
 
-	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
 }
 func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Unassigned", 0)
 	expectedResult := "Richard Fox"
 
-	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
 }
 
 func TestGetAssigneeDisplayNameIfTaskIsNotAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
 	expectedResult := "Go Taskforce"
 
-	assert.Equal(t, getAssigneeDisplayName(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
 }
 
 func TestGetAssigneeIdWithOutACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
 	expectedResult := 1234
 
-	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
 }
 
 func TestGetAssigneeIdWithACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 0)
 	expectedResult := 4321
 
-	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
 }
 
 func TestGetAssigneeIdWithACaseAndAssignneNotToCaseOwner(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
 	expectedResult := 1122
 
-	assert.Equal(t, getAssigneeId(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
 }
 
 func TestGetClientInformationWithACase(t *testing.T) {
@@ -308,7 +315,7 @@ func TestGetClientInformationWithACase(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, getClientInformation(taskType), expectedResult)
+	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
 func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
@@ -345,7 +352,7 @@ func TestGetClientInformationWithoutACase(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, getClientInformation(taskType), expectedResult)
+	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
 func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
@@ -357,7 +364,7 @@ func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
 }
 
 func TestGetAssigneeTeamsReplacesContentWithAPIClientsInfoIfNoTeam(t *testing.T) {
@@ -369,7 +376,7 @@ func TestGetAssigneeTeamsReplacesContentWithAPIClientsInfoIfNoTeam(t *testing.T)
 		},
 	}
 
-	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
 }
 
 func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t *testing.T) {
@@ -381,7 +388,7 @@ func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t 
 		},
 	}
 
-	assert.Equal(t, getAssigneeTeams(taskType), expectedResult)
+	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
 }
 
 func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
@@ -397,7 +404,7 @@ func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
 		ClientSurname: "Pragnell",
 	}
 
-	assert.Equal(t, getClientInformation(taskType), expectedResult)
+	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
 func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
@@ -419,5 +426,5 @@ func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, getClientInformation(taskType), expectedResult)
+	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }

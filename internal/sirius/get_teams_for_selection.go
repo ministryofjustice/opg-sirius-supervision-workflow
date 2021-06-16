@@ -101,12 +101,12 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 		}
 	}
 
-	teams = filterOutNonLayTeams(teams)
+	teams = FilterOutNonLayTeams(teams)
 
 	return teams, err
 }
 
-func filterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {
+func FilterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {
 	var filteredTeams []ReturnedTeamCollection
 	for _, s := range v {
 		if len(s.Type) != 0 {
