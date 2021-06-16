@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type TeamMembers struct {
@@ -35,6 +36,7 @@ type ReturnedTeamCollection struct {
 	SelectedTeamId   int
 	Type             string
 	TypeLabel        string
+	IsTeamSelected   bool
 }
 
 type TeamStoredData struct {
@@ -42,7 +44,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context, teamId int) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected []string) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData
@@ -75,9 +77,10 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int) ([]ReturnedTeamCo
 	teams := make([]ReturnedTeamCollection, len(v))
 	for i, t := range v {
 		teams[i] = ReturnedTeamCollection{
-			Id:   t.ID,
-			Name: t.DisplayName,
-			Type: "",
+			Id:             t.ID,
+			Name:           t.DisplayName,
+			Type:           "",
+			IsTeamSelected: IsTeamSelected(teamId, assigneeSelected),
 		}
 
 		for _, m := range t.Members {
@@ -111,4 +114,14 @@ func filterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {
 		}
 	}
 	return filteredTeams
+}
+
+func IsTeamSelected(teamId int, assigneeSelected []string) bool {
+	for _, q := range assigneeSelected {
+		assigneeSelectedAsAString, _ := strconv.Atoi(q)
+		if teamId == assigneeSelectedAsAString {
+			return true
+		}
+	}
+	return false
 }
