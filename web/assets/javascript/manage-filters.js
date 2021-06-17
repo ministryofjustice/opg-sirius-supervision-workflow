@@ -8,6 +8,7 @@ export default class ManageFilters {
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.inputElementAssigneeFilter = element.querySelectorAll(".assignee-type");
       this.urlForPage = window.location.search;
+      this.teamSelection = element.querySelectorAll('.change-teams');
       this._clearFilters();
       this._isFiltered();
       this._isFilteredByAssignee();
@@ -18,6 +19,12 @@ export default class ManageFilters {
       this.taskTypeButton.forEach(element => {
           this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
           element.addEventListener('click', this._toggleTasktypeFilter);
+      });
+      
+      this.teamSelection.forEach(element => {
+        console.log("hey i have got into this foreach bind");
+          this._somethingHere = this._somethingHere.bind(this);
+          element.addEventListener('click', this._somethingHere);
       });
 
       this._retainTaskFilterMenuStateWhenReloadingPage()
@@ -108,6 +115,16 @@ export default class ManageFilters {
     let hrefValueWithoutSelectedTask = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
     let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
     document.getElementById("clear-filters").setAttribute('href', hrefValue);
+  }
+
+  _somethingHere() {
+    console.log("somethingHere");
+    let hrefValueWithoutSelectedTask = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
+    document.getElementById("clear-filters").setAttribute('href', hrefValue);
+    console.log('document.getElementById("pagination-top-form")');
+    console.log(document.getElementById("pagination-top-form"));
+    document.getElementById("pagination-top-form").submit();
   }
 
 }
