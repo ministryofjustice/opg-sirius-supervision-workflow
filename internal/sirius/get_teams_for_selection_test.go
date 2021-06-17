@@ -110,10 +110,15 @@ func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
 	assert.NotEqual(t, FilterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
 }
 
-func TestGetIsTeamSelected(t *testing.T) {
+func TestGetIsTeamSelectedReturnsTrueIfTeamIdIsInAssigneeFiltersArrayAndAlsoEqualToMyTeamId(t *testing.T) {
 	assigneeSelectedWithTeam := []string{"15", "88", "89"}
-	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam), true)
-
+	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam, 15), true)
+}
+func TestGetIsTeamSelectedReturnsFalseIfTeamIdIsNotEqualToMyTeamId(t *testing.T) {
+	assigneeSelectedWithTeam := []string{"15", "88", "89"}
+	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam, 25), false)
+}
+func TestGetIsTeamSelectedReturnsFalseIfTeamIdIsNotInAssigneeFiltersArray(t *testing.T) {
 	assigneeSelectedWithoutTeam := []string{"99", "88", "89"}
-	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithoutTeam), false)
+	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithoutTeam, 25), false)
 }

@@ -21,6 +21,7 @@ type mockWorkflowInformation struct {
 	teamSelectionData []sirius.ReturnedTeamCollection
 	assignees         sirius.AssigneesTeam
 	teamId            int
+	appliedFilters    []string
 }
 
 func (m *mockWorkflowInformation) GetCurrentUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -69,6 +70,13 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	m.lastCtx = ctx
 
 	return m.err
+}
+
+func (m *mockWorkflowInformation) GetAppliedFilters(ctx sirius.Context, teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
+	m.count += 1
+	m.lastCtx = ctx
+
+	return m.appliedFilters
 }
 
 var mockUserDetailsData = sirius.UserDetails{
@@ -238,7 +246,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(6, client.count)
+	assert.Equal(7, client.count)
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
