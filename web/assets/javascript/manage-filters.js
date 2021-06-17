@@ -90,27 +90,23 @@ export default class ManageFilters {
 
     this.inputElementAssigneeFilter.forEach(assignee => {
       if (assignee.checked) {
-        console.log(assignee)
         array.push(assignee);
       }
     })
-    console.log(array)
     let append = "";
     if(array.length > 0) {
       append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Assignee-hook">Assignees</h3>';
-      console.log(this.urlForPage)
       array.forEach(assignee => {
-        console.log(assignee.value)
           let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(assignee.value)).join("&");
           append += `<li id=${assignee.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + assignee.id + "</li>"
         })
     }
-    console.log(append)
     document.getElementById("applied-assignee-filters").innerHTML = append
   }
 
   _clearFilters() {
-    let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    let hrefValueWithoutSelectedTask = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
+    let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
     document.getElementById("clear-filters").setAttribute('href', hrefValue);
   }
 
