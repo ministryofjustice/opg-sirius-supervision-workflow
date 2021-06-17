@@ -6,9 +6,11 @@ export default class ManageFilters {
       this.taskTypeFilterArrowUp = element.querySelector(".app-c-option-select__icon--up");
       this.taskTypeFilterArrowDown = element.querySelector(".app-c-option-select__icon--down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
+      this.inputElementAssigneeFilter = element.querySelectorAll(".assignee-type");
       this.urlForPage = window.location.search;
       this._clearFilters();
       this._isFiltered();
+      this._isFilteredByAssignee();
       this._setupEventListeners();
   }
 
@@ -76,11 +78,35 @@ export default class ManageFilters {
       }else {
         append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Task-type-hook">Task type</h3>';
         array.forEach(taskType => {
-            var hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
+            let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
             append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
         }) 
       }
       document.getElementById("applied-task-type-filters").innerHTML = append
+  }
+
+  _isFilteredByAssignee() {
+    let array = [];
+
+    this.inputElementAssigneeFilter.forEach(assignee => {
+      if (assignee.checked) {
+        console.log(assignee)
+        array.push(assignee);
+      }
+    })
+    console.log(array)
+    let append = "";
+    if(array.length > 0) {
+      append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Assignee-hook">Assignees</h3>';
+      console.log(this.urlForPage)
+      array.forEach(assignee => {
+        console.log(assignee.value)
+          let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(assignee.value)).join("&");
+          append += `<li id=${assignee.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + assignee.id + "</li>"
+        })
+    }
+    console.log(append)
+    document.getElementById("applied-assignee-filters").innerHTML = append
   }
 
   _clearFilters() {
