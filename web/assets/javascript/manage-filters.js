@@ -83,7 +83,7 @@ _toggleAssigneeFilter() {
 }
 
   _retainTaskFilterMenuStateWhenReloadingPage() {
-    if (window.localStorage.getItem("TasktypeOpen") == "true") {
+    if (window.localStorage.getItem("TasktypeOpen") === "true") {
         this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
         this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
         this.taskTypeFilterArrowUp.classList.toggle('hide', false)
@@ -103,11 +103,11 @@ _toggleAssigneeFilter() {
   }
 
   _retainAssigneeMenuStateWhenReloadingPage() {
-    if (window.localStorage.getItem("AssigneeOpen") == "true") {
+    if (window.localStorage.getItem("AssigneeOpen") === "true") {
       this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'true')
-      this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'false')
+      this.assigneeFilterArrowDown.setAttribute('aria-expanded', 'false')
       this.assigneeFilterArrowUp.classList.toggle('hide', false)
-      this.assigneeFilterArrowUp.classList.toggle('hide', true)
+      this.assigneeFilterArrowDown.classList.toggle('hide', true)
 
       const hiddenStateAssignee = this.assigneeInnerContainer.classList.contains('hide');
       this.assigneeInnerContainer.classList.toggle('hide', !hiddenStateAssignee)
