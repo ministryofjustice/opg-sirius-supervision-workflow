@@ -20,12 +20,6 @@ export default class ManageFilters {
           this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
           element.addEventListener('click', this._toggleTasktypeFilter);
       });
-      
-      this.teamSelection.forEach(element => {
-        console.log("hey i have got into this foreach bind");
-          this._somethingHere = this._somethingHere.bind(this);
-          element.addEventListener('click', this._somethingHere);
-      });
 
       this._retainTaskFilterMenuStateWhenReloadingPage()
   }
@@ -79,17 +73,16 @@ export default class ManageFilters {
       })
 
       let append = "";
+    
+        if (array.length) {
+          append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Task-type-hook">Task type</h3>';
+          array.forEach(taskType => {
+              let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
+              append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
+          }) 
+        }
 
-      if(array.length === 0) {
-        append += '<p class="govuk-heading-s govuk-!-margin-bottom-0">No filters selected</p>'
-      }else {
-        append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Task-type-hook">Task type</h3>';
-        array.forEach(taskType => {
-            let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(taskType.value)).join("&");
-            append += `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + taskType.id + "</li>"
-        }) 
-      }
-      document.getElementById("applied-task-type-filters").innerHTML = append
+        document.getElementById("applied-task-type-filters").innerHTML = append
   }
 
   _isFilteredByAssignee() {
@@ -100,31 +93,24 @@ export default class ManageFilters {
         array.push(assignee);
       }
     })
+
     let append = "";
-    if(array.length > 0) {
+    
+    if (array.length) {
       append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Assignee-hook">Assignees</h3>';
       array.forEach(assignee => {
           let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(assignee.value)).join("&");
           append += `<li id=${assignee.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + assignee.id + "</li>"
         })
     }
-    document.getElementById("applied-assignee-filters").innerHTML = append
+
+      document.getElementById("applied-assignee-filters").innerHTML = append
   }
 
   _clearFilters() {
     let hrefValueWithoutSelectedTask = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
     let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
     document.getElementById("clear-filters").setAttribute('href', hrefValue);
-  }
-
-  _somethingHere() {
-    console.log("somethingHere");
-    let hrefValueWithoutSelectedTask = this.urlForPage.split("&").filter((param) => !param.includes("selected-task-type")).join("&");
-    let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
-    document.getElementById("clear-filters").setAttribute('href', hrefValue);
-    console.log('document.getElementById("pagination-top-form")');
-    console.log(document.getElementById("pagination-top-form"));
-    document.getElementById("pagination-top-form").submit();
   }
 
 }

@@ -69,6 +69,7 @@ func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+
 		taskTypeSelected := (r.Form["selected-task-type"])
 		assigneeSelected := (r.Form["selected-assignee"])
 
