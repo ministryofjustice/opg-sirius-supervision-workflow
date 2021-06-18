@@ -157,7 +157,7 @@ _toggleAssigneeFilter() {
     if (array.length) {
       append += '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Assignee-hook">Assignees</h3>';
       array.forEach(assignee => {
-          let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes(assignee.value)).join("&");
+          let hrefValue = this.urlForPage.split("&").filter((param) => !param.includes('selected-assignee='+assignee.value)).join("&");
           append += `<li id=${assignee.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` + assignee.id + "</li>"
         })
     }
