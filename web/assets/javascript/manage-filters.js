@@ -1,124 +1,78 @@
 export default class ManageFilters {
   constructor(element) {
+      this.filterComponents = element.querySelectorAll('.moj-filter__options');
 
-      this.taskTypeButton = element.querySelectorAll('.tasktype-button');
-      this.assigneeButton = element.querySelectorAll('.assignee-button');
-      console.log(this.assigneeButton)
-      this.tasktypeInnerContainer = element.querySelector(".tasktype-inner-container");
-      this.assigneeInnerContainer = element.querySelector(".assigned-inner-container");
-      this.taskTypeFilterArrowUp = element.querySelector(".tasktype-arrow-up");
-      this.taskTypeFilterArrowDown = element.querySelector(".tasktype-arrow-down");
-      this.assigneeFilterArrowUp = element.querySelector(".assigned-arrow-up");
-      this.assigneeFilterArrowDown = element.querySelector(".assigned-arrow-down");
       this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
       this.inputElementAssigneeFilter = element.querySelectorAll(".assignee-type");
       this.urlForPage = window.location.search;
+
       this.teamSelection = element.querySelectorAll('.change-teams');
       this._clearFilters();
       this._isFiltered();
       this._isFilteredByAssignee();
       this._setupEventListeners();
+      this._setupFilters();
   }
 
   _setupEventListeners() {
-      this.taskTypeButton.forEach(element => {
-          this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
-          element.addEventListener('click', this._toggleTasktypeFilter);
-      });
-
-      this._retainTaskFilterMenuStateWhenReloadingPage()
-      this._retainAssigneeMenuStateWhenReloadingPage()
+    this.filterComponents.forEach(element => {
+        this._toggleFilterVisibility = this._toggleFilterVisibility.bind(this);
+        element.querySelectorAll('.filter-toggle-button')[0].addEventListener('click', this._toggleFilterVisibility);
+    });
   }
 
-  _toggleTasktypeFilter() {
-      const hiddenStateTasktype = this.tasktypeInnerContainer.classList.contains('hide');
-      this.tasktypeInnerContainer.classList.toggle('hide', !hiddenStateTasktype)
-      if (hiddenStateTasktype) {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-
-        this.taskTypeFilterArrowUp.classList.toggle('hide', false);
-        this.taskTypeFilterArrowDown.classList.toggle('hide', true)
-
-        window.localStorage.setItem("TasktypeOpen", "true")
-        console.log("set TasktypeOpen to true")
-        console.log(window.localStorage.getItem("TasktypeOpen"))
-    } else {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowUp.classList.toggle('hide', true)
-        this.taskTypeFilterArrowDown.classList.toggle('hide', false)
-
-        window.localStorage.setItem("TasktypeOpen", "false")
-        console.log("set TasktypeOpen to false")
-        console.log(window.localStorage.getItem("TasktypeOpen"))
-    }
-}
-
-
-_toggleAssigneeFilter() {
-  console.log("in filter func")
-  const hiddenStateAssignee = this.assigneeInnerContainer.classList.contains('hide');
-  this.assigneeInnerContainer.classList.toggle('hide', !hiddenStateAssignee)
-  if (hiddenStateAssignee) {
-    this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'true')
-    this.assigneeFilterArrowDown.setAttribute('aria-expanded', 'false')
-
-    this.assigneeFilterArrowUp.classList.toggle('hide', false);
-    this.assigneeFilterArrowDown.classList.toggle('hide', true)
-
-    window.localStorage.setItem("AssigneeOpen", "true")
-    console.log("set AssigneeOpen to true")
-    console.log(window.localStorage.getItem("AssigneeOpen"))
-} else {
-    this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'false')
-    this.assigneeFilterArrowDown.setAttribute('aria-expanded', 'true')
-    this.assigneeFilterArrowUp.classList.toggle('hide', true)
-    this.assigneeFilterArrowDown.classList.toggle('hide', false)
-
-    window.localStorage.setItem("AssigneeOpen", "false")
-    console.log("set AssigneeOpen to false")
-    console.log(window.localStorage.getItem("AssigneeOpen"))
-}
-}
-
-  _retainTaskFilterMenuStateWhenReloadingPage() {
-    if (window.localStorage.getItem("TasktypeOpen") === "true") {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'false')
-        this.taskTypeFilterArrowUp.classList.toggle('hide', false)
-        this.taskTypeFilterArrowDown.classList.toggle('hide', true)
-
-        const hiddenStateTasktype = this.tasktypeInnerContainer.classList.contains('hide');
-        this.tasktypeInnerContainer.classList.toggle('hide', !hiddenStateTasktype)
-        console.log("retained task type open is true state")
+  _setupFilters() {
+    this.filterComponents.forEach(element => {
+      const filterName = element.dataset.filterName;
+      let isOpen = this._getFilterStatusFromLocalStorage(filterName)
       
-    } else {
-        this.taskTypeFilterArrowUp.setAttribute('aria-expanded', 'false')
-        this.taskTypeFilterArrowDown.setAttribute('aria-expanded', 'true')
-        this.taskTypeFilterArrowUp.classList.toggle('hide', true)
-        this.taskTypeFilterArrowDown.classList.toggle('hide', false)
-        console.log("retained task type open is false state")
-    }
+      this._setFilterVisibility(element, isOpen);
+    });
   }
 
-  _retainAssigneeMenuStateWhenReloadingPage() {
-    if (window.localStorage.getItem("AssigneeOpen") === "true") {
-      this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'true')
-      this.assigneeFilterArrowDown.setAttribute('aria-expanded', 'false')
-      this.assigneeFilterArrowUp.classList.toggle('hide', false)
-      this.assigneeFilterArrowDown.classList.toggle('hide', true)
+  _setFilterStatusToLocalStorage(filterName, isOpen) {
+    window.localStorage.setItem(filterName, JSON.stringify({ value: isOpen}));
+  }
 
-      const hiddenStateAssignee = this.assigneeInnerContainer.classList.contains('hide');
-      this.assigneeInnerContainer.classList.toggle('hide', !hiddenStateAssignee)
-      console.log("retained assignee open is true state")
-    } else {
-      this.assigneeFilterArrowUp.setAttribute('aria-expanded', 'false')
-      this.assigneeFilterArrowDown.setAttribute('aria-expanded', 'true')
-      this.assigneeFilterArrowUp.classList.toggle('hide', true)
-      this.assigneeFilterArrowDown.classList.toggle('hide', false)
-      console.log("retained assignee open is false state")
+  _getFilterStatusFromLocalStorage(filterName) {
+    let localStorageValue = JSON.parse(window.localStorage.getItem(filterName))
+    if (!localStorageValue) {
+      localStorageValue = { value: false };
+      this._setFilterStatusToLocalStorage(filterName, localStorageValue.value);
     }
+
+    return localStorageValue.value;
+  }
+
+  _toggleFilterVisibility(e) {
+    const filterElement = e.target.parentElement.parentElement.parentElement;
+    const filterName = filterElement.dataset.filterName;
+
+    let isOpen = this._getFilterStatusFromLocalStorage(filterName);
+    if (isOpen) { 
+      isOpen = false
+    } else {
+      isOpen = true;
+    }
+    //isOpen = isOpen === true ? false : true;
+
+    this._setFilterVisibility(filterElement, isOpen);
+
+    this._setFilterStatusToLocalStorage(filterName, isOpen);
+  }
+
+  _setFilterVisibility(element, isOpen) {
+    let filterInnerContainer = element.querySelector(".filter-inner-container");
+    let filterArrowUp = element.querySelector(".filter-arrow-up");
+    let filterArrowDown = element.querySelector(".filter-arrow-down");
+
+    filterInnerContainer.classList.toggle('hide', !isOpen)
+
+    filterArrowUp.setAttribute('aria-expanded', isOpen.toString())
+    filterArrowDown.setAttribute('aria-expanded', !isOpen.toString())
+
+    filterArrowUp.classList.toggle('hide', !isOpen);
+    filterArrowDown.classList.toggle('hide', isOpen)
   }
 
   _isFiltered() {
