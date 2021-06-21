@@ -46,11 +46,15 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
-	v.Members = NewFunc(v, assigneeSelected)
+
+	v.Members = setMembersThatareSelected(v, assigneeSelected)
+
+	v.Members = sortMemberAlphabetically(v.Members)
+
 	return v, err
 }
 
-func NewFunc(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
+func setMembersThatareSelected(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
 	assigneeList := make([]AssigneeTeamMembers, len(v.Members))
 
 	for i, u := range v.Members {
@@ -64,10 +68,6 @@ func NewFunc(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
 
 	v.Members = assigneeList
 
-	sort.Slice(v.Members, func(i, j int) bool {
-		return v.Members[i].TeamMembersName < v.Members[j].TeamMembersName
-	})
-
 	return v.Members
 }
 
@@ -79,4 +79,11 @@ func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
 		}
 	}
 	return false
+}
+
+func sortMemberAlphabetically(v []AssigneeTeamMembers) []AssigneeTeamMembers {
+	sort.Slice(v, func(i, j int) bool {
+		return v[i].TeamMembersName < v[j].TeamMembersName
+	})
+	return v
 }
