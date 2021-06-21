@@ -3,11 +3,14 @@ describe("Reassign Tasks", () => {
   beforeEach(() => {
     cy.setCookie("Other", "other");
     cy.setCookie("XSRF-TOKEN", "abcde");
+    cy.window().then((win) => {
+      win.sessionStorage.clear()
+    })
     cy.visit("/");
 });
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()
-    cy.get(':nth-child(2) > .govuk-checkboxes__item > .govuk-label').should('contain', 'Casework')
+    cy.get(':nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('contain', 'Casework')
   })
 
   it("can hide the filters", () => {
@@ -29,7 +32,8 @@ describe("Reassign Tasks", () => {
     cy.get('[type="checkbox"]').eq(0).check()
     cy.get('[type="checkbox"]').eq(1).check()
     cy.get('#actionFilter').click()
-    cy.url().should('include', 'selected-task-type=CWGN&selected-task-type=ORAL')
+    cy.url().should('include', 'selected-task-type=CWGN')
+    cy.url().should('include', 'selected-task-type=ORAL')
   })
   
   it("retains task type filter when changing views", () => {

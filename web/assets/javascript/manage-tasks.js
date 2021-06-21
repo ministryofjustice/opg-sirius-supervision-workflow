@@ -113,9 +113,15 @@ export default class ManageTasks {
       })
       .then((data) => {
           let str = "<option value=''selected>Select a case manager</option>"
-          data.members.forEach( caseManager => {
+          let sortedAlphbetically = data.members.sort(function(a, b){
+            if(a.name < b.name) { return -1; }
+            if(a.name > b.name) { return 1; }
+            return 0;
+        });
+
+        sortedAlphbetically.forEach( caseManager => {
              str += "<option value=" + caseManager.id + ">" + caseManager.displayName + "</option>"
-          })
+          });   
       
           document.getElementById("assignCM").innerHTML = str;
       });

@@ -22,16 +22,22 @@
           <a id="clear-filters" class="govuk-link govuk-link--no-visited-state">Clear filters</a>
         </div>
       </div>
-
+  
       <div id="task-type-tags-section" class="moj-filter-tags-list">
+      {{$appliedFiltersLength := len .AppliedFilters}}
+      {{ if eq $appliedFiltersLength 0}}
+        <p class="govuk-heading-s govuk-!-margin-bottom-0">No filters selected</p>
+      {{end}}
         <ul class="moj-filter-tags task-type-filter-tags" id="applied-task-type-filters">
+        </ul>
+        <ul class="moj-filter-tags task-type-filter-tags" id="applied-assignee-filters">
         </ul>
       </div>
     </div>
-
+  
       {{ template "task-type" . }}
-      {{/* {{ template "assigned" . }}
-      {{ template "case-owner" . }}
+      {{ template "assigned" . }}
+      {{/* {{ template "case-owner" . }}
       {{ template "date-range" . }} */}}
 
       <button id="actionFilter" type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
