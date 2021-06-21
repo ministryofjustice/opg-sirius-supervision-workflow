@@ -47,14 +47,13 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 		return v, err
 	}
 
-	v.Members = setMembersThatareSelected(v, assigneeSelected)
-
-	v.Members = sortMemberAlphabetically(v.Members)
+	v.Members = SetMembersThatareSelected(v, assigneeSelected)
+	v.Members = SortMembersAlphabetically(v.Members)
 
 	return v, err
 }
 
-func setMembersThatareSelected(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
+func SetMembersThatareSelected(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
 	assigneeList := make([]AssigneeTeamMembers, len(v.Members))
 
 	for i, u := range v.Members {
@@ -81,7 +80,7 @@ func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
 	return false
 }
 
-func sortMemberAlphabetically(v []AssigneeTeamMembers) []AssigneeTeamMembers {
+func SortMembersAlphabetically(v []AssigneeTeamMembers) []AssigneeTeamMembers {
 	sort.Slice(v, func(i, j int) bool {
 		return v[i].TeamMembersName < v[j].TeamMembersName
 	})

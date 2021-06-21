@@ -88,6 +88,22 @@ func TestIsAssigneeSelected(t *testing.T) {
 	assert.Equal(t, IsAssigneeSelected(90, teamMembersNotSelected), false)
 }
 
-// func TestGetAssigneesForFilterSortsAssigneesByFirstName(t *testing.T) {
+func TestSortMembersAlphabetically(t *testing.T) {
+	expected := []AssigneeTeamMembers{
+		{93, "Andrews Andrews", "Apple", false},
+		{91, "Anthony Anthony", "Baldwin", false},
+		{92, "Ben Ben", "Benjamin", false},
+		{88, "Cat Cat", "Cathy", false},
+		{89, "LayTeam1 LayTeam1", "User10", false},
+	}
 
-// }
+	unsortedMembers := []AssigneeTeamMembers{
+		{88, "Cat Cat", "Cathy", false},
+		{89, "LayTeam1 LayTeam1", "User10", false},
+		{91, "Anthony Anthony", "Baldwin", false},
+		{92, "Ben Ben", "Benjamin", false},
+		{93, "Andrews Andrews", "Apple", false},
+	}
+
+	assert.Equal(t, SortMembersAlphabetically(unsortedMembers), expected)
+}
