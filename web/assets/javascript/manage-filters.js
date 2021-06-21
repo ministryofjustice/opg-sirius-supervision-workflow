@@ -31,17 +31,17 @@ export default class ManageFilters {
   }
 
   _setFilterStatusToLocalStorage(filterName, isOpen) {
-    window.localStorage.setItem(filterName, JSON.stringify({ value: isOpen}));
+    window.sessionStorage.setItem(filterName, JSON.stringify({ value: isOpen}));
   }
 
   _getFilterStatusFromLocalStorage(filterName) {
-    let localStorageValue = JSON.parse(window.localStorage.getItem(filterName))
-    if (!localStorageValue) {
-      localStorageValue = { value: false };
-      this._setFilterStatusToLocalStorage(filterName, localStorageValue.value);
+    let sessionStorageValue = JSON.parse(window.sessionStorage.getItem(filterName))
+    if (!sessionStorageValue) {
+      sessionStorageValue = { value: false };
+      this._setFilterStatusToLocalStorage(filterName, sessionStorageValue.value);
     }
 
-    return localStorageValue.value;
+    return sessionStorageValue.value;
   }
 
   _toggleFilterVisibility(e) {
@@ -49,12 +49,7 @@ export default class ManageFilters {
     const filterName = filterElement.dataset.filterName;
 
     let isOpen = this._getFilterStatusFromLocalStorage(filterName);
-    if (isOpen) { 
-      isOpen = false
-    } else {
-      isOpen = true;
-    }
-    //isOpen = isOpen === true ? false : true;
+    isOpen = isOpen === true ? false : true;
 
     this._setFilterVisibility(filterElement, isOpen);
 
@@ -124,5 +119,9 @@ export default class ManageFilters {
     let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
     document.getElementById("clear-filters").setAttribute('href', hrefValue);
   }
+
+
+
+
 
 }
