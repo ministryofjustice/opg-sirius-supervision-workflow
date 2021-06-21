@@ -424,7 +424,7 @@ func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
-func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
+func setUpTasklist() []ApiTask {
 	tasklist := []ApiTask{
 		{
 			ApiTaskAssignee: CaseManagement{
@@ -469,7 +469,10 @@ func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
 			}},
 		},
 	}
-
+	return tasklist
+}
+func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
+	tasklist := setUpTasklist()
 	expectedResult := []ApiTask{
 		{
 			ApiTaskAssignee: CaseManagement{
@@ -488,5 +491,13 @@ func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
 	}
 
 	assigneeFilters := []string{"111"}
+	assert.Equal(t, filterToIncludeCaseownerTasksInTasklist(tasklist, assigneeFilters), expectedResult)
+}
+
+func TestFiltersOutTasksWhereNoMatchingAssigneeId(t *testing.T) {
+	tasklist := setUpTasklist()
+	expectedResult := []ApiTask(nil)
+
+	assigneeFilters := []string{"112", "113", "115"}
 	assert.Equal(t, filterToIncludeCaseownerTasksInTasklist(tasklist, assigneeFilters), expectedResult)
 }
