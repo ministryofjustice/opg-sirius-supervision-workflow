@@ -15,7 +15,7 @@ type ApiTaskTypes struct {
 	IsSelected bool
 }
 
-type WholeTaskList struct {
+type WholeTaskTypesList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
@@ -41,16 +41,16 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 		return nil, newStatusError(resp)
 	}
 
-	var v WholeTaskList
+	var v WholeTaskTypesList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
 
-	WholeTaskList := v.AllTaskList
+	WholeTaskTypeList := v.AllTaskList
 
 	var taskTypeList []ApiTaskTypes
 
-	for _, u := range WholeTaskList {
+	for _, u := range WholeTaskTypeList {
 		taskType := ApiTaskTypes{
 			Handle:     u.Handle,
 			Incomplete: u.Incomplete,

@@ -423,3 +423,70 @@ func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
+
+func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
+	tasklist := []ApiTask{
+		{
+			ApiTaskAssignee: CaseManagement{
+				CaseManagerName: "Pro Team 1 - (Supervision)",
+				Id:              19,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Id:              63,
+						CaseManagerName: "John Fearless",
+					},
+				},
+			}},
+		},
+		{
+			ApiTaskAssignee: CaseManagement{
+				CaseManagerName: "Pro Team 1 - (Supervision)",
+				Id:              19,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Id:              63,
+						CaseManagerName: "John Fearless",
+					},
+				},
+			}},
+		},
+		{
+			ApiTaskAssignee: CaseManagement{
+				CaseManagerName: "PROTeam1 User1",
+				Id:              111,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Id:              63,
+						CaseManagerName: "John Fearless",
+					},
+				},
+			}},
+		},
+	}
+
+	expectedResult := []ApiTask{
+		{
+			ApiTaskAssignee: CaseManagement{
+				CaseManagerName: "PROTeam1 User1",
+				Id:              111,
+			},
+			ApiTaskCaseItems: []CaseItemsDetails{{
+				CaseItemClient: Clients{
+					ClientSupervisionCaseOwner: CaseManagement{
+						Id:              63,
+						CaseManagerName: "John Fearless",
+					},
+				},
+			}},
+		},
+	}
+
+	assigneeFilters := []string{"111"}
+	assert.Equal(t, filterToIncludeCaseownerTasksInTasklist(tasklist, assigneeFilters), expectedResult)
+}
