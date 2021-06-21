@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
@@ -45,7 +46,11 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return v, err
 	}
+	v.Members = NewFunc(v, assigneeSelected)
+	return v, err
+}
 
+func NewFunc(v AssigneesTeam, assigneeSelected []string) []AssigneeTeamMembers {
 	assigneeList := make([]AssigneeTeamMembers, len(v.Members))
 
 	for i, u := range v.Members {
@@ -59,7 +64,11 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 
 	v.Members = assigneeList
 
-	return v, err
+	sort.Slice(v.Members, func(i, j int) bool {
+		return v.Members[i].TeamMembersName < v.Members[j].TeamMembersName
+	})
+
+	return v.Members
 }
 
 func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {

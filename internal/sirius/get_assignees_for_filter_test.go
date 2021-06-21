@@ -87,3 +87,7 @@ func TestIsAssigneeSelected(t *testing.T) {
 	teamMembersNotSelected := []string{"99", "88", "89"}
 	assert.Equal(t, IsAssigneeSelected(90, teamMembersNotSelected), false)
 }
+
+// func TestGetAssigneesForFilterSortsAssigneesByFirstName(t *testing.T) {
+
+// }
