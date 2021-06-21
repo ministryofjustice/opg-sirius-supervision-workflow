@@ -207,11 +207,6 @@ func SetUpTaskTypeWithoutAClient() ApiTask {
 				},
 			},
 		},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
 	}
 	return v
 }
