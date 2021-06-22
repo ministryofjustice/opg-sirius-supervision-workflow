@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type CaseManagement struct {
@@ -98,6 +99,11 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskList := v
 
 	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
+
+	if len(assigneeFilters) > 0 {
+		TaskList.WholeTaskList = filterToIncludeCaseownerTasksInTasklist(TaskList.WholeTaskList, assigneeSelected)
+		TaskList.TotalTasks = len(TaskList.WholeTaskList)
+	}
 
 	return TaskList, teamID, err
 }
@@ -201,4 +207,17 @@ func GetClientInformation(s ApiTask) Clients {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}
 	return s.ApiClients[0]
+}
+
+func filterToIncludeCaseownerTasksInTasklist(TaskList []ApiTask, assigneeFilters []string) []ApiTask {
+	var list []ApiTask
+	for _, s := range TaskList {
+		for _, k := range assigneeFilters {
+			idToInt, _ := strconv.Atoi(k)
+			if s.ApiTaskAssignee.Id == idToInt {
+				list = append(list, s)
+			}
+		}
+	}
+	return list
 }
