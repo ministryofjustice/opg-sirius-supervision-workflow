@@ -126,9 +126,9 @@ func TestCreateTaskTypeFilter(t *testing.T) {
 
 func TestCreateAssigneeFilter(t *testing.T) {
 	assert.Equal(t, CreateAssigneeFilter([]string{}, ""), "")
-	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1"}, ""), "assigneeid:LayTeam1")
-	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User2", "LayTeam1 User3"}, ""), "assigneeid:LayTeam1 User2,assigneeid:LayTeam1 User3")
-	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User3"}, ""), "assigneeid:LayTeam1 User3")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1"}, ""), "assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User2", "LayTeam1 User3"}, ""), "assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User3"}, ""), "assigneeid_or_null:LayTeam1 User3")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
