@@ -471,33 +471,3 @@ func setUpTasklist() []ApiTask {
 	}
 	return tasklist
 }
-func TestFilterToIncludeCaseownerTasksInTasklist(t *testing.T) {
-	tasklist := setUpTasklist()
-	expectedResult := []ApiTask{
-		{
-			ApiTaskAssignee: CaseManagement{
-				CaseManagerName: "PROTeam1 User1",
-				Id:              111,
-			},
-			ApiTaskCaseItems: []CaseItemsDetails{{
-				CaseItemClient: Clients{
-					ClientSupervisionCaseOwner: CaseManagement{
-						Id:              63,
-						CaseManagerName: "John Fearless",
-					},
-				},
-			}},
-		},
-	}
-
-	assigneeFilters := []string{"111"}
-	assert.Equal(t, filterToIncludeCaseownerTasksInTasklist(tasklist, assigneeFilters), expectedResult)
-}
-
-func TestFiltersOutTasksWhereNoMatchingAssigneeId(t *testing.T) {
-	tasklist := setUpTasklist()
-	expectedResult := []ApiTask(nil)
-
-	assigneeFilters := []string{"112", "113", "115"}
-	assert.Equal(t, filterToIncludeCaseownerTasksInTasklist(tasklist, assigneeFilters), expectedResult)
-}
