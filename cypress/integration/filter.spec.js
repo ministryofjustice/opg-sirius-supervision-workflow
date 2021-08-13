@@ -16,7 +16,7 @@ describe("Reassign Tasks", () => {
   it("can hide the filters", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('#option-select-title-task-type').click()
-    cy.get('app-c-option-select__container-inner').should('not.be.visible') 
+    cy.get('.govuk-fieldset > :nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('not.be.visible')
   })
 
   it("can apply a filter which adds task type heading", () => {

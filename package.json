@@ -20,7 +20,7 @@
     "client-sessions": "^0.8.0",
     "cookie-parser": "^1.4.5",
     "cross-spawn": "^7.0.2",
-    "cypress": "5.3.0",
+    "cypress": "8.2.0",
     "del": "^5.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -47,8 +47,8 @@
     "sync-request": "^6.0.0",
     "universal-analytics": "^0.4.16",
     "uuid": "^8.3.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
