@@ -35,7 +35,7 @@ type workflowVars struct {
 	Errors         sirius.ValidationErrors
 }
 
-func loggingInfoForWorflow(client WorkflowInformation, tmpl Template) Handler {
+func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
 
