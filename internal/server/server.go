@@ -30,7 +30,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	mux := http.NewServeMux()
 	mux.Handle("/",
 		wrap(
-			loggingInfoForWorflow(client, templates["workflow.gotmpl"])))
+			loggingInfoForWorkflow(client, templates["workflow.gotmpl"])))
 
 	mux.Handle("/health-check", healthCheck())
 
