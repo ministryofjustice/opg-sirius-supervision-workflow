@@ -18,3 +18,4 @@ cypress/screenshots
 cypress/videos
 # ignore JetBrains project files
 .idea
+/main
