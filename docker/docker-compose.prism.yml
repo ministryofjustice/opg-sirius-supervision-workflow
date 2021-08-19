@@ -1,0 +1,31 @@
+version: "3.6"
+services:
+  workflow:
+    build:
+      target: dev
+    environment:
+      SIRIUS_URL: http://docker.for.mac.localhost:8081
+    ports:
+      - '8888:1234'
+      - '2345:2345'
+    volumes:
+      - ..:/app:rw,delegated
+  proxy:
+    image: nginx
+    volumes:
+      - ./dev-proxy/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - '8081:80'
+    external_links:
+      - prism
+    depends_on:
+      - prism
+    command: [nginx-debug, '-g', 'daemon off;']
+  prism:
+    image: stoplight/prism:4
+    volumes:
+      - ../prism:/tmp
+    ports:
+      - '4010:4010'
+    command: >
+      mock -p 4010 --host 0.0.0.0 /tmp/sirius-supervision.yml

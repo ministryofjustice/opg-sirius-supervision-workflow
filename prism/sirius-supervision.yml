@@ -1,0 +1,199 @@
+openapi: 3.1.0
+info:
+  title: Sirius Supervision
+  version: '1.0'
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Sam Joseph
+    email: samuel.joseph@digital.justice.gov.uk
+  description: Hand-generated API documentation for Sirius Supervision endpoints used by Workflow
+servers:
+  - url: 'http://localhost:4001'
+paths:
+  /api/v1/tasktypes/supervision:
+    parameters: []
+    get:
+      summary: Get Supervision Task Types
+      tags: []
+      responses:
+        '200':
+          description: Task types returned
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  task_types:
+                    type: object
+                    required:
+                      - CWGN
+                      - CCR
+                      - CNC
+                      - CPOD
+                    properties:
+                      CWGN:
+                        $ref: '#/components/schemas/TaskType'
+                      CCR:
+                        $ref: '#/components/schemas/TaskType'
+                      CNC:
+                        $ref: '#/components/schemas/TaskType'
+                      CPOD:
+                        $ref: '#/components/schemas/TaskType'
+                required:
+                  - task_types
+              examples:
+                fixed-task-type-list:
+                  value:
+                    task_types:
+                      CWGN:
+                        handle: CWGN
+                        incomplete: Casework - General
+                        complete: Casework - General
+                        user: true
+                        category: supervision
+                      CCR:
+                        handle: CCR
+                        incomplete: Casework - Complaint review
+                        complete: Casework - Complaint reviewed
+                        user: true
+                        category: supervision
+                      CNC:
+                        handle: CNC
+                        incomplete: Casework - Non-compliant
+                        complete: Casework - compliant
+                        user: true
+                        category: supervision
+                      CPOD:
+                        handle: CPOD
+                        incomplete: Casework - Proof of death required
+                        complete: Casework - Proof of death received
+                        user: true
+                        category: supervision
+                      ORAL:
+                        handle: ORAL
+                        incomplete: Order - Allocate to team
+                        complete: Order - Allocate to team
+                        user: true
+                        category: supervision
+      operationId: get-task-types
+      description: Retrieve the task types associated with Supervision
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: XSRF-TOKEN
+          required: true
+          description: generic_token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+            examples: {}
+  /api/v1/teams/{id}:
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get assignees in team
+      tags: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+              examples:
+                fixed-team-list:
+                  value:
+                    id: 1
+                    members:
+                      - id: 1
+                        name: Marcos Kavanagh
+                        displayName: Marcos Kavanagh
+                      - id: 2
+                        name: Kingsley Mccann
+                        displayName: Kingsley Mccann
+                      - id: 3
+                        name: Tyron Bates
+                        displayName: Tyron Bates
+                      - id: 4
+                        name: Johnny Hats
+                        displayName: Johnny Hats
+                    name: Allocations
+
+components:
+  schemas:
+    TaskType:
+      description: ''
+      type: object
+      properties:
+        handle:
+          type: string
+          minLength: 1
+        incomplete:
+          type: string
+          minLength: 1
+        complete:
+          type: string
+          minLength: 1
+        user:
+          type: boolean
+        category:
+          type: string
+          minLength: 1
+      required:
+        - handle
+        - incomplete
+        - complete
+        - user
+        - category
+      x-examples:
+        casework:
+          handle: CWGN
+          incomplete: Casework - General
+          complete: Casework - General
+          user: true
+          category: supervision
+    Team:
+      title: Team
+      type: object
+      properties:
+        id:
+          type: integer
+        members:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Assignee'
+        name:
+          type: string
+      required:
+        - id
+        - members
+        - name
+    Assignee:
+      title: Assignee
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        displayName:
+          type: string
+      required:
+        - id
+        - name
+        - displayName
+  securitySchemes: {}
+  responses: {}
+  examples: {}

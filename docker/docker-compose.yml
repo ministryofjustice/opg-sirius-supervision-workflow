@@ -1,11 +1,12 @@
 version: "3.6"
 
 services:
-  app:
+  workflow:
     build:
       context: ..
       dockerfile: ./docker/sirius-workflow/Dockerfile
-    ports: ["8888:1234"]
+    ports:
+      - '8888:1234'
     environment:
       SIRIUS_URL: http://docker.for.mac.localhost:8080
       SIRIUS_PUBLIC_URL: http://localhost:8080
