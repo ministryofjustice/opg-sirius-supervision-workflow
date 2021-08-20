@@ -7,7 +7,8 @@
     "watch": "webpack --watch",
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "fakedb": "json-server --watch json-server/db.json"
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^0.2.5",

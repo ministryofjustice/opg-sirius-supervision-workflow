@@ -1,0 +1,57 @@
+{
+  "tasktypes": {
+    "task_types": {
+      "CWGN": {
+        "handle": "CWGN",
+        "incomplete": "Casework - General",
+        "complete": "Casework - General",
+        "user": true,
+        "category": "supervision"
+      },
+      "CCR": {
+        "handle": "CCR",
+        "incomplete": "Casework - Complaint review",
+        "complete": "Casework - Complaint reviewed",
+        "user": true,
+        "category": "supervision"
+      },
+      "CNC": {
+        "handle": "CNC",
+        "incomplete": "Casework - Non-compliant",
+        "complete": "Casework - compliant",
+        "user": true,
+        "category": "supervision"
+      },
+      "CPOD": {
+        "handle": "CPOD",
+        "incomplete": "Casework - Proof of death required",
+        "complete": "Casework - Proof of death received",
+        "user": true,
+        "category": "supervision"
+      }
+    }
+  },
+  "teams": [
+    {
+      "id": 20,
+      "name": "Allocations",
+      "members": [
+        {
+          "id": 1,
+          "name": "Marcos Kavanagh",
+          "displayName": "Marcos Kavanagh"
+        },
+        {
+          "id": 2,
+          "name": "Kingsley Mccann",
+          "displayName": "Kingsley Mccann"
+        },
+        {
+          "id": 3,
+          "name": "Tyron Bates",
+          "displayName": "Tyron Bates"
+        }
+      ]
+    }
+  ]
+}

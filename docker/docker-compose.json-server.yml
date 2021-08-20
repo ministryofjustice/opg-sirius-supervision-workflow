@@ -13,19 +13,17 @@ services:
   proxy:
     image: nginx
     volumes:
-      - ./dev-proxy/nginx.prism.conf:/etc/nginx/nginx.conf
+      - ./dev-proxy/nginx.json-server.conf:/etc/nginx/nginx.conf
     ports:
       - '8081:80'
     external_links:
-      - prism
+      - json-server
     depends_on:
-      - prism
+      - json-server
     command: [nginx-debug, '-g', 'daemon off;']
-  prism:
-    image: stoplight/prism:4
-    volumes:
-      - ../prism:/tmp
+  json-server:
+    build:
+      context: ..
+      dockerfile: ./docker/json-server/Dockerfile
     ports:
-      - '4010:4010'
-    command: >
-      mock -p 4010 --host 0.0.0.0 /tmp/sirius-supervision.yml
+      - '3000:3000'
