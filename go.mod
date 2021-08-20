@@ -1,8 +1,8 @@
 module github.com/ministryofjustice/opg-sirius-workflow
 
-go 1.14
+go 1.16
 
 require (
-	github.com/pact-foundation/pact-go v1.5.2
-	github.com/stretchr/testify v1.6.1
+	github.com/pact-foundation/pact-go v1.6.4
+	github.com/stretchr/testify v1.7.0
 )
