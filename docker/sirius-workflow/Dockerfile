@@ -1,4 +1,27 @@
-FROM node:14.13.1-alpine3.12 as asset-env
+FROM golang:1.16-alpine as base
+WORKDIR /app
+
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+RUN apk update \
+    && apk add --no-cache \
+    ca-certificates \
+    git \
+    && update-ca-certificates
+
+### Development with hot reload and debugger
+FROM base AS dev
+WORKDIR /app
+
+RUN go get -u github.com/cosmtrek/air && go install github.com/go-delve/delve/cmd/dlv@latest
+EXPOSE 8080
+EXPOSE 2345
+
+ENTRYPOINT ["air"]
+
+FROM node:14.17.5-alpine3.14 as asset-env
 
 WORKDIR /app
 
@@ -12,7 +35,7 @@ COPY yarn.lock .
 RUN yarn install
 RUN yarn build
 
-FROM golang:1.14 as build-env
+FROM base as build-env
 
 WORKDIR /app
 
@@ -23,9 +46,9 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
+RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3.10
+FROM alpine:3.14
 
 WORKDIR /go/bin
 
