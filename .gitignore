@@ -13,9 +13,13 @@ node_modules
 package-lock.json
 logs/*
 pacts/*
+tmp/
+docker/tmp
 web/static
 cypress/screenshots
 cypress/videos
 # ignore JetBrains project files
 .idea
+# binaries
 /main
+/opg-sirius-workflow
