@@ -21,7 +21,7 @@ EXPOSE 2345
 
 ENTRYPOINT ["air"]
 
-FROM node:14.17.5-alpine3.14 as asset-env
+FROM node:17.0.1-alpine3.14 as asset-env
 
 WORKDIR /app
 
