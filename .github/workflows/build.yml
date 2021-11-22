@@ -69,6 +69,7 @@ jobs:
           fi
 
       - name: Publish pacts
+        if: github.actor != 'dependabot[bot]'
         env:
           PACT_DIR: ./pacts
           PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
