@@ -142,6 +142,11 @@ jobs:
       - name: Run cypress
         run: |
           docker-compose -f docker/docker-compose.ci.yml run cypress
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
 
   build:
     name: "Build & Push Containers"
