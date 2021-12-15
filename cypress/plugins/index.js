@@ -24,4 +24,8 @@ module.exports = (on, config) => {
       }
       return launchOptions;
   });
+
+  on('task', {
+    failed: require('cypress-failed-log/src/failed')(),
+  })
 };
