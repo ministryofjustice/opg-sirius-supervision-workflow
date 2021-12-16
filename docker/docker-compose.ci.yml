@@ -37,6 +37,9 @@ services:
       context: ..
       dockerfile: ./docker/cypress/Dockerfile
     command: ["--headless", "-b", "chrome"]
+    volumes:
+      - ../cypress/screenshots:/root/cypress/screenshots:rw,delegated
+      - ../cypress/logs:/root/cypress/logs:rw,delegated
     depends_on:
       - app
       - pact-stub

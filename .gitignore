@@ -16,8 +16,12 @@ pacts/*
 tmp/
 docker/tmp
 web/static
+
+# Cypress cli run artifact folders
+cypress/logs
 cypress/screenshots
 cypress/videos
+
 # ignore JetBrains project files
 .idea
 # binaries

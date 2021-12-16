@@ -19,6 +19,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^4.3.0",
     "cypress": "8.7.0",
+    "cypress-failed-log": "^2.9.2",
     "mini-css-extract-plugin": "^2.2.0",
     "sass": "^1.38.1",
     "sass-loader": "^12.1.0",
