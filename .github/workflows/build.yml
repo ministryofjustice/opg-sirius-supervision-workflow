@@ -184,7 +184,7 @@ jobs:
           docker build --tag sirius/sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
       - name: Scan
         run: |
-          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy sirius/sirius-workflow:latest
+          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image sirius/sirius-workflow:latest
 
       - name: Bump version
         id: bump_version
