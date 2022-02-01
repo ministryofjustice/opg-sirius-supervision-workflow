@@ -15,7 +15,7 @@ func main() {
 		pactBrokerUsername  = os.Getenv("PACT_BROKER_USERNAME")
 		pactBrokerPassword  = os.Getenv("PACT_BROKER_PASSWORD")
 		pactConsumerVersion = os.Getenv("PACT_CONSUMER_VERSION")
-		pactTag             = os.Getenv("PACT_TAG")
+		pactTag             = os.Getenv("PACT_CONSUMER_TAG")
 	)
 
 	log.Println("Publishing Pact files to broker", pactDir, pactBrokerURL)
