@@ -35,6 +35,7 @@ export default class ManageTasks {
                         break; 
                     case "js-mt-cancel":
                         this._hideEditTasksPanel(e)
+                        break;
                     case "js-assign-team-select":
                         this._getCaseManagers(e);
                         break;
