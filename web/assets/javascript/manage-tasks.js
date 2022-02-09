@@ -6,51 +6,47 @@ export default class ManageTasks {
       }
       this.teamMemberData = [];
 
-      this.checkBoxElements = element.querySelectorAll('.js-mt-checkbox');
-      this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
-      this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
-      this.cancelEditTasksButton = element.querySelectorAll('.js-mt-cancel');
-      this.assignTeamSelect = element.querySelectorAll('.js-assign-team-select');
       this.xsrfToken = element.querySelector('.js-xsrfToken');
+      this.checkBoxElements = element.querySelectorAll('.js-mt-checkbox');
+      this.manageTasksButton = element.querySelectorAll('.js-mt-edit-tasks-btn');
+      this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
       this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
       this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
       this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content')
       this.taskTypeCheckBox
-      this.taskTypeButton = element.querySelectorAll('.js-container-button');
 
       this._setupEventListeners();
     }
 
   _setupEventListeners() {
-      this.checkBoxElements.forEach(element => {
-          this._updateSelectedState = this._updateSelectedState.bind(this);
-          element.addEventListener('click', this._updateSelectedState);
-      });
-
-      this.allcheckBoxElements.forEach(element => {
-          this._updateAllSelectedState = this._updateAllSelectedState.bind(this);
-          element.addEventListener('click', this._updateAllSelectedState);
-      });
-
-      this.manageTasksButton.forEach(element => {
-          this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
-          element.addEventListener('click', this._showEditTasksPanel);
-      });
-
-      this.cancelEditTasksButton.forEach(element => {
-          this._hideEditTasksPanel = this._hideEditTasksPanel.bind(this);
-          element.addEventListener('click', this._hideEditTasksPanel);
-      });
-      
-      this.assignTeamSelect.forEach(element => {
-          this._getCaseManagers = this._getCaseManagers.bind(this);
-          element.addEventListener('change', this._getCaseManagers);
-      });    
-
-      this.taskTypeButton.forEach(element => {
-          this._toggleTasktypeFilter = this._toggleTasktypeFilter.bind(this);
-          element.addEventListener('click', this._toggleTasktypeFilter);
-      });
+    document.addEventListener('click', (e) => {
+        if (e.target) {
+             if (e.target.classList.length > 0) {
+                const hookName = Array.from(e.target.classList).filter(f => f.indexOf('js-') === 0)[0];
+                switch (hookName) {
+                    case "js-mt-checkbox":
+                        this._updateSelectedState(e);
+                        break;
+                    case "js-mt-checkbox-select-all":
+                        this._updateAllSelectedState(e);
+                        break;
+                    case "js-mt-edit-tasks-btn":
+                        this._showEditTasksPanel(e);
+                        break; 
+                    case "js-mt-cancel":
+                        this._hideEditTasksPanel(e)
+                    case "js-assign-team-select":
+                        this._getCaseManagers(e);
+                        break;
+                    case "js-container-button":
+                        this._toggleTasktypeFilter(e);
+                        break;
+                    default:
+                        break;
+                }  
+            }
+        }
+    });
   }
 
   _updateDomElements() {
