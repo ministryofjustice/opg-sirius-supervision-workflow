@@ -125,7 +125,7 @@ export default class ManageTasks {
   }
 
   _toggleTasktypeFilter(event) {
-      const innerContainer = event.target.parentElement.querySelector(".js-options-container");
+      const innerContainer = event.target.parentElement.parentElement.parentElement.querySelector(".js-options-container");
       innerContainer.classList.toggle("hide")
-  }
+  } 
 }
