@@ -48,7 +48,7 @@ COPY . .
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3.15.0
+FROM alpine:3.15.2
 
 WORKDIR /go/bin
 
