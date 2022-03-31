@@ -32,7 +32,7 @@ func TestPermissions(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get my permissions").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
@@ -70,7 +70,7 @@ func TestPermissions(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get my permissions without cookies").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
@@ -130,7 +130,7 @@ func TestPermissionsIgnoredPact(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get all the permissions I need").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,

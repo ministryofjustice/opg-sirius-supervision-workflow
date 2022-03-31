@@ -31,7 +31,7 @@ func TestGetTaskTypes(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get all task types").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,

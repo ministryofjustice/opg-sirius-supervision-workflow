@@ -32,7 +32,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User logged in").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get all teams for dropdown").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
