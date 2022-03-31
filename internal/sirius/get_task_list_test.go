@@ -32,7 +32,7 @@ func TestGetTaskList(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User is logged in").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get tasks for a team which have long names").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,

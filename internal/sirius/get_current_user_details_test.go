@@ -32,7 +32,7 @@ func TestGetCurrentUserDetails(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to workflow page").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
@@ -95,7 +95,7 @@ func TestGetCurrentUserDetails(t *testing.T) {
 			setup: func() {
 				pact.
 					AddInteraction().
-					Given("User exists").
+					Given("I am a Lay Team user").
 					UponReceiving("A request to get my details without cookies").
 					WithRequest(dsl.Request{
 						Method: http.MethodGet,
