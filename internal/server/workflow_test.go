@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -148,7 +149,8 @@ func TestGetUserDetails(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/path", nil)
 
-	handler := loggingInfoForWorkflow(client, template)
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Nil(err)
@@ -237,7 +239,8 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/path", nil)
 
-	handler := loggingInfoForWorkflow(client, template)
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Nil(err)
@@ -301,7 +304,8 @@ func TestWorkflowUnauthenticated(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	handler := loggingInfoForWorkflow(client, template)
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Equal(sirius.ErrUnauthorized, err)
@@ -318,7 +322,8 @@ func TestWorkflowSiriusErrors(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
 
-	handler := loggingInfoForWorkflow(client, template)
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Equal("err", err.Error())
@@ -334,8 +339,67 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 	template := &mockTemplates{}
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("POST", "/path", nil)
-	handler := loggingInfoForWorkflow(client, template)
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Nil(err)
+}
+
+func TestWorkflowUsesDefaultWorkflowTeamIfNonProvided(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockWorkflowInformation{err: errors.New("err")}
+	template := &mockTemplates{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "", nil)
+
+	defaultWorkflowTeam := 19
+	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
+	err := handler(sirius.PermissionSet{}, w, r)
+
+	assert.Nil(err)
+	resp := w.Result()
+
+	assert.Equal(workflowVars{
+		Path: "/path",
+		MyDetails: sirius.UserDetails{
+			ID:        123,
+			Firstname: "John",
+			Surname:   "Doe",
+			Teams: []sirius.MyDetailsTeam{
+				{
+					TeamId:      13,
+					DisplayName: "Lay Team 1 - (Supervision)",
+				},
+			},
+		},
+
+		TaskList: sirius.TaskList{
+			WholeTaskList: []sirius.ApiTask{{}},
+		},
+		LoadTasks: []sirius.ApiTaskTypes{
+			{
+				Handle:     "CDFC",
+				Incomplete: "Correspondence - Review failed draft",
+				Category:   "supervision",
+				Complete:   "Correspondence - Reviewed draft failure",
+				User:       true,
+			},
+		},
+		TeamSelection: []sirius.ReturnedTeamCollection{
+			{
+				Id: 13,
+				Members: []sirius.TeamMembers{
+					{
+						TeamMembersId:   86,
+						TeamMembersName: "LayTeam1 User11",
+					},
+				},
+				Name: "Lay Team 1 - (Supervision)",
+			},
+		},
+	}, template.lastVars)
+
 }
