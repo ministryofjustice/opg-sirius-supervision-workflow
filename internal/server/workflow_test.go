@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -360,7 +359,6 @@ func TestWorkflowUsesDefaultWorkflowTeamIfNonProvided(t *testing.T) {
 	err := handler(sirius.PermissionSet{}, w, r)
 
 	assert.Nil(err)
-	resp := w.Result()
 
 	assert.Equal(workflowVars{
 		Path: "/path",
