@@ -57,9 +57,9 @@ Run Cypress tests against the pact copy of the service
 -------------------------------------------------------------------
 ## Run the Pact tests in more detail
 
-test sirius files: `test-sirius`
+test sirius files: `yarn test-sirius`
 
-test server files: `test-server`
+test server files: `yarn test-server`
 
 -------------------------------------------------------------------
 ## Noted issues:
