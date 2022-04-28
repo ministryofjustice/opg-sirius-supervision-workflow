@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -35,7 +34,7 @@ type workflowVars struct {
 	Errors         sirius.ValidationErrors
 }
 
-func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template) Handler {
+func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
 
@@ -77,15 +76,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
-
+		loggedInTeamId := 0
 		if len(myDetails.Teams) < 1 {
-			err = errors.New("this user is not in a team")
-		}
-		if err != nil {
-			return err
+			loggedInTeamId = defaultWorkflowTeam
+		} else {
+			loggedInTeamId = myDetails.Teams[0].TeamId
 		}
 
-		loggedInTeamId := myDetails.Teams[0].TeamId
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
 			return err

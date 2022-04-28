@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -23,6 +24,7 @@ func main() {
 	webDir := getEnv("WEB_DIR", "web")
 	siriusURL := getEnv("SIRIUS_URL", "http://localhost:8080")
 	siriusPublicURL := getEnv("SIRIUS_PUBLIC_URL", "")
+	DefaultWorkflowTeam := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
 	prefix := getEnv("PREFIX", "")
 
 	layouts, _ := template.
@@ -61,9 +63,15 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
+	if err != nil {
+		logger.Print("Error converting DEFAULT_WORKFLOW_TEAM to int")
+
+	}
+
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: server.New(logger, client, tmpls, prefix, siriusPublicURL, webDir),
+		Handler: server.New(logger, client, tmpls, prefix, siriusPublicURL, webDir, defaultWorkflowTeam),
 	}
 
 	go func() {

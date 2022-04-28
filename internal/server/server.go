@@ -24,13 +24,13 @@ type Template interface {
 	ExecuteTemplate(io.Writer, string, interface{}) error
 }
 
-func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string) http.Handler {
+func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string, defaultWorkflowTeam int) http.Handler {
 	wrap := errorHandler(logger, client, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
 	mux.Handle("/",
 		wrap(
-			loggingInfoForWorkflow(client, templates["workflow.gotmpl"])))
+			loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam)))
 
 	mux.Handle("/health-check", healthCheck())
 
