@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/logging"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
