@@ -22,8 +22,9 @@ cypress/logs
 cypress/screenshots
 cypress/videos
 
-# ignore JetBrains project files
+# ignore IDE project files
 .idea
+.vscode
 # binaries
 /main
 /opg-sirius-workflow

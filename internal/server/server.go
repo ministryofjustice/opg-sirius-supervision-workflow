@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ministryofjustice/opg-go-common/securityheaders"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
@@ -14,7 +15,6 @@ type Logger interface {
 	Request(*http.Request, error)
 }
 
-//this is the files in server which need a client
 type Client interface {
 	ErrorHandlerClient
 	WorkflowInformation
@@ -39,7 +39,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return http.StripPrefix(prefix, mux)
+	return http.StripPrefix(prefix, securityheaders.Use(mux))
 }
 
 type RedirectError string
