@@ -16,6 +16,7 @@ pacts/*
 tmp/
 docker/tmp
 web/static
+test-results
 
 # Cypress cli run artifact folders
 cypress/logs
