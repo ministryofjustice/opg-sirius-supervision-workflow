@@ -28,15 +28,17 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+
       - name: Resolve GO Dependencies
         run: |
           go mod download
+          
       - name: Setup gotestsum
         uses: autero1/action-gotestsum@v1.0.0
         with:
           gotestsum_version: 1.6.4
 
-      - run: mkdir -p /tmp/test-results
+      - run: mkdir -p test-results
 
       - name: Cache Pact
         id: cache-pact
@@ -44,10 +46,12 @@ jobs:
         with:
           path: ./pact/
           key: ${{ runner.os }}-pact-1.88.6
+
       - name: Add Pact to Path
         if: steps.cache-pact.outputs.cache-hit == 'true'
         run: |
           echo "$PWD/pact/bin" >> $GITHUB_PATH
+
       - name: Download pact tools
         if: steps.cache-pact.outputs.cache-hit != 'true'
         run: |
@@ -57,7 +61,21 @@ jobs:
 
       - name: Run Tests
         run: |
-          gotestsum --junitfile /tmp/test-results/unit-tests.xml -- ./... -coverprofile=/tmp/test-coverage.txt
+          gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() && github.actor != 'dependabot[bot]' }}
+        with:
+          check_name: "Unit Test Results"
+          files: test-results/unit-tests.xml
+
+      - name: Scan with SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        if: ${{ always() && github.actor != 'dependabot[bot]' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Define Pact tag
         id: pact_tag
@@ -78,12 +96,14 @@ jobs:
           PACT_BROKER_USERNAME: admin
           PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
         run: PACT_CONSUMER_TAG=${{ steps.pact_tag.outputs.TAG }} PACT_CONSUMER_VERSION=${{ steps.pact_tag.outputs.VERSION	}} go run internal/pact/publish.go
+
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v1
         with:
-          files: /tmp/test-coverage.txt
+          files: test-results/test-coverage.txt
           fail_ci_if_error: true
           verbose: true
+
       - name: Persist Pacts
         uses: actions/upload-artifact@v2
         with:
