@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./pact/
-          key: ${{ runner.os }}-pact-1.88.6
+          key: ${{ runner.os }}-pact-1.89.02-rc1
 
       - name: Add Pact to Path
         if: steps.cache-pact.outputs.cache-hit == 'true'
@@ -55,8 +55,8 @@ jobs:
       - name: Download pact tools
         if: steps.cache-pact.outputs.cache-hit != 'true'
         run: |
-          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
-          tar xzf pact-1.88.6-linux-x86_64.tar.gz
+          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.89.02-rc1/pact-1.89.02-rc1-osx.tar.gz
+          tar xzf pact-1.89.02-rc1-osx.tar.gz
           echo "$PWD/pact/bin" >> $GITHUB_PATH
 
       - name: Run Tests
