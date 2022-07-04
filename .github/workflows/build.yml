@@ -40,12 +40,15 @@ jobs:
 
       - run: mkdir -p test-results
 
+      - name: Set Pact Standalone version
+        run: |
+          echo "pact_version=1.89.02-rc1" >> $GITHUB_ENV
       - name: Cache Pact
         id: cache-pact
         uses: actions/cache@v2
         with:
           path: ./pact/
-          key: ${{ runner.os }}-pact-1.88.6
+          key: ${{ runner.os }}-pact-${{ env.pact_version }}
 
       - name: Add Pact to Path
         if: steps.cache-pact.outputs.cache-hit == 'true'
@@ -55,8 +58,8 @@ jobs:
       - name: Download pact tools
         if: steps.cache-pact.outputs.cache-hit != 'true'
         run: |
-          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v1.88.6/pact-1.88.6-linux-x86_64.tar.gz
-          tar xzf pact-1.88.6-linux-x86_64.tar.gz
+          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v${{ env.pact_version }}/pact-${{ env.pact_version }}-linux-x86_64.tar.gz
+          tar xzf pact-${{ env.pact_version }}-linux-x86_64.tar.gz
           echo "$PWD/pact/bin" >> $GITHUB_PATH
 
       - name: Run Tests
