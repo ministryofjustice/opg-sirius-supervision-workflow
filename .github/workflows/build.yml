@@ -32,7 +32,7 @@ jobs:
       - name: Resolve GO Dependencies
         run: |
           go mod download
-          
+
       - name: Setup gotestsum
         uses: autero1/action-gotestsum@v1.0.0
         with:
@@ -274,8 +274,8 @@ jobs:
 
       - name: Push Tag to Parameter Store
         run: |
-          aws ssm put-parameter --name "opg-sirius-workflow-latest-green-build" --type "String" --value "${{ needs.build.outputs.tag}}" --overwrite --region=eu-west-1
+          aws ssm put-parameter --name "opg-sirius-supervision-workflow-latest-green-build" --type "String" --value "${{ needs.build.outputs.tag }}" --overwrite --region=eu-west-1
 
       - name: Trigger Dev Deploy
         shell: bash
-        run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-sirius-workflow"
+        run: curl -u ${{ secrets.JENKINS_API_USER }}:${{ secrets.JENKINS_API_TOKEN }} "https://${{ secrets.JENKINS_URL }}/job/Sirius/job/Deploy_to_Development/build?token=${{ secrets.JENKINS_API_TOKEN_NAME }}&cause=Triggered+by+opg-sirius-supervision-workflow"
