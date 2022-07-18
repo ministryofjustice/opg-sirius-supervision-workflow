@@ -3,6 +3,7 @@ package sirius
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/pact-foundation/pact-go/dsl"
@@ -213,8 +214,17 @@ func TestPermissionSetChecksPermission(t *testing.T) {
 		},
 	}
 
-	assert.True(t, permissions.HasPermission("user", "PATCH"))
-	assert.True(t, permissions.HasPermission("team", "GET"))
-	assert.True(t, permissions.HasPermission("team", "get"))
-	assert.False(t, permissions.HasPermission("team", "PATCHs"))
+	assert.True(t, permissions.hasPermission("user", "PATCH"))
+	assert.True(t, permissions.hasPermission("team", "GET"))
+	assert.True(t, permissions.hasPermission("team", "get"))
+	assert.False(t, permissions.hasPermission("team", "PATCHs"))
+}
+
+func (ps PermissionSet) hasPermission(group string, method string) bool {
+	for _, b := range ps[group].Permissions {
+		if strings.EqualFold(b, method) {
+			return true
+		}
+	}
+	return false
 }

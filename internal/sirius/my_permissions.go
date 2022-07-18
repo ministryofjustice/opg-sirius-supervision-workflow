@@ -3,7 +3,6 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 )
 
 type PermissionGroup struct {
@@ -11,15 +10,6 @@ type PermissionGroup struct {
 }
 
 type PermissionSet map[string]PermissionGroup
-
-func (ps PermissionSet) HasPermission(group string, method string) bool {
-	for _, b := range ps[group].Permissions {
-		if strings.EqualFold(b, method) {
-			return true
-		}
-	}
-	return false
-}
 
 func (c *Client) MyPermissions(ctx Context) (PermissionSet, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/permissions", nil)
@@ -44,5 +34,5 @@ func (c *Client) MyPermissions(ctx Context) (PermissionSet, error) {
 	var v PermissionSet
 	err = json.NewDecoder(resp.Body).Decode(&v)
 
-	return v, err
+	return PermissionSet{}, err
 }

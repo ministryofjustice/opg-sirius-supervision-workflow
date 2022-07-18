@@ -1,0 +1,64 @@
+{
+  "teams": [
+    {
+      "id": 13,
+      "name": "Lay Team 1 - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Lay Team 1 - (Supervision)",
+      "email": "LayTeam1.team@opgtest.com",
+      "members": [
+        {
+          "id": 86,
+          "name": "LayTeam1 User11"
+        },
+        {
+          "id": 92,
+          "name": "Cersei",
+          "phoneNumber": "12345678",
+          "displayName": "Cersei Lannister",
+          "deleted": false,
+          "email": "cerseilannister@opgtest.com"
+        },
+        {
+          "id": 93,
+          "name": "Jon",
+          "phoneNumber": "1555678",
+          "displayName": "Jon Snow",
+          "deleted": false,
+          "email": "jonsnow@opgtest.com"
+        },
+        {
+          "id": 94,
+          "name": "Eddard",
+          "phoneNumber": "888845555",
+          "displayName": "Eddard Stark",
+          "deleted": false,
+          "email": "eddardstark@opgtest.com"
+        }
+      ],
+      "children": [],
+      "teamType": {
+        "handle": "PA",
+        "label": "PA"
+      }
+    }
+  ],
+  "tasktypes/supervision": {
+    "task_types": {
+      "CWGN": {
+        "category": "supervision",
+        "complete": "Casework - General",
+        "handle": "CWGN",
+        "incomplete": "Casework - General",
+        "user": true
+      },
+      "ORAL": {
+        "category": "supervision",
+        "complete": "Order - Allocate to team",
+        "handle": "ORAL",
+        "incomplete": "Order - Allocate to team",
+        "user": true
+      }
+    }
+  }
+}
