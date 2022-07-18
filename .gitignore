@@ -12,7 +12,6 @@ node_modules
 .tmuxp.*
 package-lock.json
 logs/*
-pacts/*
 tmp/
 docker/tmp
 web/static
