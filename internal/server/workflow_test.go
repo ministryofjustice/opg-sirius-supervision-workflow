@@ -15,7 +15,7 @@ type mockWorkflowInformation struct {
 	lastCtx           sirius.Context
 	err               error
 	userData          sirius.UserDetails
-	taskTypeData      []sirius.ApiTaskTypes
+	taskTypeData      []sirius.TaskType
 	taskListData      sirius.TaskList
 	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
@@ -31,14 +31,14 @@ func (m *mockWorkflowInformation) GetCurrentUserDetails(ctx sirius.Context) (sir
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
+func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.TaskType, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, int, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.TaskType, assigneeSelected []string) (sirius.TaskList, int, error) {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -72,7 +72,7 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	return m.err
 }
 
-func (m *mockWorkflowInformation) GetAppliedFilters(ctx sirius.Context, teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
+func (m *mockWorkflowInformation) GetAppliedFilters(ctx sirius.Context, teamId int, loadTaskTypes []sirius.TaskType, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
 	m.count += 1
 	m.lastCtx = ctx
 
@@ -80,9 +80,7 @@ func (m *mockWorkflowInformation) GetAppliedFilters(ctx sirius.Context, teamId i
 }
 
 var mockUserDetailsData = sirius.UserDetails{
-	ID:        123,
-	Firstname: "John",
-	Surname:   "Doe",
+	ID: 123,
 	Teams: []sirius.MyDetailsTeam{
 		{
 			TeamId:      13,
@@ -91,7 +89,7 @@ var mockUserDetailsData = sirius.UserDetails{
 	},
 }
 
-var mockTaskTypeData = []sirius.ApiTaskTypes{
+var mockTaskTypeData = []sirius.TaskType{
 	{
 		Handle:     "CDFC",
 		Incomplete: "Correspondence - Review failed draft",
@@ -102,23 +100,23 @@ var mockTaskTypeData = []sirius.ApiTaskTypes{
 }
 
 var mockTaskListData = sirius.TaskList{
-	WholeTaskList: []sirius.ApiTask{
+	WholeTaskList: []sirius.Task{
 		{
-			ApiTaskAssignee: sirius.CaseManagement{
-				CaseManagerName: "Assignee Duke Clive Henry Hetley Junior Jones",
+			Assignee: sirius.CaseManagement{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
-			ApiTaskType:    "Case work - General",
-			ApiTaskDueDate: "01/02/2021",
-			ApiTaskCaseItems: []sirius.CaseItemsDetails{
+			Type:    "Case work - General",
+			DueDate: "01/02/2021",
+			CaseItems: []sirius.CaseItemsDetails{
 				{
-					CaseItemClient: sirius.Clients{
-						ClientCaseRecNumber: "caseRecNumber",
-						ClientFirstName:     "Client Alexander Zacchaeus",
-						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.CaseManagement{
-							CaseManagerName: "Supervision - Team - Name",
+					Client: sirius.SupervisionClient{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: sirius.CaseManagement{
+							Name: "Supervision - Team - Name",
 						},
-						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},
 				},
 			},
@@ -131,8 +129,8 @@ var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
 		Id: 13,
 		Members: []sirius.TeamMembers{
 			{
-				TeamMembersId:   86,
-				TeamMembersName: "LayTeam1 User11",
+				Id:   86,
+				Name: "LayTeam1 User11",
 			},
 		},
 		Name: "Lay Team 1 - (Supervision)",
@@ -150,7 +148,7 @@ func TestGetUserDetails(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 
@@ -177,30 +175,30 @@ func TestGetUserDetails(t *testing.T) {
 	// 	},
 
 	// 	TaskList: sirius.TaskList{
-	// 		WholeTaskList: []sirius.ApiTask{
+	// 		WholeTaskList: []sirius.Task{
 	// 			{
-	// 				ApiTaskAssignee: sirius.AssigneeDetails{
+	// 				Assignee: sirius.AssigneeDetails{
 	// 					AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
 	// 				},
-	// 				ApiTaskCaseItems: []sirius.CaseItemsDetails{
+	// 				CaseItems: []sirius.CaseItemsDetails{
 	// 					{
-	// 						CaseItemClient: sirius.ClientDetails{
-	// 							ClientCaseRecNumber: "caseRecNumber",
-	// 							ClientFirstName:     "Client Alexander Zacchaeus",
-	// 							ClientId:            3333,
-	// 							ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
+	// 						Client: sirius.ClientDetails{
+	// 							CaseRecNumber: "caseRecNumber",
+	// 							FirstName:     "Client Alexander Zacchaeus",
+	// 							Id:            3333,
+	// 							SupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
 	// 								SupervisionCaseOwnerName: "Supervision - Team - Name",
 	// 							},
-	// 							ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+	// 							Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
 	// 						},
 	// 					},
 	// 				},
-	// 				ApiTaskDueDate: "01/02/2021",
-	// 				ApiTaskType:    "Case work - General",
+	// 				DueDate: "01/02/2021",
+	// 				Type:    "Case work - General",
 	// 			},
 	// 		},
 	// 	},
-	// 	LoadTasks: []sirius.ApiTaskTypes{
+	// 	LoadTasks: []sirius.TaskType{
 	// 		{
 	// 			Handle:     "CDFC",
 	// 			Incomplete: "Correspondence - Review failed draft",
@@ -214,8 +212,8 @@ func TestGetUserDetails(t *testing.T) {
 	// 			Id: 13,
 	// 			Members: []sirius.TeamMembers{
 	// 				{
-	// 					TeamMembersId:   86,
-	// 					TeamMembersName: "LayTeam1 User11",
+	// 					Id:   86,
+	// 					Name: "LayTeam1 User11",
 	// 				},
 	// 			},
 	// 			Name: "Lay Team 1 - (Supervision)",
@@ -229,7 +227,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert := assert.New(t)
 
 	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
+		WholeTaskList: []sirius.Task{{}},
 	}
 
 	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
@@ -240,7 +238,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 
@@ -255,9 +253,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert.Equal(workflowVars{
 		Path: "/path",
 		MyDetails: sirius.UserDetails{
-			ID:        123,
-			Firstname: "John",
-			Surname:   "Doe",
+			ID: 123,
 			Teams: []sirius.MyDetailsTeam{
 				{
 					TeamId:      13,
@@ -267,9 +263,9 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 		},
 
 		TaskList: sirius.TaskList{
-			WholeTaskList: []sirius.ApiTask{{}},
+			WholeTaskList: []sirius.Task{{}},
 		},
-		LoadTasks: []sirius.ApiTaskTypes{
+		LoadTasks: []sirius.TaskType{
 			{
 				Handle:     "CDFC",
 				Incomplete: "Correspondence - Review failed draft",
@@ -283,8 +279,8 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				Id: 13,
 				Members: []sirius.TeamMembers{
 					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
+						Id:   86,
+						Name: "LayTeam1 User11",
 					},
 				},
 				Name: "Lay Team 1 - (Supervision)",
@@ -305,7 +301,7 @@ func TestWorkflowUnauthenticated(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Equal(sirius.ErrUnauthorized, err)
 
@@ -323,7 +319,7 @@ func TestWorkflowSiriusErrors(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Equal("err", err.Error())
 
@@ -340,7 +336,7 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 	r, _ := http.NewRequest("POST", "/path", nil)
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 }

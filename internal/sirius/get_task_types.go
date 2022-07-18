@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-type ApiTaskTypes struct {
+type TaskType struct {
 	Handle     string `json:"handle"`
 	Incomplete string `json:"incomplete"`
 	Category   string `json:"category"`
@@ -15,11 +15,11 @@ type ApiTaskTypes struct {
 	IsSelected bool
 }
 
-type WholeTaskTypesList struct {
-	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
+type taskTypeMap struct {
+	TaskTypes map[string]TaskType `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
+func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]TaskType, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
@@ -41,17 +41,17 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 		return nil, newStatusError(resp)
 	}
 
-	var v WholeTaskTypesList
+	var v taskTypeMap
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		return nil, err
 	}
 
-	WholeTaskTypeList := v.AllTaskList
+	taskTypes := v.TaskTypes
 
-	var taskTypeList []ApiTaskTypes
+	var taskTypeList []TaskType
 
-	for _, u := range WholeTaskTypeList {
-		taskType := ApiTaskTypes{
+	for _, u := range taskTypes {
+		taskType := TaskType{
 			Handle:     u.Handle,
 			Incomplete: u.Incomplete,
 			Category:   u.Category,

@@ -14,10 +14,10 @@ type AssigneesTeam struct {
 	Name    string                `json:"name"`
 }
 type AssigneeTeamMembers struct {
-	TeamMembersId          int    `json:"id"`
-	TeamMembersName        string `json:"name"`
-	TeamMembersDisplayName string `json:"displayName"`
-	IsSelected             bool
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+	IsSelected  bool
 }
 
 func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected []string) (AssigneesTeam, error) {
@@ -58,10 +58,10 @@ func SetMembersThatareSelected(v AssigneesTeam, assigneeSelected []string) []Ass
 
 	for i, u := range v.Members {
 		assigneeList[i] = AssigneeTeamMembers{
-			TeamMembersId:          u.TeamMembersId,
-			TeamMembersName:        u.TeamMembersName,
-			TeamMembersDisplayName: u.TeamMembersDisplayName,
-			IsSelected:             IsAssigneeSelected(u.TeamMembersId, assigneeSelected),
+			Id:          u.Id,
+			Name:        u.Name,
+			DisplayName: u.DisplayName,
+			IsSelected:  IsAssigneeSelected(u.Id, assigneeSelected),
 		}
 	}
 
@@ -82,7 +82,7 @@ func IsAssigneeSelected(TeamMembersId int, assigneeSelected []string) bool {
 
 func SortMembersAlphabetically(v []AssigneeTeamMembers) []AssigneeTeamMembers {
 	sort.Slice(v, func(i, j int) bool {
-		return v[i].TeamMembersName < v[j].TeamMembersName
+		return v[i].Name < v[j].Name
 	})
 	return v
 }

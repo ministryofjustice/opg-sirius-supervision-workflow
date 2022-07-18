@@ -7,40 +7,40 @@ import (
 )
 
 type CaseManagement struct {
-	CaseManagerName string     `json:"displayName"`
-	Id              int        `json:"id"`
-	Team            []UserTeam `json:"teams"`
+	Name  string     `json:"displayName"`
+	Id    int        `json:"id"`
+	Teams []UserTeam `json:"teams"`
 }
 
 type UserTeam struct {
-	Name string     `json:"displayName"`
-	Id   int        `json:"id"`
-	Team []UserTeam `json:"teams"`
+	Name  string     `json:"displayName"`
+	Id    int        `json:"id"`
+	Teams []UserTeam `json:"teams"`
 }
 
 type CaseItemsDetails struct {
-	CaseItemClient Clients `json:"client"`
+	Client SupervisionClient `json:"client"`
 }
 
-type Clients struct {
-	ClientId                   int            `json:"id"`
-	ClientCaseRecNumber        string         `json:"caseRecNumber"`
-	ClientFirstName            string         `json:"firstname"`
-	ClientSurname              string         `json:"surname"`
-	ClientSupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
+type SupervisionClient struct {
+	Id                   int            `json:"id"`
+	CaseRecNumber        string         `json:"caseRecNumber"`
+	FirstName            string         `json:"firstname"`
+	Surname              string         `json:"surname"`
+	SupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
 }
 
-type ApiTask struct {
-	ApiTaskAssignee   CaseManagement     `json:"assignee"`
-	ApiTaskCaseItems  []CaseItemsDetails `json:"caseItems"`
-	ApiClients        []Clients          `json:"clients"`
-	ApiTaskDueDate    string             `json:"dueDate"`
-	ApiTaskId         int                `json:"id"`
-	ApiTaskHandle     string             `json:"type"`
-	ApiTaskType       string             `json:"name"`
-	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
-	TaskTypeName      string
-	ClientInformation Clients
+type Task struct {
+	Id                int                 `json:"id"`
+	Assignee          CaseManagement      `json:"assignee"`
+	CaseItems         []CaseItemsDetails  `json:"caseItems"`
+	Clients           []SupervisionClient `json:"clients"`
+	DueDate           string              `json:"dueDate"`
+	Handle            string              `json:"type"`
+	Type              string              `json:"name"`
+	CaseOwnerTask     bool                `json:"caseOwnerTask"`
+	Name              string
+	ClientInformation SupervisionClient
 }
 
 type PageDetails struct {
@@ -49,7 +49,7 @@ type PageDetails struct {
 }
 
 type TaskList struct {
-	WholeTaskList []ApiTask   `json:"tasks"`
+	WholeTaskList []Task      `json:"tasks"`
 	Pages         PageDetails `json:"pages"`
 	TotalTasks    int         `json:"total"`
 	ActiveFilters []string
@@ -57,7 +57,7 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []TaskType, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
@@ -133,20 +133,20 @@ func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) str
 	return assigneeFilters
 }
 
-func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
-	var list []ApiTask
+func SetTaskTypeName(v []Task, loadTasks []TaskType) []Task {
+	var list []Task
 	for _, s := range v {
-		task := ApiTask{
-			ApiTaskAssignee: CaseManagement{
-				CaseManagerName: GetAssigneeDisplayName(s),
-				Id:              GetAssigneeId(s),
-				Team:            GetAssigneeTeams(s),
+		task := Task{
+			Assignee: CaseManagement{
+				Name:  GetAssigneeDisplayName(s),
+				Id:    GetAssigneeId(s),
+				Teams: GetAssigneeTeams(s),
 			},
-			ApiTaskDueDate:    s.ApiTaskDueDate,
-			ApiTaskId:         s.ApiTaskId,
-			ApiTaskHandle:     s.ApiTaskHandle,
-			ApiTaskType:       s.ApiTaskType,
-			TaskTypeName:      GetTaskName(s, loadTasks),
+			DueDate:           s.DueDate,
+			Id:                s.Id,
+			Handle:            s.Handle,
+			Type:              s.Type,
+			Name:              GetTaskName(s, loadTasks),
 			ClientInformation: GetClientInformation(s),
 		}
 		list = append(list, task)
@@ -154,51 +154,51 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 	return list
 }
 
-func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
+func GetTaskName(task Task, loadTasks []TaskType) string {
 	for i := range loadTasks {
-		if task.ApiTaskHandle == loadTasks[i].Handle {
+		if task.Handle == loadTasks[i].Handle {
 			return loadTasks[i].Incomplete
 		}
 	}
-	return task.ApiTaskType
+	return task.Type
 }
 
-func GetAssigneeDisplayName(s ApiTask) string {
-	if s.ApiTaskAssignee.CaseManagerName == "Unassigned" {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.CaseManagerName
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.CaseManagerName
+func GetAssigneeDisplayName(s Task) string {
+	if s.Assignee.Name == "Unassigned" {
+		if len(s.Clients) != 0 {
+			return s.Clients[0].SupervisionCaseOwner.Name
+		} else if len(s.CaseItems) != 0 {
+			return s.CaseItems[0].Client.SupervisionCaseOwner.Name
 		}
 	}
-	return s.ApiTaskAssignee.CaseManagerName
+	return s.Assignee.Name
 }
 
-func GetAssigneeTeams(s ApiTask) []UserTeam {
-	if len(s.ApiTaskAssignee.Team) == 0 {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.Team
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Team
+func GetAssigneeTeams(s Task) []UserTeam {
+	if len(s.Assignee.Teams) == 0 {
+		if len(s.Clients) != 0 {
+			return s.Clients[0].SupervisionCaseOwner.Teams
+		} else if len(s.CaseItems) != 0 {
+			return s.CaseItems[0].Client.SupervisionCaseOwner.Teams
 		}
 	}
-	return s.ApiTaskAssignee.Team
+	return s.Assignee.Teams
 }
 
-func GetAssigneeId(s ApiTask) int {
-	if s.ApiTaskAssignee.Id == 0 {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.Id
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Id
+func GetAssigneeId(s Task) int {
+	if s.Assignee.Id == 0 {
+		if len(s.Clients) != 0 {
+			return s.Clients[0].SupervisionCaseOwner.Id
+		} else if len(s.CaseItems) != 0 {
+			return s.CaseItems[0].Client.SupervisionCaseOwner.Id
 		}
 	}
-	return s.ApiTaskAssignee.Id
+	return s.Assignee.Id
 }
 
-func GetClientInformation(s ApiTask) Clients {
-	if len(s.ApiTaskCaseItems) != 0 {
-		return s.ApiTaskCaseItems[0].CaseItemClient
+func GetClientInformation(s Task) SupervisionClient {
+	if len(s.CaseItems) != 0 {
+		return s.CaseItems[0].Client
 	}
-	return s.ApiClients[0]
+	return s.Clients[0]
 }

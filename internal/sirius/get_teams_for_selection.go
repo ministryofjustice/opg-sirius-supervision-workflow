@@ -7,16 +7,14 @@ import (
 )
 
 type TeamMembers struct {
-	TeamMembersId          int    `json:"id"`
-	TeamMembersName        string `json:"name"`
-	TeamMembersDisplayName string `json:"displayName"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
 }
 
 type TeamCollection struct {
 	ID          int    `json:"id"`
 	DisplayName string `json:"displayName"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phoneNumber"`
 	Members     []struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
@@ -85,8 +83,8 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 
 		for _, m := range t.Members {
 			teams[i].Members = append(teams[i].Members, TeamMembers{
-				TeamMembersId:   m.ID,
-				TeamMembersName: m.Email,
+				Id:   m.ID,
+				Name: m.Email,
 			})
 		}
 

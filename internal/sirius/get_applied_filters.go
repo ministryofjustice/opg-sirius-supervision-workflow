@@ -1,6 +1,6 @@
 package sirius
 
-func (c *Client) GetAppliedFilters(ctx Context, teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
+func (c *Client) GetAppliedFilters(ctx Context, teamId int, loadTaskTypes []TaskType, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
 	var appliedFilters []string
 
 	for _, u := range loadTaskTypes {
@@ -17,7 +17,7 @@ func (c *Client) GetAppliedFilters(ctx Context, teamId int, loadTaskTypes []ApiT
 
 	for _, u := range assigneesForFilter.Members {
 		if u.IsSelected {
-			appliedFilters = append(appliedFilters, u.TeamMembersDisplayName)
+			appliedFilters = append(appliedFilters, u.DisplayName)
 		}
 	}
 

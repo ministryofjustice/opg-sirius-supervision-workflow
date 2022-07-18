@@ -23,7 +23,7 @@ func TestGetTaskTypes(t *testing.T) {
 		name             string
 		setup            func()
 		cookies          []*http.Cookie
-		expectedResponse []ApiTaskTypes
+		expectedResponse []TaskType
 		expectedError    error
 	}{
 		{
@@ -69,7 +69,7 @@ func TestGetTaskTypes(t *testing.T) {
 				{Name: "XSRF-TOKEN", Value: "abcde"},
 				{Name: "Other", Value: "other"},
 			},
-			expectedResponse: []ApiTaskTypes{
+			expectedResponse: []TaskType{
 				{
 					Handle:     "CWGN",
 					Incomplete: "Casework - General",

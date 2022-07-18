@@ -70,9 +70,7 @@ func TestGetCurrentUserDetails(t *testing.T) {
 				{Name: "Other", Value: "other"},
 			},
 			expectedMyDetails: UserDetails{
-				ID:          65,
-				Name:        "case",
-				PhoneNumber: "12345678",
+				ID: 65,
 				Teams: []MyDetailsTeam{
 					{
 						TeamId:      13,
@@ -80,13 +78,6 @@ func TestGetCurrentUserDetails(t *testing.T) {
 					},
 				},
 				DisplayName: "case manager",
-				Deleted:     false,
-				Email:       "case.manager@opgtest.com",
-				Firstname:   "case",
-				Surname:     "manager",
-				Roles:       []string{"Case Manager"},
-				Locked:      false,
-				Suspended:   false,
 			},
 		},
 

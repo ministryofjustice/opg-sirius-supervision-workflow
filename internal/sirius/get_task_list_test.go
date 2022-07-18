@@ -61,7 +61,7 @@ func TestGetTaskList(t *testing.T) {
 			tc.setup()
 			assert.Nil(t, pact.Verify(func() error {
 				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, int, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{}, []string{})
+				taskList, int, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []TaskType{}, []string{})
 				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList, int)
 				assert.Equal(t, tc.expectedError, err)
 				return nil
@@ -131,73 +131,73 @@ func TestCreateAssigneeFilter(t *testing.T) {
 	assert.Equal(t, CreateAssigneeFilter([]string{"LayTeam1 User3"}, ""), "assigneeid_or_null:LayTeam1 User3")
 }
 
-func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) Task {
+	v := Task{
+		Assignee: CaseManagement{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
 		},
-		ApiTaskCaseItems: []CaseItemsDetails{{
-			CaseItemClient: Clients{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "Pamela",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              4321,
-					CaseManagerName: "Richard Fox",
+		CaseItems: []CaseItemsDetails{{
+			Client: SupervisionClient{
+				CaseRecNumber: "13636617",
+				FirstName:     "Pamela",
+				Id:            37259351,
+				SupervisionCaseOwner: CaseManagement{
+					Id:   4321,
+					Name: "Richard Fox",
 				},
-				ClientSurname: "Pragnell",
+				Surname: "Pragnell",
 			},
 		}},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate: "01/06/2021",
+		Id:      40904862,
+		Handle:  ApiTaskHandleInput,
+		Type:    ApiTaskTypeInput,
+		Name:    TaskTypeNameInput,
 	}
 	return v
 }
 
-func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) Task {
+	v := Task{
+		Assignee: CaseManagement{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
 		},
-		ApiClients: []Clients{
+		Clients: []SupervisionClient{
 			{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "WithoutACase",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              1234,
-					CaseManagerName: "Richard Fox",
-					Team: []UserTeam{
+				CaseRecNumber: "13636617",
+				FirstName:     "WithoutACase",
+				Id:            37259351,
+				SupervisionCaseOwner: CaseManagement{
+					Id:   1234,
+					Name: "Richard Fox",
+					Teams: []UserTeam{
 						{
 							Name: "Go TaskForce Team",
 							Id:   999,
 						},
 					},
 				},
-				ClientSurname: "WithoutACase",
+				Surname: "WithoutACase",
 			},
 		},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate: "01/06/2021",
+		Id:      40904862,
+		Handle:  ApiTaskHandleInput,
+		Type:    ApiTaskTypeInput,
+		Name:    TaskTypeNameInput,
 	}
 	return v
 }
 
-func SetUpTaskTypeWithoutAClient() ApiTask {
-	v := ApiTask{
-		ApiTaskCaseItems: []CaseItemsDetails{
+func SetUpTaskTypeWithoutAClient() Task {
+	v := Task{
+		CaseItems: []CaseItemsDetails{
 			{
-				CaseItemClient: Clients{
-					ClientSupervisionCaseOwner: CaseManagement{
-						Team: []UserTeam{
+				Client: SupervisionClient{
+					SupervisionCaseOwner: CaseManagement{
+						Teams: []UserTeam{
 							{
 								Name: "Go TaskForce Team",
 								Id:   888,
@@ -211,8 +211,8 @@ func SetUpTaskTypeWithoutAClient() ApiTask {
 	return v
 }
 
-func SetUpLoadTasks() []ApiTaskTypes {
-	loadTasks := []ApiTaskTypes{
+func SetUpLoadTasks() []TaskType {
+	loadTasks := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -299,24 +299,24 @@ func TestGetAssigneeIdWithACaseAndAssignneNotToCaseOwner(t *testing.T) {
 
 func TestGetClientInformationWithACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientSurname:       "Pragnell",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              4321,
+	expectedResult := SupervisionClient{
+		Id:            37259351,
+		CaseRecNumber: "13636617",
+		FirstName:     "Pamela",
+		Surname:       "Pragnell",
+		SupervisionCaseOwner: CaseManagement{
+			Name: "Richard Fox",
+			Id:   4321,
 		},
 	}
 
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
-func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			Team: []UserTeam{
+func SetUpUserTeamStruct(TeamName string, TeamId int) Task {
+	v := Task{
+		Assignee: CaseManagement{
+			Teams: []UserTeam{
 				{
 					Name: TeamName,
 					Id:   TeamId,
@@ -330,15 +330,15 @@ func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
 
 func TestGetClientInformationWithoutACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              1234,
-			Team: []UserTeam{
+	expectedResult := SupervisionClient{
+		Id:            37259351,
+		CaseRecNumber: "13636617",
+		FirstName:     "WithoutACase",
+		Surname:       "WithoutACase",
+		SupervisionCaseOwner: CaseManagement{
+			Name: "Richard Fox",
+			Id:   1234,
+			Teams: []UserTeam{
 				{
 					Name: "Go TaskForce Team",
 					Id:   999,
@@ -388,15 +388,15 @@ func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t 
 
 func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              4321,
-			CaseManagerName: "Richard Fox",
+	expectedResult := SupervisionClient{
+		CaseRecNumber: "13636617",
+		FirstName:     "Pamela",
+		Id:            37259351,
+		SupervisionCaseOwner: CaseManagement{
+			Id:   4321,
+			Name: "Richard Fox",
 		},
-		ClientSurname: "Pragnell",
+		Surname: "Pragnell",
 	}
 
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
@@ -404,15 +404,15 @@ func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
 
 func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              1234,
-			CaseManagerName: "Richard Fox",
-			Team: []UserTeam{
+	expectedResult := SupervisionClient{
+		CaseRecNumber: "13636617",
+		FirstName:     "WithoutACase",
+		Surname:       "WithoutACase",
+		Id:            37259351,
+		SupervisionCaseOwner: CaseManagement{
+			Id:   1234,
+			Name: "Richard Fox",
+			Teams: []UserTeam{
 				{
 					Name: "Go TaskForce Team",
 					Id:   999,

@@ -10,13 +10,13 @@ import (
 
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.TaskType, error)
+	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.TaskType, []string) (sirius.TaskList, int, error)
 	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
-	GetAppliedFilters(sirius.Context, int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
+	GetAppliedFilters(sirius.Context, int, []sirius.TaskType, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
 type workflowVars struct {
@@ -25,7 +25,7 @@ type workflowVars struct {
 	MyDetails      sirius.UserDetails
 	TaskList       sirius.TaskList
 	TaskDetails    sirius.TaskDetails
-	LoadTasks      []sirius.ApiTaskTypes
+	LoadTasks      []sirius.TaskType
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
 	AppliedFilters []string
@@ -35,7 +35,7 @@ type workflowVars struct {
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
-	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
