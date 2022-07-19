@@ -9,13 +9,12 @@ services:
     ports: ["8888:1234"]
 
     environment:
-      SIRIUS_URL: http://pact-stub:8080
+      SIRIUS_URL: http://json-server:3000
       SIRIUS_PUBLIC_URL: http://localhost:8080
 
-  pact-stub:
-    build: ./pact-stub
-    environment:
-      PACT_DIR: ./pacts
-      PORT: 8080
-    volumes:
-      - "../pacts:/app/pacts"
+  json-server:
+    build:
+      context: ..
+      dockerfile: ./docker/json-server/Dockerfile
+    ports:
+      - '3000:3000'

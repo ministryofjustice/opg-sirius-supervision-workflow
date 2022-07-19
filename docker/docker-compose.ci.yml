@@ -8,25 +8,14 @@ services:
     ports: ["8888:8080"]
     environment:
       PORT: 8888
-      SIRIUS_URL: http://pact-stub:8080
+      SIRIUS_URL:http://json-server:3000
       SIRIUS_PUBLIC_URL: http://localhost:8080
-
-  pact-stub:
-    build: ./pact-stub
-    ports: ["8080:8080"]
-    environment:
-      PACT_DIR: ./pacts
-      PORT: 8080
-    volumes:
-      - type: volume
-        source: pacts_data
-        target: /app/pacts
 
   puppeteer:
     build: ./puppeteer
     depends_on:
       - app
-      - pact-stub
+      - json-server
     environment:
       - LHCI_BUILD_CONTEXT__CURRENT_HASH=$CIRCLE_SHA1
       - LHCI_BUILD_CONTEXT__GITHUB_REPO_SLUG=ministryofjustice/opg-sirius-workflow
@@ -42,9 +31,11 @@ services:
       - ../cypress/logs:/root/cypress/logs:rw,delegated
     depends_on:
       - app
-      - pact-stub
+      - json-server
 
-volumes:
-  pacts_data:
-    name: pacts_data
-    external: true
+  json-server:
+    build:
+      context: ..
+      dockerfile: ./docker/json-server/Dockerfile
+    ports:
+      - '3000:3000'

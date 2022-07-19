@@ -7,3 +7,10 @@ services:
       - '2345:2345'
     volumes:
       - ..:/app:rw,delegated
+
+  json-server:
+    build:
+      context: ..
+      dockerfile: ./docker/json-server/Dockerfile
+    ports:
+      - '3000:3000'
