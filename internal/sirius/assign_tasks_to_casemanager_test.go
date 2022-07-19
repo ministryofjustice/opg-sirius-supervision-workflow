@@ -11,12 +11,13 @@ import (
 
 func TestAssignTasks(t *testing.T) {
 	pact := &dsl.Pact{
-		Consumer:          "sirius-workflow",
-		Provider:          "sirius",
-		Host:              "localhost",
-		PactFileWriteMode: "merge",
-		LogDir:            "../../logs",
-		PactDir:           "../../pacts",
+		Consumer:                 "sirius-workflow",
+		Provider:                 "sirius",
+		Host:                     "localhost",
+		PactFileWriteMode:        "merge",
+		LogDir:                   "../../logs",
+		PactDir:                  "../../pacts",
+		DisableToolValidityCheck: true,
 	}
 	defer pact.Teardown()
 
