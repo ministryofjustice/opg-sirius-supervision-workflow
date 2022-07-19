@@ -69,8 +69,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		taskTypeSelected := (r.Form["selected-task-type"])
-		assigneeSelected := (r.Form["selected-assignee"])
+		taskTypeSelected := r.Form["selected-task-type"]
+		assigneeSelected := r.Form["selected-assignee"]
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
@@ -150,7 +150,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			if err != nil {
 				return err
 			}
-			taskIdArray := (r.Form["selected-tasks"])
+			taskIdArray := r.Form["selected-tasks"]
 
 			taskIdForUrl := ""
 

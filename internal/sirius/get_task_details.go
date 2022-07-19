@@ -48,9 +48,8 @@ func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, disp
 func GetPreviousPageNumber(search int) int {
 	if search <= 1 {
 		return 1
-	} else {
-		return search - 1
 	}
+	return search - 1
 }
 
 func GetNextPageNumber(taskList TaskList, search int) int {
@@ -60,9 +59,8 @@ func GetNextPageNumber(taskList TaskList, search int) int {
 		} else {
 			return search + 1
 		}
-	} else {
-		return taskList.Pages.PageTotal
 	}
+	return taskList.Pages.PageTotal
 }
 
 func GetShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
@@ -79,9 +77,8 @@ func GetShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
 func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	if taskList.Pages.PageCurrent*displayTaskLimit > taskList.TotalTasks {
 		return taskList.TotalTasks
-	} else {
-		return taskList.Pages.PageCurrent * displayTaskLimit
 	}
+	return taskList.Pages.PageCurrent * displayTaskLimit
 }
 
 func GetPaginationLimits(taskList TaskList, TaskDetails TaskDetails) []int {
