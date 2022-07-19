@@ -35,7 +35,7 @@ type workflowVars struct {
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
-	return func(perm sirius.PermissionSet, w http.ResponseWriter, r *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
