@@ -1,74 +1,71 @@
 package sirius
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
-	"github.com/pact-foundation/pact-go/dsl"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetTaskList(t *testing.T) {
-	pact := &dsl.Pact{
-		Consumer:          "sirius-workflow",
-		Provider:          "sirius",
-		Host:              "localhost",
-		PactFileWriteMode: "merge",
-		LogDir:            "../../logs",
-		PactDir:           "../../pacts",
-	}
-	defer pact.Teardown()
-	testCases := []struct {
-		name             string
-		setup            func()
-		cookies          []*http.Cookie
-		expectedResponse TaskList
-		taskDetails      TaskDetails
-		expectedError    error
-	}{
-		{
-			name: "Test Task List",
-			setup: func() {
-				pact.
-					AddInteraction().
-					Given("I am a Lay Team user").
-					UponReceiving("A request to get tasks for a team which have long names").
-					WithRequest(dsl.Request{
-						Method: http.MethodGet,
-						Path:   dsl.String("/api/v1/assignees/team/13/tasks"),
-						Headers: dsl.MapMatcher{
-							"X-XSRF-TOKEN":        dsl.String("abcde"),
-							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
-							"OPG-Bypass-Membrane": dsl.String("1"),
-						},
-					}).
-					WillRespondWith(dsl.Response{
-						Status:  http.StatusOK,
-						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
-						Body:    dsl.Like(map[string]interface{}{}),
-					})
-			},
-			cookies: []*http.Cookie{
-				{Name: "XSRF-TOKEN", Value: "abcde"},
-				{Name: "Other", Value: "other"},
-			},
-			expectedResponse: TaskList{},
-		},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.setup()
-			assert.Nil(t, pact.Verify(func() error {
-				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-				taskList, int, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{}, []string{})
-				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList, int)
-				assert.Equal(t, tc.expectedError, err)
-				return nil
-			}))
-		})
-	}
-}
+//func TestGetTaskList(t *testing.T) {
+//	pact := &dsl.Pact{
+//		Consumer:          "sirius-workflow",
+//		Provider:          "sirius",
+//		Host:              "localhost",
+//		PactFileWriteMode: "merge",
+//		LogDir:            "../../logs",
+//		PactDir:           "../../pacts",
+//	}
+//	defer pact.Teardown()
+//	testCases := []struct {
+//		name             string
+//		setup            func()
+//		cookies          []*http.Cookie
+//		expectedResponse TaskList
+//		taskDetails      TaskDetails
+//		expectedError    error
+//	}{
+//		{
+//			name: "Test Task List",
+//			setup: func() {
+//				pact.
+//					AddInteraction().
+//					Given("I am a Lay Team user").
+//					UponReceiving("A request to get tasks for a team which have long names").
+//					WithRequest(dsl.Request{
+//						Method: http.MethodGet,
+//						Path:   dsl.String("/api/v1/assignees/team/13/tasks"),
+//						Headers: dsl.MapMatcher{
+//							"X-XSRF-TOKEN":        dsl.String("abcde"),
+//							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
+//							"OPG-Bypass-Membrane": dsl.String("1"),
+//						},
+//					}).
+//					WillRespondWith(dsl.Response{
+//						Status:  http.StatusOK,
+//						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
+//						Body:    dsl.Like(map[string]interface{}{}),
+//					})
+//			},
+//			cookies: []*http.Cookie{
+//				{Name: "XSRF-TOKEN", Value: "abcde"},
+//				{Name: "Other", Value: "other"},
+//			},
+//			expectedResponse: TaskList{},
+//		},
+//	}
+//	for _, tc := range testCases {
+//		t.Run(tc.name, func(t *testing.T) {
+//			tc.setup()
+//			assert.Nil(t, pact.Verify(func() error {
+//				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
+//				taskList, int, err := client.GetTaskList(getContext(tc.cookies), 1, 25, 13, 13, []string{}, []ApiTaskTypes{}, []string{})
+//				assert.Equal(t, tc.expectedResponse.WholeTaskList, taskList.WholeTaskList, int)
+//				assert.Equal(t, tc.expectedError, err)
+//				return nil
+//			}))
+//		})
+//	}
+//}
 
 func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
 

@@ -6,9 +6,9 @@ describe("Pagination", () => {
   });
 
   it("shows correct number of total tasks", () => {
-    // cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(1)").should('contain', '0')
-    cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(2)").should('contain', '0')
-    cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(3)").should('contain', '0')
+    cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(1)").should('contain', '1')
+    cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(2)").should('contain', '10')
+    cy.get("#pagination-label > .flex-container > .moj-pagination__results > :nth-child(3)").should('contain', '10')
   })
 
  it("disabled previous button while on top page one", () => {

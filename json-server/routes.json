@@ -1,0 +1,6 @@
+{
+    "/api/v1/*": "/$1",
+    "/tasktypes/supervision": "/tasktypes-supervision",
+    "/users/current": "/users-current",
+    "/assignees/team/:id/tasks*": "/tasks/:id"
+}
