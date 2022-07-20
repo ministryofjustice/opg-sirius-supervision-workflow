@@ -14,9 +14,9 @@ describe("Task list", () => {
     cy.contains("Actions");
   })
 
-  it("has a message to show the team has no tasks", () => {
-    cy.get('.govuk-table__cell').should("contain", "The team has no tasks");
-  })
+  // it("has a message to show the team has no tasks", () => {
+  //   cy.get('.govuk-table__cell').should("contain", "The team has no tasks");
+  // })
 
 // it("should have a table with the column Task type", () => {
 //   cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2)").should("contain", "Case work - General")
