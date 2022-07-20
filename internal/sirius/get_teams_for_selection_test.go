@@ -28,7 +28,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 		expectedError    error
 	}{
 		{
-			name: "Test Team Selection",
+			name: "Test Team Selection?",
 			setup: func() {
 				pact.
 					AddInteraction().
