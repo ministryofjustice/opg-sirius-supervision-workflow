@@ -113,7 +113,6 @@ jobs:
           name: pacts
           path: |
             ./pacts/sirius-workflow-sirius.json
-            ./pacts/ignored-ignored.json
 
   lint:
     name: GO lint
@@ -137,7 +136,6 @@ jobs:
       - name: Retrieve pact
         run: |
           docker container create --name temp -v pacts_data:/root hello-world
-          docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
           docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
 
       - name: Run pa11y
@@ -162,7 +160,6 @@ jobs:
       - name: Retrieve pact
         run: |
           docker container create --name temp -v pacts_data:/root hello-world
-          docker cp ./pacts/ignored-ignored.json temp:/root/ignored-ignored.json
           docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
       - name: Run cypress
         run: |
