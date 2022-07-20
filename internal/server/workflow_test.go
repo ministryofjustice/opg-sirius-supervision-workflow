@@ -150,7 +150,7 @@ func TestGetUserDetails(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 
@@ -240,7 +240,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 
@@ -305,7 +305,7 @@ func TestWorkflowUnauthenticated(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Equal(sirius.ErrUnauthorized, err)
 
@@ -323,7 +323,7 @@ func TestWorkflowSiriusErrors(t *testing.T) {
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Equal("err", err.Error())
 
@@ -340,7 +340,7 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 	r, _ := http.NewRequest("POST", "/path", nil)
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(sirius.PermissionSet{}, w, r)
+	err := handler(w, r)
 
 	assert.Nil(err)
 }
