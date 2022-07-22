@@ -40,28 +40,6 @@ jobs:
 
       - run: mkdir -p test-results
 
-      - name: Set Pact Standalone version
-        run: |
-          echo "pact_version=1.89.02-rc1" >> $GITHUB_ENV
-      - name: Cache Pact
-        id: cache-pact
-        uses: actions/cache@v2
-        with:
-          path: ./pact/
-          key: ${{ runner.os }}-pact-${{ env.pact_version }}
-
-      - name: Add Pact to Path
-        if: steps.cache-pact.outputs.cache-hit == 'true'
-        run: |
-          echo "$PWD/pact/bin" >> $GITHUB_PATH
-
-      - name: Download pact tools
-        if: steps.cache-pact.outputs.cache-hit != 'true'
-        run: |
-          curl -LO https://github.com/pact-foundation/pact-ruby-standalone/releases/download/v${{ env.pact_version }}/pact-${{ env.pact_version }}-linux-x86_64.tar.gz
-          tar xzf pact-${{ env.pact_version }}-linux-x86_64.tar.gz
-          echo "$PWD/pact/bin" >> $GITHUB_PATH
-
       - name: Run Tests
         run: |
           gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
@@ -80,39 +58,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      - name: Define Pact tag
-        id: pact_tag
-        run: |
-          if [ $GITHUB_EVENT_NAME == "pull_request" ]; then
-              echo "::set-output name=VERSION::${{github.event.pull_request.head.sha}}"
-              echo "::set-output name=TAG::${{github.head_ref}}"
-          else
-              echo "::set-output name=VERSION::${{github.sha}}"
-              echo "::set-output name=TAG::main"
-          fi
-
-      - name: Publish pacts
-        if: github.actor != 'dependabot[bot]'
-        env:
-          PACT_DIR: ./pacts
-          PACT_BROKER_URL: https://pact-broker.api.opg.service.justice.gov.uk
-          PACT_BROKER_USERNAME: admin
-          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
-        run: PACT_CONSUMER_TAG=${{ steps.pact_tag.outputs.TAG }} PACT_CONSUMER_VERSION=${{ steps.pact_tag.outputs.VERSION	}} go run internal/pact/publish.go
-
       - name: Upload Code Coverage
         uses: codecov/codecov-action@v1
         with:
           files: test-results/test-coverage.txt
           fail_ci_if_error: true
           verbose: true
-
-      - name: Persist Pacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: pacts
-          path: |
-            ./pacts/sirius-workflow-sirius.json
 
   lint:
     name: GO lint
@@ -128,20 +79,9 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: pacts
-          path: ./pacts
-      - name: Retrieve pact
-        run: |
-          docker container create --name temp -v pacts_data:/root hello-world
-          docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
-
       - name: Run pa11y
         run: |
           docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
-
       - name: Run Lighthouse
         run: |
           docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
@@ -152,15 +92,6 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: pacts
-          path: ./pacts
-      - name: Retrieve pact
-        run: |
-          docker container create --name temp -v pacts_data:/root hello-world
-          docker cp ./pacts/sirius-workflow-sirius.json temp:/root/sirius-workflow-sirius.json
       - name: Run cypress
         run: |
           docker-compose -f docker/docker-compose.ci.yml run cypress

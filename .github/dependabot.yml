@@ -24,17 +24,6 @@ updates:
       separator: "-"
 
   - package-ecosystem: "docker"
-    directory: "/docker/pact-stub"
-    schedule:
-      interval: "daily"
-      time: "10:00"
-      timezone: "Europe/London"
-    commit-message:
-      prefix: "#patch"
-    pull-request-branch-name:
-      separator: "-"
-
-  - package-ecosystem: "docker"
     directory: "/docker/puppeteer"
     schedule:
       interval: "daily"
