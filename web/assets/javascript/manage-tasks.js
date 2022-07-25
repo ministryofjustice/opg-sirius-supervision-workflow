@@ -4,7 +4,6 @@ export default class ManageTasks {
       this.data = {
           selectedTasks: 0
       }
-      this.teamMemberData = [];
 
       this.checkBoxElements = element.querySelectorAll('.js-mt-checkbox');
       this.allcheckBoxElements = element.querySelectorAll('.js-mt-checkbox-select-all');
@@ -14,8 +13,7 @@ export default class ManageTasks {
       this.xsrfToken = element.querySelector('.js-xsrfToken');
       this.selectedCountElement = element.querySelectorAll('.js-mt-task-count');
       this.editPanelDiv = element.querySelectorAll('.js-mt-edit-panel');
-      this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content')
-      this.taskTypeCheckBox
+      this.baseUrl = document.querySelector('[name=api-base-uri]').getAttribute('content');
       this.taskTypeButton = element.querySelectorAll('.js-container-button');
 
       this._setupEventListeners();
@@ -84,13 +82,13 @@ export default class ManageTasks {
       this._updateDomElements();
   }
 
-  _showEditTasksPanel(event) {
+  _showEditTasksPanel(_event) {
       this.editPanelDiv.forEach(element => {
           element.classList.toggle('hide', this.data.selectedTasks === 0);
       });
     }
 
-  _hideEditTasksPanel(event) {
+  _hideEditTasksPanel(_event) {
       this.editPanelDiv.forEach(element => {
           element.classList.toggle('hide', true);
       });
