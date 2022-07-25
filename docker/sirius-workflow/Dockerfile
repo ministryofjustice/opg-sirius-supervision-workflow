@@ -21,7 +21,7 @@ EXPOSE 2345
 
 ENTRYPOINT ["air"]
 
-FROM node:18.3.0-alpine3.14 as asset-env
+FROM node:18.6.0-alpine3.16 as asset-env
 
 WORKDIR /app
 
@@ -48,7 +48,7 @@ COPY . .
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3.16.0
+FROM alpine:3.16.1
 
 WORKDIR /go/bin
 
