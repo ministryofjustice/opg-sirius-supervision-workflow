@@ -1,5 +1,5 @@
 ## build json-server for mock API
-FROM node:14.17.5-alpine3.14 as json-server
+FROM node:18.6.0-alpine3.16 as json-server
 
 WORKDIR /app
 
