@@ -105,11 +105,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 func CreateTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
 	if len(taskTypeSelected) == 0 {
 		taskTypeFilters += ","
-	} else if len(taskTypeSelected) == 1 {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s + ","
-		}
-	} else if len(taskTypeSelected) > 1 {
+	} else {
 		for _, s := range taskTypeSelected {
 			taskTypeFilters += "type:" + s + ","
 		}
