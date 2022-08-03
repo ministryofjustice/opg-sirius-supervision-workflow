@@ -2,7 +2,7 @@ describe("Reassign Tasks", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.visit("/");
+        cy.visit("/supervision/workflow/1");
     });
   
   // it("sends the task to be reassign to someone else", () => {
