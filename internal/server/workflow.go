@@ -12,7 +12,7 @@ type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
-	GetTaskDetails(sirius.Context, sirius.TaskList, int, int) sirius.TaskDetails
+	GetPageDetails(sirius.Context, sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
@@ -24,7 +24,7 @@ type workflowVars struct {
 	XSRFToken      string
 	MyDetails      sirius.UserDetails
 	TaskList       sirius.TaskList
-	TaskDetails    sirius.TaskDetails
+	PageDetails    sirius.PageDetails
 	LoadTasks      []sirius.ApiTaskTypes
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
@@ -48,24 +48,26 @@ func checkForChangesToSelectedPagination(r *http.Request) int {
 			return currentTaskDisplay
 		}
 	}
-
 	return 25
+}
 
+func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int {
+	if len(myDetails.Teams) < 1 {
+		return defaultWorkflowTeam
+	} else {
+		return myDetails.Teams[0].TeamId
+	}
+	return 0
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
-		var displayTaskLimit int
-
-		//if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		//	return StatusError(http.StatusMethodNotAllowed)
-		//}
-
 		ctx := getContext(r)
-
 		search, _ := strconv.Atoi(r.FormValue("page"))
+		fmt.Print("search")
+		fmt.Println(search)
 
-		displayTaskLimit = checkForChangesToSelectedPagination(r)
+		displayTaskLimit := checkForChangesToSelectedPagination(r)
 
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
@@ -81,12 +83,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if err != nil {
 			return err
 		}
-		loggedInTeamId := 0
-		if len(myDetails.Teams) < 1 {
-			loggedInTeamId = defaultWorkflowTeam
-		} else {
-			loggedInTeamId = myDetails.Teams[0].TeamId
-		}
+
+		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
@@ -97,20 +95,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if err != nil {
 			return err
 		}
-		fmt.Println("get task list")
 
-		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
-		fmt.Println("get task details")
+		pageDetails := client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
+
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
-		fmt.Println("get teams for selection")
+
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
-		fmt.Println("get assignees for filter")
+
 		appliedFilters := client.GetAppliedFilters(ctx, teamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
@@ -118,7 +115,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			XSRFToken:      ctx.XSRFToken,
 			MyDetails:      myDetails,
 			TaskList:       taskList,
-			TaskDetails:    taskdetails,
+			PageDetails:    pageDetails,
 			LoadTasks:      loadTaskTypes,
 			TeamSelection:  teamSelection,
 			Assignees:      assigneesForFilter,
@@ -180,13 +177,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 			taskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
-			taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
+			pageDetails := client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
 			if err != nil {
 				return err
 			}
 
 			vars.TaskList = taskList
-			vars.TaskDetails = taskdetails
+			vars.PageDetails = pageDetails
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
