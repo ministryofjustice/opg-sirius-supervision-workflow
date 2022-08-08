@@ -69,12 +69,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		taskTypeSelected := (r.Form["selected-task-type"])
-		fmt.Println("selected task type")
-		fmt.Println(taskTypeSelected)
-		assigneeSelected := (r.Form["selected-assignee"])
-		fmt.Println("assigneeSelected")
-		fmt.Println(assigneeSelected)
+		taskTypeSelected := r.Form["selected-task-type"]
+		assigneeSelected := r.Form["selected-assignee"]
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
