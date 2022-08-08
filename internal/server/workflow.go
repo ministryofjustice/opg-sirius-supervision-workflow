@@ -34,6 +34,25 @@ type workflowVars struct {
 	Errors         sirius.ValidationErrors
 }
 
+func checkForChangesToSelectedPagination(r *http.Request) int {
+	bothDisplayTaskLimits := r.Form["tasksPerPage"]
+	currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
+	if len(bothDisplayTaskLimits) != 0 {
+		topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
+		bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
+		if topDisplayTaskLimit != currentTaskDisplay {
+			return topDisplayTaskLimit
+		} else if bottomDisplayTaskLimit != currentTaskDisplay {
+			return bottomDisplayTaskLimit
+		} else {
+			return currentTaskDisplay
+		}
+	}
+
+	return 25
+
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
@@ -45,22 +64,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		ctx := getContext(r)
 
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		bothDisplayTaskLimits := r.Form["tasksPerPage"]
-		currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
 
-		if len(bothDisplayTaskLimits) != 0 {
-			topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
-			bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
-			if topDisplayTaskLimit != currentTaskDisplay {
-				displayTaskLimit = topDisplayTaskLimit
-			} else if bottomDisplayTaskLimit != currentTaskDisplay {
-				displayTaskLimit = bottomDisplayTaskLimit
-			} else {
-				displayTaskLimit = currentTaskDisplay
-			}
-		} else {
-			displayTaskLimit = 25
-		}
+		displayTaskLimit = checkForChangesToSelectedPagination(r)
 
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
