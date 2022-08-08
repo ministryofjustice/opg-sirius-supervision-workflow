@@ -50,6 +50,8 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	v.Members = SetMembersThatareSelected(v, assigneeSelected)
 	v.Members = SortMembersAlphabetically(v.Members)
 
+	fmt.Println("assignees for filter")
+	fmt.Println(v)
 	return v, err
 }
 

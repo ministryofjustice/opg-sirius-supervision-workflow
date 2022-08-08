@@ -38,9 +38,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 	return func(w http.ResponseWriter, r *http.Request) error {
 		var displayTaskLimit int
 
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
+		//if r.Method != http.MethodGet && r.Method != http.MethodPost {
+		//	return StatusError(http.StatusMethodNotAllowed)
+		//}
 
 		ctx := getContext(r)
 
@@ -70,7 +70,11 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 
 		taskTypeSelected := (r.Form["selected-task-type"])
+		fmt.Println("selected task type")
+		fmt.Println(taskTypeSelected)
 		assigneeSelected := (r.Form["selected-assignee"])
+		fmt.Println("assigneeSelected")
+		fmt.Println(assigneeSelected)
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
@@ -92,19 +96,20 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if err != nil {
 			return err
 		}
+		fmt.Println("get task list")
 
 		taskdetails := client.GetTaskDetails(ctx, taskList, search, displayTaskLimit)
-
+		fmt.Println("get task details")
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
-
+		fmt.Println("get teams for selection")
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
 			return err
 		}
-
+		fmt.Println("get assignees for filter")
 		appliedFilters := client.GetAppliedFilters(ctx, teamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
@@ -136,7 +141,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
-
+			//this is where it picks up the new user to assign task to
 			checkTaskHasIdForAssigning := r.FormValue("assignCM")
 			var newAssigneeIdForTask int
 

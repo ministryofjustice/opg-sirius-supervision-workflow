@@ -38,7 +38,7 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 
 ## Run Cypress tests
 
-`docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down`
+`docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
 
 `yarn and yarn cypress`
 
