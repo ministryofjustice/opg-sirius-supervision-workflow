@@ -57,15 +57,27 @@ func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int 
 	} else {
 		return myDetails.Teams[0].TeamId
 	}
-	return 0
+}
+
+func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
+	var assigneeIdForTask int
+	var err error
+
+	if assigneeId != "" {
+		assigneeIdForTask, err = strconv.Atoi(assigneeId)
+	} else {
+		assigneeIdForTask, err = strconv.Atoi(teamId)
+	}
+	if err != nil {
+		return 0, err
+	}
+	return assigneeIdForTask, nil
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
-		fmt.Print("search")
-		fmt.Println(search)
 
 		displayTaskLimit := checkForChangesToSelectedPagination(r)
 
@@ -130,6 +142,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		case http.MethodGet:
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		case http.MethodPost:
+			var newAssigneeIdForTask int
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 
 			if selectedTeamToAssignTaskString == "0" {
@@ -140,19 +153,17 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 			//this is where it picks up the new user to assign task to
-			checkTaskHasIdForAssigning := r.FormValue("assignCM")
-			var newAssigneeIdForTask int
-
-			if checkTaskHasIdForAssigning != "" {
-				newAssigneeIdForTask, _ = strconv.Atoi(r.FormValue("assignCM"))
-			} else {
-				newAssigneeIdForTask, _ = strconv.Atoi(selectedTeamToAssignTaskString)
+			newAssigneeIdForTask, err = getAssigneeIdForTask(selectedTeamToAssignTaskString, r.FormValue("assignCM"))
+			if err != nil {
+				return err
 			}
 
 			err := r.ParseForm()
 			if err != nil {
 				return err
 			}
+
+			//refactor next
 			taskIdArray := (r.Form["selected-tasks"])
 
 			taskIdForUrl := ""
@@ -176,14 +187,12 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
-			taskList, _, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
-			pageDetails := client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
+			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				return err
 			}
+			vars.PageDetails = client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
 
-			vars.TaskList = taskList
-			vars.PageDetails = pageDetails
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
