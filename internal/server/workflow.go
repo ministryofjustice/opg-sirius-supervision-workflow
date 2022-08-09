@@ -34,9 +34,9 @@ type workflowVars struct {
 	Errors         sirius.ValidationErrors
 }
 
-func checkForChangesToSelectedPagination(r *http.Request) int {
-	bothDisplayTaskLimits := r.Form["tasksPerPage"]
-	currentTaskDisplay, _ := strconv.Atoi(r.FormValue("currentTaskDisplay"))
+func checkForChangesToSelectedPagination(bothDisplayTaskLimits []string, currentTaskDisplayString string) int {
+	currentTaskDisplay, _ := strconv.Atoi(currentTaskDisplayString)
+
 	if len(bothDisplayTaskLimits) != 0 {
 		topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
 		bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
@@ -92,7 +92,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
-		displayTaskLimit := checkForChangesToSelectedPagination(r)
+		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
 
 		err := r.ParseForm()
 		if err != nil {
