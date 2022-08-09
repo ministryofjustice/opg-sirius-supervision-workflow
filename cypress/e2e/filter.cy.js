@@ -6,7 +6,7 @@ describe("Reassign Tasks", () => {
     cy.window().then((win) => {
       win.sessionStorage.clear()
     })
-    cy.visit("/");
+    cy.visit("/supervision/workflow/1");
 });
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()

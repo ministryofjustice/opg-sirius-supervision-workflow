@@ -1,6 +1,6 @@
 package sirius
 
-type TaskDetails struct {
+type PageDetails struct {
 	ListOfPages       []int
 	PreviousPage      int
 	NextPage          int
@@ -13,36 +13,36 @@ type TaskDetails struct {
 	LastFilter        string
 }
 
-func (c *Client) GetTaskDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int) TaskDetails {
-	var k TaskDetails
+func (c *Client) GetPageDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int) PageDetails {
+	var k PageDetails
 
-	TaskDetails := k
+	PageDetails := k
 
 	for i := 1; i < taskList.Pages.PageTotal+1; i++ {
-		TaskDetails.ListOfPages = append(TaskDetails.ListOfPages, i)
+		PageDetails.ListOfPages = append(PageDetails.ListOfPages, i)
 	}
 
-	TaskDetails.PreviousPage = GetPreviousPageNumber(search)
+	PageDetails.PreviousPage = GetPreviousPageNumber(search)
 
-	TaskDetails.NextPage = GetNextPageNumber(taskList, search)
+	PageDetails.NextPage = GetNextPageNumber(taskList, search)
 
-	TaskDetails.StoredTaskLimit = displayTaskLimit
+	PageDetails.StoredTaskLimit = displayTaskLimit
 
-	TaskDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(taskList, displayTaskLimit)
+	PageDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(taskList, displayTaskLimit)
 
-	TaskDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(taskList, displayTaskLimit)
+	PageDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(taskList, displayTaskLimit)
 
-	if len(TaskDetails.ListOfPages) != 0 {
-		TaskDetails.FirstPage = TaskDetails.ListOfPages[0]
-		TaskDetails.LastPage = TaskDetails.ListOfPages[len(TaskDetails.ListOfPages)-1]
-		TaskDetails.LimitedPagination = GetPaginationLimits(taskList, TaskDetails)
+	if len(PageDetails.ListOfPages) != 0 {
+		PageDetails.FirstPage = PageDetails.ListOfPages[0]
+		PageDetails.LastPage = PageDetails.ListOfPages[len(PageDetails.ListOfPages)-1]
+		PageDetails.LimitedPagination = GetPaginationLimits(taskList, PageDetails)
 	} else {
-		TaskDetails.FirstPage = 0
-		TaskDetails.LastPage = 0
-		TaskDetails.LimitedPagination = []int{0}
+		PageDetails.FirstPage = 0
+		PageDetails.LastPage = 0
+		PageDetails.LimitedPagination = []int{0}
 	}
 
-	return TaskDetails
+	return PageDetails
 }
 
 func GetPreviousPageNumber(search int) int {
@@ -84,7 +84,7 @@ func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 	}
 }
 
-func GetPaginationLimits(taskList TaskList, TaskDetails TaskDetails) []int {
+func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
 	if taskList.Pages.PageCurrent > 2 {
@@ -92,12 +92,12 @@ func GetPaginationLimits(taskList TaskList, TaskDetails TaskDetails) []int {
 	} else {
 		twoBeforeCurrentPage = 0
 	}
-	if taskList.Pages.PageCurrent+2 <= TaskDetails.LastPage {
+	if taskList.Pages.PageCurrent+2 <= PageDetails.LastPage {
 		twoAfterCurrentPage = taskList.Pages.PageCurrent + 2
-	} else if taskList.Pages.PageCurrent+1 <= TaskDetails.LastPage {
+	} else if taskList.Pages.PageCurrent+1 <= PageDetails.LastPage {
 		twoAfterCurrentPage = taskList.Pages.PageCurrent + 1
 	} else {
 		twoAfterCurrentPage = taskList.Pages.PageCurrent
 	}
-	return TaskDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+	return PageDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
