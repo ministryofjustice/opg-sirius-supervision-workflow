@@ -337,7 +337,7 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 
 	template := &mockTemplates{}
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "/path", nil)
+	r, _ := http.NewRequest("POST", "", nil)
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(w, r)

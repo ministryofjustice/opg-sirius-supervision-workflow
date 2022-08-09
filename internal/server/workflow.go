@@ -65,7 +65,7 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 
 	if assigneeId != "" {
 		assigneeIdForTask, err = strconv.Atoi(assigneeId)
-	} else {
+	} else if teamId != "" {
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
@@ -74,14 +74,25 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 	return assigneeIdForTask, nil
 }
 
+func createTaskIdForUrl(taskIdArray []string) string {
+	taskIdForUrl := ""
+
+	for i := 0; i < len(taskIdArray); i++ {
+		taskIdForUrl += taskIdArray[i]
+		if i < (len(taskIdArray) - 1) {
+			taskIdForUrl += "+"
+		}
+	}
+	return taskIdForUrl
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
+		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
 		displayTaskLimit := checkForChangesToSelectedPagination(r)
-
-		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
 		err := r.ParseForm()
 		if err != nil {
@@ -144,7 +155,6 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		case http.MethodPost:
 			var newAssigneeIdForTask int
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
-
 			if selectedTeamToAssignTaskString == "0" {
 				vars.Errors = sirius.ValidationErrors{
 					"selection": {"": "Please select a team"},
@@ -163,17 +173,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return err
 			}
 
-			//refactor next
 			taskIdArray := (r.Form["selected-tasks"])
-
-			taskIdForUrl := ""
-
-			for i := 0; i < len(taskIdArray); i++ {
-				taskIdForUrl += taskIdArray[i]
-				if i < (len(taskIdArray) - 1) {
-					taskIdForUrl += "+"
-				}
-			}
+			taskIdForUrl := createTaskIdForUrl(taskIdArray)
 
 			if err != nil {
 				return err
@@ -184,13 +185,16 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			if err != nil {
 				return err
 			}
+
 			if vars.Errors == nil {
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
+
 			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				return err
 			}
+
 			vars.PageDetails = client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
