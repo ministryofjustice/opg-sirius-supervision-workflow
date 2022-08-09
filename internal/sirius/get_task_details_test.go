@@ -16,7 +16,7 @@ func TestGetPreviousPageNumber(t *testing.T) {
 
 func SetUpGetNextPageNumber(pageCurrent int, pageTotal int, totalTasks int) TaskList {
 	taskList := TaskList{
-		Pages: PageDetails{
+		Pages: PageInformation{
 			PageCurrent: pageCurrent,
 			PageTotal:   pageTotal,
 		},
