@@ -17,7 +17,7 @@ type mockWorkflowInformation struct {
 	userData          sirius.UserDetails
 	taskTypeData      []sirius.ApiTaskTypes
 	taskListData      sirius.TaskList
-	taskDetailsData   sirius.TaskDetails
+	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
 	assignees         sirius.AssigneesTeam
 	teamId            int
@@ -44,11 +44,11 @@ func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, di
 
 	return m.taskListData, m.teamId, m.err
 }
-func (m *mockWorkflowInformation) GetTaskDetails(ctx sirius.Context, taskList sirius.TaskList, search int, displayTaskLimit int) sirius.TaskDetails {
+func (m *mockWorkflowInformation) GetPageDetails(ctx sirius.Context, taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
 	m.count += 1
 	m.lastCtx = ctx
 
-	return m.taskDetailsData
+	return m.pageDetailsData
 }
 
 func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, teamId int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
@@ -337,7 +337,7 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 
 	template := &mockTemplates{}
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "/path", nil)
+	r, _ := http.NewRequest("POST", "", nil)
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(w, r)
