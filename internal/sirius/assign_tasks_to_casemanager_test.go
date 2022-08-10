@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,7 +14,7 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 	mockClient := &mocks.MockClient{}
 	client, _ := NewClient(mockClient, "http://localhost:3000")
 
-	r := ioutil.NopCloser(bytes.NewReader([]byte(nil)))
+	r := io.NopCloser(bytes.NewReader([]byte(nil)))
 
 	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
@@ -24,7 +24,7 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 	}
 
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
-	
+
 	assert.Equal(t, nil, err)
 
 }
