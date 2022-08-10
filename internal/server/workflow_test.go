@@ -46,7 +46,6 @@ func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, di
 }
 func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
 	m.count += 1
-	m.lastCtx = ctx
 
 	return m.pageDetailsData
 }
@@ -74,7 +73,6 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 
 func (m *mockWorkflowInformation) GetAppliedFilters(teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
 	m.count += 1
-	m.lastCtx = ctx
 
 	return m.appliedFilters
 }
