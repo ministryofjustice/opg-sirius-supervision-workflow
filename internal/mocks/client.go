@@ -15,5 +15,4 @@ var (
 // Do is the mock client's `Do` func
 func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
 	return GetDoFunc(req)
-	
 }

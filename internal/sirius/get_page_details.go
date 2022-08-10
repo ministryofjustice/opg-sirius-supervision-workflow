@@ -13,29 +13,29 @@ type PageDetails struct {
 	LastFilter        string
 }
 
-func (c *Client) GetPageDetails(ctx Context, taskList TaskList, search int, displayTaskLimit int) PageDetails {
+func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
 	var k PageDetails
 
 	PageDetails := k
 
-	for i := 1; i < taskList.Pages.PageTotal+1; i++ {
+	for i := 1; i < tasklist.Pages.PageTotal+1; i++ {
 		PageDetails.ListOfPages = append(PageDetails.ListOfPages, i)
 	}
 
 	PageDetails.PreviousPage = GetPreviousPageNumber(search)
 
-	PageDetails.NextPage = GetNextPageNumber(taskList, search)
+	PageDetails.NextPage = GetNextPageNumber(tasklist, search)
 
 	PageDetails.StoredTaskLimit = displayTaskLimit
 
-	PageDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(taskList, displayTaskLimit)
+	PageDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(tasklist, displayTaskLimit)
 
-	PageDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(taskList, displayTaskLimit)
+	PageDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(tasklist, displayTaskLimit)
 
 	if len(PageDetails.ListOfPages) != 0 {
 		PageDetails.FirstPage = PageDetails.ListOfPages[0]
 		PageDetails.LastPage = PageDetails.ListOfPages[len(PageDetails.ListOfPages)-1]
-		PageDetails.LimitedPagination = GetPaginationLimits(taskList, PageDetails)
+		PageDetails.LimitedPagination = GetPaginationLimits(tasklist, PageDetails)
 	} else {
 		PageDetails.FirstPage = 0
 		PageDetails.LastPage = 0
@@ -85,6 +85,8 @@ func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 }
 
 func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
+	//just manually filter out if pages less than 5?
+	//once have limits then can fill in numbers based on that? Don't need to calculate so much
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
 	if taskList.Pages.PageCurrent > 2 {

@@ -12,11 +12,11 @@ type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
-	GetPageDetails(sirius.Context, sirius.TaskList, int, int) sirius.PageDetails
+	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
-	GetAppliedFilters(sirius.Context, int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
+	GetAppliedFilters(int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
 type workflowVars struct {
@@ -119,7 +119,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		pageDetails := client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
+		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
 
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
@@ -131,7 +131,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		appliedFilters := client.GetAppliedFilters(ctx, teamId, loadTaskTypes, teamSelection, assigneesForFilter)
+		appliedFilters := client.GetAppliedFilters(teamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
 			Path:           r.URL.Path,
@@ -195,7 +195,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return err
 			}
 
-			vars.PageDetails = client.GetPageDetails(ctx, taskList, search, displayTaskLimit)
+			vars.PageDetails = client.GetPageDetails(taskList, search, displayTaskLimit)
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
