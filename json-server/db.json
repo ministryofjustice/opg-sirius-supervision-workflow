@@ -4,6 +4,8 @@
       "id": "assign-tasks-to-casemanager"
     }
   ],
+  "assign-tasks-to-casemanager": {
+  },
   "get-assignees-for-filter": {
     "id": 21,
     "name": "Lay Team 1 - (Supervision)",

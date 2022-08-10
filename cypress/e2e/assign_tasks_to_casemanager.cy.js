@@ -4,7 +4,7 @@ describe("Reassign Tasks", () => {
         cy.setCookie("XSRF-TOKEN", "abcde");
         cy.visit("/supervision/workflow/1");
     });
-  
+
     it("shows me a table of tasks", () => {
       cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2) > .govuk-label").contains('Case work - General')
       cy.get(":nth-child(1) > :nth-child(3) > .govuk-label").contains('Client Alexander Zacchaeus')
@@ -12,18 +12,32 @@ describe("Reassign Tasks", () => {
       cy.get(":nth-child(1) > :nth-child(5) > .govuk-label").contains('LayTeam1 User3')
     });
 
-    it("allows you to manage a task", () => {
-       cy.setCookie("success-route", "assign-tasks-to-casemanager");
-       cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
-       cy.get("#manage-task").should('be.visible').click()
-       cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
-       cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
-       cy.get("#edit-panel").click()
+    it("allows you to assign a task to a team", () => {
+        cy.setCookie("success-route", "assign-tasks-to-casemanager");
+        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#manage-task").should('be.visible').click()
+        cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
+        cy.get('#edit-save').click()
+        cy.url().should('include', 'supervision/workflow')
+        cy.get("#success-banner").should('be.visible')
+        cy.get("#success-banner").contains('1 tasks have been reassigned')
+    });
 
-       //struggles with the javascript binding to get the case managers for the selected team
-       cy.on('uncaught:exception', (err, runnable) => {
-           return false
-       })
+    it("allows you to assign multiple tasks to an individual in a team", () => {
+        cy.setCookie("success-route", "assign-tasks-to-casemanager");
+        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get(":nth-child(2) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get(":nth-child(5) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#manage-task").should('be.visible').click()
+        cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
+        cy.get('#assignCM').select('LayTeam1 User4');
+        cy.get('#edit-save').click()
+        cy.url().should('include', 'supervision/workflow')
+        cy.get("#success-banner").should('be.visible')
+        cy.get("#success-banner").contains('3 tasks have been reassigned')
+
     });
 
     it("throws error when task is not assigned to a team", () => {
