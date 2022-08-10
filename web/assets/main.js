@@ -7,6 +7,8 @@ import MojBannerAutoHide from './javascript/moj-banner-auto-hide';
 
 GOVUKFrontend.initAll();
 
+document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+
 MojBannerAutoHide(document.querySelector('.app-main-class'));
 
 const manageTasks = document.querySelectorAll('[data-module="manage-tasks"]');
