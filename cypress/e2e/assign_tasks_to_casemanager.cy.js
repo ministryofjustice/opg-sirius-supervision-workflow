@@ -40,11 +40,10 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
-
+        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
 
-        // cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
-        cy.url().should('contain', 'supervision/workflow')
+        // cy.url().should('contain', 'supervision/workflow')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 tasks have been reassigned')
     });
