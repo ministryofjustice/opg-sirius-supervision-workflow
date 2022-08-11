@@ -6,48 +6,6 @@
   ],
   "assign-tasks-to-casemanager": {
   },
-  "get-assignees-for-filter": {
-    "id": 21,
-    "name": "Lay Team 1 - (Supervision)",
-    "phoneNumber": "0123456789",
-    "displayName": "Lay Team 1 - (Supervision)",
-    "deleted": false,
-    "email": "LayTeam1.team@opgtest.com",
-    "members": [
-      {
-        "id": 76,
-        "name": "LayTeam1",
-        "phoneNumber": "12345678",
-        "displayName": "LayTeam1 User4",
-        "deleted": false,
-        "email": "lay1-4@opgtest.com"
-      },
-      {
-        "id": 75,
-        "name": "LayTeam1",
-        "phoneNumber": "12345678",
-        "displayName": "LayTeam1 User3",
-        "deleted": false,
-        "email": "lay1-3@opgtest.com"
-      },
-      {
-        "id": 74,
-        "name": "LayTeam1",
-        "phoneNumber": "12345678",
-        "displayName": "LayTeam1 User2",
-        "deleted": false,
-        "email": "lay1-2@opgtest.com"
-      },
-      {
-        "id": 73,
-        "name": "LayTeam1",
-        "phoneNumber": "12345678",
-        "displayName": "LayTeam1 User1",
-        "deleted": false,
-        "email": "lay1-1@opgtest.com"
-      }
-    ]
-  },
   "teams": [
     {
       "id": 13,

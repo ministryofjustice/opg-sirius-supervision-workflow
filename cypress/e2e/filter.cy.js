@@ -6,6 +6,27 @@ describe("Reassign Tasks", () => {
     cy.window().then((win) => {
       win.sessionStorage.clear()
     })
+    cy.intercept('api/v1/teams/*', {
+      body: {
+        "members": [
+          {
+            "id": 76,
+            "displayName": "LayTeam1 User4",
+          },
+          {
+            "id": 75,
+            "displayName": "LayTeam1 User3",
+          },
+          {
+            "id": 74,
+            "displayName": "LayTeam1 User2",
+          },
+          {
+            "id": 73,
+            "displayName": "LayTeam1 User1",
+          }
+        ]
+      }})
     cy.visit("/supervision/workflow/1");
 });
   it("can expand the filters which are hidden by default", () => {

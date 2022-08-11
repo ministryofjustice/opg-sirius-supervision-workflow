@@ -1,9 +1,9 @@
 describe("Get team Members", () => {
-  beforeEach(() => {
-      cy.setCookie("Other", "other");
-      cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow/1");
-  });
+  // beforeEach(() => {
+  //     cy.setCookie("Other", "other");
+  //     cy.setCookie("XSRF-TOKEN", "abcde");
+  //     cy.visit("/supervision/workflow/1");
+  // });
 
 //  it("shows my team as the default in assign to a team", () => {
 //   cy.get("#assignTeam").should('contain', "Lay Team 1 - (Supervision)")

@@ -3,6 +3,5 @@
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/users/current": "/users-current",
     "/assignees/team/:id/tasks*": "/tasks/:id",
-    "/users/:id/tasks/:id": "/assign-tasks-to-casemanager",
-    "/teams/:id": "/get-assignees-for-filter"
+    "/users/:id/tasks/:id": "/assign-tasks-to-casemanager"
 }
