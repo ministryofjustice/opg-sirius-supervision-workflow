@@ -39,7 +39,49 @@ describe("Reassign Tasks", () => {
         cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.intercept('api/v1/teams/*', {
+            body: {
+                "members": [
+                    {
+                        "id": 76,
+                        "displayName": "LayTeam1 User4",
+                    },
+                    {
+                        "id": 75,
+                        "displayName": "LayTeam1 User3",
+                    },
+                    {
+                        "id": 74,
+                        "displayName": "LayTeam1 User2",
+                    },
+                    {
+                        "id": 73,
+                        "displayName": "LayTeam1 User1",
+                    }
+                ]
+            }})
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
+        cy.intercept('api/v1/teams/*', {
+            body: {
+                "members": [
+                    {
+                        "id": 76,
+                        "displayName": "LayTeam1 User4",
+                    },
+                    {
+                        "id": 75,
+                        "displayName": "LayTeam1 User3",
+                    },
+                    {
+                        "id": 74,
+                        "displayName": "LayTeam1 User2",
+                    },
+                    {
+                        "id": 73,
+                        "displayName": "LayTeam1 User1",
+                    }
+                ]
+            }})
         cy.get('#edit-save').click()
         cy.url().should('include', 'supervision/workflow')
         cy.get("#success-banner").should('be.visible')
@@ -53,7 +95,49 @@ describe("Reassign Tasks", () => {
         cy.get(":nth-child(5) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.intercept('api/v1/teams/*', {
+            body: {
+                "members": [
+                    {
+                        "id": 76,
+                        "displayName": "LayTeam1 User4",
+                    },
+                    {
+                        "id": 75,
+                        "displayName": "LayTeam1 User3",
+                    },
+                    {
+                        "id": 74,
+                        "displayName": "LayTeam1 User2",
+                    },
+                    {
+                        "id": 73,
+                        "displayName": "LayTeam1 User1",
+                    }
+                ]
+            }})
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
+        cy.intercept('api/v1/teams/*', {
+            body: {
+                "members": [
+                    {
+                        "id": 76,
+                        "displayName": "LayTeam1 User4",
+                    },
+                    {
+                        "id": 75,
+                        "displayName": "LayTeam1 User3",
+                    },
+                    {
+                        "id": 74,
+                        "displayName": "LayTeam1 User2",
+                    },
+                    {
+                        "id": 73,
+                        "displayName": "LayTeam1 User1",
+                    }
+                ]
+            }})
         cy.get('#assignCM').select('LayTeam1 User4');
         cy.get('#edit-save').click()
         cy.url().should('include', 'supervision/workflow')
