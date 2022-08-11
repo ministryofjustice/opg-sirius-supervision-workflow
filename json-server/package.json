@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "serve": "json-server -H 0.0.0.0 db.json -m patcher.js -m error-rerouter.js success-rerouter.js -m custom-body-mapper.js -r routes.json"
+        "serve": "json-server -H 0.0.0.0 db.json -m patcher.js -m error-rerouter.js -m success-rerouter.js -m custom-body-mapper.js -r routes.json"
     },
     "author": "",
     "dependencies": {
