@@ -35,7 +35,7 @@ describe("Reassign Tasks", () => {
     // PATCH /users/27/tasks/0
 
     it("allows you to assign a task to a team", () => {
-        cy.setCookie("success-route", "assign-tasks-to-casemanager");
+        cy.setCookie("success-route", "assignTasksToCasemanager");
         cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()

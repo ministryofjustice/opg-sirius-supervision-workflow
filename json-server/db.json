@@ -1,6 +1,9 @@
 {
-  "assign-tasks-to-casemanager": {
-  },
+  "successes": [
+    {
+      "id": "assignTasksToCasemanager"
+    }
+  ],
   "teams": [
     {
       "id": 13,
