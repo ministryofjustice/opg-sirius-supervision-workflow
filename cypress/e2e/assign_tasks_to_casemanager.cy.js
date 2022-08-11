@@ -40,7 +40,7 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
-        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.intercept('PUT', 'api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
 
         // cy.url().should('contain', 'supervision/workflow')
