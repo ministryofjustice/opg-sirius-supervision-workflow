@@ -2,7 +2,7 @@ describe("Reassign Tasks", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.intercept('api/v1/teams/*', {
+        cy.intercept('GET', 'api/v1/teams/*', {
             body: {
                 "members": [
                     {
@@ -40,17 +40,15 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
-        cy.intercept('api/v1/users/27/tasks/0', {body: null})
 
-        // cy.intercept('PUT', '**/users/*', {statusCode: 204})
-        // cy.intercept('POST', '**/users/*', {statusCode: 204})
-        // cy.intercept('POST', '/', {statusCode: 204})
         cy.get('#edit-save').click()
+
         // cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
         cy.url().should('include', 'supervision/workflow')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 tasks have been reassigned')
     });
+    ///home/runner/work/opg-sirius-supervision-workflow/opg-sirius-supervision-workflow/cypress/screenshots
 
     // it("allows you to assign multiple tasks to an individual in a team", () => {
     //     cy.setCookie("success-route", "assign-tasks-to-casemanager");
