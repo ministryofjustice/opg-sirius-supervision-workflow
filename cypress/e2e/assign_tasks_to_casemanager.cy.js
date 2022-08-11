@@ -44,7 +44,7 @@ describe("Reassign Tasks", () => {
         cy.get('#edit-save').click()
 
         // cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
-        cy.url().should('include', 'supervision/workflow')
+        cy.url().should('contain', 'supervision/workflow')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 tasks have been reassigned')
     });
