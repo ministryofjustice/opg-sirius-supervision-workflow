@@ -2,7 +2,7 @@ describe("Team Selection", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/");
+      cy.visit("/supervision/workflow/1");
   });
 
 //  it("pulls through my team on the change view bar", () => {
