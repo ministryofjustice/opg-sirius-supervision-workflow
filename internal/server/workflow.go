@@ -195,7 +195,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return err
 			}
 
-			vars.PageDetails = client.GetPageDetails(taskList, search, displayTaskLimit)
+			vars.PageDetails = client.GetPageDetails(vars.TaskList, search, displayTaskLimit)
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
