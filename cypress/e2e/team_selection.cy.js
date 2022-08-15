@@ -2,27 +2,6 @@ describe("Team Selection", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.intercept('api/v1/teams/*', {
-          body: {
-              "members": [
-                  {
-                      "id": 76,
-                      "displayName": "LayTeam1 User4",
-                  },
-                  {
-                      "id": 75,
-                      "displayName": "LayTeam1 User3",
-                  },
-                  {
-                      "id": 74,
-                      "displayName": "LayTeam1 User2",
-                  },
-                  {
-                      "id": 73,
-                      "displayName": "LayTeam1 User1",
-                  }
-              ]
-          }})
       cy.visit("/supervision/workflow/1");
   });
 
