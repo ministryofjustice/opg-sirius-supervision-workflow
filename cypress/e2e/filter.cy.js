@@ -1,4 +1,4 @@
-describe("Reassign Tasks", () => {
+describe("Filters", () => {
 
   beforeEach(() => {
     cy.setCookie("Other", "other");
