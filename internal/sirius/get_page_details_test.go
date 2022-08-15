@@ -231,13 +231,54 @@ func TestGetShowingUpperLimitNumberWillReturnTotalTasksIfOnFinalPage(t *testing.
 	assert.Equal(t, GetShowingUpperLimitNumber(taskList, 100), 10)
 }
 
-//func TestGetPaginationLimits(t *testing.T) {
-//	taskList := CreateTaskList(1, 1, 25)
-//	pageDetails := CreatePageDetails(1)
-//
-//	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), 10)
-//
-//}
+func TestGetPaginationLimitsPage1of10(t *testing.T) {
+	taskList := CreateTaskList(1, 10, 0)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 1, 2, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{1, 2, 3}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage2of10(t *testing.T) {
+	taskList := CreateTaskList(2, 10, 0)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 1, 3, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{1, 2, 3, 4}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage3of10(t *testing.T) {
+	taskList := CreateTaskList(3, 10, 0)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 2, 4, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage4of10(t *testing.T) {
+	taskList := CreateTaskList(4, 10, 100)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3, 5, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{2, 3, 4, 5, 6}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage8of10(t *testing.T) {
+	taskList := CreateTaskList(8, 10, 100)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 7, 9, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{6, 7, 8, 9, 10}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage9of10(t *testing.T) {
+	taskList := CreateTaskList(9, 10, 100)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 8, 10, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{7, 8, 9, 10}, GetPaginationLimits(taskList, pageDetails))
+}
+
+func TestGetPaginationLimitsPage10of10(t *testing.T) {
+	taskList := CreateTaskList(10, 10, 100)
+	pageDetails := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 9, 10, []int{}, 1, 10, 0, 0, 0)
+
+	assert.Equal(t, []int{8, 9, 10}, GetPaginationLimits(taskList, pageDetails))
+}
 
 func MakeListOfPagesRange(min, max int) []int {
 	a := make([]int, max-min+1)

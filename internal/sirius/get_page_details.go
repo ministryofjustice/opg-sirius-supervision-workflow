@@ -85,8 +85,6 @@ func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
 }
 
 func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
-	//just manually filter out if pages less than 5?
-	//once have limits then can fill in numbers based on that? Don't need to calculate so much
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
 	if taskList.Pages.PageCurrent > 2 {
