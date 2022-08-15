@@ -43,15 +43,15 @@ type ApiTask struct {
 	ClientInformation Clients
 }
 
-type PageDetails struct {
+type PageInformation struct {
 	PageCurrent int `json:"current"`
 	PageTotal   int `json:"total"`
 }
 
 type TaskList struct {
-	WholeTaskList []ApiTask   `json:"tasks"`
-	Pages         PageDetails `json:"pages"`
-	TotalTasks    int         `json:"total"`
+	WholeTaskList []ApiTask       `json:"tasks"`
+	Pages         PageInformation `json:"pages"`
+	TotalTasks    int             `json:"total"`
 	ActiveFilters []string
 }
 
