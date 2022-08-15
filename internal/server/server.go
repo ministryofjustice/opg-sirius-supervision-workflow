@@ -38,7 +38,12 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return http.StripPrefix(prefix, securityheaders.Use(mux))
+	return http.StripPrefix(prefix,
+		securityheaders.Use(
+			allowDynamicFetch(siriusPublicURL)(
+				mux),
+		),
+	)
 }
 
 type RedirectError string
@@ -134,5 +139,15 @@ func getContext(r *http.Request) sirius.Context {
 		Context:   r.Context(),
 		Cookies:   r.Cookies(),
 		XSRFToken: token,
+	}
+}
+
+func allowDynamicFetch(sirius string) func(http.Handler) http.HandlerFunc {
+	return func(next http.Handler) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Del("Content-Security-Policy")
+			w.Header().Add("Content-Security-Policy", "default-src 'self'; connect-src "+sirius)
+			next.ServeHTTP(w, r)
+		}
 	}
 }
