@@ -119,9 +119,4 @@ export default class ManageFilters {
     let hrefValue = hrefValueWithoutSelectedTask.split("&").filter((param) => !param.includes("selected-assignee")).join("&");
     document.getElementById("clear-filters").setAttribute('href', hrefValue);
   }
-
-
-
-
-
 }
