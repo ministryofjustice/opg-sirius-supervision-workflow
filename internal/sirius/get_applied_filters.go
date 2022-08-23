@@ -1,6 +1,6 @@
 package sirius
 
-func (c *Client) GetAppliedFilters(teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
+func (c *Client) GetAppliedFilters(ctx Context, teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
 	var appliedFilters []string
 
 	for _, u := range loadTaskTypes {

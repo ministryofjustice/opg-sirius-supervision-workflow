@@ -67,51 +67,51 @@ import (
 //	}
 //}
 
-func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
+func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, TaskDetails) {
 
 	ListOfPages := MakeListOfPagesRange(1, lastPage)
 
 	taskList := TaskList{
-		Pages: PageInformation{
+		Pages: PageDetails{
 			PageCurrent: pageCurrent,
 		},
 	}
-	pageDetails := PageDetails{
+	taskDetails := TaskDetails{
 		LastPage:    lastPage,
 		ListOfPages: ListOfPages,
 	}
 
-	return taskList, pageDetails
+	return taskList, taskDetails
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(3, 10)
+	taskList, taskDetails := setUpPagesTests(3, 10)
 
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4, 5})
 }
 
 func TestGetPaginationLimitsWillReturnARangeOnlyTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(1, 10)
+	taskList, taskDetails := setUpPagesTests(1, 10)
 
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3})
 }
 
 func TestGetPaginationLimitsWillReturnARangeOneBelowAndTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(2, 10)
+	taskList, taskDetails := setUpPagesTests(2, 10)
 
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3, 4})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{1, 2, 3, 4})
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndOneAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(4, 5)
+	taskList, taskDetails := setUpPagesTests(4, 5)
 
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{2, 3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{2, 3, 4, 5})
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(5, 5)
+	taskList, taskDetails := setUpPagesTests(5, 5)
 
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{3, 4, 5})
+	assert.Equal(t, GetPaginationLimits(taskList, taskDetails), []int{3, 4, 5})
 }
 
 func TestCreateTaskTypeFilter(t *testing.T) {
