@@ -36,12 +36,25 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 - `go build main.go `
 - `./main `
 
-## Run Cypress tests
+  -------------------------------------------------------------------
 
-`docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
+## Run Pact and Cypress tests
 
-`yarn and yarn cypress`
+Generate the pact file which mimics Sirius and runs workflow tests
 
+`go test ./...`
+ 
+To generate the pact file with no cache
+
+`go test ./... -count=1`
+ 
+Run Cypress tests against the pact copy of the service
+ 
+`docker-compose -f docker/docker-compose.cypress.yml up -d --build `
+ 
+`yarn && yarn cypress `
+    
+-------------------------------------------------------------------
 ## Run the Pact tests in more detail
 
 test sirius files: `yarn test-sirius`
