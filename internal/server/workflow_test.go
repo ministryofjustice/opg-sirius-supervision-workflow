@@ -17,7 +17,7 @@ type mockWorkflowInformation struct {
 	userData          sirius.UserDetails
 	taskTypeData      []sirius.ApiTaskTypes
 	taskListData      sirius.TaskList
-	pageDetailsData   sirius.PageDetails
+	taskDetailsData   sirius.TaskDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
 	assignees         sirius.AssigneesTeam
 	teamId            int
@@ -44,10 +44,11 @@ func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, di
 
 	return m.taskListData, m.teamId, m.err
 }
-func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
+func (m *mockWorkflowInformation) GetTaskDetails(ctx sirius.Context, taskList sirius.TaskList, search int, displayTaskLimit int) sirius.TaskDetails {
 	m.count += 1
+	m.lastCtx = ctx
 
-	return m.pageDetailsData
+	return m.taskDetailsData
 }
 
 func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, teamId int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
@@ -71,8 +72,9 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	return m.err
 }
 
-func (m *mockWorkflowInformation) GetAppliedFilters(teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
+func (m *mockWorkflowInformation) GetAppliedFilters(ctx sirius.Context, teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
 	m.count += 1
+	m.lastCtx = ctx
 
 	return m.appliedFilters
 }
@@ -335,60 +337,10 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 
 	template := &mockTemplates{}
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("POST", "", nil)
+	r, _ := http.NewRequest("POST", "/path", nil)
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
 	err := handler(w, r)
 
 	assert.Nil(err)
-}
-
-func TestCheckForChangesToSelectedPagination(t *testing.T) {
-	assert.Equal(t, 50, checkForChangesToSelectedPagination([]string{"25", "50"}, "25"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{"25", "50"}, "50"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{"25", "25"}, "25"))
-	assert.Equal(t, 100, checkForChangesToSelectedPagination([]string{"50", "100"}, "50"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{}, "100"))
-}
-
-func TestGetLoggedInTeam(t *testing.T) {
-	assert.Equal(t, 13, getLoggedInTeam(sirius.UserDetails{
-		ID:          65,
-		Name:        "case",
-		PhoneNumber: "12345678",
-		Teams: []sirius.MyDetailsTeam{
-			{
-				TeamId:      13,
-				DisplayName: "Lay Team 1 - (Supervision)",
-			},
-		},
-		DisplayName: "case manager",
-	}, 25))
-
-	assert.Equal(t, 25, getLoggedInTeam(sirius.UserDetails{
-		ID:          65,
-		Name:        "case",
-		DisplayName: "case manager",
-	}, 25))
-}
-
-func TestGetAssigneeIdForTask(t *testing.T) {
-	expectedAssigneeId, expectedError := getAssigneeIdForTask("13", "67")
-	assert.Equal(t, expectedAssigneeId, 67)
-	assert.Nil(t, expectedError)
-
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("13", "")
-	assert.Equal(t, expectedAssigneeId, 13)
-	assert.Nil(t, expectedError)
-
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("", "")
-	assert.Equal(t, expectedAssigneeId, 0)
-	assert.Nil(t, expectedError)
-}
-
-func TestCreateTaskIdForUrl(t *testing.T) {
-	assert.Equal(t, "", createTaskIdForUrl([]string{}))
-	assert.Equal(t, "15+16+17", createTaskIdForUrl([]string{"15", "16", "17"}))
-	assert.Equal(t, "15", createTaskIdForUrl([]string{"15"}))
-
 }

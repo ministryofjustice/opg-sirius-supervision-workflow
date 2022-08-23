@@ -2,7 +2,7 @@ describe("Work flow", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow/1");
+      cy.visit("/");
   });
 
   it("shows user that is logged in within banner", () => {
