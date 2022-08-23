@@ -1,4 +1,4 @@
-describe("Filters", () => {
+describe("Reassign Tasks", () => {
 
   beforeEach(() => {
     cy.setCookie("Other", "other");
@@ -6,7 +6,7 @@ describe("Filters", () => {
     cy.window().then((win) => {
       win.sessionStorage.clear()
     })
-    cy.visit("/supervision/workflow/1");
+    cy.visit("/");
 });
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()
