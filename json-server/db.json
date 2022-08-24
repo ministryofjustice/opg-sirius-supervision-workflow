@@ -1,45 +1,172 @@
 {
+  "successes": [
+    {
+      "id": "assignTasksToCasemanager"
+    }
+  ],
+  "assign-tasks-to-casemanager": {
+  },
   "teams": [
     {
       "id": 13,
+      "name": "Allocations - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Allocations - (Supervision)",
+      "deleted": false,
+      "email": "allocations.team@opgtest.com",
+      "members": [
+        {
+          "id": 72,
+          "name": "Allocations",
+          "phoneNumber": "12345678",
+          "displayName": "Allocations User1",
+          "deleted": false,
+          "email": "allocations@opgtest.com"
+        }
+      ],
+      "teamType": {
+        "handle": "ALLOCATIONS",
+        "label": "Allocations",
+        "deprecated": null
+      }
+    },
+    {
+      "id": 32,
+      "name": "Investigations - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Investigations - (Supervision)",
+      "deleted": false,
+      "email": "Investigations.team@opgtest.com",
+      "members": [
+        {
+          "id": 101,
+          "name": "Investigations",
+          "phoneNumber": "12345678",
+          "displayName": "Investigations User1",
+          "deleted": false,
+          "email": "investigations@opgtest.com"
+        }
+      ],
+      "teamType": {
+        "handle": "INVESTIGATIONS",
+        "label": "Investigations",
+        "deprecated": null
+      }
+    },
+    {
+      "id": 21,
       "name": "Lay Team 1 - (Supervision)",
       "phoneNumber": "0123456789",
       "displayName": "Lay Team 1 - (Supervision)",
+      "deleted": false,
       "email": "LayTeam1.team@opgtest.com",
       "members": [
         {
-          "id": 86,
-          "name": "LayTeam1 User11"
-        },
-        {
-          "id": 92,
-          "name": "Cersei",
+          "id": 76,
+          "name": "LayTeam1",
           "phoneNumber": "12345678",
-          "displayName": "Cersei Lannister",
+          "displayName": "LayTeam1 User4",
           "deleted": false,
-          "email": "cerseilannister@opgtest.com"
+          "email": "lay1-4@opgtest.com"
         },
         {
-          "id": 93,
-          "name": "Jon",
-          "phoneNumber": "1555678",
-          "displayName": "Jon Snow",
+          "id": 75,
+          "name": "LayTeam1",
+          "phoneNumber": "12345678",
+          "displayName": "LayTeam1 User3",
           "deleted": false,
-          "email": "jonsnow@opgtest.com"
+          "email": "lay1-3@opgtest.com"
         },
         {
-          "id": 94,
-          "name": "Eddard",
-          "phoneNumber": "888845555",
-          "displayName": "Eddard Stark",
+          "id": 74,
+          "name": "LayTeam1",
+          "phoneNumber": "12345678",
+          "displayName": "LayTeam1 User2",
           "deleted": false,
-          "email": "eddardstark@opgtest.com"
+          "email": "lay1-2@opgtest.com"
+        },
+        {
+          "id": 73,
+          "name": "LayTeam1",
+          "phoneNumber": "12345678",
+          "displayName": "LayTeam1 User1",
+          "deleted": false,
+          "email": "lay1-1@opgtest.com"
         }
       ],
-      "children": [],
+      "teamType": {
+        "handle": "LAY",
+        "label": "Lay",
+        "deprecated": null
+      }
+    },
+    {
+      "id": 22,
+      "name": "Lay Team 2 - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Lay Team 2 - (Supervision)",
+      "deleted": false,
+      "email": "LayTeam2.team@opgtest.com",
+      "members": [
+        {
+          "id": 93,
+          "name": "LayTeam2",
+          "phoneNumber": "12345678",
+          "displayName": "LayTeam2 User1",
+          "deleted": false,
+          "email": "lay2@opgtest.com"
+        }
+      ],
+      "teamType": {
+        "handle": "LAY",
+        "label": "Lay",
+        "deprecated": null
+      }
+    },
+    {
+      "id": 24,
+      "name": "PA Team 1 - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "PA Team 1 - (Supervision)",
+      "deleted": false,
+      "email": "PATeam1.team@opgtest.com",
+      "members": [
+        {
+          "id": 94,
+          "name": "PATeam1",
+          "phoneNumber": "12345678",
+          "displayName": "PATeam1 User1",
+          "deleted": false,
+          "email": "pa1@opgtest.com"
+        }
+      ],
       "teamType": {
         "handle": "PA",
-        "label": "PA"
+        "label": "PA",
+        "deprecated": null
+      }
+    },
+    {
+      "id": 27,
+      "name": "Pro Team 1 - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Pro Team 1 - (Supervision)",
+      "deleted": false,
+      "email": "ProTeam1.team@opgtest.com",
+      "members": [
+        {
+          "id": 96,
+          "name": "PROTeam1",
+          "phoneNumber": "12345678",
+          "displayName": "PROTeam1 User1",
+          "deleted": false,
+          "email": "pro1@opgtest.com"
+        }
+      ],
+      "teamType": {
+        "handle": "PRO",
+        "label": "Pro",
+        "deprecated": null
       }
     }
   ],
@@ -92,17 +219,17 @@
       "tasks": [
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
+            "displayName": "LayTeam1 User3",
             "id": 86
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
+                "caseRecNumber": "51132787",
                 "firstname": "Client Alexander Zacchaeus",
                 "id": 3333,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
                 "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
               }
@@ -113,192 +240,192 @@
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "LayTeam1 User3",
+            "id": 69
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "48806317",
+                "firstname": "Tom",
+                "id": 2564,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Hanks"
               }
             }
           ],
-          "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "dueDate": "28/02/2018",
+          "name": "Order - Allocate to team"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "Margaret Bavaria-Straubing",
+            "id": 99
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "83948321",
+                "firstname": "Martin",
+                "id": 1458,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Freeman"
               }
             }
           ],
-          "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "dueDate": "01/12/2018",
+          "name": "Case work - Call back request"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "LayTeam1 User13",
+            "id": 88
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "58748192",
+                "firstname": "Robert",
+                "id": 1237,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Strange"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Case work - Complaint review"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "LayTeam1 User10",
+            "id": 12
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "33731087",
+                "firstname": "Sean",
+                "id": 4561,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Bean"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Case work - Safeguarding"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "Lay Team 1 - (Supervision)",
+            "id": 58
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "91221815",
+                "firstname": "David",
+                "id": 4561,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Attenborough"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Correspondence - Review failed draft"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "Lay Team 1 - (Supervision)",
+            "id": 94
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "52556905",
+                "firstname": "Alexander",
+                "id": 7894,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Bell"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Finance - Sop processing"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "LayTeam1 User3",
+            "id": 77
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "94277087",
+                "firstname": "Henry",
+                "id": 3691,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Cavill"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Report - Full staff review"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "LayTeam1 User1",
+            "id": 46
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "93766765",
+                "firstname": "Henry",
+                "id": 2583,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Ford"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Visit - Review report"
         },
         {
           "assignee": {
-            "displayName": "Assignee Duke Clive Henry Hetley Junior Jones",
-            "id": 86
+            "displayName": "Lay Team 1 - (Supervision)",
+            "id": 64
           },
           "caseItems": [
             {
               "client": {
-                "caseRecNumber": "caseRecNumber",
-                "firstname": "Client Alexander Zacchaeus",
-                "id": 3333,
+                "caseRecNumber": "62168380",
+                "firstname": "Matt",
+                "id": 1472,
                 "supervisionCaseOwner": {
-                  "displayName": "Supervision - Team - Name"
+                  "displayName": "Lay Team 1 - (Supervision)"
                 },
-                "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
+                "surname": "Smith"
               }
             }
           ],
           "dueDate": "01/02/2021",
-          "name": "Case work - General"
+          "name": "Order - Review the order"
         }
       ],
       "total": 10
