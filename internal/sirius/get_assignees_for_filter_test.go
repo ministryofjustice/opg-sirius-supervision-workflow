@@ -1,81 +1,45 @@
 package sirius
 
 import (
-	"testing"
-
+	"bytes"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
-//func TestGetMembersForTeam(t *testing.T) {
-//	pact := &dsl.Pact{
-//		Consumer:          "sirius-workflow",
-//		Provider:          "sirius",
-//		Host:              "localhost",
-//		PactFileWriteMode: "merge",
-//		LogDir:            "../../logs",
-//		PactDir:           "../../pacts",
-//	}
-//	defer pact.Teardown()
-//
-//	testCases := []struct {
-//		name             string
-//		setup            func()
-//		cookies          []*http.Cookie
-//		expectedResponse AssigneesTeam
-//		expectedError    error
-//	}{
-//		{
-//			name: "Test Get Members for Team",
-//			setup: func() {
-//				pact.
-//					AddInteraction().
-//					Given("I am a Lay Team user").
-//					UponReceiving("A request to get default team members for selected team").
-//					WithRequest(dsl.Request{
-//						Method: http.MethodGet,
-//						Path:   dsl.String("/api/v1/teams/13"),
-//						Headers: dsl.MapMatcher{
-//							"X-XSRF-TOKEN":        dsl.String("abcde"),
-//							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
-//							"OPG-Bypass-Membrane": dsl.String("1"),
-//						},
-//					}).
-//					WillRespondWith(dsl.Response{
-//						Status:  http.StatusOK,
-//						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
-//						Body: dsl.Like(map[string]interface{}{
-//							"id":   dsl.Like(13),
-//							"name": dsl.Like("Lay Team 1 - (Supervision)"),
-//						}),
-//					})
-//			},
-//			cookies: []*http.Cookie{
-//				{Name: "XSRF-TOKEN", Value: "abcde"},
-//				{Name: "Other", Value: "other"},
-//			},
-//			expectedResponse: AssigneesTeam{
-//				Id:      13,
-//				Name:    "Lay Team 1 - (Supervision)",
-//				Members: []AssigneeTeamMembers{},
-//			},
-//		},
-//	}
-//
-//	for _, tc := range testCases {
-//		t.Run(tc.name, func(t *testing.T) {
-//			tc.setup()
-//
-//			assert.Nil(t, pact.Verify(func() error {
-//				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-//
-//				myTeamMembers, err := client.GetAssigneesForFilter(getContext(tc.cookies), 13, []string{""})
-//				assert.Equal(t, tc.expectedResponse, myTeamMembers)
-//				assert.Equal(t, tc.expectedError, err)
-//				return nil
-//			}))
-//		})
-//	}
-//}
+func TestGetMembersForTeamReturned(t *testing.T) {
+
+	mockClient := &mocks.MockClient{}
+	client, _ := NewClient(mockClient, "http://localhost:3000")
+
+	json := `    {
+      	"id": 13,
+      	"name": "Lay Team 1 - (Supervision)"
+    }`
+
+	r := io.NopCloser(bytes.NewReader([]byte(json)))
+
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 200,
+			Body:       r,
+		}, nil
+	}
+
+	expectedResponse := AssigneesTeam{
+		Id:      13,
+		Name:    "Lay Team 1 - (Supervision)",
+		Members: []AssigneeTeamMembers{},
+	}
+
+	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
+
+	assert.Equal(t, expectedResponse, assigneeTeams)
+	assert.Equal(t, nil, err)
+}
 
 func TestIsAssigneeSelected(t *testing.T) {
 	teamMembersSelected := []string{"15", "88", "89", "90"}
@@ -103,4 +67,49 @@ func TestSortMembersAlphabetically(t *testing.T) {
 	}
 
 	assert.Equal(t, SortMembersAlphabetically(unsortedMembers), expected)
+}
+
+func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL)
+
+	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
+
+	expectedResponse := AssigneesTeam{
+		Id:      0,
+		Name:    "",
+		Members: []AssigneeTeamMembers(nil),
+	}
+
+	assert.Equal(t, expectedResponse, assigneeTeams)
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusMethodNotAllowed,
+		URL:    svr.URL + "/api/v1/teams/13",
+		Method: http.MethodGet,
+	}, err)
+}
+
+func TestAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL)
+
+	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
+
+	expectedResponse := AssigneesTeam{
+		Id:      0,
+		Name:    "",
+		Members: []AssigneeTeamMembers(nil),
+	}
+
+	assert.Equal(t, ErrUnauthorized, err)
+	assert.Equal(t, expectedResponse, assigneeTeams)
 }
