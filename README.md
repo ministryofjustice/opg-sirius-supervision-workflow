@@ -7,9 +7,11 @@
 - [docker-compose](https://docs.docker.com/compose/install/) (>= 1.27.4)
 
 #### Installing dependencies locally: 
+
 - `yarn install`
 - `go mod download`
--------------------------------------------------------------------
+- 
+---
 
 ## Local development
 
@@ -41,13 +43,16 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 
 `docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
 
-`yarn and yarn cypress`   
+`yarn && yarn cypress`   
+
 -------------------------------------------------------------------
-## Run the Pact tests in more detail
+## Run the unit/functional tests
 
 test sirius files: `yarn test-sirius`
 
 test server files: `yarn test-server`
+
+Run all Go tests:  `go test ./...`
 
 -------------------------------------------------------------------
 ## Noted issues:
