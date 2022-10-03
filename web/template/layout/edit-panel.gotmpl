@@ -3,7 +3,7 @@
 <section id="edit-panel">
  <button type="button" id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
     Manage task
-  </button>
+ </button>
 
   {{ if .SuccessMessage }}
     {{ template "success-banner" .}}
@@ -16,48 +16,36 @@
           <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
         </div>
       </header>
-          <div class="govuk-width-container">
-          <form action="{{ prefix "/" }}" method="POST" id="reassign-task-form" class="ignore-pagination-bottom">
-            <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
-            <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-              <label class="govuk-label" for="sort">
-                Assign to a team
-              </label>
-              <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
-              <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
-                <option value="0" selected>Select a team</option>
-                  {{ range .TeamSelection }}
-                  <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
-                  {{ end }}
-              </select>
-            </div>
+      <div class="govuk-width-container">
+        <form action="{{ prefix "/" }}" method="POST" id="reassign-task-form" class="ignore-pagination-bottom">
+        <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a team
+          </label>
+          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
+          <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+            <option value="0" selected>Select a team</option>
+              {{ range .TeamSelection }}
+              <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
+              {{ end }}
+          </select>
+        </div>
 
-            <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-              <label class="govuk-label" for="sort">
-                Assign to a case manager
-              </label>
-              <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
-                <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
-              </select>
-            </div>
+        <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
+          <label class="govuk-label" for="sort">
+            Assign to a case manager
+          </label>
+          <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
+            <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
+          </select>
+        </div>
 
-              {{/* <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-                <label class="govuk-label" for="sort">
-                  Set priority
-                </label>
-                <select class="govuk-select" id="assignPriority" name="assignTeam">
-                  <option value=""disabled selected>Select a priority</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-              </div> */}}
-              {{/* <div> */}}
-              <br>
-            <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
-            </form>
-            <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
-          </div>
-        </section>
+        <br>
+        <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
+        <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
       </div>
+    </section>
+  </div>
 </section>
 {{ end }}
