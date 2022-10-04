@@ -20,11 +20,9 @@
         <div id="reassign-task-form" class="ignore-pagination-bottom">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <label class="govuk-label" for="sort">
-            Assign to a team
-          </label>
           <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
-          <label for="assignTeam"></label> <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+          <label class="govuk-label" for="assignTeam">Assign to a team</label>
+            <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
             <option value="0" selected>Select a team</option>
               {{ range .TeamSelection }}
               <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
@@ -33,11 +31,11 @@
         </div>
 
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <label class="govuk-label" for="sort">
+          <label class="govuk-label" for="assignCM">
             Assign to a case manager
           </label>
-          <select class="govuk-select ignore-pagination-bottom" label for="selected-CM" id="assignCM" name="assignCM">
-            <option value="" label="Select a case manager" id="selected-CM" selected>Select a case manager</option>
+          <select class="govuk-select ignore-pagination-bottom" for="selected-CM" id="assignCM" name="assignCM">
+            <option value="" label="Select a case manager" selected>Select a case manager</option>
           </select>
         </div>
 
