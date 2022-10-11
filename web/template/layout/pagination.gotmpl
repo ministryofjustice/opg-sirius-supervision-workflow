@@ -40,7 +40,7 @@
       </ul>
         <div class="govuk-form-group moj-pagination__change-view-number">
           <label class="govuk-label" for="label-display-rows">View</label>
-          <select class="govuk-select" id="display-rows" name="tasksPerPage" aria-labelledby="display-rows" aria-label="display-rows" onchange="this.form.submit()">
+          <select class="govuk-select" id="display-rows" name="tasksPerPage" aria-labelledby="display-rows" aria-label="display-rows" data-control="select-submit">
             <option value="25" id="display-rows_25"{{if eq .PageDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
             <option value="50" id="display-rows_50"{{if eq .PageDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
             <option value="100" id="display-rows_100"{{if eq .PageDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option>
