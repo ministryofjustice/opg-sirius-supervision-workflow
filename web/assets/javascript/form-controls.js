@@ -1,8 +1,8 @@
 const FormControls = (element) => {
 
-    //event delegation bound to all data-control="select-submit"
+    //event delegation bound to all data-module="app-select-submit"
     document.addEventListener("change", function (e) {
-        if (e.target?.dataset?.control == 'select-submit') {
+        if (e.target?.dataset?.module == 'app-select-submit') {
             e.target.closest('form')?.submit();
         }
     })
