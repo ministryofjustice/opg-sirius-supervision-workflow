@@ -4,8 +4,14 @@ import MOJFrontend from '@ministryofjustice/frontend/moj/all.js';
 import ManageTasks from './javascript/manage-tasks';
 import ManageFilters from './javascript/manage-filters';
 import MojBannerAutoHide from './javascript/moj-banner-auto-hide';
+import FormControls from './javascript/form-controls';
+
+//moved from inline due to Content Security Policy
+document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
 
 GOVUKFrontend.initAll();
+
+FormControls(); 
 
 MojBannerAutoHide(document.querySelector('.app-main-class'));
 
