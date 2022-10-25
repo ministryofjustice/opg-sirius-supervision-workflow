@@ -1,16 +1,18 @@
 package sirius
 
 type PageDetails struct {
-	ListOfPages       []int
-	PreviousPage      int
-	NextPage          int
-	LimitedPagination []int
-	FirstPage         int
-	LastPage          int
-	StoredTaskLimit   int
-	ShowingUpperLimit int
-	ShowingLowerLimit int
-	LastFilter        string
+	ListOfPages        []int
+	PreviousPage       int
+	NextPage           int
+	LimitedPagination  []int
+	FirstPage          int
+	LastPage           int
+	StoredTaskLimit    int
+	ShowingUpperLimit  int
+	ShowingLowerLimit  int
+	LastFilter         string
+	UpperEllipsesLimit bool
+	LowerEllipsesLimit bool
 }
 
 func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
@@ -31,6 +33,10 @@ func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit 
 	PageDetails.ShowingUpperLimit = GetShowingUpperLimitNumber(tasklist, displayTaskLimit)
 
 	PageDetails.ShowingLowerLimit = GetShowingLowerLimitNumber(tasklist, displayTaskLimit)
+
+	PageDetails.UpperEllipsesLimit = GetUpperEllipsesLimit(tasklist.Pages, search)
+
+	PageDetails.LowerEllipsesLimit = GetLowerEllipsesLimit(search)
 
 	if len(PageDetails.ListOfPages) != 0 {
 		PageDetails.FirstPage = PageDetails.ListOfPages[0]
@@ -100,4 +106,12 @@ func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
 		twoAfterCurrentPage = taskList.Pages.PageCurrent
 	}
 	return PageDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
+}
+
+func GetUpperEllipsesLimit(pages PageInformation, search int) bool {
+	return (pages.PageTotal - search) >= 3
+}
+
+func GetLowerEllipsesLimit(search int) bool {
+	return search <= 3
 }
