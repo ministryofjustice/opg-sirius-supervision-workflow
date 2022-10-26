@@ -46,3 +46,84 @@ $moj-assets-path: "/supervision/workflow/assets/";
 #actionFilter {
   margin-left: 1em;
 }
+
+.current {
+  @include govuk-typography-weight-bold;
+  outline: 1px solid transparent !important;
+  background-color: $govuk-link-colour !important;
+  color: #fff !important;
+  display: block !important;
+  min-width: govuk-spacing(3) !important;
+
+  &:hover {
+    background-color: $govuk-link-colour;
+  }
+
+  .govuk-pagination__link {
+    @include govuk-link-style-inverse;
+  }
+}
+
+.moj-button {
+      all: unset;
+
+      .govuk-pagination__link {
+        display: block;
+        min-width: govuk-spacing(3) !important;
+
+        &:after {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+
+        // Add link hover decoration to prev/next text if no label present on prev/next only mode
+        // We do this so that we have a hover state in all possible instances
+        &:hover,
+        &:active {
+          .govuk-pagination__link-title--decorated {
+            @include govuk-link-decoration;
+          }
+
+          .govuk-pagination__link-label,
+          .govuk-pagination__link-title--decorated {
+            @include govuk-link-hover-decoration;
+          }
+        }
+
+        &:focus {
+          .govuk-pagination__icon {
+            color: $govuk-focus-text-colour !important;
+          }
+
+         .govuk-pagination__link-label {
+            text-decoration: none !important;
+          }
+
+          .govuk-pagination__link-title--decorated {
+            text-decoration: none !important;
+          }
+        }
+      }
+
+      &__change-view-number {
+           .govuk-label {
+             display: inline-block;
+             margin-right: 0.5em;
+           }
+         }
+
+         .govuk-pagination__list {
+              display: inline-block;
+              text-align: justify;
+         }
+  }
+
+
+
+
+
+
