@@ -2,6 +2,6 @@
     "/api/v1/*": "/$1",
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/users/current": "/users-current",
-    "/assignees/team/:id/tasks*": "/tasks/:id",
+    "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=:pageLimit&page=0&sort=dueDate\\:asc*": "/tasks/:pageLimit",
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager"
 }
