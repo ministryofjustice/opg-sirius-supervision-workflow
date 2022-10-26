@@ -39,6 +39,7 @@ func CreatePageDetails(
 		ShowingUpperLimit,
 		ShowingLowerLimit,
 		"",
+		true,
 	}
 	return newPageDetails
 }

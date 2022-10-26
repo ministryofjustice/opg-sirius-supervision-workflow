@@ -43,8 +43,8 @@
             {{ end }}
             {{if ne $currentPage .TaskList.Pages.PageTotal}}
                 {{if eq .PageDetails.UpperEllipsesLimit true }}
-                    <li id="second-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
-                    <li id="last-page-pagination-link" class="govuk-pagination__item">
+                    <li id="final-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
+                    <li id="final-page-pagination-link" class="govuk-pagination__item">
                       <button type="submit" a class="govuk-link govuk-pagination__link moj-button {{if eq .PageDetails.LastPage $currentPage }}govuk-pagination__item--current current{{end}}"  aria-label="Page {{ .PageDetails.LastPage }}" name="page" value="{{ .PageDetails.LastPage }}">
                       {{ .PageDetails.LastPage }}
                       </button>
