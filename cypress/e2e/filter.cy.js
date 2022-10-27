@@ -13,45 +13,45 @@ describe("Filters", () => {
     cy.get(':nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('contain', 'Casework')
   })
 
-  // it("can hide the filters", () => {
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('.govuk-fieldset > :nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('not.be.visible')
-  // })
-  //
-  // it("can apply a filter which adds task type heading", () => {
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('[type="checkbox"]').eq(0).check()
-  //   cy.get('#actionFilter').click()
-  //   cy.url().should('include', 'selected-task-type=CWGN')
-  //   cy.get('.moj-filter__selected').should('contain','Task type')
-  // })
-  //
-  // it("can apply two filters", () => {
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('[type="checkbox"]').eq(0).check()
-  //   cy.get('[type="checkbox"]').eq(1).check()
-  //   cy.get('#actionFilter').click()
-  //   cy.url().should('include', 'selected-task-type=CWGN')
-  //   cy.url().should('include', 'selected-task-type=ORAL')
-  // })
-  //
-  // it("retains task type filter when changing views", () => {
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('[type="checkbox"]').eq(0).check()
-  //   cy.get('#actionFilter').click()
-  //   cy.get("#display-rows").select('100')
-  //   cy.url().should('include', 'selected-task-type=CWGN')
-  // })
-  //
-  // it("shows button to remove individual task type filter", () => {
-  //   cy.get('#option-select-title-task-type').click()
-  //   cy.get('[type="checkbox"]').eq(0).check()
-  //   cy.get('[type="checkbox"]').eq(1).check()
-  //   cy.get('#actionFilter').click()
-  //   cy.get('.moj-filter__tag').eq(0).should('contain', 'Casework - General')
-  //   cy.get('.moj-filter__tag').eq(1).should('contain', 'Order - Allocate to team')
-  // })
+  it("can hide the filters", () => {
+    cy.get('#option-select-title-task-type').click()
+    cy.get('#option-select-title-task-type').click()
+    cy.get('.govuk-fieldset > :nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('not.be.visible')
+  })
+
+  it("can apply a filter which adds task type heading", () => {
+    cy.get('#option-select-title-task-type').click()
+    cy.get('[type="checkbox"]').eq(0).check()
+    cy.get('#actionFilter').click()
+    cy.url().should('include', 'selected-task-type=CWGN')
+    cy.get('.moj-filter__selected').should('contain','Task type')
+  })
+
+  it("can apply two filters", () => {
+    cy.get('#option-select-title-task-type').click()
+    cy.get('[type="checkbox"]').eq(0).check()
+    cy.get('[type="checkbox"]').eq(1).check()
+    cy.get('#actionFilter').click()
+    cy.url().should('include', 'selected-task-type=CWGN')
+    cy.url().should('include', 'selected-task-type=ORAL')
+  })
+
+  it("retains task type filter when changing views", () => {
+    cy.get('#option-select-title-task-type').click()
+    cy.get('[type="checkbox"]').eq(0).check()
+    cy.get('#actionFilter').click()
+    cy.get("#display-rows").select('100')
+    cy.url().should('include', 'selected-task-type=CWGN')
+  })
+
+  it("shows button to remove individual task type filter", () => {
+    cy.get('#option-select-title-task-type').click()
+    cy.get('[type="checkbox"]').eq(0).check()
+    cy.get('[type="checkbox"]').eq(1).check()
+    cy.get('#actionFilter').click()
+    cy.get('.moj-filter__tag').eq(0).should('contain', 'Casework - General')
+    cy.get('.moj-filter__tag').eq(1).should('contain', 'Order - Allocate to team')
+  })
 
   it("can clear all filters with clear filter link", () => {
     cy.get('#option-select-title-task-type').click()
