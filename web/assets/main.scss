@@ -6,7 +6,6 @@ $moj-assets-path: "/supervision/workflow/assets/";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
 @import "./scss/app-c-option-select";
 @import "./scss/sirius-workflow";
-@import "./scss/moj-pagination";
 @import "./scss/moj-team-banner";
 @import "./scss/moj-manage-tasks";
 
@@ -46,3 +45,16 @@ $moj-assets-path: "/supervision/workflow/assets/";
 #actionFilter {
   margin-left: 1em;
 }
+
+.current {
+  @include govuk-typography-weight-bold;
+  outline: 1px solid transparent !important;
+  background-color: $govuk-link-colour !important;
+  color: #fff !important;
+  display: inline-block !important;
+  min-width: govuk-spacing(3) !important;
+}
+
+.moj-button {
+   all: unset;
+  }
