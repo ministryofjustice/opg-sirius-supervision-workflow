@@ -47,12 +47,16 @@ $moj-assets-path: "/supervision/workflow/assets/";
   margin-left: 1em;
 }
 
+.govuk-pagination__list {
+  display: inline-block;
+}
+
 .current {
   @include govuk-typography-weight-bold;
   outline: 1px solid transparent !important;
   background-color: $govuk-link-colour !important;
   color: #fff !important;
-  display: block !important;
+  display: inline-block !important;
   min-width: govuk-spacing(3) !important;
 
   &:hover {
@@ -68,7 +72,7 @@ $moj-assets-path: "/supervision/workflow/assets/";
       all: unset;
 
       .govuk-pagination__link {
-        display: block;
+        display: inline-block;
         min-width: govuk-spacing(3) !important;
 
         &:after {
