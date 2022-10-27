@@ -2,6 +2,11 @@
     "/api/v1/*": "/$1",
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/users/current": "/users-current",
-    "/assignees/team/:id/tasks*": "/tasks/:id",
+
+    "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-25/:pageNumber",
+    "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=50&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-50/:pageNumber",
+    "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=100&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-100/:pageNumber",
+
+    "/assignees/team/:teamId/tasks*": "/tasks/:teamId",
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager"
 }
