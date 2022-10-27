@@ -1,43 +1,69 @@
 {{ define "pagination" }}
-  <nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label">
-
-    <p class="govuk-visually-hidden" id="pagination-form-heading">Pagination navigation</p>
-
+<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label"  role="navigation" aria-label="results">
     <div class="flex-container">
-
-      <p class="moj-pagination__results">Showing <b>
-      {{ if le .PageDetails.ShowingLowerLimit .TaskList.TotalTasks }}
-        {{ .PageDetails.ShowingLowerLimit }}
-      {{ else }}
-        {{.TaskList.TotalTasks}}
-      {{ end }}</b> to <b>
-      {{ if le .PageDetails.ShowingUpperLimit .TaskList.TotalTasks }}
-        {{ .PageDetails.ShowingUpperLimit }}
-      {{ else }}
-        {{.TaskList.TotalTasks}}
-      {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
-
-      <ul class="moj-pagination__list">
-        <li class="moj-pagination__item moj-pagination__item--prev">
-          <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .PageDetails.PreviousPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent 1 }}disabled{{ end }}> Previous </button>
-        </li>
+        <p class="moj-pagination__results">Showing <b>
+        {{ if le .PageDetails.ShowingLowerLimit .TaskList.TotalTasks }}
+          {{ .PageDetails.ShowingLowerLimit }}
+        {{ else }}
+          {{.TaskList.TotalTasks}}
+        {{ end }}</b> to <b>
+        {{ if le .PageDetails.ShowingUpperLimit .TaskList.TotalTasks }}
+          {{ .PageDetails.ShowingUpperLimit }}
+        {{ else }}
+          {{.TaskList.TotalTasks}}
+        {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
         {{$currentPage := .TaskList.Pages.PageCurrent}}
+        <div id="numbered-pages">
+          <div id="previous-page-pagination-link" class="govuk-pagination__prev" {{if eq $currentPage 1 }} visibility: hidden {{end}}>
+            <button type="submit" a class="govuk-link govuk-pagination__link moj-button" name="page" value="{{ .PageDetails.PreviousPage }}" rel="prev">
+              <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+              </svg>
+              <span class="govuk-pagination__link-title">Previous</span></button>
+          </div>
+          <ul class="govuk-pagination__list">
+            {{if ne $currentPage 1 }}
+                {{ if gt .TaskList.Pages.PageTotal 2}}
+                    {{if gt $currentPage 3 }}
+                        <li id="first-page-pagination-link" class="govuk-pagination__item">
+                            <button type="submit" a class="govuk-pagination__link moj-button {{if eq .PageDetails.FirstPage $currentPage }}govuk-pagination__item--current current{{end}}" name="page" value="{{ .PageDetails.FirstPage }}" >
+                                {{ .PageDetails.FirstPage }}
+                            </button>
+                        </li>
+                        <li id="first-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
+                    {{end}}
+                {{end}}
+            {{end}}
+            {{ if gt .TaskList.Pages.PageTotal 0}}
+                {{ range .PageDetails.LimitedPagination }}
+                    <li class="govuk-pagination__item">
+                      <button type="submit" a class="govuk-link govuk-pagination__link moj-button {{if eq . $currentPage }}govuk-pagination__item--current current{{end}}" name="page" value="{{ . }}" aria-label="Page {{ . }}">
+                      {{ . }}</button>
+                    </li>
+                {{ end }}
+            {{end}}
+            {{if ne $currentPage .TaskList.Pages.PageTotal}}
+                {{if eq .PageDetails.UpperEllipsesLimit true }}
+                    <li id="final-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
+                    <li id="final-page-pagination-link" class="govuk-pagination__item">
+                      <button type="submit" a class="govuk-link govuk-pagination__link moj-button {{if eq .PageDetails.LastPage $currentPage }}govuk-pagination__item--current current{{end}}"  aria-label="Page {{ .PageDetails.LastPage }}" name="page" value="{{ .PageDetails.LastPage }}">
+                      {{ .PageDetails.LastPage }}
+                      </button>
+                    </li>
+                {{end}}
+            {{end}}
+          </ul>
 
-        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .PageDetails.FirstPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .PageDetails.FirstPage }}">{{ .PageDetails.FirstPage }}</button></li>
-        <li class="moj-pagination__item moj-pagination__item--dots">...</li>
-
-        {{ range .PageDetails.LimitedPagination }}
-          <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq . $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ . }}">{{ . }}</button></li>
-        {{ end }}
-
-        <li class="moj-pagination__item moj-pagination__item--dots">...</li>
-        <li class="moj-pagination__item"><button type="submit" a class="moj-pagination__link moj-pagination__link--btn {{if eq .PageDetails.LastPage $currentPage }}moj-pagination__item--active{{end}}" name="page" value="{{ .PageDetails.LastPage }}">{{ .PageDetails.LastPage }}</button></li>
-
-        <li class="moj-pagination__item">
-          <li class="moj-pagination__item moj-pagination__item--next">
-          <button type="submit" a class="moj-pagination__link moj-pagination__link--btn" name="page" value="{{ .PageDetails.NextPage }}" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }} {{ if eq .TaskList.Pages.PageCurrent .TaskList.Pages.PageTotal }}disabled{{ end }}> Next </button>
-        </li>
-      </ul>
+          <br>
+          {{ if gt .TaskList.Pages.PageTotal 1}}
+              <div id="next-page-pagination-link" class="govuk-pagination__next" {{if eq $currentPage .TaskList.Pages.PageTotal }} visibility: hidden {{end}}>
+                <button type="submit" a class="govuk-link govuk-pagination__link moj-button" name="page" value="{{ .PageDetails.NextPage }}" rel="next" {{ if lt .TaskList.Pages.PageTotal 2 }}disabled{{ end }}>
+                    <span class="govuk-pagination__link-title" >Next</span> <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                    <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                  </svg></button>
+              </div>
+          {{end}}
+        </div>
         <div class="govuk-form-group moj-pagination__change-view-number">
           <label class="govuk-label" for="label-display-rows">View</label>
           <select class="govuk-select" id="display-rows" name="tasksPerPage" aria-labelledby="display-rows" aria-label="display-rows" data-module="app-select-submit">
@@ -48,5 +74,4 @@
         </div>
     </div>
   </nav>
-
 {{ end }}
