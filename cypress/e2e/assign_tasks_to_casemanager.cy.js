@@ -27,8 +27,8 @@ describe("Reassign Tasks", () => {
     });
 
     it("shows me a table of tasks", () => {
-        cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2) > .govuk-label").contains('Case work - General')
-        cy.get(":nth-child(1) > :nth-child(3) > .govuk-label").contains('Client Alexander Zacchaeus')
+        cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2) > .govuk-label").contains('Case work - Complaint review')
+        cy.get(":nth-child(1) > :nth-child(3) > .govuk-label").contains('Lizzo Surname')
         cy.get(":nth-child(1) > :nth-child(4) > .govuk-label").contains('Lay Team 1 - (Supervision)')
         cy.get(":nth-child(1) > :nth-child(5) > .govuk-label").contains('LayTeam1 User3')
     });
