@@ -14,7 +14,7 @@ describe("Pagination", () => {
     it("will not show previous arrow on page 1 but will show it on other pages", () => {
       cy.get("#display-rows").select('25')
       cy.get("#display-rows").should('have.value', '25')
-      cy.get("#previous-page-pagination-link").should('not.be.visible', 'Previous')
+      cy.get("#previous-page-pagination-link").should('not.exist')
       cy.get("#next-page-pagination-link").click()
       cy.get("#previous-page-pagination-link").should('be.visible', 'Previous')
     })
@@ -22,7 +22,7 @@ describe("Pagination", () => {
     it("shows next button apart from on last page", () => {
       cy.get("#next-page-pagination-link").should('be.visible', 'Next')
       cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > #numbered-pages > .govuk-pagination__list > #final-page-pagination-link > .govuk-link").click()
-      cy.get("#next-page-pagination-link").should('not.be.visible', 'Next')
+      cy.get("#next-page-pagination-link").should('not.exist')
     })
 
     it("shows first page and ellipses once you are past page 3", () => {
@@ -126,7 +126,7 @@ describe("Pagination", () => {
       cy.get("#final-ellipses").should('not.exist');
       cy.get("#final-page-pagination-link").should('not.exist');
       cy.get("#next-page-pagination-link").should('not.exist');
-      cy.get("#previous-page-pagination-link").should('not.be.visible', 'Previous');
+      cy.get("#previous-page-pagination-link").should('not.exist');
     })
   });
 });
