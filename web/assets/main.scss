@@ -49,10 +49,7 @@ $moj-assets-path: "/supervision/workflow/assets/";
 .current {
   @include govuk-typography-weight-bold;
   outline: 1px solid transparent !important;
-  background-color: $govuk-link-colour !important;
   color: #fff !important;
-  display: inline-block !important;
-  min-width: govuk-spacing(3) !important;
 }
 
 .moj-button {
