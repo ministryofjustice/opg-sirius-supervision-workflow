@@ -21,7 +21,7 @@ describe("Pagination", () => {
 
     it("shows next button apart from on last page", () => {
       cy.get("#next-page-pagination-link").should('be.visible', 'Next')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > #numbered-pages > .govuk-pagination__list > #final-page-pagination-link > .govuk-link").click()
+      cy.get("#final-page-pagination-link").click()
       cy.get("#next-page-pagination-link").should('not.exist')
     })
 
@@ -30,13 +30,13 @@ describe("Pagination", () => {
       cy.get("#display-rows").should('have.value', '25')
       cy.get("#first-ellipses").should('not.exist');
       cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > #numbered-pages > #next-page-pagination-link > .govuk-link").click()
+      cy.get("#next-page-pagination-link").click()
       cy.get("#first-ellipses").should('not.exist');
       cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > #numbered-pages > #next-page-pagination-link > .govuk-link").click()
+      cy.get("#next-page-pagination-link").click()
       cy.get("#first-ellipses").should('not.exist');
       cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > #numbered-pages > #next-page-pagination-link > .govuk-link").click()
+      cy.get("#next-page-pagination-link").click()
       cy.get("#first-ellipses").should('exist');
       cy.get("#first-page-pagination-link").should('exist');
     })
@@ -68,25 +68,25 @@ describe("Pagination", () => {
     })
 
     it("allows me to select view 25 and updates task numbers", () => {
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '1')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '25')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '1')
+      cy.get(".moj-pagination__results").should('contain', '25')
+      cy.get(".moj-pagination__results").should('contain', '101')
       cy.get("#next-page-pagination-link").click()
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '26')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '50')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '26')
+      cy.get(".moj-pagination__results").should('contain', '50')
+      cy.get(".moj-pagination__results").should('contain', '101')
       cy.get("#next-page-pagination-link").click()
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '51')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '75')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '51')
+      cy.get(".moj-pagination__results").should('contain', '75')
+      cy.get(".moj-pagination__results").should('contain', '101')
       cy.get("#next-page-pagination-link").click()
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '76')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '100')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '76')
+      cy.get(".moj-pagination__results").should('contain', '100')
+      cy.get(".moj-pagination__results").should('contain', '101')
       cy.get("#next-page-pagination-link").click()
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '101')
+      cy.get(".moj-pagination__results").should('contain', '101')
     })
   });
 
@@ -97,13 +97,13 @@ describe("Pagination", () => {
     })
 
     it("can select 50 from task view value dropdown and correctly show when one task on a page", () => {
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '1')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '50')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '51')
+      cy.get(".moj-pagination__results").should('contain', '1')
+      cy.get(".moj-pagination__results").should('contain', '50')
+      cy.get(".moj-pagination__results").should('contain', '51')
       cy.get("#next-page-pagination-link").click()
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '51')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '51')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '51')
+      cy.get(".moj-pagination__results").should('contain', '51')
+      cy.get(".moj-pagination__results").should('contain', '51')
+      cy.get(".moj-pagination__results").should('contain', '51')
     })
 
   });
@@ -115,9 +115,9 @@ describe("Pagination", () => {
     })
 
     it("can select 100 from task view value dropdown and shows limited task count", () => {
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '1')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '10')
-      cy.get(".govuk-\\!-padding-right-2 > #pagination-label > .flex-container > .moj-pagination__results").should('contain', '10')
+      cy.get(".moj-pagination__results").should('contain', '1')
+      cy.get(".moj-pagination__results").should('contain', '10')
+      cy.get(".moj-pagination__results").should('contain', '10')
     })
 
     it("will not show previous link, next link, first page, first ellipses, final page or final ellipses when only one page", () => {
