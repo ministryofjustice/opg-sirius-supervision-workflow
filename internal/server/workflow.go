@@ -90,6 +90,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 	return func(w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
+		if search < 1 {
+		    search = 1
+		}
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
 		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
