@@ -15,7 +15,7 @@ func TestGetMembersForTeamReturned(t *testing.T) {
 	mockClient := &mocks.MockClient{}
 	client, _ := NewClient(mockClient, "http://localhost:3000")
 
-	json := `    {
+	json := `{
       	"id": 13,
       	"name": "Lay Team 1 - (Supervision)"
     }`
