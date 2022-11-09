@@ -53,16 +53,14 @@ $moj-assets-path: "/supervision/workflow/assets/";
 }
 
 .moj-button {
-   all: unset;
-   color: govuk-colour("blue");
-   text-decoration: underline;
+  all: unset;
+  color: govuk-colour("blue");
+  text-decoration: underline;
 }
 
- .moj-pagination__change-view-number {
-   .govuk-label {
-     display: inline-block;
-     margin-right: 0.5em;
-   }
- }
-
-
+.moj-pagination__change-view-number {
+  .govuk-label {
+    display: inline-block;
+    margin-right: 0.5em;
+  }
+}
