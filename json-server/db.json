@@ -429,6 +429,15 @@
         }
       ],
       "total": 10
+    },
+    {
+      "id": 21,
+      "pages": {
+        "current": 1,
+        "total": 1
+      },
+      "tasks": [],
+      "total": 0
     }
   ],
   "tasks-view-25": [
