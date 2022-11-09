@@ -24,9 +24,7 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 	}
 
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
-
 	assert.Equal(t, nil, err)
-
 }
 
 func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
@@ -53,8 +51,6 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 	defer svr.Close()
 
 	client, _ := NewClient(http.DefaultClient, svr.URL)
-
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
-
 	assert.Equal(t, ErrUnauthorized, err)
 }
