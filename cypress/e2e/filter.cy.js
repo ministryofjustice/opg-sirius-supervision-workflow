@@ -35,7 +35,7 @@ describe("Filters", () => {
     cy.url().should('include', 'selected-task-type=CWGN')
     cy.url().should('include', 'selected-task-type=ORAL')
   })
-  
+
   it("retains task type filter when changing views", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('[type="checkbox"]').eq(0).check()
