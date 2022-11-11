@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"github.com/ministryofjustice/opg-go-common/logging"
 
 	"net/http"
 )
@@ -26,10 +27,12 @@ type MyDetailsTeam struct {
 	TeamId      int    `json:"id"`
 }
 
-func (c *Client) GetCurrentUserDetails(ctx Context) (UserDetails, error) {
+func (c *Client) GetCurrentUserDetails(ctx Context, logger *logging.Logger) (UserDetails, error) {
 	var v UserDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)
+	logger.Print(req.URL, err)
+
 	if err != nil {
 		return v, err
 	}

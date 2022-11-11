@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 )
 
@@ -57,7 +58,7 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, logger *logging.Logger, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
@@ -67,10 +68,10 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	} else {
 		teamID = selectedTeamId
 	}
-
 	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
+	logger.Print(req.URL, err)
 
 	if err != nil {
 		return v, 0, err

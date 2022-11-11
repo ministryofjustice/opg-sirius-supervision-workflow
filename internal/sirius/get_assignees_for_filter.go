@@ -3,6 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 	"sort"
 	"strconv"
@@ -20,10 +21,11 @@ type AssigneeTeamMembers struct {
 	IsSelected             bool
 }
 
-func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected []string) (AssigneesTeam, error) {
+func (c *Client) GetAssigneesForFilter(ctx Context, logger *logging.Logger, teamId int, assigneeSelected []string) (AssigneesTeam, error) {
 	var v AssigneesTeam
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
+	logger.Print(req.URL, err)
 
 	if err != nil {
 		return v, err

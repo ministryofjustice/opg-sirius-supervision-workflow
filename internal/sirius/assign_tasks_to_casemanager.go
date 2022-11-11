@@ -3,14 +3,16 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 )
 
-func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIdForUrl string) error {
+func (c *Client) AssignTasksToCaseManager(ctx Context, logger *logging.Logger, newAssigneeIdForTask int, taskIdForUrl string) error {
 
 	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%s", newAssigneeIdForTask, taskIdForUrl)
 
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, nil)
+	logger.Print(req.URL, err)
 
 	if err != nil {
 		return err

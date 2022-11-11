@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 	"sort"
 )
@@ -19,8 +20,9 @@ type WholeTaskTypesList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
+func (c *Client) GetTaskTypes(ctx Context, logger *logging.Logger, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
+	logger.Print(req.URL, err)
 
 	if err != nil {
 		return nil, err
