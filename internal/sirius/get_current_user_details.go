@@ -31,7 +31,7 @@ func (c *Client) GetCurrentUserDetails(ctx Context, logger *logging.Logger) (Use
 	var v UserDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)
-	logger.Print(req.URL, err)
+	c.logRequest(logger, req, err)
 
 	if err != nil {
 		return v, err

@@ -22,7 +22,7 @@ type WholeTaskTypesList struct {
 
 func (c *Client) GetTaskTypes(ctx Context, logger *logging.Logger, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
-	logger.Print(req.URL, err)
+	c.logRequest(logger, req, err)
 
 	if err != nil {
 		return nil, err

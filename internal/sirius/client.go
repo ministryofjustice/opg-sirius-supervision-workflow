@@ -3,6 +3,7 @@ package sirius
 import (
 	"context"
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"io"
 	"net/http"
 )
@@ -96,4 +97,12 @@ func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*
 	req.Header.Add("X-XSRF-TOKEN", ctx.XSRFToken)
 
 	return req, err
+}
+
+func (c *Client) logRequest(logger *logging.Logger, r *http.Request, err error) {
+	logger.Print(r.Method)
+	logger.Print(r.URL.Path)
+	if err != nil {
+		logger.Print(err)
+	}
 }

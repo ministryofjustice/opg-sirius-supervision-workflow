@@ -12,7 +12,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, logger *logging.Logger, n
 	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%s", newAssigneeIdForTask, taskIdForUrl)
 
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, nil)
-	logger.Print(req.URL, err)
+	c.logRequest(logger, req, err)
 
 	if err != nil {
 		return err
