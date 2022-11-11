@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"encoding/json"
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 	"strconv"
 )
@@ -45,7 +44,7 @@ type TeamStoredData struct {
 	SelectedTeam int
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context, logger *logging.Logger, teamId int, assigneeSelected []string) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected []string) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
 	var k TeamStoredData

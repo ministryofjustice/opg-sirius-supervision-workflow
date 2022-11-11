@@ -11,13 +11,13 @@ import (
 )
 
 type WorkflowInformation interface {
-	GetCurrentUserDetails(sirius.Context, *logging.Logger) (sirius.UserDetails, error)
-	GetTaskTypes(sirius.Context, *logging.Logger, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, *logging.Logger, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
+	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
+	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
 	GetPageDetails(*logging.Logger, sirius.TaskList, int, int) sirius.PageDetails
-	GetTeamsForSelection(sirius.Context, *logging.Logger, int, []string) ([]sirius.ReturnedTeamCollection, error)
-	GetAssigneesForFilter(sirius.Context, *logging.Logger, int, []string) (sirius.AssigneesTeam, error)
-	AssignTasksToCaseManager(sirius.Context, *logging.Logger, int, string) error
+	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
+	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
+	AssignTasksToCaseManager(sirius.Context, int, string) error
 	GetAppliedFilters(*logging.Logger, int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
@@ -111,7 +111,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		taskTypeSelected := r.Form["selected-task-type"]
 		assigneeSelected := r.Form["selected-assignee"]
 
-		myDetails, err := client.GetCurrentUserDetails(ctx, logger)
+		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
 			logger.Print("GetCurrentUserDetails error")
 			logger.Print(err)
@@ -120,14 +120,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
 
-		loadTaskTypes, err := client.GetTaskTypes(ctx, logger, taskTypeSelected)
+		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
 			logger.Print("GetTaskTypes error")
 			logger.Print(err)
 			return err
 		}
 
-		taskList, teamId, err := client.GetTaskList(ctx, logger, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
 			logger.Print("GetTaskList error")
 			logger.Print(err)
@@ -136,14 +136,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		pageDetails := client.GetPageDetails(logger, taskList, search, displayTaskLimit)
 
-		teamSelection, err := client.GetTeamsForSelection(ctx, logger, teamId, assigneeSelected)
+		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
 			logger.Print("GetTeamsForSelection error")
 			logger.Print(err)
 			return err
 		}
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, logger, teamId, assigneeSelected)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
 			logger.Print("GetAssigneesForFilter error")
 			logger.Print(err)
@@ -206,7 +206,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, logger, newAssigneeIdForTask, taskIdForUrl)
+			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager error")
 				logger.Print(err)
@@ -217,7 +217,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 
-			vars.TaskList, _, err = client.GetTaskList(ctx, logger, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				logger.Print("vars.TaskList error")
 				logger.Print(err)

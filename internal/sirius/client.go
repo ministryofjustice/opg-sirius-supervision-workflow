@@ -111,7 +111,6 @@ func (c *Client) logRequest(r *http.Request, err error) {
 
 func (c *Client) logResponse(r *http.Response, err error) {
 	c.logger.Print(r.StatusCode)
-	c.logger.Print(r.Request.)
 	if err != nil {
 		c.logger.Print(err)
 	}

@@ -2,16 +2,19 @@ package sirius
 
 import (
 	"bytes"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
+	"os"
 	"testing"
 )
 
 func TestGetTaskTypes(t *testing.T) {
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -57,7 +60,8 @@ func TestGetTaskTypes(t *testing.T) {
 
 func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{

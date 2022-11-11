@@ -3,7 +3,6 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 )
 
@@ -58,7 +57,7 @@ type TaskList struct {
 
 var teamID int
 
-func (c *Client) GetTaskList(ctx Context, logger *logging.Logger, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, int, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string

@@ -2,18 +2,22 @@ package sirius
 
 import (
 	"bytes"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 func TestGetMembersForTeamReturned(t *testing.T) {
 
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
       	"id": 13,
@@ -70,12 +74,13 @@ func TestSortMembersAlphabetically(t *testing.T) {
 }
 
 func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
 	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
 
@@ -95,12 +100,13 @@ func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
 }
 
 func TestAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
 	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
 
