@@ -2,6 +2,7 @@
     "/api/v1/*": "/$1",
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/users/current": "/users-current",
+    "/assignees/team/21/tasks\\?filter=status\\:Not+started\\,\\,&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks/21",
 
     "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-25/:pageNumber",
     "/assignees/team/13/tasks\\?filter=status\\:Not+started\\,\\,&limit=50&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-50/:pageNumber",
