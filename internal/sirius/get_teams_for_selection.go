@@ -51,7 +51,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, logger *logging.Logger, teamI
 	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
-	c.logRequest(logger, req, err)
+	c.logRequest(req, err)
 	if err != nil {
 		return q, err
 	}

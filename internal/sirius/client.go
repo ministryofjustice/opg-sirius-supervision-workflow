@@ -67,10 +67,11 @@ func (ctx Context) With(c context.Context) Context {
 	}
 }
 
-func NewClient(httpClient HTTPClient, baseURL string) (*Client, error) {
+func NewClient(httpClient HTTPClient, baseURL string, logger *logging.Logger) (*Client, error) {
 	return &Client{
 		http:    httpClient,
 		baseURL: baseURL,
+		logger:  logger,
 	}, nil
 }
 
@@ -81,6 +82,7 @@ type HTTPClient interface {
 type Client struct {
 	http    HTTPClient
 	baseURL string
+	logger  *logging.Logger
 }
 
 func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
@@ -99,10 +101,10 @@ func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*
 	return req, err
 }
 
-func (c *Client) logRequest(logger *logging.Logger, r *http.Request, err error) {
-	logger.Print(r.Method)
-	logger.Print(r.URL.Path)
+func (c *Client) logRequest(r *http.Request, err error) {
+	c.logger.Print(r.Method)
+	c.logger.Print(r.URL.Path)
 	if err != nil {
-		logger.Print(err)
+		c.logger.Print(err)
 	}
 }
