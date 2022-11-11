@@ -11,6 +11,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	requestURL := fmt.Sprintf("/api/v1/users/%d/tasks/%s", newAssigneeIdForTask, taskIdForUrl)
 
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, nil)
+	c.logRequest(req, err)
 
 	if err != nil {
 		return err
@@ -18,6 +19,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	req.Header.Set("Content-type", "application/json")
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
 	if err != nil {
 		return err
 	}

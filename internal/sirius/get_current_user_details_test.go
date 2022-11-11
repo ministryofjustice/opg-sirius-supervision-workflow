@@ -1,7 +1,9 @@
 package sirius
 
 import (
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -127,10 +129,11 @@ import (
 //}
 
 func TestMyDetailsStatusError(t *testing.T) {
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	s := teapotServer()
 	defer s.Close()
 
-	client, _ := NewClient(http.DefaultClient, s.URL)
+	client, _ := NewClient(http.DefaultClient, s.URL, logger)
 
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{

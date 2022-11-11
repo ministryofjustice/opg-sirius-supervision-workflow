@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -12,11 +14,11 @@ type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
 	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
-	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
+	GetPageDetails(*logging.Logger, sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
 	AssignTasksToCaseManager(sirius.Context, int, string) error
-	GetAppliedFilters(int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
+	GetAppliedFilters(*logging.Logger, int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
 type workflowVars struct {
@@ -59,7 +61,7 @@ func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int 
 	}
 }
 
-func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
+func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (int, error) {
 	var assigneeIdForTask int
 	var err error
 
@@ -69,6 +71,8 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
+		logger.Print("getAssigneeIdForTask error")
+		logger.Print(err)
 		return 0, err
 	}
 	return assigneeIdForTask, nil
@@ -88,17 +92,19 @@ func createTaskIdForUrl(taskIdArray []string) string {
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		if search < 1 {
-		    search = 1
+			search = 1
 		}
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
-
 		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
 
 		err := r.ParseForm()
 		if err != nil {
+			logger.Print("ParseForm error")
+			logger.Print(err)
 			return err
 		}
 
@@ -107,6 +113,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
+			logger.Print("GetCurrentUserDetails error")
+			logger.Print(err)
 			return err
 		}
 
@@ -114,27 +122,35 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
+			logger.Print("GetTaskTypes error")
+			logger.Print(err)
 			return err
 		}
 
 		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
+			logger.Print("GetTaskList error")
+			logger.Print(err)
 			return err
 		}
 
-		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
+		pageDetails := client.GetPageDetails(logger, taskList, search, displayTaskLimit)
 
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
+			logger.Print("GetTeamsForSelection error")
+			logger.Print(err)
 			return err
 		}
 
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
+			logger.Print("GetAssigneesForFilter error")
+			logger.Print(err)
 			return err
 		}
 
-		appliedFilters := client.GetAppliedFilters(teamId, loadTaskTypes, teamSelection, assigneesForFilter)
+		appliedFilters := client.GetAppliedFilters(logger, teamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
 			Path:           r.URL.Path,
@@ -166,13 +182,17 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err = getAssigneeIdForTask(selectedTeamToAssignTaskString, r.FormValue("assignCM"))
+			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
 			if err != nil {
+				logger.Print("getAssigneeIdForTask error")
+				logger.Print(err)
 				return err
 			}
 
 			err := r.ParseForm()
 			if err != nil {
+				logger.Print("ParseForm error")
+				logger.Print(err)
 				return err
 			}
 
@@ -180,12 +200,16 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			taskIdForUrl := createTaskIdForUrl(taskIdArray)
 
 			if err != nil {
+				logger.Print("taskIdForUrl error")
+				logger.Print(err)
 				return err
 			}
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 			if err != nil {
+				logger.Print("AssignTasksToCaseManager error")
+				logger.Print(err)
 				return err
 			}
 
@@ -195,10 +219,12 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
+				logger.Print("vars.TaskList error")
+				logger.Print(err)
 				return err
 			}
 
-			vars.PageDetails = client.GetPageDetails(vars.TaskList, search, displayTaskLimit)
+			vars.PageDetails = client.GetPageDetails(logger, vars.TaskList, search, displayTaskLimit)
 
 			return tmpl.ExecuteTemplate(w, "page", vars)
 		default:
