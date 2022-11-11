@@ -29,6 +29,8 @@ func (c *Client) GetTaskTypes(ctx Context, logger *logging.Logger, taskTypeSelec
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return nil, err
 	}

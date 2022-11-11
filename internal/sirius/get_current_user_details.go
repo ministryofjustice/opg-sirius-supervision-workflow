@@ -38,6 +38,8 @@ func (c *Client) GetCurrentUserDetails(ctx Context, logger *logging.Logger) (Use
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return v, err
 	}

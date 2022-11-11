@@ -57,6 +57,8 @@ func (c *Client) GetTeamsForSelection(ctx Context, logger *logging.Logger, teamI
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return q, err
 	}

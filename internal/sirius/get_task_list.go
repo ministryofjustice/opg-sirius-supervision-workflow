@@ -78,6 +78,8 @@ func (c *Client) GetTaskList(ctx Context, logger *logging.Logger, search int, di
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return v, 0, err
 	}

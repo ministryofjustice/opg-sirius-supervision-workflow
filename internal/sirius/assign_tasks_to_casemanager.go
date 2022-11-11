@@ -20,6 +20,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, logger *logging.Logger, n
 	req.Header.Set("Content-type", "application/json")
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
 	if err != nil {
 		return err
 	}

@@ -32,9 +32,12 @@ func (c *Client) GetAssigneesForFilter(ctx Context, logger *logging.Logger, team
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return v, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
