@@ -2,19 +2,16 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
 func TestUpdateAssignTasksToCaseManager(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	r := io.NopCloser(bytes.NewReader([]byte(nil)))
@@ -31,8 +28,7 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 }
 
 func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}))
@@ -50,8 +46,7 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 }
 
 func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))

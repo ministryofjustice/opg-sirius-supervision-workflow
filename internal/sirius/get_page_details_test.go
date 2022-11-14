@@ -8,6 +8,12 @@ import (
 	"testing"
 )
 
+func SetUpTest() (*logging.Logger, *mocks.MockClient) {
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	mockClient := &mocks.MockClient{}
+	return logger, mockClient
+}
+
 func CreateTaskList(pageCurrent int, pageTotal int, totalTasks int) TaskList {
 	taskList := TaskList{
 		Pages: PageInformation{
@@ -48,8 +54,7 @@ func CreatePageDetails(
 }
 
 func TestGetPageDetails(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 2, 4, []int{1, 2, 3, 4, 5}, 1, 5, 25, 75, 51, false)
@@ -60,8 +65,7 @@ func TestGetPageDetails(t *testing.T) {
 }
 
 func TestGetPageDetailsPage1View25(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 25, 10, 1, false)
@@ -71,8 +75,7 @@ func TestGetPageDetailsPage1View25(t *testing.T) {
 }
 
 func TestGetPageDetailsPage1View50(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 50, 10, 1, false)
@@ -82,8 +85,7 @@ func TestGetPageDetailsPage1View50(t *testing.T) {
 }
 
 func TestGetPageDetailsPage1View100(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 100, 99, 1, false)
@@ -93,8 +95,7 @@ func TestGetPageDetailsPage1View100(t *testing.T) {
 }
 
 func TestGetPageDetailsPage2of2(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2}, 2, 2, []int{1, 2}, 1, 2, 25, 27, 26, false)
@@ -104,8 +105,7 @@ func TestGetPageDetailsPage2of2(t *testing.T) {
 }
 
 func TestGetPageDetailsPage2of3(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3}, 1, 3, []int{1, 2, 3}, 1, 3, 25, 50, 26, false)
@@ -115,8 +115,7 @@ func TestGetPageDetailsPage2of3(t *testing.T) {
 }
 
 func TestGetPageDetailsPage4of10(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3, 5, []int{2, 3, 4, 5, 6}, 1, 10, 25, 100, 76, true)
@@ -126,8 +125,7 @@ func TestGetPageDetailsPage4of10(t *testing.T) {
 }
 
 func TestGetPageDetailsPage4of5(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 3, 5, []int{2, 3, 4, 5}, 1, 5, 50, 200, 151, false)
@@ -137,8 +135,7 @@ func TestGetPageDetailsPage4of5(t *testing.T) {
 }
 
 func TestGetPageDetailsPage5of5(t *testing.T) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	mockClient := &mocks.MockClient{}
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 4, 5, []int{3, 4, 5}, 1, 5, 50, 250, 201, false)
@@ -148,8 +145,7 @@ func TestGetPageDetailsPage5of5(t *testing.T) {
 }
 
 func TestGetPageDetailsPage7of10(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 6, 8, []int{5, 6, 7, 8, 9}, 1, 10, 50, 350, 301, true)
@@ -159,8 +155,7 @@ func TestGetPageDetailsPage7of10(t *testing.T) {
 }
 
 func TestGetPageDetailsPage9of10(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 8, 10, []int{7, 8, 9, 10}, 1, 10, 100, 900, 801, false)
@@ -170,8 +165,7 @@ func TestGetPageDetailsPage9of10(t *testing.T) {
 }
 
 func TestGetPageDetailsFinalPage(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 9, 10, []int{8, 9, 10}, 1, 10, 100, 1000, 901, false)
