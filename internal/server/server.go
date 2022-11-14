@@ -98,6 +98,7 @@ func errorHandler(logger Logger, tmplError Template, prefix, siriusURL string) f
 					if status.Code() == http.StatusForbidden || status.Code() == http.StatusNotFound {
 						code = status.Code()
 					}
+					logger.Request(r, err)
 				}
 
 				w.WriteHeader(code)
