@@ -11,8 +11,8 @@ import (
 )
 
 func TestUpdateAssignTasksToCaseManager(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	r := io.NopCloser(bytes.NewReader([]byte(nil)))
 
@@ -28,12 +28,13 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 }
 
 func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
 
@@ -45,12 +46,13 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 }
 
 func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
 	assert.Equal(t, ErrUnauthorized, err)
 }

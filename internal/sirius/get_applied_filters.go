@@ -1,6 +1,8 @@
 package sirius
 
-func (c *Client) GetAppliedFilters(teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
+import "github.com/ministryofjustice/opg-go-common/logging"
+
+func (c *Client) GetAppliedFilters(logger *logging.Logger, teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
 	var appliedFilters []string
 
 	for _, u := range loadTaskTypes {
@@ -20,6 +22,9 @@ func (c *Client) GetAppliedFilters(teamId int, loadTaskTypes []ApiTaskTypes, tea
 			appliedFilters = append(appliedFilters, u.TeamMembersDisplayName)
 		}
 	}
-
+	if len(appliedFilters) >= 1 {
+		logger.Print("appliedFilters")
+		logger.Print(appliedFilters)
+	}
 	return appliedFilters
 }

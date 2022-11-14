@@ -11,9 +11,8 @@ import (
 )
 
 func TestGetMembersForTeamReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
       	"id": 13,
@@ -70,12 +69,13 @@ func TestSortMembersAlphabetically(t *testing.T) {
 }
 
 func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
 	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
 
@@ -95,12 +95,13 @@ func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
 }
 
 func TestAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
+	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL)
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
 	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
 

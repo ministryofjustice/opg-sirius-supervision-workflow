@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"encoding/json"
-
 	"net/http"
 )
 
@@ -30,11 +29,15 @@ func (c *Client) GetCurrentUserDetails(ctx Context) (UserDetails, error) {
 	var v UserDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)
+	c.logRequest(req, err)
+
 	if err != nil {
 		return v, err
 	}
 
 	resp, err := c.http.Do(req)
+	c.logResponse(resp, err)
+
 	if err != nil {
 		return v, err
 	}
