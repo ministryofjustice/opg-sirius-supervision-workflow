@@ -24,14 +24,14 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	var v AssigneesTeam
 
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
-	c.logRequest(req, err)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return v, err
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(resp, err)
+	c.logResponse(req, resp, err)
 
 	if err != nil {
 		return v, err

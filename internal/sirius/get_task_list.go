@@ -70,14 +70,14 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
-	c.logRequest(req, err)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return v, 0, err
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(resp, err)
+	c.logResponse(req, resp, err)
 
 	if err != nil {
 		return v, 0, err

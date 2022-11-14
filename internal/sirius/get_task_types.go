@@ -21,14 +21,14 @@ type WholeTaskTypesList struct {
 
 func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
-	c.logRequest(req, err)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(resp, err)
+	c.logResponse(req, resp, err)
 
 	if err != nil {
 		return nil, err
