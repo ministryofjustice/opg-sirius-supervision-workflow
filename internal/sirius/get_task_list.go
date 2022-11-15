@@ -77,19 +77,21 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(req, resp, err)
 
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return v, 0, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return v, 0, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return v, 0, newStatusError(resp)
 	}
 

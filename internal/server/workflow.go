@@ -71,8 +71,7 @@ func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (in
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
-		logger.Print("getAssigneeIdForTask error")
-		logger.Print(err)
+		logger.Print("getAssigneeIdForTask error: " + err.Error())
 		return 0, err
 	}
 	return assigneeIdForTask, nil
@@ -103,8 +102,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		err := r.ParseForm()
 		if err != nil {
-			logger.Print("ParseForm error")
-			logger.Print(err)
+			logger.Print("ParseForm error: " + err.Error())
 			return err
 		}
 
@@ -113,8 +111,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
-			logger.Print("GetCurrentUserDetails error")
-			logger.Print(err)
+			logger.Print("GetCurrentUserDetails error " + err.Error())
 			return err
 		}
 
@@ -122,15 +119,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
-			logger.Print("GetTaskTypes error")
-			logger.Print(err)
+			logger.Print("GetTaskTypes error " + err.Error())
 			return err
 		}
 
 		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
-			logger.Print("GetTaskList error")
-			logger.Print(err)
+			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
 
@@ -138,15 +133,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
-			logger.Print("GetTeamsForSelection error")
-			logger.Print(err)
+			logger.Print("GetTeamsForSelection error " + err.Error())
 			return err
 		}
 
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
-			logger.Print("GetAssigneesForFilter error")
-			logger.Print(err)
+			logger.Print("GetAssigneesForFilter error " + err.Error())
 			return err
 		}
 
@@ -184,15 +177,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			//this is where it picks up the new user to assign task to
 			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
 			if err != nil {
-				logger.Print("getAssigneeIdForTask error")
-				logger.Print(err)
+				logger.Print("getAssigneeIdForTask error: " + err.Error())
 				return err
 			}
 
 			err := r.ParseForm()
 			if err != nil {
-				logger.Print("ParseForm error")
-				logger.Print(err)
+				logger.Print("ParseForm error: " + err.Error())
 				return err
 			}
 
@@ -200,16 +191,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			taskIdForUrl := createTaskIdForUrl(taskIdArray)
 
 			if err != nil {
-				logger.Print("taskIdForUrl error")
-				logger.Print(err)
+				logger.Print("taskIdForUrl error: " + err.Error())
 				return err
 			}
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 			if err != nil {
-				logger.Print("AssignTasksToCaseManager error")
-				logger.Print(err)
+				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return err
 			}
 
@@ -219,8 +208,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
-				logger.Print("vars.TaskList error")
-				logger.Print(err)
+				logger.Print("vars.TaskList error: " + err.Error())
 				return err
 			}
 

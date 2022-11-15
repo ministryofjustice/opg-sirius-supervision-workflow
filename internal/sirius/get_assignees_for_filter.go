@@ -31,23 +31,26 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(req, resp, err)
 
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return v, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return v, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logResponse(req, resp, err)
 		return v, err
 	}
 

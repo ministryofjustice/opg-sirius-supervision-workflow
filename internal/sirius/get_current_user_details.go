@@ -44,10 +44,12 @@ func (c *Client) GetCurrentUserDetails(ctx Context) (UserDetails, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return v, newStatusError(resp)
 	}
 

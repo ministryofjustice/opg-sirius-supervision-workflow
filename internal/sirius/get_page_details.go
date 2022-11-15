@@ -46,8 +46,6 @@ func (c *Client) GetPageDetails(logger *logging.Logger, tasklist TaskList, searc
 		PageDetails.LastPage = 0
 		PageDetails.LimitedPagination = []int{0}
 	}
-	logger.Print("PageDetails")
-	logger.Print(PageDetails)
 
 	return PageDetails
 }

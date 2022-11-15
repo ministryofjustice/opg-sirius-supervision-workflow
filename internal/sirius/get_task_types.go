@@ -28,24 +28,27 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(req, resp, err)
 
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return nil, newStatusError(resp)
 	}
 
 	var v WholeTaskTypesList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
