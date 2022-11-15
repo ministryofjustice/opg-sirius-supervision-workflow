@@ -1,5 +1,11 @@
 package sirius
 
+import (
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
+)
+
 //func TestGetCurrentUserDetails(t *testing.T) {
 //	pact := &dsl.Pact{
 //		Consumer:          "sirius-workflow",
@@ -119,17 +125,17 @@ package sirius
 //	}
 //}
 
-//func TestMyDetailsStatusError(t *testing.T) {
-//	logger, _ := SetUpTest()
-//	s := teapotServer()
-//	defer s.Close()
-//
-//	client, _ := NewClient(http.DefaultClient, s.URL, logger)
-//
-//	_, err := client.GetCurrentUserDetails(getContext(nil))
-//	assert.Equal(t, StatusError{
-//		Code:   http.StatusTeapot,
-//		URL:    s.URL + "/api/v1/users/current",
-//		Method: http.MethodGet,
-//	}, err)
-//}
+func TestMyDetailsStatusError(t *testing.T) {
+	logger, _ := SetUpTest()
+	s := teapotServer()
+	defer s.Close()
+
+	client, _ := NewClient(http.DefaultClient, s.URL, logger)
+
+	_, err := client.GetCurrentUserDetails(getContext(nil))
+	assert.Equal(t, StatusError{
+		Code:   http.StatusTeapot,
+		URL:    s.URL + "/api/v1/users/current",
+		Method: http.MethodGet,
+	}, err)
+}
