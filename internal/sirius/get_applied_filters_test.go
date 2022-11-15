@@ -1,15 +1,19 @@
 package sirius
 
 import (
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -70,16 +74,16 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 		"Casework - General",
 	}
 
-	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 12, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 1, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -124,16 +128,16 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 		"Order - Allocate to team",
 	}
 
-	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 12, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -195,16 +199,16 @@ func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.
 		"Allocations Team",
 	}
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -267,16 +271,16 @@ func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedRetu
 		"Test Two",
 	}
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 3, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -340,16 +344,16 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 		"Test One",
 	}
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 4, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -408,7 +412,7 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 
 	expectedFilter := []string(nil)
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 0, len(appliedFilters))
