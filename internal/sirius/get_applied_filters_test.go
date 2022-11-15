@@ -74,7 +74,7 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 		"Casework - General",
 	}
 
-	appliedFilters := client.GetAppliedFilters(logger, 12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 1, len(appliedFilters))
@@ -128,7 +128,7 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 		"Order - Allocate to team",
 	}
 
-	appliedFilters := client.GetAppliedFilters(logger, 12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
@@ -199,7 +199,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.
 		"Allocations Team",
 	}
 
-	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
@@ -271,7 +271,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedRetu
 		"Test Two",
 	}
 
-	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 3, len(appliedFilters))
@@ -344,7 +344,7 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 		"Test One",
 	}
 
-	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 4, len(appliedFilters))
@@ -412,7 +412,7 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 
 	expectedFilter := []string(nil)
 
-	appliedFilters := client.GetAppliedFilters(logger, 13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 0, len(appliedFilters))

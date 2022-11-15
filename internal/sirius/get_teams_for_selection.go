@@ -51,27 +51,30 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
-		c.logErrorRequest(req, err)
+		c.logger.Request(req, err)
 		return q, err
 	}
 
 	resp, err := c.http.Do(req)
-	c.logResponse(req, resp, err)
 
 	if err != nil {
+		c.logger.Request(req, err)
 		return q, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logger.Request(req, err)
 		return q, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logger.Request(req, err)
 		return q, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logger.Request(req, err)
 		return q, err
 	}
 

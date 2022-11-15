@@ -59,7 +59,7 @@ func TestGetPageDetails(t *testing.T) {
 
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 2, 4, []int{1, 2, 3, 4, 5}, 1, 5, 25, 75, 51, false)
 	taskList := CreateTaskList(3, 5, 125)
-	result := client.GetPageDetails(logger, taskList, 3, 25)
+	result := client.GetPageDetails(taskList, 3, 25)
 
 	assert.Equal(t, expectedResult, result)
 }
@@ -71,7 +71,7 @@ func TestGetPageDetailsPage1View25(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 25, 10, 1, false)
 	taskList := CreateTaskList(1, 1, 10)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 1, 25))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 1, 25))
 }
 
 func TestGetPageDetailsPage1View50(t *testing.T) {
@@ -81,7 +81,7 @@ func TestGetPageDetailsPage1View50(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 50, 10, 1, false)
 	taskList := CreateTaskList(1, 1, 10)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 1, 50))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 1, 50))
 }
 
 func TestGetPageDetailsPage1View100(t *testing.T) {
@@ -91,7 +91,7 @@ func TestGetPageDetailsPage1View100(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1}, 1, 1, []int{1}, 1, 1, 100, 99, 1, false)
 	taskList := CreateTaskList(1, 1, 99)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 1, 100))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 1, 100))
 }
 
 func TestGetPageDetailsPage2of2(t *testing.T) {
@@ -101,7 +101,7 @@ func TestGetPageDetailsPage2of2(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2}, 2, 2, []int{1, 2}, 1, 2, 25, 27, 26, false)
 	taskList := CreateTaskList(2, 2, 27)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 3, 25))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 3, 25))
 }
 
 func TestGetPageDetailsPage2of3(t *testing.T) {
@@ -111,7 +111,7 @@ func TestGetPageDetailsPage2of3(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3}, 1, 3, []int{1, 2, 3}, 1, 3, 25, 50, 26, false)
 	taskList := CreateTaskList(2, 3, 74)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 2, 25))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 2, 25))
 }
 
 func TestGetPageDetailsPage4of10(t *testing.T) {
@@ -121,7 +121,7 @@ func TestGetPageDetailsPage4of10(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3, 5, []int{2, 3, 4, 5, 6}, 1, 10, 25, 100, 76, true)
 	taskList := CreateTaskList(4, 10, 250)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 4, 25))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 4, 25))
 }
 
 func TestGetPageDetailsPage4of5(t *testing.T) {
@@ -131,7 +131,7 @@ func TestGetPageDetailsPage4of5(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 3, 5, []int{2, 3, 4, 5}, 1, 5, 50, 200, 151, false)
 	taskList := CreateTaskList(4, 5, 1000)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 4, 50))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 4, 50))
 }
 
 func TestGetPageDetailsPage5of5(t *testing.T) {
@@ -141,7 +141,7 @@ func TestGetPageDetailsPage5of5(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5}, 4, 5, []int{3, 4, 5}, 1, 5, 50, 250, 201, false)
 	taskList := CreateTaskList(5, 5, 1000)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 5, 50))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 5, 50))
 }
 
 func TestGetPageDetailsPage7of10(t *testing.T) {
@@ -151,7 +151,7 @@ func TestGetPageDetailsPage7of10(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 6, 8, []int{5, 6, 7, 8, 9}, 1, 10, 50, 350, 301, true)
 	taskList := CreateTaskList(7, 10, 500)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 7, 50))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 7, 50))
 }
 
 func TestGetPageDetailsPage9of10(t *testing.T) {
@@ -161,7 +161,7 @@ func TestGetPageDetailsPage9of10(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 8, 10, []int{7, 8, 9, 10}, 1, 10, 100, 900, 801, false)
 	taskList := CreateTaskList(9, 10, 901)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 9, 100))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 9, 100))
 }
 
 func TestGetPageDetailsFinalPage(t *testing.T) {
@@ -171,7 +171,7 @@ func TestGetPageDetailsFinalPage(t *testing.T) {
 	expectedResult := CreatePageDetails([]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 9, 10, []int{8, 9, 10}, 1, 10, 100, 1000, 901, false)
 	taskList := CreateTaskList(10, 10, 1000)
 
-	assert.Equal(t, expectedResult, client.GetPageDetails(logger, taskList, 10, 100))
+	assert.Equal(t, expectedResult, client.GetPageDetails(taskList, 10, 100))
 }
 
 func TestGetPreviousPageNumber(t *testing.T) {

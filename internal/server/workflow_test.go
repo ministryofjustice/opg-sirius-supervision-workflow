@@ -46,7 +46,7 @@ func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, di
 
 	return m.taskListData, m.teamId, m.err
 }
-func (m *mockWorkflowInformation) GetPageDetails(logging *logging.Logger, taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
+func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
 	m.count += 1
 
 	return m.pageDetailsData
@@ -73,7 +73,7 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	return m.err
 }
 
-func (m *mockWorkflowInformation) GetAppliedFilters(logging *logging.Logger, teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
+func (m *mockWorkflowInformation) GetAppliedFilters(teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
 	m.count += 1
 
 	return m.appliedFilters

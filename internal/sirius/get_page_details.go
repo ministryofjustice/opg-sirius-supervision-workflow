@@ -1,7 +1,5 @@
 package sirius
 
-import "github.com/ministryofjustice/opg-go-common/logging"
-
 type PageDetails struct {
 	ListOfPages        []int
 	PreviousPage       int
@@ -16,7 +14,7 @@ type PageDetails struct {
 	UpperEllipsesLimit bool
 }
 
-func (c *Client) GetPageDetails(logger *logging.Logger, tasklist TaskList, search int, displayTaskLimit int) PageDetails {
+func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
 	var k PageDetails
 
 	PageDetails := k
@@ -46,8 +44,6 @@ func (c *Client) GetPageDetails(logger *logging.Logger, tasklist TaskList, searc
 		PageDetails.LastPage = 0
 		PageDetails.LimitedPagination = []int{0}
 	}
-	logger.Print("PageDetails")
-	logger.Print(PageDetails)
 
 	return PageDetails
 }
