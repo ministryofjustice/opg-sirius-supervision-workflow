@@ -46,6 +46,15 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 `yarn && yarn cypress`   
 
 -------------------------------------------------------------------
+## Run Cypress tests for M1 chips
+
+`make down`
+`docker image prune`
+`docker-compose -f docker/docker-compose.ci.yml build app json-server`
+`docker-compose -f docker/docker-compose.ci.yml up app json-server`
+`yarn cypress-ci`
+
+-------------------------------------------------------------------
 ## Run the unit/functional tests
 
 test sirius files: `yarn test-sirius`
