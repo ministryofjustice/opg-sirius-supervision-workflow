@@ -48,7 +48,7 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 -------------------------------------------------------------------
 ## Run Cypress tests for M1 chips
 
-`make down`
+`make down - in sirius repo`
 `docker image prune`
 `docker-compose -f docker/docker-compose.ci.yml build app json-server`
 `docker-compose -f docker/docker-compose.ci.yml up app json-server`
