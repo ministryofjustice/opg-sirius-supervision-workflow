@@ -1,10 +1,9 @@
 package sirius
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 //func TestGetCurrentUserDetails(t *testing.T) {
@@ -127,10 +126,11 @@ import (
 //}
 
 func TestMyDetailsStatusError(t *testing.T) {
+	logger, _ := SetUpTest()
 	s := teapotServer()
 	defer s.Close()
 
-	client, _ := NewClient(http.DefaultClient, s.URL)
+	client, _ := NewClient(http.DefaultClient, s.URL, logger)
 
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{

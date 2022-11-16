@@ -1,15 +1,19 @@
 package sirius
 
 import (
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -77,9 +81,9 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -131,9 +135,9 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -202,9 +206,9 @@ func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -274,9 +278,9 @@ func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedRetu
 }
 
 func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -347,9 +351,9 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{

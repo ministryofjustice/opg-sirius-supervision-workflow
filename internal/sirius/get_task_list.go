@@ -67,31 +67,36 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	} else {
 		teamID = selectedTeamId
 	}
-
 	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return v, 0, err
 	}
 
 	resp, err := c.http.Do(req)
+
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return v, 0, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return v, 0, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return v, 0, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logger.Request(req, err)
 		return v, 0, err
 	}
 
