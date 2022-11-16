@@ -13,7 +13,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	req, err := c.newRequest(ctx, http.MethodPut, requestURL, nil)
 
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logErrorRequest(req, err)
 		return err
 	}
 	req.Header.Set("Content-type", "application/json")

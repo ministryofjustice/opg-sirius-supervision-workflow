@@ -23,7 +23,7 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logErrorRequest(req, err)
 		return nil, err
 	}
 

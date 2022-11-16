@@ -51,7 +51,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logErrorRequest(req, err)
 		return q, err
 	}
 
