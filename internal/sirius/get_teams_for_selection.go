@@ -81,6 +81,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 	k.TeamId = teamId
 
 	teams := make([]ReturnedTeamCollection, len(v))
+
 	for i, t := range v {
 		teams[i] = ReturnedTeamCollection{
 			Id:             t.ID,
@@ -92,7 +93,7 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 		for _, m := range t.Members {
 			teams[i].Members = append(teams[i].Members, TeamMembers{
 				TeamMembersId:   m.ID,
-				TeamMembersName: m.Email,
+				TeamMembersName: m.DisplayName,
 			})
 		}
 
