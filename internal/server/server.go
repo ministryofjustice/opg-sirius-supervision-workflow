@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/ministryofjustice/opg-go-common/securityheaders"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"go.uber.org/zap"
 )
 
 type Logger interface {
@@ -24,12 +27,15 @@ type Template interface {
 }
 
 func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string, defaultWorkflowTeam int) http.Handler {
+	logwrap := WrapHttpRequestLogger()
+
 	wrap := errorHandler(logger, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
 	mux.Handle("/",
-		wrap(
-			loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam)))
+		logwrap(
+			wrap(
+				loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam))))
 
 	mux.Handle("/health-check", healthCheck())
 
@@ -116,6 +122,29 @@ func errorHandler(logger Logger, tmplError Template, prefix, siriusURL string) f
 				}
 			}
 		})
+	}
+}
+
+func WrapHttpRequestLogger() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			next.ServeHTTP(w, r)
+			logger, err := zap.NewProduction()
+			if err != nil {
+				log.Fatal(err)
+			}
+			sugar := logger.Sugar()
+
+			sugar.Infow(
+				"Application Request",
+				"method", r.Method,
+				"uri", r.URL.RequestURI(),
+				"duration", time.Since(start),
+			)
+		}
+
+		return http.HandlerFunc(fn)
 	}
 }
 
