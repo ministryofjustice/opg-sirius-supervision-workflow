@@ -58,23 +58,23 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 	resp, err := c.http.Do(req)
 
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return q, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return q, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return q, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return q, err
 	}
 

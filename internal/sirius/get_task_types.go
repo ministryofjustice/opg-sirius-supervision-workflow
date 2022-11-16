@@ -30,25 +30,25 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	resp, err := c.http.Do(req)
 
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return nil, newStatusError(resp)
 	}
 
 	var v WholeTaskTypesList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 

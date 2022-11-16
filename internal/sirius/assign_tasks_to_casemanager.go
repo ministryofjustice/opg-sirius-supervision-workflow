@@ -21,14 +21,14 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	resp, err := c.http.Do(req)
 
 	if err != nil {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		c.logger.Request(req, err)
+		c.logResponse(req, resp, err)
 		return ErrUnauthorized
 	}
 
@@ -38,7 +38,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 		}
 
 		if err := json.NewDecoder(resp.Body).Decode(&v); err == nil {
-			c.logger.Request(req, err)
+			c.logResponse(req, resp, err)
 			return &ValidationError{
 				Errors: v.ValidationErrors,
 			}
