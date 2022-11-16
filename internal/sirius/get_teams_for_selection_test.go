@@ -1,77 +1,61 @@
 package sirius
 
 import (
+	"bytes"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"io"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-//func TestGetTeamsForSelection(t *testing.T) {
-//	pact := &dsl.Pact{
-//		Consumer:          "sirius-workflow",
-//		Provider:          "sirius",
-//		Host:              "localhost",
-//		PactFileWriteMode: "merge",
-//		LogDir:            "../../logs",
-//		PactDir:           "../../pacts",
-//	}
-//	defer pact.Teardown()
-//
-//	testCases := []struct {
-//		name             string
-//		setup            func()
-//		cookies          []*http.Cookie
-//		expectedResponse []ReturnedTeamCollection
-//		expectedError    error
-//	}{
-//		{
-//			name: "Test Team Selection",
-//			setup: func() {
-//				pact.
-//					AddInteraction().
-//					Given("I am a Lay Team user").
-//					UponReceiving("A request to get all teams for dropdown").
-//					WithRequest(dsl.Request{
-//						Method: http.MethodGet,
-//						Path:   dsl.String("/api/v1/teams"),
-//						Headers: dsl.MapMatcher{
-//							"X-XSRF-TOKEN":        dsl.String("abcde"),
-//							"Cookie":              dsl.String("XSRF-TOKEN=abcde; Other=other"),
-//							"OPG-Bypass-Membrane": dsl.String("1"),
-//						},
-//					}).
-//					WillRespondWith(dsl.Response{
-//						Status:  http.StatusOK,
-//						Headers: dsl.MapMatcher{"Content-Type": dsl.String("application/json")},
-//						Body: dsl.EachLike(map[string]interface{}{
-//							"id":   dsl.Like(13),
-//							"name": dsl.Like("Lay Team 1 - (Supervision)"),
-//						}, 1),
-//					})
-//			},
-//			cookies: []*http.Cookie{
-//				{Name: "XSRF-TOKEN", Value: "abcde"},
-//				{Name: "Other", Value: "other"},
-//			},
-//			expectedResponse: []ReturnedTeamCollection(nil),
-//		},
-//	}
-//
-//	for _, tc := range testCases {
-//		t.Run(tc.name, func(t *testing.T) {
-//			tc.setup()
-//
-//			assert.Nil(t, pact.Verify(func() error {
-//				client, _ := NewClient(http.DefaultClient, fmt.Sprintf("http://localhost:%d", pact.Server.Port))
-//
-//				myTeamCollection, err := client.GetTeamsForSelection(getContext(tc.cookies), 13, []string{})
-//				assert.Equal(t, tc.expectedResponse, myTeamCollection)
-//				assert.Equal(t, tc.expectedError, err)
-//				return nil
-//			}))
-//		})
-//	}
-//}
+func TestGetTeamsForSelection(t *testing.T) {
+	mockClient := &mocks.MockClient{}
+	client, _ := NewClient(mockClient, "http://localhost:3000")
+
+	json := `[{
+			"id":21,"displayName":"Allocations - (Supervision)", "email":"allocations.team@opgtest.com", "phoneNumber":"0123456789",
+			"members":[
+				{
+					"id":71,"displayName":"Allocations User1", "email":"allocations@opgtest.com"
+				}
+			],
+			"teamType":{
+				"handle":"ALLOCATIONS","label":"Allocations"
+			}
+		}]`
+
+	r := io.NopCloser(bytes.NewReader([]byte(json)))
+
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 200,
+			Body:       r,
+		}, nil
+	}
+
+	expectedResponse := []ReturnedTeamCollection{
+		{
+			Id: 21,
+			Members: []TeamMembers{
+				{
+					TeamMembersId: 71, TeamMembersName: "Allocations User1", TeamMembersDisplayName: "",
+				},
+			},
+			Name:             "Allocations - (Supervision)",
+			UserSelectedTeam: 21,
+			SelectedTeamId:   0,
+			Type:             "ALLOCATIONS",
+			TypeLabel:        "Allocations",
+			IsTeamSelected:   false,
+		},
+	}
+
+	teams, err := client.GetTeamsForSelection(getContext(nil), 21, []string{""})
+	assert.Equal(t, expectedResponse, teams)
+	assert.Equal(t, nil, err)
+}
 
 func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
 	teamCollection := []ReturnedTeamCollection{
