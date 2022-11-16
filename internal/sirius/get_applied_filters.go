@@ -20,6 +20,5 @@ func (c *Client) GetAppliedFilters(teamId int, loadTaskTypes []ApiTaskTypes, tea
 			appliedFilters = append(appliedFilters, u.TeamMembersDisplayName)
 		}
 	}
-
 	return appliedFilters
 }

@@ -58,7 +58,7 @@ func main() {
 		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
 	}
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL)
+	client, err := sirius.NewClient(http.DefaultClient, siriusURL, logger)
 	if err != nil {
 		logger.Fatal(err)
 	}

@@ -10,8 +10,8 @@ import (
 )
 
 func TestGetTaskTypes(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -56,8 +56,8 @@ func TestGetTaskTypes(t *testing.T) {
 }
 
 func TestGetTaskTypesCanMarkSelected(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{

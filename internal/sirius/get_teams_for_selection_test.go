@@ -11,8 +11,8 @@ import (
 )
 
 func TestGetTeamsForSelection(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `[{
 			"id":21,"displayName":"Allocations - (Supervision)", "email":"allocations.team@opgtest.com", "phoneNumber":"0123456789",

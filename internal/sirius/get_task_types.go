@@ -23,26 +23,32 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
+
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return nil, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return nil, newStatusError(resp)
 	}
 
 	var v WholeTaskTypesList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
