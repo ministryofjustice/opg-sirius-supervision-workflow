@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"html/template"
 	"io"
 	"net/http"
@@ -38,7 +39,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return http.StripPrefix(prefix, securityheaders.Use(mux))
+	return otelhttp.NewHandler(http.StripPrefix(prefix, securityheaders.Use(mux)), "sirius-workflow")
 }
 
 type RedirectError string
