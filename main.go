@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,13 +14,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
 func main() {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logger.Sync()
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
@@ -59,14 +64,16 @@ func main() {
 	}
 
 	client, err := sirius.NewClient(http.DefaultClient, siriusURL, logger)
+	sugar := client.Logger.Sugar()
 	if err != nil {
-		logger.Fatal(err)
+		sugar.Infow("Error returned by Sirius New Client",
+			"error", err,
+		)
 	}
 
 	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
 	if err != nil {
-		logger.Print("Error converting DEFAULT_WORKFLOW_TEAM to int")
-
+		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
 	}
 
 	server := &http.Server{
@@ -76,23 +83,28 @@ func main() {
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logger.Fatal(err)
+			sugar.Infow("Error returned by server.ListenAndServe()",
+				"error", err,
+			)
+			sugar.Fatal(err)
 		}
 	}()
 
-	logger.Print("Running at :" + port)
+	sugar.Infow("Running at :" + port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-c
-	logger.Print("signal received: ", sig)
+	sugar.Infow("signal received: ", sig)
 
 	tc, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(tc); err != nil {
-		logger.Print(err)
+		sugar.Infow("Error returned by server.Shutdown",
+			"error", err,
+		)
 	}
 }
 

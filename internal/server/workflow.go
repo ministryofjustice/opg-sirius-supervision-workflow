@@ -61,7 +61,7 @@ func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int 
 	}
 }
 
-func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (int, error) {
+func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 	var assigneeIdForTask int
 	var err error
 
@@ -71,7 +71,7 @@ func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (in
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
-		logger.Print("getAssigneeIdForTask error: " + err.Error())
+		//logger.Print("getAssigneeIdForTask error: " + err.Error())
 		return 0, err
 	}
 	return assigneeIdForTask, nil
@@ -169,13 +169,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 			if selectedTeamToAssignTaskString == "0" {
 				vars.Errors = sirius.ValidationErrors{
-					"selection": {"": "Please select a team"},
+					"selection": map[string]string{"": "Please select a team"},
 				}
 
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
+			newAssigneeIdForTask, err = getAssigneeIdForTask(selectedTeamToAssignTaskString, r.FormValue("assignCM"))
 			if err != nil {
 				logger.Print("getAssigneeIdForTask error: " + err.Error())
 				return err
