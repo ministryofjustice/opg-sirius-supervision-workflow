@@ -2,6 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/ministryofjustice/opg-go-common/env"
+	"go.opentelemetry.io/contrib/detectors/aws/ecs"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/contrib/propagators/aws/xray"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/trace"
+	"google.golang.org/grpc"
 	"html/template"
 	"net/http"
 	"os"
@@ -16,6 +24,39 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
+
+func initTracerProvider(ctx context.Context, logger *logging.Logger) func() {
+	resource, err := ecs.NewResourceDetector().Detect(ctx)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	traceExporter, err := otlptracegrpc.New(ctx,
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithEndpoint("0.0.0.0:4317"),
+		otlptracegrpc.WithDialOption(grpc.WithBlock()),
+	)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	idg := xray.NewIDGenerator()
+	tp := trace.NewTracerProvider(
+		trace.WithResource(resource),
+		trace.WithSampler(trace.AlwaysSample()),
+		trace.WithBatcher(traceExporter),
+		trace.WithIDGenerator(idg),
+	)
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(xray.Propagator{})
+
+	return func() {
+		if err := tp.Shutdown(ctx); err != nil {
+			logger.Fatal(err)
+		}
+	}
+}
 
 func main() {
 	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -58,7 +99,15 @@ func main() {
 		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
 	}
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL)
+	if env.Get("TRACING_ENABLED", "0") == "1" {
+		shutdown := initTracerProvider(context.Background(), logger)
+		defer shutdown()
+	}
+
+	httpClient := http.DefaultClient
+	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
+
+	client, err := sirius.NewClient(httpClient, siriusURL)
 	if err != nil {
 		logger.Fatal(err)
 	}
