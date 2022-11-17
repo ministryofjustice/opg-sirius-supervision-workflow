@@ -7,16 +7,16 @@ describe("Navigation", () => {
 
     it("supervision link is clicked", () => {
         cy.get(':nth-child(1) > .moj-header__navigation-link').click()
-        cy.url().should('include', 'localhost:8080/supervision')
+        cy.url().should('include', '/supervision')
     })
 
     it("lpa link is clicked", () => {
         cy.get(':nth-child(2) > .moj-header__navigation-link').click()
-        cy.url().should('include', 'localhost:8080/lpa')
+        cy.url().should('include', '/lpa')
     })
 
     it("log out link is clicked", () => {
         cy.get(':nth-child(3) > .moj-header__navigation-link').click()
-        cy.url().should('include', 'localhost:8080/auth/logout')
+        cy.url().should('include', '/auth/logout')
     })
 });
