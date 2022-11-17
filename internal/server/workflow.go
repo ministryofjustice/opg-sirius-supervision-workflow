@@ -91,7 +91,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		if search < 1 {
-		    search = 1
+			search = 1
 		}
 		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
 
@@ -160,7 +160,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 			if selectedTeamToAssignTaskString == "0" {
 				vars.Errors = sirius.ValidationErrors{
-					"selection": {"": "Please select a team"},
+					"selection": map[string]string{"": "Please select a team"},
 				}
 
 				return tmpl.ExecuteTemplate(w, "page", vars)
