@@ -39,7 +39,7 @@ func New(logger Logger, client Client, templates map[string]*template.Template, 
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return otelhttp.NewHandler(http.StripPrefix(prefix, securityheaders.Use(mux)), "sirius-workflow")
+	return otelhttp.NewHandler(http.StripPrefix(prefix, securityheaders.Use(mux)), "supervision-workflow")
 }
 
 type RedirectError string

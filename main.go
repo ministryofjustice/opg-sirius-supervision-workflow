@@ -107,7 +107,7 @@ func main() {
 	httpClient := http.DefaultClient
 	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL)
+	client, err := sirius.NewClient(httpClient, siriusURL)
 	if err != nil {
 		logger.Fatal(err)
 	}
