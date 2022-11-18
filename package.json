@@ -7,7 +7,8 @@
     "watch": "webpack --watch",
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "cypress-ci": "cypress  open -c baseUrl=http://localhost:8080"
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^1.0.0",
