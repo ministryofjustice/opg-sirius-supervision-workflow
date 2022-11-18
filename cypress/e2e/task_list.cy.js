@@ -28,11 +28,11 @@ it("should have a table with the column Client", () => {
 })
 
 it("should have a table with the column Case owner", () => {
-  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(4)").should("contain", "Lay Team 1 - (Supervision)")
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(4)").should("contain", "Allocations - (Supervision)")
 })
 
 it("should have a table with the column Assigned to", () => {
-  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "LayTeam1 User3")
+  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "Allocations User3")
 })
 
 it("should have a table with the column Due date", () => {
