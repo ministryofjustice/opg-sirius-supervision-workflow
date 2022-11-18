@@ -2,7 +2,7 @@
 
 ### Major dependencies
 
-- [Go](https://golang.org/) (>= 1.16)
+- [Go](https://golang.org/) (>= 1.19)
 - [Pact](https://github.com/pact-foundation/pact-ruby-standalone) (>= 1.88.3)
 - [docker-compose](https://docs.docker.com/compose/install/) (>= 1.27.4)
 
