@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/ministryofjustice/opg-go-common/env"
 	"github.com/ministryofjustice/opg-go-common/logging"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
@@ -65,12 +66,9 @@ func main() {
 	sugar := serverLogger.Sugar()
 
 	if err != nil {
-		sugar.Fatal(err)
+		panic(fmt.Sprintf("Error creating logger: %v\n", err))
 	}
 	defer serverLogger.Sync()
-	if err != nil {
-		sugar.Fatal(err)
-	}
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
