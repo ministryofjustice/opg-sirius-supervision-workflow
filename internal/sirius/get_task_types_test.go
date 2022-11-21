@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -106,6 +107,24 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 	taskTypes, err := client.GetTaskTypes(getContext(nil), []string{"CWGN", "CNC"})
 	assert.Equal(t, expectedResponse, taskTypes)
 	assert.Equal(t, nil, err)
+}
+
+func TestGetTaskTypesReturns500Error(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+
+	_, err := client.GetTaskTypes(getContext(nil), []string{"CWGN", "CNC"})
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusInternalServerError,
+		URL:    svr.URL + "/api/v1/tasktypes/supervision",
+		Method: http.MethodGet,
+	}, err)
 }
 
 func TestIsSelected(t *testing.T) {

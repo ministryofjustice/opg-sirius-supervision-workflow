@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestUpdateAssignTasksToCaseManager(t *testing.T) {
+func TestAssignTasksToCaseManager(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
@@ -61,7 +61,6 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 
 func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	logger, _ := SetUpTest()
-	logger.Print("TestAssignTasksToCaseManagerReturnsInternalServerError")
 
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -70,9 +69,12 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
-	assert.Equal(t, StatusError{
+
+	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
 		URL:    svr.URL + "/api/v1/users/53/tasks/76",
 		Method: http.MethodPut,
-	}, err)
+	}
+
+	assert.Equal(t, expectedResponse, err)
 }

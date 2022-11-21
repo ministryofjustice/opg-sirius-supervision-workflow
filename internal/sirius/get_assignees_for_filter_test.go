@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestGetMembersForTeamReturned(t *testing.T) {
+func TestGetAssigneesForFilterReturned(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
@@ -68,7 +68,7 @@ func TestSortMembersAlphabetically(t *testing.T) {
 	assert.Equal(t, SortMembersAlphabetically(unsortedMembers), expected)
 }
 
-func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
+func TestGetAssigneesForFilterReturnsNewStatusError(t *testing.T) {
 	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -94,7 +94,7 @@ func TestAssigneesForFilterReturnsNewStatusError(t *testing.T) {
 	}, err)
 }
 
-func TestAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
+func TestGetAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
 	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -113,4 +113,30 @@ func TestAssigneesForFilterReturnsUnauthorisedClientError(t *testing.T) {
 
 	assert.Equal(t, ErrUnauthorized, err)
 	assert.Equal(t, expectedResponse, assigneeTeams)
+}
+
+func TestGetAssigneesForFilterReturns500Error(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+
+	assigneeTeams, err := client.GetAssigneesForFilter(getContext(nil), 13, []string{""})
+
+	expectedResponse := AssigneesTeam{
+		Id:      0,
+		Name:    "",
+		Members: []AssigneeTeamMembers(nil),
+	}
+
+	assert.Equal(t, expectedResponse, assigneeTeams)
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusInternalServerError,
+		URL:    svr.URL + "/api/v1/teams/13",
+		Method: http.MethodGet,
+	}, err)
 }

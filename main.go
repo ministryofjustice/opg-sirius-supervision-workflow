@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"go.uber.org/zap"
 	"html/template"
 	"log"
@@ -19,11 +20,11 @@ import (
 )
 
 func main() {
-	logger, err := zap.NewProduction()
+	serverLogger, err := zap.NewProduction()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer logger.Sync()
+	defer serverLogger.Sync()
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
@@ -62,9 +63,10 @@ func main() {
 	for _, file := range files {
 		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
 	}
+	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL, logger)
-	sugar := client.Logger.Sugar()
+	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
+	sugar := serverLogger.Sugar()
 	if err != nil {
 		sugar.Infow("Error returned by Sirius New Client",
 			"error", err,
@@ -78,7 +80,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: server.New(logger, client, tmpls, prefix, siriusPublicURL, webDir, defaultWorkflowTeam),
+		Handler: server.New(serverLogger, client, tmpls, prefix, siriusPublicURL, webDir, defaultWorkflowTeam),
 	}
 
 	go func() {
