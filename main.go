@@ -68,6 +68,9 @@ func main() {
 		sugar.Fatal(err)
 	}
 	defer serverLogger.Sync()
+	if err != nil {
+		sugar.Fatal(err)
+	}
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
