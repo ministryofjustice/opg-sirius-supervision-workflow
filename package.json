@@ -11,6 +11,7 @@
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
     "cypress": "cypress open",
+    "cypress-ci": "cypress  open -c baseUrl=http://localhost:8080",
     "prettier": "prettier --write ./web"
   },
   "dependencies": {
