@@ -10,19 +10,6 @@ import (
 	"testing"
 )
 
-func TestGetCurrentUserStatusError(t *testing.T) {
-	logger, _ := SetUpTest()
-	s := teapotServer()
-	defer s.Close()
-
-	client, _ := NewClient(http.DefaultClient, s.URL, logger)
-
-	_, err := client.GetCurrentUserDetails(getContext(nil))
-	assert.Equal(t, StatusError{
-		Method: http.MethodGet,
-	}, err)
-}
-
 func TestGetCurrentUserDetails(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)

@@ -2,8 +2,10 @@ package server
 
 import (
 	"errors"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -373,15 +375,17 @@ func TestGetLoggedInTeam(t *testing.T) {
 }
 
 func TestGetAssigneeIdForTask(t *testing.T) {
-	expectedAssigneeId, expectedError := getAssigneeIdForTask("13", "67")
+	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+
+	expectedAssigneeId, expectedError := getAssigneeIdForTask(logger, "13", "67")
 	assert.Equal(t, expectedAssigneeId, 67)
 	assert.Nil(t, expectedError)
 
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("13", "")
+	expectedAssigneeId, expectedError = getAssigneeIdForTask(logger, "13", "")
 	assert.Equal(t, expectedAssigneeId, 13)
 	assert.Nil(t, expectedError)
 
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("", "")
+	expectedAssigneeId, expectedError = getAssigneeIdForTask(logger, "", "")
 	assert.Equal(t, expectedAssigneeId, 0)
 	assert.Nil(t, expectedError)
 }
