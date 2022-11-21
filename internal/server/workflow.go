@@ -61,7 +61,7 @@ func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int 
 	}
 }
 
-func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
+func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (int, error) {
 	var assigneeIdForTask int
 	var err error
 
@@ -175,7 +175,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err = getAssigneeIdForTask(selectedTeamToAssignTaskString, r.FormValue("assignCM"))
+			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
 			if err != nil {
 				logger.Print("getAssigneeIdForTask error: " + err.Error())
 				return err

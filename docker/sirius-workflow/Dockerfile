@@ -21,14 +21,13 @@ EXPOSE 2345
 
 ENTRYPOINT ["air"]
 
-FROM node:19.0.0-alpine3.16 as asset-env
+FROM node:19.0.1-alpine3.16 as asset-env
 
 WORKDIR /app
 
 RUN mkdir -p web/static
 
 COPY web/assets web/assets
-COPY webpack.config.js .
 COPY package.json .
 COPY yarn.lock .
 

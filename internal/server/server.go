@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/zap"
 	"html/template"
 	"io"
@@ -39,7 +40,7 @@ func New(logger *zap.Logger, client Client, templates map[string]*template.Templ
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return http.StripPrefix(prefix, securityheaders.Use(mux))
+	return otelhttp.NewHandler(http.StripPrefix(prefix, securityheaders.Use(mux)), "supervision-workflow")
 }
 
 type RedirectError string
