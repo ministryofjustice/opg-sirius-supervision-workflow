@@ -373,8 +373,6 @@ func TestGetLoggedInTeam(t *testing.T) {
 }
 
 func TestGetAssigneeIdForTask(t *testing.T) {
-	//logger := logging.New(os.Stdout, "opg-sirius-workflow ")
-
 	expectedAssigneeId, expectedError := getAssigneeIdForTask("13", "67")
 	assert.Equal(t, expectedAssigneeId, 67)
 	assert.Nil(t, expectedError)
