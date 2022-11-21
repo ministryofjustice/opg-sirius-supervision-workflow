@@ -71,7 +71,7 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
-		//logger.Print("getAssigneeIdForTask error: " + err.Error())
+		logger.Print("getAssigneeIdForTask error: " + err.Error())
 		return 0, err
 	}
 	return assigneeIdForTask, nil
