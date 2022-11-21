@@ -67,7 +67,6 @@ func main() {
 		log.Fatal(err)
 	}
 	defer serverLogger.Sync()
-	sugar := serverLogger.Sugar()
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
@@ -107,23 +106,24 @@ func main() {
 		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
 	}
 	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
-
-	httpClient := http.DefaultClient
-	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
-
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
+	sugar := serverLogger.Sugar()
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
 		shutdown := initTracerProvider(context.Background(), serverLogger)
 		defer shutdown()
 	}
 
+	httpClient := http.DefaultClient
+	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
+
+	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
+
 	if err != nil {
 		sugar.Infow("Error returned by Sirius New Client",
 			"error", err,
 		)
 	}
-
+	
 	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
 	if err != nil {
 		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
