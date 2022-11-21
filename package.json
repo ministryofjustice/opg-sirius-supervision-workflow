@@ -3,28 +3,26 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
+    "build": "yarn build:js && yarn build:css && yarn build:images",
+    "build:js": "esbuild --bundle web/assets/main.js --minify --outfile=web/static/javascript/all.js --sourcemap --resolve-extensions=.mjs,.js",
+    "build:css": "sass --load-path . --style compressed web/assets/main.scss web/static/stylesheets/all.css",
+    "build:images": "mkdir -p web/static/assets/images && cp node_modules/govuk-frontend/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/static/assets/images",
+    "clean": "rm -rf web/static",
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "prettier": "prettier --write ./web"
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^1.0.0",
     "govuk-frontend": "^4.3.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "babel-loader": "^8.2.2",
-    "copy-webpack-plugin": "^9.0.1",
-    "css-loader": "^4.3.0",
     "cypress": "10.3.0",
     "cypress-failed-log": "^2.9.2",
-    "mini-css-extract-plugin": "^2.2.0",
-    "sass": "^1.38.1",
-    "sass-loader": "^12.1.0",
-    "webpack": "^5.61.0",
-    "webpack-cli": "^4.9.1"
+    "esbuild": "^0.15.14",
+    "prettier": "^2.7.1",
+    "sass": "^1.38.1"
   },
   "resolutions": {
     "colors": "1.4.0"
