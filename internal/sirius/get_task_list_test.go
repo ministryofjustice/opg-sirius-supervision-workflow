@@ -1,25 +1,121 @@
 package sirius
 
 import (
+	"bytes"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
+func TestGetTaskListCanReturn200(t *testing.T) {
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
-	ListOfPages := MakeListOfPagesRange(1, lastPage)
+	json := `
+	{
+		"limit":25,
+		"metadata":[],
+		"pages":{"current":1,"total":1},
+		"total":13,
+		"tasks":[
+		{
+			"id":119,
+			"type":"ORAL",
+			"status":"Not started",
+			"dueDate":"29\/11\/2022",
+			"name":"",
+			"description":"A client has been created",
+			"ragRating":1,
+			"assignee":{"id":0,"displayName":"Unassigned"},
+			"createdTime":"14\/11\/2022 12:02:01",
+			"caseItems":[],
+			"persons":[{"id":61,"uId":"7000-0000-1870","caseRecNumber":"92902877","salutation":"Maquis","firstname":"Antoine","middlenames":"","surname":"Burgundy","supervisionCaseOwner":{"id":22,"teams":[],"displayName":"Allocations - (Supervision)"}}],
+			"clients":[{"id":61,"uId":"7000-0000-1870","caseRecNumber":"92902877","salutation":"Maquis","firstname":"Antoine","middlenames":"","surname":"Burgundy","supervisionCaseOwner":{"id":22,"teams":[],"displayName":"Allocations - (Supervision)"}}],
+			"caseOwnerTask":true
+    	}
+		]
+	}`
 
-	taskList := TaskList{
-		Pages: PageInformation{
-			PageCurrent: pageCurrent,
+	r := io.NopCloser(bytes.NewReader([]byte(json)))
+
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 200,
+			Body:       r,
+		}, nil
+	}
+
+	expectedResponse := TaskList{
+		WholeTaskList: []ApiTask{
+			{
+				ApiTaskAssignee: CaseManagement{
+					"Allocations - (Supervision)",
+					22,
+					[]UserTeam{},
+				},
+				ApiTaskCaseItems: nil,
+				ApiClients:       nil,
+				ApiTaskDueDate:   "29/11/2022",
+				ApiTaskId:        119,
+				ApiTaskHandle:    "ORAL",
+				ApiTaskType:      "",
+				ApiCaseOwnerTask: false,
+				TaskTypeName:     "",
+				ClientInformation: Clients{
+					ClientId:            61,
+					ClientCaseRecNumber: "92902877",
+					ClientFirstName:     "Antoine",
+					ClientSurname:       "Burgundy",
+					ClientSupervisionCaseOwner: CaseManagement{
+						CaseManagerName: "Allocations - (Supervision)",
+						Id:              22,
+						Team:            []UserTeam{},
+					},
+				},
+			},
 		},
-	}
-	pageDetails := PageDetails{
-		LastPage:    lastPage,
-		ListOfPages: ListOfPages,
+		Pages: PageInformation{
+			PageCurrent: 1,
+			PageTotal:   1,
+		},
+		TotalTasks: 13,
 	}
 
-	return taskList, pageDetails
+	assigneeTeams, teamId, err := client.GetTaskList(getContext(nil), 1, 25, 13, 13, []string{""}, []ApiTaskTypes{}, []string{""})
+
+	assert.Equal(t, expectedResponse, assigneeTeams)
+	assert.Equal(t, 13, teamId)
+	assert.Equal(t, nil, err)
+}
+
+func TestGetTaskListCanThrow500Error(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+
+	assigneeTeams, _, err := client.GetTaskList(getContext(nil), 1, 25, 13, 13, []string{""}, []ApiTaskTypes{}, []string{""})
+
+	expectedResponse := TaskList{
+		WholeTaskList: nil,
+		Pages:         PageInformation{},
+		TotalTasks:    0,
+		ActiveFilters: nil,
+	}
+
+	assert.Equal(t, expectedResponse, assigneeTeams)
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusInternalServerError,
+		URL:    svr.URL + "/api/v1/assignees/team/13/tasks?filter=status:Not+started,type:,assigneeid_or_null:&limit=25&page=1&sort=dueDate:asc",
+		Method: http.MethodGet,
+	}, err)
 }
 
 func TestGetPaginationLimitsWillReturnARangeTwoBelowAndTwoAboveCurrentPage(t *testing.T) {
@@ -335,4 +431,21 @@ func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
 		},
 	}
 	return v
+}
+
+func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
+
+	ListOfPages := MakeListOfPagesRange(1, lastPage)
+
+	taskList := TaskList{
+		Pages: PageInformation{
+			PageCurrent: pageCurrent,
+		},
+	}
+	pageDetails := PageDetails{
+		LastPage:    lastPage,
+		ListOfPages: ListOfPages,
+	}
+
+	return taskList, pageDetails
 }
