@@ -68,9 +68,9 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Error creating logger: %v\n", err))
 	}
-	defer serverLogger.Sync()
-	if err != nil {
-		panic(fmt.Sprintf("Error creating logger: %v\n", err))
+	serverLogger.Info("Starting notification-subscriber")
+	if err := serverLogger.Sync(); err != nil {
+		panic("Error syncing logger: " + err.Error())
 	}
 
 	port := getEnv("PORT", "1234")
