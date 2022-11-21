@@ -26,9 +26,10 @@ func New(logger *zap.Logger, client Client, templates map[string]*template.Templ
 	wrap := errorHandler(logger, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
-	logwrap(
-		wrap(
-			loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam)))
+	mux.Handle("/",
+		logwrap(
+			wrap(
+				loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam))))
 	mux.Handle("/health-check", healthCheck())
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
