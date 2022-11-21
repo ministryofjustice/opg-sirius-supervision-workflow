@@ -3,18 +3,16 @@ package server
 import (
 	"fmt"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.uber.org/zap"
 	"html/template"
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/ministryofjustice/opg-go-common/securityheaders"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
-
-type Logger interface {
-	Request(*http.Request, error)
-}
 
 type Client interface {
 	WorkflowInformation
@@ -24,13 +22,16 @@ type Template interface {
 	ExecuteTemplate(io.Writer, string, interface{}) error
 }
 
-func New(logger Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string, defaultWorkflowTeam int) http.Handler {
+func New(logger *zap.Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string, defaultWorkflowTeam int) http.Handler {
+	logwrap := WrapHttpRequestLogger(logger)
+
 	wrap := errorHandler(logger, templates["error.gotmpl"], prefix, siriusPublicURL)
 
 	mux := http.NewServeMux()
 	mux.Handle("/",
-		wrap(
-			loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam)))
+		logwrap(
+			wrap(
+				loggingInfoForWorkflow(client, templates["workflow.gotmpl"], defaultWorkflowTeam))))
 
 	mux.Handle("/health-check", healthCheck())
 
@@ -75,10 +76,10 @@ type errorVars struct {
 	Error     string
 }
 
-func errorHandler(logger Logger, tmplError Template, prefix, siriusURL string) func(next Handler) http.Handler {
+func errorHandler(logger *zap.Logger, tmplError Template, prefix, siriusURL string) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+			sugar := logger.Sugar()
 			err := next(w, r)
 
 			if err != nil {
@@ -92,11 +93,14 @@ func errorHandler(logger Logger, tmplError Template, prefix, siriusURL string) f
 					return
 				}
 
-				logger.Request(r, err)
-
 				code := http.StatusInternalServerError
 				if status, ok := err.(StatusError); ok {
 					if status.Code() == http.StatusForbidden || status.Code() == http.StatusNotFound {
+						sugar.Infow("Internal server error",
+							"status", status.Code(),
+							"error", err,
+						)
+						sugar.Error(err, err.Error())
 						code = status.Code()
 					}
 				}
@@ -112,11 +116,30 @@ func errorHandler(logger Logger, tmplError Template, prefix, siriusURL string) f
 				})
 
 				if err != nil {
-					logger.Request(r, err)
+					sugar.Error(err, err.Error())
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}
 		})
+	}
+}
+
+func WrapHttpRequestLogger(logger *zap.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			next.ServeHTTP(w, r)
+			sugar := logger.Sugar()
+
+			sugar.Infow(
+				"Application Request",
+				"method", r.Method,
+				"uri", r.URL.RequestURI(),
+				"duration", time.Since(start),
+			)
+		}
+
+		return http.HandlerFunc(fn)
 	}
 }
 
