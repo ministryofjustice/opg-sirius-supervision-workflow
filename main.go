@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -63,8 +62,10 @@ func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
 
 func main() {
 	serverLogger, err := zap.NewProduction()
+	sugar := serverLogger.Sugar()
+
 	if err != nil {
-		log.Fatal(err)
+		sugar.Fatal(err)
 	}
 	defer serverLogger.Sync()
 
@@ -106,7 +107,6 @@ func main() {
 		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
 	}
 	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
-	sugar := serverLogger.Sugar()
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
 		shutdown := initTracerProvider(context.Background(), serverLogger)
@@ -123,7 +123,7 @@ func main() {
 			"error", err,
 		)
 	}
-	
+
 	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
 	if err != nil {
 		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
