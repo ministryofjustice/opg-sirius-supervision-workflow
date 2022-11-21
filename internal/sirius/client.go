@@ -3,8 +3,10 @@ package sirius
 import (
 	"context"
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 const ErrUnauthorized ClientError = "unauthorized"
@@ -66,10 +68,11 @@ func (ctx Context) With(c context.Context) Context {
 	}
 }
 
-func NewClient(httpClient HTTPClient, baseURL string) (*Client, error) {
+func NewClient(httpClient HTTPClient, baseURL string, logger *logging.Logger) (*Client, error) {
 	return &Client{
 		http:    httpClient,
 		baseURL: baseURL,
+		logger:  logger,
 	}, nil
 }
 
@@ -80,6 +83,7 @@ type HTTPClient interface {
 type Client struct {
 	http    HTTPClient
 	baseURL string
+	logger  *logging.Logger
 }
 
 func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
@@ -96,4 +100,18 @@ func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*
 	req.Header.Add("X-XSRF-TOKEN", ctx.XSRFToken)
 
 	return req, err
+}
+
+func (c *Client) logErrorRequest(req *http.Request, err error) {
+	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path)
+	if err != nil {
+		c.logger.Print(err)
+	}
+}
+
+func (c *Client) logResponse(req *http.Request, resp *http.Response, err error) {
+	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + strconv.Itoa(resp.StatusCode))
+	if err != nil {
+		c.logger.Print(err)
+	}
 }
