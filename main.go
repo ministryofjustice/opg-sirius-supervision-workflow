@@ -69,6 +69,9 @@ func main() {
 		panic(fmt.Sprintf("Error creating logger: %v\n", err))
 	}
 	defer serverLogger.Sync()
+	if err != nil {
+		panic(fmt.Sprintf("Error creating logger: %v\n", err))
+	}
 
 	port := getEnv("PORT", "1234")
 	webDir := getEnv("WEB_DIR", "web")
