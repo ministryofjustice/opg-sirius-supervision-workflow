@@ -26,24 +26,29 @@ func (c *Client) GetAssigneesForFilter(ctx Context, teamId int, assigneeSelected
 	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/teams/%d", teamId), nil)
 
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return v, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
+		c.logResponse(req, resp, err)
 		return v, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
+		c.logResponse(req, resp, err)
 		return v, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		c.logResponse(req, resp, err)
 		return v, newStatusError(resp)
 	}
 
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		c.logResponse(req, resp, err)
 		return v, err
 	}
 

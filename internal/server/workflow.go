@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/ministryofjustice/opg-go-common/logging"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -59,7 +61,7 @@ func getLoggedInTeam(myDetails sirius.UserDetails, defaultWorkflowTeam int) int 
 	}
 }
 
-func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
+func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (int, error) {
 	var assigneeIdForTask int
 	var err error
 
@@ -69,6 +71,7 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 		assigneeIdForTask, err = strconv.Atoi(teamId)
 	}
 	if err != nil {
+		logger.Print("getAssigneeIdForTask error: " + err.Error())
 		return 0, err
 	}
 	return assigneeIdForTask, nil
@@ -88,6 +91,7 @@ func createTaskIdForUrl(taskIdArray []string) string {
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
 		if search < 1 {
@@ -99,6 +103,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		err := r.ParseForm()
 		if err != nil {
+			logger.Print("ParseForm error: " + err.Error())
 			return err
 		}
 
@@ -107,6 +112,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
+			logger.Print("GetCurrentUserDetails error " + err.Error())
 			return err
 		}
 
@@ -114,11 +120,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
+			logger.Print("GetTaskTypes error " + err.Error())
 			return err
 		}
 
 		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 		if err != nil {
+			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
 
@@ -126,11 +134,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
 		if err != nil {
+			logger.Print("GetTeamsForSelection error " + err.Error())
 			return err
 		}
 
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
 		if err != nil {
+			logger.Print("GetAssigneesForFilter error " + err.Error())
 			return err
 		}
 
@@ -166,13 +176,15 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return tmpl.ExecuteTemplate(w, "page", vars)
 			}
 			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err = getAssigneeIdForTask(selectedTeamToAssignTaskString, r.FormValue("assignCM"))
+			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
 			if err != nil {
+				logger.Print("getAssigneeIdForTask error: " + err.Error())
 				return err
 			}
 
 			err := r.ParseForm()
 			if err != nil {
+				logger.Print("ParseForm error: " + err.Error())
 				return err
 			}
 
@@ -180,12 +192,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			taskIdForUrl := createTaskIdForUrl(taskIdArray)
 
 			if err != nil {
+				logger.Print("taskIdForUrl error: " + err.Error())
 				return err
 			}
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
 			if err != nil {
+				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return err
 			}
 
@@ -195,6 +209,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
+				logger.Print("vars.TaskList error: " + err.Error())
 				return err
 			}
 
