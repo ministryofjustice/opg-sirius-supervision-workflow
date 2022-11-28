@@ -2,7 +2,7 @@
 
 ### Major dependencies
 
-- [Go](https://golang.org/) (>= 1.16)
+- [Go](https://golang.org/) (>= 1.19)
 - [Pact](https://github.com/pact-foundation/pact-ruby-standalone) (>= 1.88.3)
 - [docker-compose](https://docs.docker.com/compose/install/) (>= 1.27.4)
 
@@ -44,6 +44,15 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 `docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
 
 `yarn && yarn cypress`   
+
+-------------------------------------------------------------------
+## Run Cypress tests for M1 chips
+
+`make down - in sirius repo`
+`docker image prune`
+`docker-compose -f docker/docker-compose.ci.yml build app json-server`
+`docker-compose -f docker/docker-compose.ci.yml up app json-server`
+`yarn cypress-ci`
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests

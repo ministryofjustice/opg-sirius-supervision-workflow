@@ -5,14 +5,15 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTeamsForSelection(t *testing.T) {
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	json := `[{
 			"id":21,"displayName":"Allocations - (Supervision)", "email":"allocations.team@opgtest.com", "phoneNumber":"0123456789",
@@ -55,6 +56,24 @@ func TestGetTeamsForSelection(t *testing.T) {
 	teams, err := client.GetTeamsForSelection(getContext(nil), 21, []string{""})
 	assert.Equal(t, expectedResponse, teams)
 	assert.Equal(t, nil, err)
+}
+
+func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+
+	_, err := client.GetTeamsForSelection(getContext(nil), 21, []string{""})
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusInternalServerError,
+		URL:    svr.URL + "/api/v1/teams",
+		Method: http.MethodGet,
+	}, err)
 }
 
 func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
