@@ -3,10 +3,14 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "serve": "json-server -H 0.0.0.0 db.json -m patcher.js -m error-rerouter.js success-rerouter.js -r routes.json"
+        "serve": "concurrently --kill-others \"yarn start:server\" \"yarn watch:update\"",
+        "start:server": "json-server -H 0.0.0.0 --watch config/db.js -m config/patcher.js -m config/error-rerouter.js config/success-rerouter.js -m config/custom-body-mapper.js -r config/routes.json",
+        "watch:update": "onchange 'config/*.js' -- touch config/routes.json"
     },
     "author": "",
     "dependencies": {
-        "json-server": "0.17.1"
+        "concurrently": "^7.4.0",
+        "json-server": "0.17.1",
+        "onchange": "^7.1.0"
     }
 }
