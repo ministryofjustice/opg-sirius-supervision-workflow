@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type CaseManagement struct {
@@ -119,17 +120,18 @@ func CreateTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 }
 
 func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
+	newArrayFilters := []string{}
+
 	if len(assigneeSelected) == 1 {
 		for _, s := range assigneeSelected {
+
 			assigneeFilters += "assigneeid_or_null:" + s
 		}
 	} else if len(assigneeSelected) > 1 {
 		for _, s := range assigneeSelected {
-			assigneeFilters += "assigneeid_or_null:" + s + ","
+			newArrayFilters = append(newArrayFilters, "assigneeid_or_null:"+s)
 		}
-		assigneeFilterLength := len(assigneeFilters)
-		length := assigneeFilterLength - 1
-		assigneeFilters = assigneeFilters[0:length]
+		assigneeFilters += strings.Join(newArrayFilters, ",")
 	}
 	return assigneeFilters
 }
