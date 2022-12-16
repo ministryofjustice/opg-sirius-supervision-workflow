@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type CaseManagement struct {
@@ -124,12 +125,8 @@ func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) str
 			assigneeFilters += "assigneeid_or_null:" + s
 		}
 	} else if len(assigneeSelected) > 1 {
-		for _, s := range assigneeSelected {
-			assigneeFilters += "assigneeid_or_null:" + s + ","
-		}
-		assigneeFilterLength := len(assigneeFilters)
-		length := assigneeFilterLength - 1
-		assigneeFilters = assigneeFilters[0:length]
+		assigneeFilters += "assigneeid_or_null:"
+		assigneeFilters += strings.Join(assigneeSelected, ",")
 	}
 	return assigneeFilters
 }
