@@ -129,6 +129,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
+		if search > taskList.Pages.PageTotal {
+			search = taskList.Pages.PageTotal
+			taskList, teamId, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			if err != nil {
+				logger.Print("GetTaskList error " + err.Error())
+				return err
+			}
+		}
 
 		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
 
