@@ -120,13 +120,18 @@ func CreateTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) str
 }
 
 func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
+	newArrayFilters := []string{}
+
 	if len(assigneeSelected) == 1 {
 		for _, s := range assigneeSelected {
+
 			assigneeFilters += "assigneeid_or_null:" + s
 		}
 	} else if len(assigneeSelected) > 1 {
-		assigneeFilters += "assigneeid_or_null:"
-		assigneeFilters += strings.Join(assigneeSelected, ",")
+		for _, s := range assigneeSelected {
+			newArrayFilters = append(newArrayFilters, "assigneeid_or_null:"+s)
+		}
+		assigneeFilters += strings.Join(newArrayFilters, ",")
 	}
 	return assigneeFilters
 }
