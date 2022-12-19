@@ -17,7 +17,7 @@ jobs:
     name: Test Workflow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v2
         with:
           go-version: 1.19.2
@@ -71,7 +71,7 @@ jobs:
     name: GO lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run linting
         uses: golangci/golangci-lint-action@v2
 
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run pa11y
         run: |
           docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run cypress
         run: |
           docker-compose -f docker/docker-compose.ci.yml run cypress
@@ -118,7 +118,7 @@ jobs:
       branch: ${{ steps.set-outputs.outputs.branch }}
       tag: ${{ steps.bump_version.outputs.tag }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
       - name: Extract branch name
@@ -186,7 +186,7 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
