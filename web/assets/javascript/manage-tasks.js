@@ -96,13 +96,13 @@ export default class ManageTasks {
     this._updateDomElements();
   }
 
-  _showEditTasksPanel(_event) {
+  _showEditTasksPanel() {
     this.editPanelDiv.forEach((element) => {
       element.classList.toggle("hide", this.data.selectedTasks === 0);
     });
   }
 
-  _hideEditTasksPanel(_event) {
+  _hideEditTasksPanel() {
     this.editPanelDiv.forEach((element) => {
       element.classList.toggle("hide", true);
     });
