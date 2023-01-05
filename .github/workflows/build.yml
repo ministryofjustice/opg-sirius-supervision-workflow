@@ -100,13 +100,13 @@ jobs:
         run: |
           docker-compose -f docker/docker-compose.ci.yml run cypress
       - name: Store screenshots
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-screenshots
           path: cypress/screenshots
       - name: Store logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: cypress-logs
