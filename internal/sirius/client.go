@@ -110,7 +110,11 @@ func (c *Client) logErrorRequest(req *http.Request, err error) {
 }
 
 func (c *Client) logResponse(req *http.Request, resp *http.Response, err error) {
-	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + strconv.Itoa(resp.StatusCode))
+	response := "None"
+	if resp != nil {
+		response = strconv.Itoa(resp.StatusCode)
+	}
+	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + response)
 	if err != nil {
 		c.logger.Print(err)
 	}
