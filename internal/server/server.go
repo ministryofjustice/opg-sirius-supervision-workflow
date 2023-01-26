@@ -89,7 +89,7 @@ func errorHandler(logger *zap.Logger, tmplError Template, prefix, siriusURL stri
 					http.Redirect(w, r, prefix+redirect.To(), http.StatusFound)
 					return
 				}
-				sugar.Infow("Error handler", r, err)
+				sugar.Infow("Error handler", err)
 
 				code := http.StatusInternalServerError
 				if status, ok := err.(StatusError); ok {
