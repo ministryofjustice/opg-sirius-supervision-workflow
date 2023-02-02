@@ -93,6 +93,7 @@ func createTaskIdForUrl(taskIdArray []string) string {
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		var loggedInTeamId int
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
@@ -113,6 +114,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		assigneeSelected := r.Form["selected-assignee"]
 
 		data := workflowVars{
+			Path:      r.URL.Path,
 			XSRFToken: ctx.XSRFToken,
 		}
 
@@ -122,8 +124,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		//can we call the api once to get everything?
 		group, groupCtx := errgroup.WithContext(ctx.Context)
 		groupTwo, groupCtx := errgroup.WithContext(ctx.Context)
-		groupThree, groupCtx := errgroup.WithContext(ctx.Context)
-		groupFour, groupCtx := errgroup.WithContext(ctx.Context)
+		groupThree, groupCtxThree := errgroup.WithContext(ctx.Context)
+		groupFour, groupCtxFour := errgroup.WithContext(ctx.Context)
+		groupFive, groupCtx := errgroup.WithContext(ctx.Context)
 
 		group.Go(func() error {
 			myDetails, err := client.GetCurrentUserDetails(ctx.With(groupCtx))
@@ -135,8 +138,6 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return nil
 		})
 
-		loggedInTeamId := getLoggedInTeam(data.MyDetails, defaultWorkflowTeam)
-
 		group.Go(func() error {
 			loadTaskTypes, err := client.GetTaskTypes(ctx.With(groupCtx), taskTypeSelected)
 			if err != nil {
@@ -147,8 +148,21 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return nil
 		})
 
+		if err := group.Wait(); err != nil {
+			return err
+		}
+
 		groupTwo.Go(func() error {
-			taskList, teamId, err := client.GetTaskList(ctx.With(groupCtx), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
+			loggedInTeamId = getLoggedInTeam(data.MyDetails, defaultWorkflowTeam)
+			return nil
+		})
+
+		if err := groupTwo.Wait(); err != nil {
+			return err
+		}
+
+		groupThree.Go(func() error {
+			taskList, teamId, err := client.GetTaskList(ctx.With(groupCtxThree), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
 				return err
@@ -160,7 +174,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if search > data.TaskList.Pages.PageTotal && data.TaskList.Pages.PageTotal > 0 {
 			groupThree.Go(func() error {
 				search = data.TaskList.Pages.PageTotal
-				data.TaskList, data.TeamId, err = client.GetTaskList(ctx.With(groupCtx), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
+				data.TaskList, data.TeamId, err = client.GetTaskList(ctx.With(groupCtxThree), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 				if err != nil {
 					logger.Print("GetTaskList error " + err.Error())
 					return err
@@ -169,14 +183,18 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			})
 		}
 
-		groupThree.Go(func() error {
+		if err := groupThree.Wait(); err != nil {
+			return err
+		}
+
+		groupFour.Go(func() error {
 			pageDetails := client.GetPageDetails(data.TaskList, search, displayTaskLimit)
 			data.PageDetails = pageDetails
 			return nil
 		})
 
-		groupThree.Go(func() error {
-			teamSelection, err := client.GetTeamsForSelection(ctx.With(groupCtx), data.TeamId, assigneeSelected)
+		groupFour.Go(func() error {
+			teamSelection, err := client.GetTeamsForSelection(ctx.With(groupCtxFour), data.TeamId, assigneeSelected)
 			if err != nil {
 				logger.Print("GetTeamsForSelection error " + err.Error())
 				return err
@@ -185,8 +203,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return nil
 		})
 
-		groupThree.Go(func() error {
-			assigneesForFilter, err := client.GetAssigneesForFilter(ctx.With(groupCtx), data.TeamId, assigneeSelected)
+		groupFour.Go(func() error {
+			assigneesForFilter, err := client.GetAssigneesForFilter(ctx.With(groupCtxFour), data.TeamId, assigneeSelected)
 			if err != nil {
 				logger.Print("GetAssigneesForFilter error " + err.Error())
 				return err
@@ -196,41 +214,32 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return nil
 		})
 
-		groupFour.Go(func() error {
+		if err := groupFour.Wait(); err != nil {
+			return err
+		}
+
+		groupFive.Go(func() error {
 			appliedFilters := client.GetAppliedFilters(data.TeamId, data.LoadTasks, data.TeamSelection, data.Assignees)
 			data.AppliedFilters = appliedFilters
 			return nil
 		})
 
-		vars := workflowVars{
-			Path: r.URL.Path,
-		}
-
-		if err := group.Wait(); err != nil {
-			return err
-		}
-		if err := groupTwo.Wait(); err != nil {
-			return err
-		}
-		if err := groupThree.Wait(); err != nil {
-			return err
-		}
-		if err := groupFour.Wait(); err != nil {
+		if err := groupFive.Wait(); err != nil {
 			return err
 		}
 
 		switch r.Method {
 		case http.MethodGet:
-			return tmpl.ExecuteTemplate(w, "page", vars)
+			return tmpl.ExecuteTemplate(w, "page", data)
 		case http.MethodPost:
 			var newAssigneeIdForTask int
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 			if selectedTeamToAssignTaskString == "0" {
-				vars.Errors = sirius.ValidationErrors{
+				data.Errors = sirius.ValidationErrors{
 					"selection": map[string]string{"": "Please select a team"},
 				}
 
-				return tmpl.ExecuteTemplate(w, "page", vars)
+				return tmpl.ExecuteTemplate(w, "page", data)
 			}
 			//this is where it picks up the new user to assign task to
 			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
@@ -260,19 +269,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return err
 			}
 
-			if vars.Errors == nil {
-				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
+			if data.Errors == nil {
+				data.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 
-			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
+			data.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
-				logger.Print("vars.TaskList error: " + err.Error())
+				logger.Print("data.TaskList error: " + err.Error())
 				return err
 			}
 
-			vars.PageDetails = client.GetPageDetails(vars.TaskList, search, displayTaskLimit)
+			data.PageDetails = client.GetPageDetails(data.TaskList, search, displayTaskLimit)
 
-			return tmpl.ExecuteTemplate(w, "page", vars)
+			return tmpl.ExecuteTemplate(w, "page", data)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
 		}
