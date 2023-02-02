@@ -28,7 +28,7 @@ If you are using VSCode, you can then attach a remote debugger on port `2345`. T
 You will then be able to use breakpoints to stop and inspect the application.
 
 Additionally, hot-reloading is provided by Air, so any changes to the Go code (including templates) 
-will rebuild and restart the application without requiring manually stopping and restarting the compose stack.
+will rebuild and restart the application without requiring manually stopping and restarting the composer stack.
 
 ### Without docker
 

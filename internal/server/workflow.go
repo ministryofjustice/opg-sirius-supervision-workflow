@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"golang.org/x/sync/errgroup"
 )
 
 type WorkflowInformation interface {
@@ -31,6 +32,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
 	AppliedFilters []string
+	TeamId         int
 	SuccessMessage string
 	Error          string
 	Errors         sirius.ValidationErrors
@@ -110,64 +112,111 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		taskTypeSelected := r.Form["selected-task-type"]
 		assigneeSelected := r.Form["selected-assignee"]
 
-		myDetails, err := client.GetCurrentUserDetails(ctx)
-		if err != nil {
-			logger.Print("GetCurrentUserDetails error " + err.Error())
-			return err
+		data := workflowVars{
+			XSRFToken: ctx.XSRFToken,
 		}
 
-		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
+		//need to make two groups and make sure that the second group the first one comes back before the second group
+		//think about putting the groups into methods
+		//do a process tree
+		//can we call the api once to get everything?
+		group, groupCtx := errgroup.WithContext(ctx.Context)
+		groupTwo, groupCtx := errgroup.WithContext(ctx.Context)
+		groupThree, groupCtx := errgroup.WithContext(ctx.Context)
+		groupFour, groupCtx := errgroup.WithContext(ctx.Context)
 
-		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
-		if err != nil {
-			logger.Print("GetTaskTypes error " + err.Error())
-			return err
-		}
+		group.Go(func() error {
+			myDetails, err := client.GetCurrentUserDetails(ctx.With(groupCtx))
+			if err != nil {
+				logger.Print("GetCurrentUserDetails error " + err.Error())
+				return err
+			}
+			data.MyDetails = myDetails
+			return nil
+		})
 
-		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
-		if err != nil {
-			logger.Print("GetTaskList error " + err.Error())
-			return err
-		}
-		if search > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			search = taskList.Pages.PageTotal
-			taskList, teamId, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		loggedInTeamId := getLoggedInTeam(data.MyDetails, defaultWorkflowTeam)
+
+		group.Go(func() error {
+			loadTaskTypes, err := client.GetTaskTypes(ctx.With(groupCtx), taskTypeSelected)
+			if err != nil {
+				logger.Print("GetTaskTypes error " + err.Error())
+				return err
+			}
+			data.LoadTasks = loadTaskTypes
+			return nil
+		})
+
+		groupTwo.Go(func() error {
+			taskList, teamId, err := client.GetTaskList(ctx.With(groupCtx), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
 				return err
 			}
+			data.TeamId = teamId
+			data.TaskList = taskList
+			return nil
+		})
+		if search > data.TaskList.Pages.PageTotal && data.TaskList.Pages.PageTotal > 0 {
+			groupThree.Go(func() error {
+				search = data.TaskList.Pages.PageTotal
+				data.TaskList, data.TeamId, err = client.GetTaskList(ctx.With(groupCtx), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
+				if err != nil {
+					logger.Print("GetTaskList error " + err.Error())
+					return err
+				}
+				return nil
+			})
 		}
 
-		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
+		groupThree.Go(func() error {
+			pageDetails := client.GetPageDetails(data.TaskList, search, displayTaskLimit)
+			data.PageDetails = pageDetails
+			return nil
+		})
 
-		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
-		if err != nil {
-			logger.Print("GetTeamsForSelection error " + err.Error())
-			return err
-		}
+		groupThree.Go(func() error {
+			teamSelection, err := client.GetTeamsForSelection(ctx.With(groupCtx), data.TeamId, assigneeSelected)
+			if err != nil {
+				logger.Print("GetTeamsForSelection error " + err.Error())
+				return err
+			}
+			data.TeamSelection = teamSelection
+			return nil
+		})
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
-		if err != nil {
-			logger.Print("GetAssigneesForFilter error " + err.Error())
-			return err
-		}
+		groupThree.Go(func() error {
+			assigneesForFilter, err := client.GetAssigneesForFilter(ctx.With(groupCtx), data.TeamId, assigneeSelected)
+			if err != nil {
+				logger.Print("GetAssigneesForFilter error " + err.Error())
+				return err
+			}
 
-		appliedFilters := client.GetAppliedFilters(teamId, loadTaskTypes, teamSelection, assigneesForFilter)
+			data.Assignees = assigneesForFilter
+			return nil
+		})
+
+		groupFour.Go(func() error {
+			appliedFilters := client.GetAppliedFilters(data.TeamId, data.LoadTasks, data.TeamSelection, data.Assignees)
+			data.AppliedFilters = appliedFilters
+			return nil
+		})
 
 		vars := workflowVars{
-			Path:           r.URL.Path,
-			XSRFToken:      ctx.XSRFToken,
-			MyDetails:      myDetails,
-			TaskList:       taskList,
-			PageDetails:    pageDetails,
-			LoadTasks:      loadTaskTypes,
-			TeamSelection:  teamSelection,
-			Assignees:      assigneesForFilter,
-			AppliedFilters: appliedFilters,
+			Path: r.URL.Path,
 		}
 
-		if err != nil {
-			return StatusError(http.StatusNotFound)
+		if err := group.Wait(); err != nil {
+			return err
+		}
+		if err := groupTwo.Wait(); err != nil {
+			return err
+		}
+		if err := groupThree.Wait(); err != nil {
+			return err
+		}
+		if err := groupFour.Wait(); err != nil {
+			return err
 		}
 
 		switch r.Method {
@@ -215,7 +264,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 
-			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
 				logger.Print("vars.TaskList error: " + err.Error())
 				return err
