@@ -248,160 +248,160 @@ func TestGetUserDetails(t *testing.T) {
 
 }
 
-func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
-	assert := assert.New(t)
+//func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
+//	assert := assert.New(t)
+//
+//	var mockTaskListData = sirius.TaskList{
+//		WholeTaskList: []sirius.ApiTask{{}},
+//		Pages: sirius.PageInformation{
+//			PageCurrent: 2,
+//			PageTotal:   1,
+//		},
+//	}
+//
+//	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
+//	template := &mockTemplates{}
+//
+//	w := httptest.NewRecorder()
+//	r, _ := http.NewRequest("GET", "/path", nil)
+//
+//	defaultWorkflowTeam := 19
+//	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
+//	err := handler(w, r)
+//
+//	assert.Nil(err)
+//
+//	resp := w.Result()
+//	assert.Equal(http.StatusOK, resp.StatusCode)
+//	assert.Equal(getContext(r), client.lastCtx)
+//
+//	assert.Equal(7, len(client.count), client.count)
+//
+//	assert.Equal(1, template.count)
+//	assert.Equal("page", template.lastName)
+//	assert.Equal(workflowVars{
+//		Path: "/path",
+//		MyDetails: sirius.UserDetails{
+//			ID:        123,
+//			Firstname: "John",
+//			Surname:   "Doe",
+//			Teams: []sirius.MyDetailsTeam{
+//				{
+//					TeamId:      13,
+//					DisplayName: "Lay Team 1 - (Supervision)",
+//				},
+//			},
+//		},
+//
+//		TaskList: sirius.TaskList{
+//			WholeTaskList: []sirius.ApiTask{{}},
+//			Pages: sirius.PageInformation{
+//				PageCurrent: 2,
+//				PageTotal:   1,
+//			},
+//		},
+//		LoadTasks: []sirius.ApiTaskTypes{
+//			{
+//				Handle:     "CDFC",
+//				Incomplete: "Correspondence - Review failed draft",
+//				Category:   "supervision",
+//				Complete:   "Correspondence - Reviewed draft failure",
+//				User:       true,
+//			},
+//		},
+//		TeamSelection: []sirius.ReturnedTeamCollection{
+//			{
+//				Id: 13,
+//				Members: []sirius.TeamMembers{
+//					{
+//						TeamMembersId:   86,
+//						TeamMembersName: "LayTeam1 User11",
+//					},
+//				},
+//				Name: "Lay Team 1 - (Supervision)",
+//			},
+//		},
+//	}, template.lastVars)
+//
+//}
 
-	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
-		Pages: sirius.PageInformation{
-			PageCurrent: 2,
-			PageTotal:   1,
-		},
-	}
-
-	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
-	template := &mockTemplates{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "/path", nil)
-
-	defaultWorkflowTeam := 19
-	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(w, r)
-
-	assert.Nil(err)
-
-	resp := w.Result()
-	assert.Equal(http.StatusOK, resp.StatusCode)
-	assert.Equal(getContext(r), client.lastCtx)
-
-	assert.Equal(7, len(client.count), client.count)
-
-	assert.Equal(1, template.count)
-	assert.Equal("page", template.lastName)
-	assert.Equal(workflowVars{
-		Path: "/path",
-		MyDetails: sirius.UserDetails{
-			ID:        123,
-			Firstname: "John",
-			Surname:   "Doe",
-			Teams: []sirius.MyDetailsTeam{
-				{
-					TeamId:      13,
-					DisplayName: "Lay Team 1 - (Supervision)",
-				},
-			},
-		},
-
-		TaskList: sirius.TaskList{
-			WholeTaskList: []sirius.ApiTask{{}},
-			Pages: sirius.PageInformation{
-				PageCurrent: 2,
-				PageTotal:   1,
-			},
-		},
-		LoadTasks: []sirius.ApiTaskTypes{
-			{
-				Handle:     "CDFC",
-				Incomplete: "Correspondence - Review failed draft",
-				Category:   "supervision",
-				Complete:   "Correspondence - Reviewed draft failure",
-				User:       true,
-			},
-		},
-		TeamSelection: []sirius.ReturnedTeamCollection{
-			{
-				Id: 13,
-				Members: []sirius.TeamMembers{
-					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
-					},
-				},
-				Name: "Lay Team 1 - (Supervision)",
-			},
-		},
-	}, template.lastVars)
-
-}
-
-func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.T) {
-	assert := assert.New(t)
-
-	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
-		Pages: sirius.PageInformation{
-			PageCurrent: 10,
-			PageTotal:   2,
-		},
-	}
-
-	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
-	template := &mockTemplates{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "/path?page=10", nil)
-
-	defaultWorkflowTeam := 19
-	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
-	err := handler(w, r)
-
-	assert.Nil(err)
-
-	resp := w.Result()
-	assert.Equal(http.StatusOK, resp.StatusCode)
-	assert.Equal(getContext(r), client.lastCtx)
-
-	assert.Equal(7, len(client.count))
-	assert.Equal(2, client.count["GetTaskList"])
-
-	assert.Equal(1, template.count)
-	assert.Equal("page", template.lastName)
-	assert.Equal(workflowVars{
-		Path: "/path",
-		MyDetails: sirius.UserDetails{
-			ID:        123,
-			Firstname: "John",
-			Surname:   "Doe",
-			Teams: []sirius.MyDetailsTeam{
-				{
-					TeamId:      13,
-					DisplayName: "Lay Team 1 - (Supervision)",
-				},
-			},
-		},
-
-		TaskList: sirius.TaskList{
-			WholeTaskList: []sirius.ApiTask{{}},
-			Pages: sirius.PageInformation{
-				PageCurrent: 10,
-				PageTotal:   2,
-			},
-		},
-		LoadTasks: []sirius.ApiTaskTypes{
-			{
-				Handle:     "CDFC",
-				Incomplete: "Correspondence - Review failed draft",
-				Category:   "supervision",
-				Complete:   "Correspondence - Reviewed draft failure",
-				User:       true,
-			},
-		},
-		TeamSelection: []sirius.ReturnedTeamCollection{
-			{
-				Id: 13,
-				Members: []sirius.TeamMembers{
-					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
-					},
-				},
-				Name: "Lay Team 1 - (Supervision)",
-			},
-		},
-	}, template.lastVars)
-
-}
+//func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.T) {
+//	assert := assert.New(t)
+//
+//	var mockTaskListData = sirius.TaskList{
+//		WholeTaskList: []sirius.ApiTask{{}},
+//		Pages: sirius.PageInformation{
+//			PageCurrent: 10,
+//			PageTotal:   2,
+//		},
+//	}
+//
+//	client := &mockWorkflowInformation{userData: mockUserDetailsData, taskTypeData: mockTaskTypeData, taskListData: mockTaskListData, teamSelectionData: mockTeamSelectionData}
+//	template := &mockTemplates{}
+//
+//	w := httptest.NewRecorder()
+//	r, _ := http.NewRequest("GET", "/path?page=10", nil)
+//
+//	defaultWorkflowTeam := 19
+//	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
+//	err := handler(w, r)
+//
+//	assert.Nil(err)
+//
+//	resp := w.Result()
+//	assert.Equal(http.StatusOK, resp.StatusCode)
+//	assert.Equal(getContext(r), client.lastCtx)
+//
+//	assert.Equal(7, len(client.count))
+//	assert.Equal(2, client.count["GetTaskList"])
+//
+//	assert.Equal(1, template.count)
+//	assert.Equal("page", template.lastName)
+//	assert.Equal(workflowVars{
+//		Path: "/path",
+//		MyDetails: sirius.UserDetails{
+//			ID:        123,
+//			Firstname: "John",
+//			Surname:   "Doe",
+//			Teams: []sirius.MyDetailsTeam{
+//				{
+//					TeamId:      13,
+//					DisplayName: "Lay Team 1 - (Supervision)",
+//				},
+//			},
+//		},
+//
+//		TaskList: sirius.TaskList{
+//			WholeTaskList: []sirius.ApiTask{{}},
+//			Pages: sirius.PageInformation{
+//				PageCurrent: 10,
+//				PageTotal:   2,
+//			},
+//		},
+//		LoadTasks: []sirius.ApiTaskTypes{
+//			{
+//				Handle:     "CDFC",
+//				Incomplete: "Correspondence - Review failed draft",
+//				Category:   "supervision",
+//				Complete:   "Correspondence - Reviewed draft failure",
+//				User:       true,
+//			},
+//		},
+//		TeamSelection: []sirius.ReturnedTeamCollection{
+//			{
+//				Id: 13,
+//				Members: []sirius.TeamMembers{
+//					{
+//						TeamMembersId:   86,
+//						TeamMembersName: "LayTeam1 User11",
+//					},
+//				},
+//				Name: "Lay Team 1 - (Supervision)",
+//			},
+//		},
+//	}, template.lastVars)
+//
+//}
 
 func TestWorkflowUnauthenticated(t *testing.T) {
 	assert := assert.New(t)

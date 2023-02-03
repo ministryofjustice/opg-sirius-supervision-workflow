@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"golang.org/x/sync/errgroup"
 )
 
 type WorkflowInformation interface {
@@ -31,6 +32,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
 	AppliedFilters []string
+	TeamId         int
 	SuccessMessage string
 	Error          string
 	Errors         sirius.ValidationErrors
@@ -91,6 +93,7 @@ func createTaskIdForUrl(taskIdArray []string) string {
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
+		var loggedInTeamId int
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 		ctx := getContext(r)
 		search, _ := strconv.Atoi(r.FormValue("page"))
@@ -110,78 +113,133 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		taskTypeSelected := r.Form["selected-task-type"]
 		assigneeSelected := r.Form["selected-assignee"]
 
-		myDetails, err := client.GetCurrentUserDetails(ctx)
-		if err != nil {
-			logger.Print("GetCurrentUserDetails error " + err.Error())
+		data := workflowVars{
+			Path:      r.URL.Path,
+			XSRFToken: ctx.XSRFToken,
+		}
+
+		//need to make two groups and make sure that the second group the first one comes back before the second group
+		//think about putting the groups into methods
+		//do a process tree
+		//can we call the api once to get everything?
+		group, groupCtx := errgroup.WithContext(ctx.Context)
+		groupTwo, _ := errgroup.WithContext(ctx.Context)
+		groupThree, groupCtxThree := errgroup.WithContext(ctx.Context)
+		groupFour, groupCtxFour := errgroup.WithContext(ctx.Context)
+		groupFive, _ := errgroup.WithContext(ctx.Context)
+
+		group.Go(func() error {
+			myDetails, err := client.GetCurrentUserDetails(ctx.With(groupCtx))
+			if err != nil {
+				logger.Print("GetCurrentUserDetails error " + err.Error())
+				return err
+			}
+			data.MyDetails = myDetails
+			return nil
+		})
+
+		group.Go(func() error {
+			loadTaskTypes, err := client.GetTaskTypes(ctx.With(groupCtx), taskTypeSelected)
+			if err != nil {
+				logger.Print("GetTaskTypes error " + err.Error())
+				return err
+			}
+			data.LoadTasks = loadTaskTypes
+			return nil
+		})
+
+		if err := group.Wait(); err != nil {
 			return err
 		}
 
-		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
+		groupTwo.Go(func() error {
+			loggedInTeamId = getLoggedInTeam(data.MyDetails, defaultWorkflowTeam)
+			return nil
+		})
 
-		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
-		if err != nil {
-			logger.Print("GetTaskTypes error " + err.Error())
+		if err := groupTwo.Wait(); err != nil {
 			return err
 		}
 
-		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
-		if err != nil {
-			logger.Print("GetTaskList error " + err.Error())
-			return err
-		}
-		if search > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			search = taskList.Pages.PageTotal
-			taskList, teamId, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		groupThree.Go(func() error {
+			taskList, teamId, err := client.GetTaskList(ctx.With(groupCtxThree), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
 				return err
 			}
+			data.TeamId = teamId
+			data.TaskList = taskList
+			return nil
+		})
+		if search > data.TaskList.Pages.PageTotal && data.TaskList.Pages.PageTotal > 0 {
+			groupThree.Go(func() error {
+				search = data.TaskList.Pages.PageTotal
+				data.TaskList, data.TeamId, err = client.GetTaskList(ctx.With(groupCtxThree), search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
+				if err != nil {
+					logger.Print("GetTaskList error " + err.Error())
+					return err
+				}
+				return nil
+			})
 		}
 
-		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
-
-		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
-		if err != nil {
-			logger.Print("GetTeamsForSelection error " + err.Error())
+		if err := groupThree.Wait(); err != nil {
 			return err
 		}
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
-		if err != nil {
-			logger.Print("GetAssigneesForFilter error " + err.Error())
+		groupFour.Go(func() error {
+			pageDetails := client.GetPageDetails(data.TaskList, search, displayTaskLimit)
+			data.PageDetails = pageDetails
+			return nil
+		})
+
+		groupFour.Go(func() error {
+			teamSelection, err := client.GetTeamsForSelection(ctx.With(groupCtxFour), data.TeamId, assigneeSelected)
+			if err != nil {
+				logger.Print("GetTeamsForSelection error " + err.Error())
+				return err
+			}
+			data.TeamSelection = teamSelection
+			return nil
+		})
+
+		groupFour.Go(func() error {
+			assigneesForFilter, err := client.GetAssigneesForFilter(ctx.With(groupCtxFour), data.TeamId, assigneeSelected)
+			if err != nil {
+				logger.Print("GetAssigneesForFilter error " + err.Error())
+				return err
+			}
+
+			data.Assignees = assigneesForFilter
+			return nil
+		})
+
+		if err := groupFour.Wait(); err != nil {
 			return err
 		}
 
-		appliedFilters := client.GetAppliedFilters(teamId, loadTaskTypes, teamSelection, assigneesForFilter)
+		groupFive.Go(func() error {
+			appliedFilters := client.GetAppliedFilters(data.TeamId, data.LoadTasks, data.TeamSelection, data.Assignees)
+			data.AppliedFilters = appliedFilters
+			return nil
+		})
 
-		vars := workflowVars{
-			Path:           r.URL.Path,
-			XSRFToken:      ctx.XSRFToken,
-			MyDetails:      myDetails,
-			TaskList:       taskList,
-			PageDetails:    pageDetails,
-			LoadTasks:      loadTaskTypes,
-			TeamSelection:  teamSelection,
-			Assignees:      assigneesForFilter,
-			AppliedFilters: appliedFilters,
-		}
-
-		if err != nil {
-			return StatusError(http.StatusNotFound)
+		if err := groupFive.Wait(); err != nil {
+			return err
 		}
 
 		switch r.Method {
 		case http.MethodGet:
-			return tmpl.ExecuteTemplate(w, "page", vars)
+			return tmpl.ExecuteTemplate(w, "page", data)
 		case http.MethodPost:
 			var newAssigneeIdForTask int
 			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
 			if selectedTeamToAssignTaskString == "0" {
-				vars.Errors = sirius.ValidationErrors{
+				data.Errors = sirius.ValidationErrors{
 					"selection": map[string]string{"": "Please select a team"},
 				}
 
-				return tmpl.ExecuteTemplate(w, "page", vars)
+				return tmpl.ExecuteTemplate(w, "page", data)
 			}
 			//this is where it picks up the new user to assign task to
 			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
@@ -211,19 +269,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				return err
 			}
 
-			if vars.Errors == nil {
-				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
+			if data.Errors == nil {
+				data.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 
-			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			data.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, data.LoadTasks, assigneeSelected)
 			if err != nil {
-				logger.Print("vars.TaskList error: " + err.Error())
+				logger.Print("data.TaskList error: " + err.Error())
 				return err
 			}
 
-			vars.PageDetails = client.GetPageDetails(vars.TaskList, search, displayTaskLimit)
+			data.PageDetails = client.GetPageDetails(data.TaskList, search, displayTaskLimit)
 
-			return tmpl.ExecuteTemplate(w, "page", vars)
+			return tmpl.ExecuteTemplate(w, "page", data)
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
 		}
