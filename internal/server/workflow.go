@@ -126,7 +126,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		groupTwo, groupCtx := errgroup.WithContext(ctx.Context)
 		groupThree, groupCtxThree := errgroup.WithContext(ctx.Context)
 		groupFour, groupCtxFour := errgroup.WithContext(ctx.Context)
-		groupFive, groupCtx := errgroup.WithContext(ctx.Context)
+		groupFive, _ := errgroup.WithContext(ctx.Context)
 
 		group.Go(func() error {
 			myDetails, err := client.GetCurrentUserDetails(ctx.With(groupCtx))
