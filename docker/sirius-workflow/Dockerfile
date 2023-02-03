@@ -1,4 +1,4 @@
-FROM golang:1.19.4-alpine as base
+FROM golang:1.20.0-alpine as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0
@@ -21,7 +21,7 @@ EXPOSE 2345
 
 ENTRYPOINT ["air"]
 
-FROM node:19.3.0-alpine3.16 as asset-env
+FROM node:19.6.0-alpine3.16 as asset-env
 
 WORKDIR /app
 
@@ -47,7 +47,7 @@ COPY . .
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3.17.0
+FROM alpine:3.17.1
 
 WORKDIR /go/bin
 
