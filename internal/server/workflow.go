@@ -123,7 +123,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		//do a process tree
 		//can we call the api once to get everything?
 		group, groupCtx := errgroup.WithContext(ctx.Context)
-		groupTwo, groupCtx := errgroup.WithContext(ctx.Context)
+		groupTwo, _ := errgroup.WithContext(ctx.Context)
 		groupThree, groupCtxThree := errgroup.WithContext(ctx.Context)
 		groupFour, groupCtxFour := errgroup.WithContext(ctx.Context)
 		groupFive, _ := errgroup.WithContext(ctx.Context)
