@@ -45,14 +45,14 @@ func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelec
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, int, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
 	m.count["GetTaskList"] += 1
 	m.lastCtx = ctx
 
-	return m.taskListData, m.teamId, m.err
+	return m.taskListData, m.err
 }
 func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
 	if m.count == nil {
