@@ -84,7 +84,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 		TotalTasks: 13,
 	}
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, 13, 13, []string{""}, []ApiTaskTypes{}, []string{""})
+	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, 13, []string{""}, []ApiTaskTypes{}, []string{""})
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
@@ -99,7 +99,7 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, 13, 13, []string{""}, []ApiTaskTypes{}, []string{""})
+	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, 13, []string{""}, []ApiTaskTypes{}, []string{""})
 
 	expectedResponse := TaskList{
 		WholeTaskList: nil,

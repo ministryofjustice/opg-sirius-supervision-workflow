@@ -55,22 +55,14 @@ type TaskList struct {
 	ActiveFilters []string
 }
 
-var teamID int
-
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, error) {
 	var v TaskList
 	var taskTypeFilters string
 	var assigneeFilters string
-	fmt.Println("selectedTeamId:", selectedTeamId)
-	if selectedTeamId == 0 {
-		teamID = loggedInTeamId
-	} else {
-		teamID = selectedTeamId
-	}
 
 	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
 	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", teamID, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
+	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", selectedTeamId, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
