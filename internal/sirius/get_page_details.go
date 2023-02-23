@@ -19,7 +19,7 @@ func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit 
 
 	PageDetails := k
 
-	for i := 1; i < tasklist.Pages.PageTotal+1; i++ {
+	for i := 1; i <= tasklist.Pages.PageTotal; i++ {
 		PageDetails.ListOfPages = append(PageDetails.ListOfPages, i)
 	}
 

@@ -1,15 +1,13 @@
 package sirius
 
 import (
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -77,9 +75,8 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -131,9 +128,8 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -202,9 +198,8 @@ func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -274,9 +269,8 @@ func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedRetu
 }
 
 func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
@@ -347,9 +341,8 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-
-	mockClient := &mocks.MockClient{}
-	client, _ := NewClient(mockClient, "http://localhost:3000")
+	logger, mockClient := SetUpTest()
+	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
 	apiTaskTypes := []ApiTaskTypes{
 		{
