@@ -105,6 +105,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 
 		selectedTeamId, _ := strconv.Atoi(r.URL.Query().Get("change-team"))
+		logger.Print("selectedTeamId from URL " + r.URL.Query().Get("change-team"))
+		logger.Print("selectedTeamId from FORM " + r.FormValue("change-team"))
+
 		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
 
 		taskTypeSelected := r.Form["selected-task-type"]
@@ -117,6 +120,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 
 		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
+		if selectedTeamId == 0 {
+			selectedTeamId, _ = strconv.Atoi(r.FormValue("change-team"))
+		}
+
+		if selectedTeamId == 0 {
+			selectedTeamId = loggedInTeamId
+		}
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
@@ -125,6 +135,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 
 		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetTaskList error " + err.Error())
 			return err
@@ -132,6 +143,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if search > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 			search = taskList.Pages.PageTotal
 			taskList, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
 				return err
@@ -141,12 +153,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
 
 		teamSelection, err := client.GetTeamsForSelection(ctx, selectedTeamId, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetTeamsForSelection error " + err.Error())
 			return err
 		}
 
 		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, selectedTeamId, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetAssigneesForFilter error " + err.Error())
 			return err
