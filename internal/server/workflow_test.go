@@ -21,7 +21,6 @@ type mockWorkflowInformation struct {
 	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
 	assignees         sirius.AssigneesTeam
-	teamId            int
 	appliedFilters    []string
 }
 
