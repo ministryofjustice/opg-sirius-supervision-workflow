@@ -90,15 +90,17 @@ func createTaskIdForUrl(taskIdArray []string) string {
 }
 
 func getSelectedTeamId(r *http.Request, loggedInTeamId int) int {
-	selectedTeamId, _ := strconv.Atoi(r.URL.Query().Get("change-team"))
-	if selectedTeamId == 0 {
-		selectedTeamId, _ = strconv.Atoi(r.FormValue("change-team"))
+	selectedTeamIdFromUrl, _ := strconv.Atoi(r.URL.Query().Get("change-team"))
+
+	if selectedTeamIdFromUrl == 0 {
+		selectedTeamIdFromForm, _ := strconv.Atoi(r.FormValue("change-team"))
+		if selectedTeamIdFromForm == 0 {
+			return loggedInTeamId
+		}
+		return selectedTeamIdFromForm
 	}
 
-	if selectedTeamId == 0 {
-		selectedTeamId = loggedInTeamId
-	}
-	return selectedTeamId
+	return selectedTeamIdFromUrl
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
