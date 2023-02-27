@@ -147,9 +147,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
 		selectedTeamId := getSelectedTeamId(r, loggedInTeamId)
-
 		urlSelectedTeamId := changeSelectedTeamIdForForm(r, selectedTeamId)
-
 		assigneeSelected = resetAssignees(urlSelectedTeamId, selectedTeamId, assigneeSelected)
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
