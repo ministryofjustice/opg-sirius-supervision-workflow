@@ -31,6 +31,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
 	AppliedFilters []string
+	TeamIdFromForm int
 	SuccessMessage string
 	Error          string
 	Errors         sirius.ValidationErrors
@@ -103,6 +104,21 @@ func getSelectedTeamId(r *http.Request, loggedInTeamId int) int {
 	return selectedTeamIdFromUrl
 }
 
+func resetAssignees(urlSelectedTeamId int, selectedTeamId int, assigneeSelected []string) []string {
+	if urlSelectedTeamId != selectedTeamId {
+		return nil
+	}
+	return assigneeSelected
+}
+
+func changeSelectedTeamIdForForm(r *http.Request, selectedTeamId int) int {
+	urlSelectedTeamId, _ := strconv.Atoi(r.URL.Query().Get("teamIdFromForm"))
+	if urlSelectedTeamId == 0 {
+		urlSelectedTeamId = selectedTeamId
+	}
+	return urlSelectedTeamId
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -131,6 +147,10 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
 		selectedTeamId := getSelectedTeamId(r, loggedInTeamId)
+
+		urlSelectedTeamId := changeSelectedTeamIdForForm(r, selectedTeamId)
+
+		assigneeSelected = resetAssignees(urlSelectedTeamId, selectedTeamId, assigneeSelected)
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
@@ -182,6 +202,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			TeamSelection:  teamSelection,
 			Assignees:      assigneesForFilter,
 			AppliedFilters: appliedFilters,
+			TeamIdFromForm: selectedTeamId,
 		}
 
 		if err != nil {
