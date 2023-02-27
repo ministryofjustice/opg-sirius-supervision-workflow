@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
@@ -467,14 +466,12 @@ func TestChangeSelectedTeamIdForFormWillReturnLoggedInTeamId(t *testing.T) {
 
 func TestResetAssigneesWillReturnNil(t *testing.T) {
 	selectedAssignee := []string{"1", "2", "3"}
-	fmt.Println("selectedAssignee: ", selectedAssignee)
 	actualTeamId := resetAssignees(4, 55, selectedAssignee)
 	assert.Equal(t, []string(nil), actualTeamId)
 }
 
 func TestResetAssigneesWillReturnSelectedAssignees(t *testing.T) {
 	selectedAssignee := []string{"1", "2", "3"}
-	fmt.Println("selectedAssignee: ", selectedAssignee)
 	actualTeamId := resetAssignees(55, 55, selectedAssignee)
 	assert.Equal(t, selectedAssignee, actualTeamId)
 }
