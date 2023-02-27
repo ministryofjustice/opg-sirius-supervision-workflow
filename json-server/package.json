@@ -10,7 +10,7 @@
     "author": "",
     "dependencies": {
         "concurrently": "^7.4.0",
-        "json-server": "0.17.1",
+        "json-server": "0.17.2",
         "onchange": "^7.1.0"
     }
 }
