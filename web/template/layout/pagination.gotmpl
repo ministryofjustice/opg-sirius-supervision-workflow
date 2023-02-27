@@ -75,6 +75,7 @@
             <option value="100" id="display-rows_100"{{if eq .PageDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option>
           </select>
         </div>
+        <input type="hidden" name="currentTaskDisplay" value="{{ .PageDetails.StoredTaskLimit }}"/>
     </div>
   </nav>
 {{ end }}
