@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
@@ -253,6 +254,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
+		TeamIdFromForm: 13,
 	}, template.lastVars)
 
 }
@@ -272,7 +274,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "/path?page=10", nil)
+	r, _ := http.NewRequest("GET", "/path?page=10&TeamIdFromForm=13", nil)
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
@@ -331,6 +333,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
+		TeamIdFromForm: 13,
 	}, template.lastVars)
 
 }
@@ -448,4 +451,30 @@ func TestGetSelectedTeamIdNoneSelected(t *testing.T) {
 	r, _ := http.NewRequest("GET", "", nil)
 	actualTeamId := getSelectedTeamId(r, 20)
 	assert.Equal(t, 20, actualTeamId)
+}
+
+func TestChangeSelectedTeamIdForFormWillReturnNewValue(t *testing.T) {
+	r, _ := http.NewRequest("GET", "?change-team=13&teamIdFromForm=5", nil)
+	actualTeamId := changeSelectedTeamIdForForm(r, 13)
+	assert.Equal(t, 5, actualTeamId)
+}
+
+func TestChangeSelectedTeamIdForFormWillReturnLoggedInTeamId(t *testing.T) {
+	r, _ := http.NewRequest("GET", "?change-team=13", nil)
+	actualTeamId := changeSelectedTeamIdForForm(r, 13)
+	assert.Equal(t, 13, actualTeamId)
+}
+
+func TestResetAssigneesWillReturnNil(t *testing.T) {
+	selectedAssignee := []string{"1", "2", "3"}
+	fmt.Println("selectedAssignee: ", selectedAssignee)
+	actualTeamId := resetAssignees(4, 55, selectedAssignee)
+	assert.Equal(t, []string(nil), actualTeamId)
+}
+
+func TestResetAssigneesWillReturnSelectedAssignees(t *testing.T) {
+	selectedAssignee := []string{"1", "2", "3"}
+	fmt.Println("selectedAssignee: ", selectedAssignee)
+	actualTeamId := resetAssignees(55, 55, selectedAssignee)
+	assert.Equal(t, selectedAssignee, actualTeamId)
 }
