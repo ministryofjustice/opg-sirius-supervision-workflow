@@ -11,7 +11,6 @@ describe("Task list", () => {
     cy.contains("Case owner");
     cy.contains("Assigned to");
     cy.contains("Due date");
-    cy.contains("Actions");
   })
 
   it("has a message to show the team has no tasks", () => {
@@ -39,11 +38,7 @@ it("should have a table with the column Due date", () => {
   cy.get(".govuk-table__body > :nth-child(1) > :nth-child(6)").should("contain", "01/02/2021")
 })
 
-it("should have a table with the column Actions", () => {
-  cy.get(".govuk-table__body > :nth-child(1) > :nth-child(7)").should("contain", "Open case")
-})
-
-it("the button should have a link to the correct case", () => {
-    cy.get(".govuk-table__body > .govuk-table__row > :nth-child(7) > a").should('have.attr', 'href', 'http://localhost:8080/supervision/#/clients/3333')
+it("the client name should link to the correct case", () => {
+    cy.get(".govuk-table__body > .govuk-table__row > :nth-child(3) > a").should('have.attr', 'href', 'http://localhost:8080/supervision/#/clients/3333')
   })
 });

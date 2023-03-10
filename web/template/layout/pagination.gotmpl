@@ -1,5 +1,5 @@
 {{ define "pagination" }}
-<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label"  role="navigation" aria-label="results">
+<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-!-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label"  role="navigation" aria-label="results">
     <div class="flex-container">
         <p class="moj-pagination__results">Showing <b>
         {{ if le .PageDetails.ShowingLowerLimit .TaskList.TotalTasks }}

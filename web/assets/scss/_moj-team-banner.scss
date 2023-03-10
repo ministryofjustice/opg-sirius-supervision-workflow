@@ -1,6 +1,4 @@
 .moj-team-banner {
-  background: govuk-colour("blue");
-  margin-bottom: 1em;
   padding: govuk-spacing(3) 0;
 
   &__container {
@@ -8,7 +6,7 @@
     justify-content: space-between;
 
     .govuk-heading-m {
-      color: govuk-colour("white");
+      color: govuk-colour("black");
       margin: 0;
       line-height: 1.75;
     }
@@ -18,7 +16,7 @@
       margin-bottom: 0;
 
       .govuk-label {
-        color: govuk-colour("white");
+        color: govuk-colour("black");
         font-weight: bold;
         display: inline-block;
         margin-right: govuk-spacing(2);
