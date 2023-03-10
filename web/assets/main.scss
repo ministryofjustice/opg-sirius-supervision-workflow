@@ -8,6 +8,8 @@ $moj-assets-path: "/supervision/workflow/assets/";
 @import "./scss/sirius-workflow";
 @import "./scss/moj-team-banner";
 @import "./scss/moj-manage-tasks";
+@import "./scss/moj-filter";
+@import "./scss/moj-sub-navigation";
 
 .moj-header__container {
   max-width: 98%;
@@ -30,16 +32,6 @@ $moj-assets-path: "/supervision/workflow/assets/";
     max-height: 200px;
     overflow-y: scroll;
   }
-}
-
-.moj-filter__selected-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.moj-filter__heading-action {
-  line-height: 1.3157894737;
 }
 
 #actionFilter {
