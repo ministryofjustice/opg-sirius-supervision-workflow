@@ -5,9 +5,12 @@ $moj-assets-path: "/supervision/workflow/assets/";
 @import "node_modules/govuk-frontend/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
 @import "./scss/app-c-option-select";
-@import "./scss/sirius-workflow";
-@import "./scss/moj-team-banner";
+@import "./scss/moj-filter";
 @import "./scss/moj-manage-tasks";
+@import "./scss/moj-pagination";
+@import "./scss/moj-sub-navigation";
+@import "./scss/moj-team-banner";
+@import "./scss/sirius-workflow";
 
 .moj-header__container {
   max-width: 98%;
@@ -32,16 +35,6 @@ $moj-assets-path: "/supervision/workflow/assets/";
   }
 }
 
-.moj-filter__selected-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.moj-filter__heading-action {
-  line-height: 1.3157894737;
-}
-
 #actionFilter {
   margin-left: 1em;
 }
@@ -56,11 +49,4 @@ $moj-assets-path: "/supervision/workflow/assets/";
   all: unset;
   color: govuk-colour("blue");
   text-decoration: underline;
-}
-
-.moj-pagination__change-view-number {
-  .govuk-label {
-    display: inline-block;
-    margin-right: 0.5em;
-  }
 }
