@@ -23,7 +23,6 @@
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
-        <th scope="col" class="govuk-table__header govuk-table__header--date">Actions</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -50,9 +49,11 @@
               <label class="govuk-label" for="api-tasktype">{{ .TaskTypeName }}</label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="client-firstname-surname-caserec-number">
-                  {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
-                  <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
+              <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link" id="hook-open-case">
+                {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
+              </a>
+              <label class="govuk-label" for="client-caserec-number">
+                <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
               </label>
             </td>
             <td class="govuk-table__cell">
@@ -81,21 +82,17 @@
             <td class="govuk-table__cell">
               <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
             </td>
-            <td class="govuk-table__cell">
-              <label class="govuk-label" for="open-case-in-sirius"></label>
-              <a href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}" class="govuk-link {{ if eq .ClientInformation.ClientId 0 }}hide{{ end }}" id="hook-open-case">Open case</a>
-            </td>
           </tr>
         {{ end }}
       {{else if eq .TaskList.TotalTasks 0}}
         {{ $length := len .AppliedFilters }}
         {{ if eq $length 0 }}
           <tr class="govuk-table__row">
-              <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
+              <td colspan="6" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
           </tr>
         {{ else if ne $length 0}}
           <tr class="govuk-table__row">
-          <td colspan="7" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+          <td colspan="6" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
           </tr>
         {{ end }}
       {{ end }}
