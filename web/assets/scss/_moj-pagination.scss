@@ -1,0 +1,10 @@
+.moj-pagination {
+  margin: 0;
+
+  &__change-view-number {
+     .govuk-label {
+       display: inline-block;
+       margin-right: 0.5em;
+     }
+   }
+}
