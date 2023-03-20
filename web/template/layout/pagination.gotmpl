@@ -1,5 +1,5 @@
 {{ define "pagination" }}
-<nav class="moj-pagination govuk-!-margin-bottom-1 govuk-!-margin-top-1 govuk-padding-right-2 govuk-!-padding-left-2 ignore-pagination-bottom" id="pagination-label"  role="navigation" aria-label="results">
+<nav class="moj-pagination" id="pagination-label"  role="navigation" aria-label="results">
     <div class="flex-container">
         <p class="moj-pagination__results">Showing <b>
         {{ if le .PageDetails.ShowingLowerLimit .TaskList.TotalTasks }}
@@ -75,6 +75,7 @@
             <option value="100" id="display-rows_100"{{if eq .PageDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option>
           </select>
         </div>
+        <input type="hidden" name="currentTaskDisplay" value="{{ .PageDetails.StoredTaskLimit }}"/>
     </div>
   </nav>
 {{ end }}

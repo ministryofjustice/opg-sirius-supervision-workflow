@@ -1,12 +1,11 @@
 .app-c-option-select {
   position: relative;
   padding: 0 0 govuk-spacing(2);
-  margin-bottom: govuk-spacing(2);
   border-bottom: 1px solid govuk-colour("mid-grey");
 
   &__heading {
     position: relative;
-    padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(1) govuk-spacing(7);
+    padding: govuk-spacing(2) govuk-spacing(2) govuk-spacing(1) govuk-spacing(6);
     margin: 0;
   }
 
@@ -31,8 +30,8 @@
   }
   &__icon {
     position: absolute;
-    top: 0;
-    left: 9px;
+    top: 3px;
+    left: 0;
     width: 30px;
     height: 40px;
     fill: govuk-colour("black");

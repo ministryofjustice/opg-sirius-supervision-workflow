@@ -21,7 +21,6 @@ type mockWorkflowInformation struct {
 	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
 	assignees         sirius.AssigneesTeam
-	teamId            int
 	appliedFilters    []string
 }
 
@@ -45,14 +44,14 @@ func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelec
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, loggedInTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, int, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
 	m.count["GetTaskList"] += 1
 	m.lastCtx = ctx
 
-	return m.taskListData, m.teamId, m.err
+	return m.taskListData, m.err
 }
 func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
 	if m.count == nil {
@@ -179,73 +178,6 @@ func TestGetUserDetails(t *testing.T) {
 
 	resp := w.Result()
 	assert.Equal(http.StatusOK, resp.StatusCode)
-	// assert.Equal(getContext(r), client.lastCtx)
-
-	// assert.Equal(5, client.count)
-
-	// assert.Equal(1, template.count)
-	// assert.Equal("page", template.lastName)
-	// assert.Equal(workflowVars{
-	// 	Path: "/path",
-	// 	MyDetails: sirius.UserDetails{
-	// 		ID:        123,
-	// 		Firstname: "John",
-	// 		Surname:   "Doe",
-	// 		Teams: []sirius.MyDetailsTeam{
-	// 			{
-	// 				TeamId:      13,
-	// 				DisplayName: "Lay Team 1 - (Supervision)",
-	// 			},
-	// 		},
-	// 	},
-
-	// 	TaskList: sirius.TaskList{
-	// 		WholeTaskList: []sirius.ApiTask{
-	// 			{
-	// 				ApiTaskAssignee: sirius.AssigneeDetails{
-	// 					AssigneeDisplayName: "Assignee Duke Clive Henry Hetley Junior Jones",
-	// 				},
-	// 				ApiTaskCaseItems: []sirius.CaseItemsDetails{
-	// 					{
-	// 						CaseItemClient: sirius.ClientDetails{
-	// 							ClientCaseRecNumber: "caseRecNumber",
-	// 							ClientFirstName:     "Client Alexander Zacchaeus",
-	// 							ClientId:            3333,
-	// 							ClientSupervisionCaseOwner: sirius.SupervisionCaseOwnerDetail{
-	// 								SupervisionCaseOwnerName: "Supervision - Team - Name",
-	// 							},
-	// 							ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
-	// 						},
-	// 					},
-	// 				},
-	// 				ApiTaskDueDate: "01/02/2021",
-	// 				ApiTaskType:    "Case work - General",
-	// 			},
-	// 		},
-	// 	},
-	// 	LoadTasks: []sirius.ApiTaskTypes{
-	// 		{
-	// 			Handle:     "CDFC",
-	// 			Incomplete: "Correspondence - Review failed draft",
-	// 			Category:   "supervision",
-	// 			Complete:   "Correspondence - Reviewed draft failure",
-	// 			User:       true,
-	// 		},
-	// 	},
-	// 	TeamSelection: []sirius.TeamCollection{
-	// 		{
-	// 			Id: 13,
-	// 			Members: []sirius.TeamMembers{
-	// 				{
-	// 					TeamMembersId:   86,
-	// 					TeamMembersName: "LayTeam1 User11",
-	// 				},
-	// 			},
-	// 			Name: "Lay Team 1 - (Supervision)",
-	// 		},
-	// 	},
-	// }, template.lastVars)
-
 }
 
 func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
@@ -321,6 +253,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
+		TeamIdFromForm: 13,
 	}, template.lastVars)
 
 }
@@ -340,7 +273,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 	template := &mockTemplates{}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "/path?page=10", nil)
+	r, _ := http.NewRequest("GET", "/path?page=10&TeamIdFromForm=13", nil)
 
 	defaultWorkflowTeam := 19
 	handler := loggingInfoForWorkflow(client, template, defaultWorkflowTeam)
@@ -399,6 +332,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
+		TeamIdFromForm: 13,
 	}, template.lastVars)
 
 }
@@ -503,5 +437,41 @@ func TestCreateTaskIdForUrl(t *testing.T) {
 	assert.Equal(t, "", createTaskIdForUrl([]string{}))
 	assert.Equal(t, "15+16+17", createTaskIdForUrl([]string{"15", "16", "17"}))
 	assert.Equal(t, "15", createTaskIdForUrl([]string{"15"}))
+}
 
+func TestGetSelectedTeamId(t *testing.T) {
+	r, _ := http.NewRequest("GET", "?change-team=13", nil)
+
+	actualTeamId := getSelectedTeamId(r, 20)
+	assert.Equal(t, 13, actualTeamId)
+}
+
+func TestGetSelectedTeamIdNoneSelected(t *testing.T) {
+	r, _ := http.NewRequest("GET", "", nil)
+	actualTeamId := getSelectedTeamId(r, 20)
+	assert.Equal(t, 20, actualTeamId)
+}
+
+func TestChangeSelectedTeamIdForFormWillReturnNewValue(t *testing.T) {
+	r, _ := http.NewRequest("GET", "?change-team=13&teamIdFromForm=5", nil)
+	actualTeamId := changeSelectedTeamIdForForm(r, 13)
+	assert.Equal(t, 5, actualTeamId)
+}
+
+func TestChangeSelectedTeamIdForFormWillReturnLoggedInTeamId(t *testing.T) {
+	r, _ := http.NewRequest("GET", "?change-team=13", nil)
+	actualTeamId := changeSelectedTeamIdForForm(r, 13)
+	assert.Equal(t, 13, actualTeamId)
+}
+
+func TestResetAssigneesWillReturnNil(t *testing.T) {
+	selectedAssignee := []string{"1", "2", "3"}
+	actualTeamId := resetAssignees(4, 55, selectedAssignee)
+	assert.Equal(t, []string(nil), actualTeamId)
+}
+
+func TestResetAssigneesWillReturnSelectedAssignees(t *testing.T) {
+	selectedAssignee := []string{"1", "2", "3"}
+	actualTeamId := resetAssignees(55, 55, selectedAssignee)
+	assert.Equal(t, selectedAssignee, actualTeamId)
 }

@@ -13,7 +13,7 @@ import (
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, int, error)
+	GetTaskList(sirius.Context, int, int, int, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
@@ -31,6 +31,7 @@ type workflowVars struct {
 	TeamSelection  []sirius.ReturnedTeamCollection
 	Assignees      sirius.AssigneesTeam
 	AppliedFilters []string
+	TeamIdFromForm int
 	SuccessMessage string
 	Error          string
 	Errors         sirius.ValidationErrors
@@ -89,6 +90,35 @@ func createTaskIdForUrl(taskIdArray []string) string {
 	return taskIdForUrl
 }
 
+func getSelectedTeamId(r *http.Request, loggedInTeamId int) int {
+	selectedTeamIdFromUrl, _ := strconv.Atoi(r.URL.Query().Get("change-team"))
+
+	if selectedTeamIdFromUrl == 0 {
+		selectedTeamIdFromForm, _ := strconv.Atoi(r.FormValue("change-team"))
+		if selectedTeamIdFromForm == 0 {
+			return loggedInTeamId
+		}
+		return selectedTeamIdFromForm
+	}
+
+	return selectedTeamIdFromUrl
+}
+
+func resetAssignees(urlSelectedTeamId int, selectedTeamId int, assigneeSelected []string) []string {
+	if urlSelectedTeamId != selectedTeamId {
+		return nil
+	}
+	return assigneeSelected
+}
+
+func changeSelectedTeamIdForForm(r *http.Request, selectedTeamId int) int {
+	urlSelectedTeamId, _ := strconv.Atoi(r.URL.Query().Get("teamIdFromForm"))
+	if urlSelectedTeamId == 0 {
+		urlSelectedTeamId = selectedTeamId
+	}
+	return urlSelectedTeamId
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -97,15 +127,14 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		if search < 1 {
 			search = 1
 		}
-		selectedTeamId, _ := strconv.Atoi(r.FormValue("change-team"))
-
-		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
 
 		err := r.ParseForm()
 		if err != nil {
 			logger.Print("ParseForm error: " + err.Error())
 			return err
 		}
+
+		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
 
 		taskTypeSelected := r.Form["selected-task-type"]
 		assigneeSelected := r.Form["selected-assignee"]
@@ -117,6 +146,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 
 		loggedInTeamId := getLoggedInTeam(myDetails, defaultWorkflowTeam)
+		selectedTeamId := getSelectedTeamId(r, loggedInTeamId)
+		urlSelectedTeamId := changeSelectedTeamIdForForm(r, selectedTeamId)
+		assigneeSelected = resetAssignees(urlSelectedTeamId, selectedTeamId, assigneeSelected)
 
 		loadTaskTypes, err := client.GetTaskTypes(ctx, taskTypeSelected)
 		if err != nil {
@@ -124,14 +156,16 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		taskList, teamId, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
 		if search > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 			search = taskList.Pages.PageTotal
-			taskList, teamId, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			taskList, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
 				return err
@@ -140,19 +174,21 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
 
-		teamSelection, err := client.GetTeamsForSelection(ctx, teamId, assigneeSelected)
+		teamSelection, err := client.GetTeamsForSelection(ctx, selectedTeamId, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetTeamsForSelection error " + err.Error())
 			return err
 		}
 
-		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, teamId, assigneeSelected)
+		assigneesForFilter, err := client.GetAssigneesForFilter(ctx, selectedTeamId, assigneeSelected)
+
 		if err != nil {
 			logger.Print("GetAssigneesForFilter error " + err.Error())
 			return err
 		}
 
-		appliedFilters := client.GetAppliedFilters(teamId, loadTaskTypes, teamSelection, assigneesForFilter)
+		appliedFilters := client.GetAppliedFilters(selectedTeamId, loadTaskTypes, teamSelection, assigneesForFilter)
 
 		vars := workflowVars{
 			Path:           r.URL.Path,
@@ -164,6 +200,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			TeamSelection:  teamSelection,
 			Assignees:      assigneesForFilter,
 			AppliedFilters: appliedFilters,
+			TeamIdFromForm: selectedTeamId,
 		}
 
 		if err != nil {
@@ -215,7 +252,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
 			}
 
-			vars.TaskList, _, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, loggedInTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
+			vars.TaskList, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeamId, taskTypeSelected, loadTaskTypes, assigneeSelected)
 			if err != nil {
 				logger.Print("vars.TaskList error: " + err.Error())
 				return err
