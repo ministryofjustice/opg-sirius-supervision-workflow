@@ -17,7 +17,7 @@ type WorkflowInformation interface {
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
-	AssignTasksToCaseManager(sirius.Context, int, string) error
+	AssignTasksToCaseManager(sirius.Context, int, []string) error
 	GetAppliedFilters(int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
@@ -234,7 +234,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			taskIdArray := (r.Form["selected-tasks"])
-			taskIdForUrl := createTaskIdForUrl(taskIdArray)
+			//taskIdForUrl := createTaskIdForUrl(taskIdArray)
 
 			if err != nil {
 				logger.Print("taskIdForUrl error: " + err.Error())
@@ -242,7 +242,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
+			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdArray)
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return err
