@@ -3,7 +3,6 @@ package sirius
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -24,7 +23,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	if err != nil {
 		return err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, fmt.Sprintf("/api/v1/reassign-multiple-tasks"), &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/reassign-multiple-tasks", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
