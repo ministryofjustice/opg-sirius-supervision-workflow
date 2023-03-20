@@ -78,18 +78,6 @@ func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (in
 	return assigneeIdForTask, nil
 }
 
-func createTaskIdForUrl(taskIdArray []string) string {
-	taskIdForUrl := ""
-
-	for i := 0; i < len(taskIdArray); i++ {
-		taskIdForUrl += taskIdArray[i]
-		if i < (len(taskIdArray) - 1) {
-			taskIdForUrl += "+"
-		}
-	}
-	return taskIdForUrl
-}
-
 func getSelectedTeamId(r *http.Request, loggedInTeamId int) int {
 	selectedTeamIdFromUrl, _ := strconv.Atoi(r.URL.Query().Get("change-team"))
 
@@ -234,12 +222,6 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			taskIdArray := (r.Form["selected-tasks"])
-			//taskIdForUrl := createTaskIdForUrl(taskIdArray)
-
-			if err != nil {
-				logger.Print("taskIdForUrl error: " + err.Error())
-				return err
-			}
 
 			// Attempt to save
 			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdArray)
