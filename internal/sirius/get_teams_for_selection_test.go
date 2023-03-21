@@ -15,17 +15,60 @@ func TestGetTeamsForSelection(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
-	json := `[{
-			"id":21,"displayName":"Allocations - (Supervision)", "email":"allocations.team@opgtest.com", "phoneNumber":"0123456789",
+	json := `[
+		{
+			"id":21,
+			"displayName":"Allocations - (Supervision)",
+			"email":"allocations.team@opgtest.com",
+			"phoneNumber":"0123456789",
 			"members":[
 				{
-					"id":71,"displayName":"Allocations User1", "email":"allocations@opgtest.com"
+					"id":71,
+					"displayName":"Allocations User1",
+					"email":"allocations@opgtest.com"
 				}
 			],
 			"teamType":{
-				"handle":"ALLOCATIONS","label":"Allocations"
+				"handle":"ALLOCATIONS",
+				"label":"Allocations"
 			}
-		}]`
+		},
+		{
+			"id":22,
+			"displayName":"Lay Team 1",
+			"email":"lay.team.1@opgtest.com",
+			"phoneNumber":"0123456789",
+			"members":[],
+			"teamType":{
+				"handle":"LAY",
+				"label":"Lay Team"
+			}
+		},
+		{
+			"id":23,
+			"displayName":"Pro Team 1",
+			"email":"pro.team.1@opgtest.com",
+			"phoneNumber":"0123456789",
+			"members":[],
+			"teamType":{
+				"handle":"PRO",
+				"label":"Pro Team"
+			}
+		},
+		{
+			"id":24,
+			"displayName":"LPA Team",
+			"email":"lpa.team@opgtest.com",
+			"phoneNumber":"0987654321",
+			"members":[
+				{
+					"id":72,
+					"displayName":"LPA User1",
+					"email":"lpa.user@opgtest.com"
+				}
+			]
+		}
+	]`
 
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
@@ -38,22 +81,68 @@ func TestGetTeamsForSelection(t *testing.T) {
 
 	expectedResponse := []ReturnedTeamCollection{
 		{
-			Id: 21,
-			Members: []TeamMembers{
+			Id:        21,
+			Name:      "Allocations - (Supervision)",
+			Type:      "ALLOCATIONS",
+			TypeLabel: "Allocations",
+			Selector:  "21",
+			Members: []TeamMember{
 				{
-					TeamMembersId: 71, TeamMembersName: "Allocations User1", TeamMembersDisplayName: "",
+					ID:   71,
+					Name: "Allocations User1",
 				},
 			},
-			Name:             "Allocations - (Supervision)",
-			UserSelectedTeam: 21,
-			SelectedTeamId:   0,
-			Type:             "ALLOCATIONS",
-			TypeLabel:        "Allocations",
-			IsTeamSelected:   false,
+			Teams: []ReturnedTeamCollection{},
+		},
+		{
+			Id:        22,
+			Name:      "Lay Team 1",
+			Type:      "LAY",
+			TypeLabel: "Lay Team",
+			Selector:  "22",
+			Teams:     []ReturnedTeamCollection{},
+		},
+		{
+			Name:     "Lay deputy team",
+			Selector: "lay-team",
+			Members:  []TeamMember{},
+			Teams: []ReturnedTeamCollection{
+				{
+					Id:        22,
+					Name:      "Lay Team 1",
+					Type:      "LAY",
+					TypeLabel: "Lay Team",
+					Selector:  "22",
+					Teams:     []ReturnedTeamCollection{},
+				},
+			},
+		},
+		{
+			Id:        23,
+			Name:      "Pro Team 1",
+			Type:      "PRO",
+			TypeLabel: "Pro Team",
+			Selector:  "23",
+			Teams:     []ReturnedTeamCollection{},
+		},
+		{
+			Name:     "Professional deputy team",
+			Selector: "pro-team",
+			Members:  []TeamMember{},
+			Teams: []ReturnedTeamCollection{
+				{
+					Id:        23,
+					Name:      "Pro Team 1",
+					Type:      "PRO",
+					TypeLabel: "Pro Team",
+					Selector:  "23",
+					Teams:     []ReturnedTeamCollection{},
+				},
+			},
 		},
 	}
 
-	teams, err := client.GetTeamsForSelection(getContext(nil), 21, []string{""})
+	teams, err := client.GetTeamsForSelection(getContext(nil))
 	assert.Equal(t, expectedResponse, teams)
 	assert.Equal(t, nil, err)
 }
@@ -67,7 +156,7 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-	_, err := client.GetTeamsForSelection(getContext(nil), 21, []string{""})
+	_, err := client.GetTeamsForSelection(getContext(nil))
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
@@ -76,49 +165,59 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 	}, err)
 }
 
-func TestFilterOutNonLayTeamsReturnsOnlySupervisionTeams(t *testing.T) {
-	teamCollection := []ReturnedTeamCollection{
-		{
-			Name:      "Supervision Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
+func TestReturnedTeamCollection_GetAssigneesForFilter(t *testing.T) {
+	team := ReturnedTeamCollection{
+		Members: []TeamMember{
+			{ID: 1, Name: "B"},
+			{ID: 2, Name: "A"},
 		},
-		{
-			Name:      "LPA Team",
-			Type:      "",
-			TypeLabel: "",
-		},
-	}
-
-	expectedTeamCollection := []ReturnedTeamCollection{
-		{
-			Name:      "Supervision Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-		},
-	}
-
-	notExpectedTeamCollection := []ReturnedTeamCollection{
-		{
-			Name:      "LPA Team",
-			Type:      "",
-			TypeLabel: "",
+		Teams: []ReturnedTeamCollection{
+			{
+				Members: []TeamMember{
+					{ID: 4, Name: "D"},
+					{ID: 2, Name: "A"},
+					{ID: 3, Name: "C"},
+				},
+			},
+			{
+				Members: []TeamMember{
+					{ID: 3, Name: "C"},
+				},
+			},
 		},
 	}
 
-	assert.Equal(t, FilterOutNonLayTeams(teamCollection), expectedTeamCollection)
-	assert.NotEqual(t, FilterOutNonLayTeams(teamCollection), notExpectedTeamCollection)
+	expected := map[int]TeamMember{
+		2: {ID: 2, Name: "A"},
+		1: {ID: 1, Name: "B"},
+		3: {ID: 3, Name: "C"},
+		4: {ID: 4, Name: "D"},
+	}
+
+	assert.Equal(t, expected, team.GetAssigneesForFilter())
 }
 
-func TestGetIsTeamSelectedReturnsTrueIfTeamIdIsInAssigneeFiltersArrayAndAlsoEqualToMyTeamId(t *testing.T) {
-	assigneeSelectedWithTeam := []string{"15", "88", "89"}
-	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam, 15), true)
+func TestReturnedTeamCollection_HasTeam(t *testing.T) {
+	team := ReturnedTeamCollection{
+		Id: 10,
+		Teams: []ReturnedTeamCollection{
+			{Id: 12},
+			{Id: 13},
+		},
+	}
+
+	assert.Truef(t, team.HasTeam(10), "Parent team ID 10 not found")
+	assert.Truef(t, team.HasTeam(12), "Check team ID 12 not found")
+	assert.Truef(t, team.HasTeam(13), "Child team ID 13 not found")
+	assert.False(t, team.HasTeam(11), "Child team ID 11 should not exist")
 }
-func TestGetIsTeamSelectedReturnsFalseIfTeamIdIsNotEqualToMyTeamId(t *testing.T) {
-	assigneeSelectedWithTeam := []string{"15", "88", "89"}
-	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithTeam, 25), false)
-}
-func TestGetIsTeamSelectedReturnsFalseIfTeamIdIsNotInAssigneeFiltersArray(t *testing.T) {
-	assigneeSelectedWithoutTeam := []string{"99", "88", "89"}
-	assert.Equal(t, IsTeamSelected(15, assigneeSelectedWithoutTeam, 25), false)
+
+func TestTeamMember_IsSelected(t *testing.T) {
+	selectedTeamMember := TeamMember{ID: 10}
+	unselectedTeamMember := TeamMember{ID: 11}
+
+	selectedAssignees := []string{"9", "10", "12", "13"}
+
+	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team ID 10 is not selected")
+	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
 }

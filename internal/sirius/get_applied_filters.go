@@ -1,23 +1,21 @@
 package sirius
 
-func (c *Client) GetAppliedFilters(teamId int, loadTaskTypes []ApiTaskTypes, teamSelection []ReturnedTeamCollection, assigneesForFilter AssigneesTeam) []string {
+func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []string, selectedUnassigned string, taskTypes []ApiTaskTypes) []string {
 	var appliedFilters []string
 
-	for _, u := range loadTaskTypes {
+	for _, u := range taskTypes {
 		if u.IsSelected {
 			appliedFilters = append(appliedFilters, u.Incomplete)
 		}
 	}
 
-	for _, u := range teamSelection {
-		if u.IsTeamSelected && teamId == u.Id {
-			appliedFilters = append(appliedFilters, u.Name)
-		}
+	if selectedTeam.Selector == selectedUnassigned {
+		appliedFilters = append(appliedFilters, selectedTeam.Name)
 	}
 
-	for _, u := range assigneesForFilter.Members {
-		if u.IsSelected {
-			appliedFilters = append(appliedFilters, u.TeamMembersDisplayName)
+	for _, u := range selectedTeam.GetAssigneesForFilter() {
+		if u.IsSelected(selectedAssignees) {
+			appliedFilters = append(appliedFilters, u.Name)
 		}
 	}
 
