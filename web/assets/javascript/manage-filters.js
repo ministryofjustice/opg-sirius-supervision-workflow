@@ -3,11 +3,9 @@ export default class ManageFilters {
     this.filterComponents = element.querySelectorAll(".moj-filter__options");
 
     this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
-    this.inputElementAssigneeFilter =
-      element.querySelectorAll(".assignee-type");
+    this.inputElementAssigneeFilter = element.querySelectorAll(".assignee-type");
     this.urlForPage = window.location.search;
 
-    this.teamSelection = element.querySelectorAll(".change-teams");
     this._clearFilters();
     this._isFiltered();
     this._isFilteredByAssignee();
@@ -128,7 +126,7 @@ export default class ManageFilters {
         let hrefValue = this.urlForPage
           .split("&")
           .filter(
-            (param) => !param.includes("selected-assignee=" + assignee.value)
+            (param) => !param.includes("selected-assignee=" + assignee.value) && !param.includes("selected-unassigned=" + assignee.value)
           )
           .join("&");
         append +=
@@ -148,7 +146,7 @@ export default class ManageFilters {
       .join("&");
     let hrefValue = hrefValueWithoutSelectedTask
       .split("&")
-      .filter((param) => !param.includes("selected-assignee"))
+      .filter((param) => !param.includes("selected-assignee") && !param.includes("selected-unassigned"))
       .join("&");
     document.getElementById("clear-filters").setAttribute("href", hrefValue);
   }

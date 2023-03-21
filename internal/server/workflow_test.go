@@ -20,7 +20,6 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
-	assignees         sirius.AssigneesTeam
 	appliedFilters    []string
 }
 
@@ -44,7 +43,7 @@ func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelec
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId int, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -62,17 +61,7 @@ func (m *mockWorkflowInformation) GetPageDetails(taskList sirius.TaskList, searc
 	return m.pageDetailsData
 }
 
-func (m *mockWorkflowInformation) GetAssigneesForFilter(ctx sirius.Context, teamId int, assigneeSelected []string) (sirius.AssigneesTeam, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetAssigneesForFilter"] += 1
-	m.lastCtx = ctx
-
-	return m.assignees, m.err
-}
-
-func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamId int, assigneeSelected []string) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context) ([]sirius.ReturnedTeamCollection, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -90,15 +79,6 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 	m.lastCtx = ctx
 
 	return m.err
-}
-
-func (m *mockWorkflowInformation) GetAppliedFilters(teamId int, loadTaskTypes []sirius.ApiTaskTypes, teamSelection []sirius.ReturnedTeamCollection, assigneesForFilter sirius.AssigneesTeam) []string {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetAppliedFilters"] += 1
-
-	return m.appliedFilters
 }
 
 var mockUserDetailsData = sirius.UserDetails{
@@ -151,10 +131,10 @@ var mockTaskListData = sirius.TaskList{
 var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
 	{
 		Id: 13,
-		Members: []sirius.TeamMembers{
+		Members: []sirius.TeamMember{
 			{
-				TeamMembersId:   86,
-				TeamMembersName: "LayTeam1 User11",
+				ID:   86,
+				Name: "LayTeam1 User11",
 			},
 		},
 		Name: "Lay Team 1 - (Supervision)",
@@ -207,7 +187,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(7, len(client.count), client.count)
+	assert.Equal(5, len(client.count), client.count)
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
@@ -224,7 +204,6 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				},
 			},
 		},
-
 		TaskList: sirius.TaskList{
 			WholeTaskList: []sirius.ApiTask{{}},
 			Pages: sirius.PageInformation{
@@ -244,18 +223,29 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 		TeamSelection: []sirius.ReturnedTeamCollection{
 			{
 				Id: 13,
-				Members: []sirius.TeamMembers{
+				Members: []sirius.TeamMember{
 					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
+						ID:   86,
+						Name: "LayTeam1 User11",
 					},
 				},
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
-		TeamIdFromForm: 13,
+		SelectedTeam: sirius.ReturnedTeamCollection{
+			Id: 13,
+			Members: []sirius.TeamMember{
+				{
+					ID:   86,
+					Name: "LayTeam1 User11",
+				},
+			},
+			Name: "Lay Team 1 - (Supervision)",
+		},
+		SelectedAssignees:  []string{"13"},
+		SelectedUnassigned: "",
+		AppliedFilters:     []string{"Lay Team 1 - (Supervision)"},
 	}, template.lastVars)
-
 }
 
 func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.T) {
@@ -285,7 +275,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(getContext(r), client.lastCtx)
 
-	assert.Equal(7, len(client.count))
+	assert.Equal(5, len(client.count))
 	assert.Equal(2, client.count["GetTaskList"])
 
 	assert.Equal(1, template.count)
@@ -323,18 +313,29 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 		TeamSelection: []sirius.ReturnedTeamCollection{
 			{
 				Id: 13,
-				Members: []sirius.TeamMembers{
+				Members: []sirius.TeamMember{
 					{
-						TeamMembersId:   86,
-						TeamMembersName: "LayTeam1 User11",
+						ID:   86,
+						Name: "LayTeam1 User11",
 					},
 				},
 				Name: "Lay Team 1 - (Supervision)",
 			},
 		},
-		TeamIdFromForm: 13,
+		SelectedTeam: sirius.ReturnedTeamCollection{
+			Id: 13,
+			Members: []sirius.TeamMember{
+				{
+					ID:   86,
+					Name: "LayTeam1 User11",
+				},
+			},
+			Name: "Lay Team 1 - (Supervision)",
+		},
+		SelectedAssignees:  []string{"13"},
+		SelectedUnassigned: "",
+		AppliedFilters:     []string{"Lay Team 1 - (Supervision)"},
 	}, template.lastVars)
-
 }
 
 func TestWorkflowUnauthenticated(t *testing.T) {
@@ -396,8 +397,8 @@ func TestCheckForChangesToSelectedPagination(t *testing.T) {
 	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{}, "100"))
 }
 
-func TestGetLoggedInTeam(t *testing.T) {
-	assert.Equal(t, 13, getLoggedInTeam(sirius.UserDetails{
+func TestGetLoggedInTeamId(t *testing.T) {
+	assert.Equal(t, 13, getLoggedInTeamId(sirius.UserDetails{
 		ID:          65,
 		Name:        "case",
 		PhoneNumber: "12345678",
@@ -410,7 +411,7 @@ func TestGetLoggedInTeam(t *testing.T) {
 		DisplayName: "case manager",
 	}, 25))
 
-	assert.Equal(t, 25, getLoggedInTeam(sirius.UserDetails{
+	assert.Equal(t, 25, getLoggedInTeamId(sirius.UserDetails{
 		ID:          65,
 		Name:        "case",
 		DisplayName: "case manager",
@@ -439,39 +440,60 @@ func TestCreateTaskIdForUrl(t *testing.T) {
 	assert.Equal(t, "15", createTaskIdForUrl([]string{"15"}))
 }
 
-func TestGetSelectedTeamId(t *testing.T) {
-	r, _ := http.NewRequest("GET", "?change-team=13", nil)
+func TestGetSelectedTeam(t *testing.T) {
+	teams := []sirius.ReturnedTeamCollection{
+		{Selector: "1"},
+		{Selector: "13"},
+		{Selector: "2"},
+	}
 
-	actualTeamId := getSelectedTeamId(r, 20)
-	assert.Equal(t, 13, actualTeamId)
-}
-
-func TestGetSelectedTeamIdNoneSelected(t *testing.T) {
-	r, _ := http.NewRequest("GET", "", nil)
-	actualTeamId := getSelectedTeamId(r, 20)
-	assert.Equal(t, 20, actualTeamId)
-}
-
-func TestChangeSelectedTeamIdForFormWillReturnNewValue(t *testing.T) {
-	r, _ := http.NewRequest("GET", "?change-team=13&teamIdFromForm=5", nil)
-	actualTeamId := changeSelectedTeamIdForForm(r, 13)
-	assert.Equal(t, 5, actualTeamId)
-}
-
-func TestChangeSelectedTeamIdForFormWillReturnLoggedInTeamId(t *testing.T) {
-	r, _ := http.NewRequest("GET", "?change-team=13", nil)
-	actualTeamId := changeSelectedTeamIdForForm(r, 13)
-	assert.Equal(t, 13, actualTeamId)
-}
-
-func TestResetAssigneesWillReturnNil(t *testing.T) {
-	selectedAssignee := []string{"1", "2", "3"}
-	actualTeamId := resetAssignees(4, 55, selectedAssignee)
-	assert.Equal(t, []string(nil), actualTeamId)
-}
-
-func TestResetAssigneesWillReturnSelectedAssignees(t *testing.T) {
-	selectedAssignee := []string{"1", "2", "3"}
-	actualTeamId := resetAssignees(55, 55, selectedAssignee)
-	assert.Equal(t, selectedAssignee, actualTeamId)
+	tests := []struct {
+		name           string
+		url            string
+		loggedInTeamId int
+		defaultTeamId  int
+		expectedTeam   sirius.ReturnedTeamCollection
+		expectedError  error
+	}{
+		{
+			name:           "Select team from URL parameter",
+			url:            "?change-team=13",
+			loggedInTeamId: 1,
+			defaultTeamId:  2,
+			expectedTeam:   teams[1],
+			expectedError:  nil,
+		},
+		{
+			name:           "Select logged in team",
+			url:            "",
+			loggedInTeamId: 1,
+			defaultTeamId:  2,
+			expectedTeam:   teams[0],
+			expectedError:  nil,
+		},
+		{
+			name:           "Select default team if logged in team is not a valid team for Workflow",
+			url:            "",
+			loggedInTeamId: 20,
+			defaultTeamId:  2,
+			expectedTeam:   teams[2],
+			expectedError:  nil,
+		},
+		{
+			name:           "Return error if no valid team can be selected",
+			url:            "?change-team=16",
+			loggedInTeamId: 3,
+			defaultTeamId:  5,
+			expectedTeam:   sirius.ReturnedTeamCollection{},
+			expectedError:  errors.New("invalid team selection"),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			r, _ := http.NewRequest("GET", test.url, nil)
+			selectedTeam, err := getSelectedTeam(r, test.loggedInTeamId, test.defaultTeamId, teams)
+			assert.Equal(t, test.expectedTeam, selectedTeam)
+			assert.Equal(t, test.expectedError, err)
+		})
+	}
 }
