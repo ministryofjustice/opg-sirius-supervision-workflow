@@ -62,37 +62,13 @@ module.exports = function () {
         "email": "Allocations.team@opgtest.com",
         "members": [
           {
-            "id": 76,
-            "name": "Allocations",
+            "id": 766,
+            "name": "LayTeam1 User1",
             "phoneNumber": "12345678",
-            "displayName": "Allocations User4",
+            "displayName": "LayTeam1 User1",
             "deleted": false,
-            "email": "lay1-4@opgtest.com"
+            "email": "lay1-user1@opgtest.com"
           },
-          {
-            "id": 75,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User3",
-            "deleted": false,
-            "email": "lay1-3@opgtest.com"
-          },
-          {
-            "id": 74,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User2",
-            "deleted": false,
-            "email": "lay1-2@opgtest.com"
-          },
-          {
-            "id": 73,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User1",
-            "deleted": false,
-            "email": "lay1-1@opgtest.com"
-          }
         ],
         "teamType": {
           "handle": "LAY",

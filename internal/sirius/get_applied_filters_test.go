@@ -6,9 +6,6 @@ import (
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
 	apiTaskTypes := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -30,54 +27,45 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:             12,
-			Name:           "Lay Team 1 - (Supervision)",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        12,
+			Name:      "Lay Team 1 - (Supervision)",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Members: []TeamMember{
+				{
+					ID:   1,
+					Name: "Test One",
+				},
+				{
+					ID:   2,
+					Name: "Test Two",
+				},
+			},
+			Selector: "12",
 		},
 		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        13,
+			Name:      "Allocations Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "13",
 		},
 	}
 
-	assigneeTeam := AssigneesTeam{
-		Id:   12,
-		Name: "Lay Team 1 - (Supervision)",
-		Members: []AssigneeTeamMembers{
-			{
-				TeamMembersId:          1,
-				TeamMembersName:        "Test One",
-				TeamMembersDisplayName: "Test One",
-				IsSelected:             false,
-			},
-			{
-				TeamMembersId:          2,
-				TeamMembersName:        "Test Two",
-				TeamMembersDisplayName: "Test Two",
-				IsSelected:             false,
-			},
-		},
-	}
+	var selectedAssignees []string
+	var selectedUnassigned string
 
 	expectedFilter := []string{
 		"Casework - General",
 	}
 
-	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 1, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
 	apiTaskTypes := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -99,38 +87,36 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:             12,
-			Name:           "Lay Team 1 - (Supervision)",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        12,
+			Name:      "Lay Team 1 - (Supervision)",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "12",
 		},
 		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        13,
+			Name:      "Allocations Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "13",
 		},
 	}
 
-	assigneeTeam := AssigneesTeam{}
+	var selectedAssignees []string
+	var selectedUnassigned string
 
 	expectedFilter := []string{
 		"Casework - General",
 		"Order - Allocate to team",
 	}
 
-	appliedFilters := client.GetAppliedFilters(12, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
 }
 
-func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
+func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *testing.T) {
 	apiTaskTypes := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -152,126 +138,46 @@ func TestGetAppliedFiltersSingleTaskSingleTeamFilterSelectedReturned(t *testing.
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:             12,
-			Name:           "Supervision Team 1",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        12,
+			Name:      "Supervision Team 1",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "12",
 		},
 		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: true,
+			Id:        13,
+			Name:      "Allocations Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Members: []TeamMember{
+				{
+					ID:   1,
+					Name: "Test One",
+				},
+				{
+					ID:   2,
+					Name: "Test Two",
+				},
+			},
+			Selector: "13",
 		},
 	}
 
-	assigneeTeam := AssigneesTeam{
-		Id:   13,
-		Name: "Lay Team 1 - (Supervision)",
-		Members: []AssigneeTeamMembers{
-			{
-				TeamMembersId:          1,
-				TeamMembersName:        "Test One",
-				TeamMembersDisplayName: "Test One",
-				IsSelected:             false,
-			},
-			{
-				TeamMembersId:          2,
-				TeamMembersName:        "Test Two",
-				TeamMembersDisplayName: "Test Two",
-				IsSelected:             false,
-			},
-		},
-	}
+	selectedAssignees := []string{"2"}
+	var selectedUnassigned string
 
 	expectedFilter := []string{
 		"Order - Allocate to team",
-		"Allocations Team",
-	}
-
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
-
-	assert.Equal(t, expectedFilter, appliedFilters)
-	assert.Equal(t, 2, len(appliedFilters))
-}
-
-func TestGetAppliedFiltersSingleTaskSingleTeamSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
-	apiTaskTypes := []ApiTaskTypes{
-		{
-			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
-			IsSelected: false,
-		},
-		{
-			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
-			IsSelected: true,
-		},
-	}
-
-	teamCollection := []ReturnedTeamCollection{
-		{
-			Id:             12,
-			Name:           "Supervision Team 1",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
-		},
-		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: true,
-		},
-	}
-
-	assigneeTeam := AssigneesTeam{
-		Id:   13,
-		Name: "Allocations Team",
-		Members: []AssigneeTeamMembers{
-			{
-				TeamMembersId:          1,
-				TeamMembersName:        "Test One",
-				TeamMembersDisplayName: "Test One",
-				IsSelected:             false,
-			},
-			{
-				TeamMembersId:          2,
-				TeamMembersName:        "Test Two",
-				TeamMembersDisplayName: "Test Two",
-				IsSelected:             true,
-			},
-		},
-	}
-
-	expectedFilter := []string{
-		"Order - Allocate to team",
-		"Allocations Team",
 		"Test Two",
 	}
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
-	assert.Equal(t, 3, len(appliedFilters))
+	assert.Equal(t, 2, len(appliedFilters))
 }
 
-func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
+func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelectedReturned(t *testing.T) {
 	apiTaskTypes := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -293,39 +199,33 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:             12,
-			Name:           "Supervision Team 1",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: true,
+			Id:        12,
+			Name:      "Supervision Team 1",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "12",
 		},
 		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: true,
+			Id:        13,
+			Name:      "Allocations Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Members: []TeamMember{
+				{
+					ID:   1,
+					Name: "Test One",
+				},
+				{
+					ID:   2,
+					Name: "Test Two",
+				},
+			},
+			Selector: "13",
 		},
 	}
 
-	assigneeTeam := AssigneesTeam{
-		Id:   13,
-		Name: "Allocations Team",
-		Members: []AssigneeTeamMembers{
-			{
-				TeamMembersId:          1,
-				TeamMembersName:        "Test One",
-				TeamMembersDisplayName: "Test One",
-				IsSelected:             true,
-			},
-			{
-				TeamMembersId:          2,
-				TeamMembersName:        "Test Two",
-				TeamMembersDisplayName: "Test Two",
-				IsSelected:             false,
-			},
-		},
-	}
+	selectedAssignees := []string{"1"}
+	selectedUnassigned := teamCollection[1].Selector
 
 	expectedFilter := []string{
 		"Casework - General",
@@ -334,16 +234,13 @@ func TestGetAppliedFiltersMultipleTasksMultipleTeamsSingleTeamMemberFilterSelect
 		"Test One",
 	}
 
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 4, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
-
 	apiTaskTypes := []ApiTaskTypes{
 		{
 			Handle:     "CWGN",
@@ -365,43 +262,36 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:             12,
-			Name:           "Supervision Team 1",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        12,
+			Name:      "Supervision Team 1",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Selector:  "12",
 		},
 		{
-			Id:             13,
-			Name:           "Allocations Team",
-			Type:           "Supervision",
-			TypeLabel:      "Only",
-			IsTeamSelected: false,
+			Id:        13,
+			Name:      "Allocations Team",
+			Type:      "Supervision",
+			TypeLabel: "Only",
+			Members: []TeamMember{
+				{
+					ID:   1,
+					Name: "Test One",
+				},
+				{
+					ID:   2,
+					Name: "Test Two",
+				},
+			},
+			Selector: "13",
 		},
 	}
 
-	assigneeTeam := AssigneesTeam{
-		Id:   13,
-		Name: "Allocations Team",
-		Members: []AssigneeTeamMembers{
-			{
-				TeamMembersId:          1,
-				TeamMembersName:        "Test One",
-				TeamMembersDisplayName: "Test One",
-				IsSelected:             false,
-			},
-			{
-				TeamMembersId:          2,
-				TeamMembersName:        "Test Two",
-				TeamMembersDisplayName: "Test Two",
-				IsSelected:             false,
-			},
-		},
-	}
+	var selectedAssignees []string
+	var selectedUnassigned string
+	var expectedFilter []string
 
-	expectedFilter := []string(nil)
-
-	appliedFilters := client.GetAppliedFilters(13, apiTaskTypes, teamCollection, assigneeTeam)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 0, len(appliedFilters))
