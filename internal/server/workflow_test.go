@@ -20,7 +20,6 @@ type mockWorkflowInformation struct {
 	taskListData      sirius.TaskList
 	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
-	appliedFilters    []string
 }
 
 func (m *mockWorkflowInformation) GetCurrentUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
