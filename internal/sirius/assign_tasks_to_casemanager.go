@@ -23,7 +23,7 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	if err != nil {
 		return err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/reassign-multiple-tasks", &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/reassign-tasks", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

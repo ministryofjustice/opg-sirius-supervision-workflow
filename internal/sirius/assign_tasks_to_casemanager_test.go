@@ -40,7 +40,7 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
-		URL:    svr.URL + "/api/v1/reassign-multiple-tasks",
+		URL:    svr.URL + "/api/v1/reassign-tasks",
 		Method: http.MethodPut,
 	}, err)
 }
@@ -70,7 +70,7 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/reassign-multiple-tasks",
+		URL:    svr.URL + "/api/v1/reassign-tasks",
 		Method: http.MethodPut,
 	}
 
