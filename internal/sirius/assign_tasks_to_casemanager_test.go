@@ -23,7 +23,7 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 		}, nil
 	}
 
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
+	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"})
 	assert.Equal(t, nil, err)
 }
 
@@ -36,11 +36,11 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
+	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"})
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
-		URL:    svr.URL + "/api/v1/users/53/tasks/76",
+		URL:    svr.URL + "/api/v1/reassign-tasks",
 		Method: http.MethodPut,
 	}, err)
 }
@@ -53,7 +53,7 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 	defer svr.Close()
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
+	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"})
 	assert.Equal(t, ErrUnauthorized, err)
 }
 
@@ -66,11 +66,11 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	defer svr.Close()
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, "76")
+	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"})
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/users/53/tasks/76",
+		URL:    svr.URL + "/api/v1/reassign-tasks",
 		Method: http.MethodPut,
 	}
 
