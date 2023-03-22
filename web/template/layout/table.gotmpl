@@ -26,12 +26,6 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-    {{ $teamInDropDown := "" }}
-    {{ range .TeamSelection}}
-      {{if eq .Id .UserSelectedTeam}}
-        {{ $teamInDropDown = .Name }}
-      {{ end }}
-    {{ end }}
       {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
           <tr class="govuk-table__row">
@@ -67,9 +61,9 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-name-and-team">
-                {{ if eq .ApiTaskAssignee.CaseManagerName $teamInDropDown}}
+                {{ if $.SelectedTeam.HasTeam .ApiTaskAssignee.Id }}
                   Not assigned
-                {{ else }} 
+                {{ else }}
                   {{ .ApiTaskAssignee.CaseManagerName }}
                 {{ end }}
                 {{ if .ApiTaskAssignee.Team }}

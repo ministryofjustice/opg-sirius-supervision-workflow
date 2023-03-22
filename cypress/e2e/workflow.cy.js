@@ -13,7 +13,7 @@ describe("Work flow", () => {
     "Supervision",
     "LPA",
     "Log out",
-];
+  ];
 
   it("has working nav links within banner", () => {
     cy.get(".moj-header__navigation-list")
