@@ -7,8 +7,8 @@ import (
 )
 
 type ReassignTaskDetails struct {
-	UserId  int      `json:"userId"`
-	TaskIds []string `json:"taskIds"`
+	AssigneeId int      `json:"assigneeId"`
+	TaskIds    []string `json:"taskIds"`
 }
 
 func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string) error {
@@ -16,8 +16,8 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
-		UserId:  newAssigneeIdForTask,
-		TaskIds: taskIds,
+		AssigneeId: newAssigneeIdForTask,
+		TaskIds:    taskIds,
 	})
 
 	if err != nil {
