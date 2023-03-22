@@ -187,11 +187,11 @@ func TestReturnedTeamCollection_GetAssigneesForFilter(t *testing.T) {
 		},
 	}
 
-	expected := map[int]TeamMember{
-		2: {ID: 2, Name: "A"},
-		1: {ID: 1, Name: "B"},
-		3: {ID: 3, Name: "C"},
-		4: {ID: 4, Name: "D"},
+	expected := []TeamMember{
+		{ID: 2, Name: "A"},
+		{ID: 1, Name: "B"},
+		{ID: 3, Name: "C"},
+		{ID: 4, Name: "D"},
 	}
 
 	assert.Equal(t, expected, team.GetAssigneesForFilter())

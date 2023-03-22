@@ -38,20 +38,22 @@ type ReturnedTeamCollection struct {
 	Teams     []ReturnedTeamCollection
 }
 
-func (r ReturnedTeamCollection) GetAssigneesForFilter() map[int]TeamMember {
+func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
 	assignees := r.Members
 	for _, team := range r.Teams {
 		assignees = append(assignees, team.Members...)
 	}
-	sort.Slice(assignees, func(i, j int) bool {
-		return assignees[i].Name < assignees[j].Name
-	})
-	deduped := map[int]TeamMember{}
+	ids := map[int]bool{}
+	var deduped []TeamMember
 	for _, assignee := range assignees {
-		if _, exists := deduped[assignee.ID]; !exists {
-			deduped[assignee.ID] = assignee
+		if _, value := ids[assignee.ID]; !value {
+			ids[assignee.ID] = true
+			deduped = append(deduped, assignee)
 		}
 	}
+	sort.Slice(deduped, func(i, j int) bool {
+		return deduped[i].Name < deduped[j].Name
+	})
 	return deduped
 }
 
