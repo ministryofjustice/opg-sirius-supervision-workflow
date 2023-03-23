@@ -17,7 +17,7 @@ type WorkflowInformation interface {
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context, int, []string) ([]sirius.ReturnedTeamCollection, error)
 	GetAssigneesForFilter(sirius.Context, int, []string) (sirius.AssigneesTeam, error)
-	AssignTasksToCaseManager(sirius.Context, int, string) error
+	AssignTasksToCaseManager(sirius.Context, int, []string) error
 	GetAppliedFilters(int, []sirius.ApiTaskTypes, []sirius.ReturnedTeamCollection, sirius.AssigneesTeam) []string
 }
 
@@ -76,18 +76,6 @@ func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (in
 		return 0, err
 	}
 	return assigneeIdForTask, nil
-}
-
-func createTaskIdForUrl(taskIdArray []string) string {
-	taskIdForUrl := ""
-
-	for i := 0; i < len(taskIdArray); i++ {
-		taskIdForUrl += taskIdArray[i]
-		if i < (len(taskIdArray) - 1) {
-			taskIdForUrl += "+"
-		}
-	}
-	return taskIdForUrl
 }
 
 func getSelectedTeamId(r *http.Request, loggedInTeamId int) int {
@@ -234,15 +222,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			taskIdArray := (r.Form["selected-tasks"])
-			taskIdForUrl := createTaskIdForUrl(taskIdArray)
-
-			if err != nil {
-				logger.Print("taskIdForUrl error: " + err.Error())
-				return err
-			}
 
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdForUrl)
+			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdArray)
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return err
