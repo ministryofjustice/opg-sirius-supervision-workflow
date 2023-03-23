@@ -82,7 +82,7 @@ func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context, teamI
 	return m.teamSelectionData, m.err
 }
 
-func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask string) error {
+func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string) error {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -431,12 +431,6 @@ func TestGetAssigneeIdForTask(t *testing.T) {
 	expectedAssigneeId, expectedError = getAssigneeIdForTask(logger, "", "")
 	assert.Equal(t, expectedAssigneeId, 0)
 	assert.Nil(t, expectedError)
-}
-
-func TestCreateTaskIdForUrl(t *testing.T) {
-	assert.Equal(t, "", createTaskIdForUrl([]string{}))
-	assert.Equal(t, "15+16+17", createTaskIdForUrl([]string{"15", "16", "17"}))
-	assert.Equal(t, "15", createTaskIdForUrl([]string{"15"}))
 }
 
 func TestGetSelectedTeamId(t *testing.T) {
