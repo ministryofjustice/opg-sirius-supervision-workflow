@@ -53,8 +53,10 @@ WORKDIR /go/bin
 
 RUN apk --update --no-cache add \
     ca-certificates \
-    && rm -rf /var/cache/apk/*
-RUN apk --no-cache add tzdata
+    tzdata
+
+# Patch vulnerabilities
+RUN apk upgrade --no-cache libcrypto3 libssl3
 
 COPY --from=build-env /go/bin/opg-sirius-workflow opg-sirius-workflow
 COPY --from=build-env /app/web/template web/template
