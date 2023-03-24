@@ -3,13 +3,13 @@ package sirius
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
-type TeamMembers struct {
-	TeamMembersId          int    `json:"id"`
-	TeamMembersName        string `json:"name"`
-	TeamMembersDisplayName string `json:"displayName"`
+type TeamMember struct {
+	ID   int    `json:"id"`
+	Name string `json:"displayName"`
 }
 
 type TeamCollection struct {
@@ -29,25 +29,59 @@ type TeamCollection struct {
 }
 
 type ReturnedTeamCollection struct {
-	Id               int
-	Members          []TeamMembers
-	Name             string
-	UserSelectedTeam int
-	SelectedTeamId   int
-	Type             string
-	TypeLabel        string
-	IsTeamSelected   bool
+	Id        int
+	Members   []TeamMember
+	Name      string
+	Type      string
+	TypeLabel string
+	Selector  string
+	Teams     []ReturnedTeamCollection
 }
 
-type TeamStoredData struct {
-	TeamId       int
-	SelectedTeam int
+func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
+	assignees := r.Members
+	for _, team := range r.Teams {
+		assignees = append(assignees, team.Members...)
+	}
+	ids := map[int]bool{}
+	var deduped []TeamMember
+	for _, assignee := range assignees {
+		if _, value := ids[assignee.ID]; !value {
+			ids[assignee.ID] = true
+			deduped = append(deduped, assignee)
+		}
+	}
+	sort.Slice(deduped, func(i, j int) bool {
+		return deduped[i].Name < deduped[j].Name
+	})
+	return deduped
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected []string) ([]ReturnedTeamCollection, error) {
+func (r ReturnedTeamCollection) HasTeam(id int) bool {
+	if r.Id == id {
+		return true
+	}
+	for _, t := range r.Teams {
+		if t.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (m TeamMember) IsSelected(selectedAssignees []string) bool {
+	for _, a := range selectedAssignees {
+		id, _ := strconv.Atoi(a)
+		if m.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, error) {
 	var v []TeamCollection
 	var q []ReturnedTeamCollection
-	var k TeamStoredData
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
@@ -76,57 +110,57 @@ func (c *Client) GetTeamsForSelection(ctx Context, teamId int, assigneeSelected 
 		return q, err
 	}
 
-	k.TeamId = teamId
+	layTeam := ReturnedTeamCollection{
+		Members:  []TeamMember{},
+		Name:     "Lay deputy team",
+		Selector: "lay-team",
+		Teams:    []ReturnedTeamCollection{},
+	}
 
-	teams := make([]ReturnedTeamCollection, len(v))
+	proTeam := ReturnedTeamCollection{
+		Members:  []TeamMember{},
+		Name:     "Professional deputy team",
+		Selector: "pro-team",
+		Teams:    []ReturnedTeamCollection{},
+	}
 
-	for i, t := range v {
-		teams[i] = ReturnedTeamCollection{
-			Id:             t.ID,
-			Name:           t.DisplayName,
-			Type:           "",
-			IsTeamSelected: IsTeamSelected(teamId, assigneeSelected, t.ID),
+	for _, t := range v {
+		if t.TeamType == nil {
+			continue
+		}
+
+		team := ReturnedTeamCollection{
+			Id:        t.ID,
+			Name:      t.DisplayName,
+			Type:      t.TeamType.Handle,
+			TypeLabel: t.TeamType.Label,
+			Selector:  strconv.Itoa(t.ID),
+			Teams:     []ReturnedTeamCollection{},
 		}
 
 		for _, m := range t.Members {
-			teams[i].Members = append(teams[i].Members, TeamMembers{
-				TeamMembersId:   m.ID,
-				TeamMembersName: m.DisplayName,
+			team.Members = append(team.Members, TeamMember{
+				ID:   m.ID,
+				Name: m.DisplayName,
 			})
 		}
 
-		for i := range teams {
-			teams[i].UserSelectedTeam = k.TeamId
-			teams[i].SelectedTeamId = k.SelectedTeam
+		if t.TeamType.Handle == "LAY" {
+			layTeam.Members = append(layTeam.Members, team.Members...)
+			layTeam.Teams = append(layTeam.Teams, team)
+		} else if t.TeamType.Handle == "PRO" {
+			proTeam.Members = append(proTeam.Members, team.Members...)
+			proTeam.Teams = append(proTeam.Teams, team)
+		}
 
-		}
-		if t.TeamType != nil {
-			teams[i].Type = t.TeamType.Handle
-			teams[i].TypeLabel = t.TeamType.Label
-		}
+		q = append(q, team)
 	}
 
-	teams = FilterOutNonLayTeams(teams)
+	q = append(q, layTeam, proTeam)
 
-	return teams, err
-}
+	sort.Slice(q, func(i, j int) bool {
+		return q[i].Name < q[j].Name
+	})
 
-func FilterOutNonLayTeams(v []ReturnedTeamCollection) []ReturnedTeamCollection {
-	var filteredTeams []ReturnedTeamCollection
-	for _, s := range v {
-		if len(s.Type) != 0 {
-			filteredTeams = append(filteredTeams, s)
-		}
-	}
-	return filteredTeams
-}
-
-func IsTeamSelected(teamId int, assigneeSelected []string, myTeamId int) bool {
-	for _, q := range assigneeSelected {
-		assigneeSelectedAsAString, _ := strconv.Atoi(q)
-		if teamId == assigneeSelectedAsAString && teamId == myTeamId {
-			return true
-		}
-	}
-	return false
+	return q, err
 }

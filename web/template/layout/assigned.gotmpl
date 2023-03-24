@@ -13,36 +13,27 @@
     </div>
   </div>
 
-    {{/* <div class="app-c-option-select__filter"> <label for="input-3eca3372" class="govuk-label govuk-visually-hidden">
-        Enter a name
-      </label>
-      <input name="option-select-filter" id="assignedSearch" class="filterCheckboxes app-c-option-select__filter-input govuk-input" type="text" aria-describedby="checkboxes-19682d1b-count" aria-controls="checkboxes-19682d1b">
-    </div> */}}
-
   <div role="group" aria-labelledby="option-select-title-countries" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list_of_assignee_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset">
         <div class="govuk-checkboxes govuk-checkboxes--small">
-          {{ range .TeamSelection }}
-            {{if eq .Id .UserSelectedTeam}}
-              <div class="govuk-checkboxes__item filter__checkbox">
-                <input class="govuk-checkboxes__input assigned assignee-type" id="Not Assigned" name="selected-assignee" type="checkbox" value="{{ .UserSelectedTeam }}" {{if .IsTeamSelected }}checked{{end}}>
-                {{end}}
-                {{ end }}
-                <label class="govuk-label govuk-checkboxes__label" for="">
-                  Not Assigned
-                </label>
-              </div>
-        </div>
-        {{ range .Assignees.Members }}
-        <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
-            <input class="govuk-checkboxes__input assigned assignee-type" id="{{.TeamMembersDisplayName}}" name="selected-assignee" type="checkbox" value="{{ .TeamMembersId }}" {{if .IsSelected }}checked{{end}}>
+            <input class="govuk-checkboxes__input assigned assignee-type" id="Not Assigned" name="selected-unassigned" type="checkbox" value="{{ .SelectedTeam.Selector }}" {{ if eq .SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
             <label class="govuk-label govuk-checkboxes__label" for="">
-              {{ .TeamMembersDisplayName }}
+              Not Assigned
             </label>
           </div>
         </div>
+
+        {{ range .SelectedTeam.GetAssigneesForFilter }}
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            <div class="govuk-checkboxes__item filter__checkbox">
+              <input class="govuk-checkboxes__input assigned assignee-type" id="{{ .Name }}" name="selected-assignee" type="checkbox" value="{{ .ID }}" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }}>
+              <label class="govuk-label govuk-checkboxes__label" for="">
+                {{ .Name }}
+              </label>
+            </div>
+          </div>
         {{ end }}
       </fieldset>
     </div>
