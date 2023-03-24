@@ -64,4 +64,10 @@ describe("Filters", () => {
     cy.get('[type="checkbox"]').eq(1).should('not.be.checked') 
   })
 
+  it("shows combined team member filters when viewing combined Lay teams", () => {
+    cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay deputy team")
+    cy.get(".moj-team-banner__container > h1").should('contain', "Lay deputy team")
+    cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam1 User1")
+    cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam2 User1")
+  })
 })
