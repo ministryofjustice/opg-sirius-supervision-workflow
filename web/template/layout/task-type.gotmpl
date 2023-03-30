@@ -1,3 +1,4 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "task-type" }}
 
 <div class="moj-filter__options" data-filter-name="moj-filter-name-tasktype">
@@ -14,21 +15,14 @@
     </div>
   </div>
 
-    {{/* <div class="app-c-option-select__filter"> <label for="input-3eca3372" class="govuk-label">
-        Enter a name
-      </label>
-      <input name="option-select-filter" id="taskSearch" class="filterCheckboxes app-c-option-select__filter-input govuk-input" type="text" aria-describedby="checkboxes-19682d1b-count" aria-controls="checkboxes-19682d1b">
-    </div> */}}
   <div role="group" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list_of_tasks_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner ">
       <fieldset class="govuk-fieldset">
-        {{/* <legend class="hide">Tasktypes</legend> */}}
         {{ range .LoadTasks }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
-              <input class="govuk-checkboxes__input task-type" id="{{ .Incomplete }}" name="selected-task-type" name="taskType" type="checkbox" value="{{ .Handle }}" {{if .IsSelected }}checked{{end}}>
-              <label class="govuk-label govuk-checkboxes__label" for="">{{ .Incomplete }}</label>
-              </input>
+              <input class="govuk-checkboxes__input" id="task_{{ .Handle }}" name="task-type" type="checkbox" value="{{ .Handle }}" data-module="filter" {{if .IsSelected }}checked{{end}} />
+              <label class="govuk-label govuk-checkboxes__label" for="task_{{ .Handle }}">{{ .Incomplete }}</label>
             </div>
           </div>
         {{ end }}
