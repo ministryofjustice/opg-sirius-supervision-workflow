@@ -1,19 +1,18 @@
 export default class ManageFilters {
   constructor(element) {
+    this.applyFilters = element.querySelector('[data-module="apply-filters"]');
+    this.clearFilters = element.querySelector('[data-module="clear-filters"]');
+    this.filters = element.querySelectorAll('[data-module="filter"]');
     this.filterComponents = element.querySelectorAll(".moj-filter__options");
 
-    this.inputElementTasktypeFilter = element.querySelectorAll(".task-type");
-    this.inputElementAssigneeFilter = element.querySelectorAll(".assignee-type");
-    this.urlForPage = window.location.search;
-
-    this._clearFilters();
-    this._isFiltered();
-    this._isFilteredByAssignee();
     this._setupEventListeners();
     this._setupFilters();
   }
 
   _setupEventListeners() {
+    this._applyFilters = this._applyFilters.bind(this);
+    this.applyFilters.addEventListener("click", this._applyFilters);
+
     this.filterComponents.forEach((element) => {
       this._toggleFilterVisibility = this._toggleFilterVisibility.bind(this);
       element
@@ -58,7 +57,7 @@ export default class ManageFilters {
     const filterName = filterElement.dataset.filterName;
 
     let isOpen = this._getFilterStatusFromLocalStorage(filterName);
-    isOpen = isOpen === true ? false : true;
+    isOpen = isOpen !== true;
 
     this._setFilterVisibility(filterElement, isOpen);
 
@@ -73,81 +72,19 @@ export default class ManageFilters {
     filterInnerContainer.classList.toggle("hide", !isOpen);
 
     filterArrowUp.setAttribute("aria-expanded", isOpen.toString());
-    filterArrowDown.setAttribute("aria-expanded", !isOpen.toString());
+    filterArrowDown.setAttribute("aria-expanded", (!isOpen).toString());
 
     filterArrowUp.classList.toggle("hide", !isOpen);
     filterArrowDown.classList.toggle("hide", isOpen);
   }
 
-  _isFiltered() {
-    let array = [];
-
-    this.inputElementTasktypeFilter.forEach((taskType) => {
-      if (taskType.checked) {
-        array.push(taskType);
+  _applyFilters() {
+    let url = this.clearFilters.getAttribute("href");
+    this.filters.forEach(function (filter) {
+      if (filter.checked) {
+        url += "&" + filter.name + "=" + filter.value
       }
     });
-
-    let append = "";
-
-    if (array.length) {
-      append +=
-        '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Task-type-hook">Task type</h3>';
-      array.forEach((taskType) => {
-        let hrefValue = this.urlForPage
-          .split("&")
-          .filter((param) => !param.includes(taskType.value))
-          .join("&");
-        append +=
-          `<li id=${taskType.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` +
-          taskType.id +
-          "</li>";
-      });
-    }
-
-    document.getElementById("applied-task-type-filters").innerHTML = append;
-  }
-
-  _isFilteredByAssignee() {
-    let array = [];
-
-    this.inputElementAssigneeFilter.forEach((assignee) => {
-      if (assignee.checked) {
-        array.push(assignee);
-      }
-    });
-
-    let append = "";
-
-    if (array.length) {
-      append +=
-        '<h3 class="govuk-heading-s govuk-!-margin-bottom-0" id="Assignee-hook">Assignees</h3>';
-      array.forEach((assignee) => {
-        let hrefValue = this.urlForPage
-          .split("&")
-          .filter(
-            (param) => !param.includes("selected-assignee=" + assignee.value) && !param.includes("selected-unassigned=" + assignee.value)
-          )
-          .join("&");
-        append +=
-          `<li id=${assignee.value}><a class="moj-filter__tag" href=${hrefValue}><span class="govuk-visually-hidden">Remove this filter</span>` +
-          assignee.id +
-          "</li>";
-      });
-    }
-
-    document.getElementById("applied-assignee-filters").innerHTML = append;
-  }
-
-  _clearFilters() {
-    let hrefValueWithoutSelectedTask = this.urlForPage
-      .split("&")
-      .filter((param) => !param.includes("selected-task-type"))
-      .join("&");
-    let hrefValue = hrefValueWithoutSelectedTask
-      .split("&")
-      .filter((param) => !param.includes("selected-assignee") && !param.includes("selected-unassigned"))
-      .join("&");
-    document.getElementById("clear-filters").setAttribute("href", hrefValue);
+    window.location.href = url;
   }
 }
