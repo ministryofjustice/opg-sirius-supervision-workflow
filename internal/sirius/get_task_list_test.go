@@ -448,9 +448,17 @@ func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
 	return v
 }
 
+func makeListOfPagesRange(min, max int) []int {
+	a := make([]int, max-min+1)
+	for i := range a {
+		a[i] = min + i
+	}
+	return a
+}
+
 func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
 
-	ListOfPages := MakeListOfPagesRange(1, lastPage)
+	ListOfPages := makeListOfPagesRange(1, lastPage)
 
 	taskList := TaskList{
 		Pages: PageInformation{

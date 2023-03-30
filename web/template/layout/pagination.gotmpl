@@ -1,3 +1,4 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "pagination" }}
 <nav class="moj-pagination" id="pagination-label"  role="navigation" aria-label="results">
     <div class="flex-container">
@@ -12,70 +13,62 @@
         {{ else }}
           {{.TaskList.TotalTasks}}
         {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
-        {{$currentPage := .TaskList.Pages.PageCurrent}}
         <div id="numbered-pages">
-          {{if ne $currentPage 1 }}
+          {{ if ne .PageDetails.CurrentPage 1 }}
               <div id="previous-page-pagination-link" class="govuk-pagination__prev">
-                <button type="submit" a class="govuk-link govuk-pagination__link moj-button" name="page" value="{{ .PageDetails.PreviousPage }}" rel="prev">
+                <a href="{{ .GetPaginationUrl .PageDetails.PreviousPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="prev">
                   <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
                     <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
                   </svg>
-                  <span class="govuk-pagination__link-title">Previous</span></button>
+                  <span class="govuk-pagination__link-title">Previous</span>
+                </a>
               </div>
           {{end}}
 
           <ul class="govuk-pagination__list">
-            {{if ne $currentPage 1 }}
-                {{ if gt .TaskList.Pages.PageTotal 2}}
-                    {{if gt $currentPage 3 }}
-                        <li id="first-page-pagination-link" class="govuk-pagination__item gov {{if eq .PageDetails.FirstPage $currentPage }}govuk-pagination__item--current{{end}}">
-                            <button type="submit" a class="govuk-pagination__link moj-button {{if eq .PageDetails.FirstPage $currentPage }} current{{end}}" name="page" value="{{ .PageDetails.FirstPage }}" >
-                                {{ .PageDetails.FirstPage }}
-                            </button>
-                        </li>
-                        <li id="first-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
-                    {{end}}
-                {{end}}
+            {{if and (ne .PageDetails.CurrentPage 1) (gt .TaskList.Pages.PageTotal 2) (gt .PageDetails.CurrentPage 3) }}
+              <li id="first-page-pagination-link" class="govuk-pagination__item gov {{if eq .PageDetails.FirstPage .PageDetails.CurrentPage }}govuk-pagination__item--current{{end}}">
+                  <a href="{{ .GetPaginationUrl .PageDetails.FirstPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq .PageDetails.FirstPage .PageDetails.CurrentPage }} current{{end}}">
+                      {{ .PageDetails.FirstPage }}
+                  </a>
+              </li>
+              <li id="first-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
             {{end}}
             {{ if gt .TaskList.Pages.PageTotal 0}}
                 {{ range .PageDetails.LimitedPagination }}
-                    <li class="govuk-pagination__item {{if  eq . $currentPage }}govuk-pagination__item--current{{end}}">
-                      <button type="submit" a class="govuk-link govuk-pagination__link moj-button {{if eq . $currentPage }}current{{end}}" name="page" value="{{ . }}" aria-label="Page {{ . }}">
-                      {{ . }}</button>
+                    <li class="govuk-pagination__item {{if eq . $.PageDetails.CurrentPage }}govuk-pagination__item--current{{end}}">
+                      <a href="{{ $.GetPaginationUrl . }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq . $.PageDetails.CurrentPage }}current{{end}}" aria-label="Page {{ . }}">{{ . }}</a>
                     </li>
                 {{ end }}
-            {{end}}
-            {{if ne $currentPage .TaskList.Pages.PageTotal}}
-                {{if eq .PageDetails.UpperEllipsesLimit true }}
-                    <li id="final-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
-                    <li id="final-page-pagination-link" class="govuk-pagination__item {{if eq .PageDetails.LastPage $currentPage }}govuk-pagination__item--current{{end}}">
-                      <button type="submit" a class="govuk-link govuk-pagination__link moj-button {{if eq .PageDetails.LastPage $currentPage }}current{{end}}"  aria-label="Page {{ .PageDetails.LastPage }}" name="page" value="{{ .PageDetails.LastPage }}">
-                      {{ .PageDetails.LastPage }}
-                      </button>
-                    </li>
-                {{end}}
-            {{end}}
+            {{ end }}
+            {{ if and (ne .PageDetails.CurrentPage .TaskList.Pages.PageTotal) (eq .PageDetails.UpperEllipsesLimit true) }}
+              <li id="final-ellipses" class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
+              <li id="final-page-pagination-link" class="govuk-pagination__item {{if eq .PageDetails.LastPage .PageDetails.CurrentPage }}govuk-pagination__item--current{{end}}">
+                <a href="{{ .GetPaginationUrl .PageDetails.LastPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq .PageDetails.LastPage .PageDetails.CurrentPage }}current{{end}}"  aria-label="Page {{ .PageDetails.LastPage }}">{{ .PageDetails.LastPage }}</a>
+              </li>
+            {{ end }}
           </ul>
 
-          {{ if and (gt .TaskList.Pages.PageTotal 1) (ne $currentPage .TaskList.Pages.PageTotal) }} 
+          {{ if and (gt .TaskList.Pages.PageTotal 1) (ne .PageDetails.CurrentPage .TaskList.Pages.PageTotal) }} 
               <div id="next-page-pagination-link" class="govuk-pagination__next">
-                <button type="submit" a class="govuk-link govuk-pagination__link moj-button" name="page" value="{{ .PageDetails.NextPage }}" rel="next">
-                    <span class="govuk-pagination__link-title" >Next</span> <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                    <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-                  </svg></button>
+                <a href="{{ .GetPaginationUrl .PageDetails.NextPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="next">
+                    <span class="govuk-pagination__link-title">Next</span>
+                    <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                      <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                    </svg>
+                </a>
               </div>
-          {{end}}  
+          {{ end }}
           
         </div>
         <div class="govuk-form-group moj-pagination__change-view-number">
           <label class="govuk-label" for="label-display-rows">View</label>
-          <select class="govuk-select" id="display-rows" name="tasksPerPage" aria-labelledby="display-rows" aria-label="display-rows" data-module="app-select-submit">
-            <option value="25" id="display-rows_25"{{if eq .PageDetails.StoredTaskLimit 25}}selected{{end}} >25</label></option>
-            <option value="50" id="display-rows_50"{{if eq .PageDetails.StoredTaskLimit 50 }}selected{{end}} >50</label></option>
-            <option value="100" id="display-rows_100"{{if eq .PageDetails.StoredTaskLimit 100 }}selected{{end}} >100</label></option>
+          <select class="govuk-select" id="display-rows" aria-labelledby="display-rows" aria-label="display-rows" data-module="jump-menu">
+            <option value="{{ .GetPaginationUrl 1 25 }}" id="display-rows_25"{{ if eq .PageDetails.StoredTaskLimit 25 }}selected{{ end }}>25</label></option>
+            <option value="{{ .GetPaginationUrl 1 50 }}" id="display-rows_50"{{ if eq .PageDetails.StoredTaskLimit 50 }}selected{{ end }}>50</label></option>
+            <option value="{{ .GetPaginationUrl 1 100 }}" id="display-rows_100"{{ if eq .PageDetails.StoredTaskLimit 100 }}selected{{ end }}>100</label></option>
           </select>
         </div>
-        <input type="hidden" name="currentTaskDisplay" value="{{ .PageDetails.StoredTaskLimit }}"/>
     </div>
   </nav>
 {{ end }}

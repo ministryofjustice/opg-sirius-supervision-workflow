@@ -1,3 +1,4 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "table" }}
 
 <section data-module="manage-tasks" class="moj-manage-tasks">
@@ -11,7 +12,7 @@
         <th scope="col" class="govuk-table__header govuk-table__select">
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input js-mt-checkbox-select-all ignore-pagination-bottom" label="table-select-all-checkbox" id="selectAll" name="organisation" type="checkbox">
+              <input class="govuk-checkboxes__input js-mt-checkbox-select-all" label="table-select-all-checkbox" id="selectAll" name="organisation" type="checkbox" autocomplete="off" />
               <label class="govuk-label govuk-checkboxes__label" for="selectAll">
                 <span class="govuk-visually-hidden">Select</span>
               </label>
@@ -32,7 +33,7 @@
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}">
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}" autocomplete="off" />
                   <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
                     <span class="govuk-visually-hidden">Select</span>
                   </label>

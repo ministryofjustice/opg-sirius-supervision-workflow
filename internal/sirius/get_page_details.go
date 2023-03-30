@@ -2,6 +2,7 @@ package sirius
 
 type PageDetails struct {
 	ListOfPages        []int
+	CurrentPage        int
 	PreviousPage       int
 	NextPage           int
 	LimitedPagination  []int
@@ -22,6 +23,8 @@ func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit 
 	for i := 1; i <= tasklist.Pages.PageTotal; i++ {
 		PageDetails.ListOfPages = append(PageDetails.ListOfPages, i)
 	}
+
+	PageDetails.CurrentPage = tasklist.Pages.PageCurrent
 
 	PageDetails.PreviousPage = GetPreviousPageNumber(search)
 

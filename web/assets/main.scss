@@ -24,21 +24,6 @@ $moj-assets-path: "/supervision/workflow/assets/";
   font-weight: 400;
 }
 
-#filters-column {
-  .govuk-checkboxes__item {
-    float: none;
-  }
-
-  #accordion-task-type {
-    max-height: 200px;
-    overflow-y: scroll;
-  }
-}
-
-#actionFilter {
-  margin-left: 1em;
-}
-
 .current {
   @include govuk-typography-weight-bold;
   outline: 1px solid transparent !important;
