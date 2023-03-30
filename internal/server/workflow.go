@@ -19,38 +19,15 @@ type WorkflowInformation interface {
 	AssignTasksToCaseManager(sirius.Context, int, []string) error
 }
 
-type workflowVars struct {
-	Path               string
-	XSRFToken          string
-	MyDetails          sirius.UserDetails
-	TaskList           sirius.TaskList
-	PageDetails        sirius.PageDetails
-	LoadTasks          []sirius.ApiTaskTypes
-	TeamSelection      []sirius.ReturnedTeamCollection
-	SelectedTeam       sirius.ReturnedTeamCollection
-	SelectedAssignees  []string
-	SelectedUnassigned string
-	AppliedFilters     []string
-	SuccessMessage     string
-	Error              string
-	Errors             sirius.ValidationErrors
-}
-
-func checkForChangesToSelectedPagination(bothDisplayTaskLimits []string, currentTaskDisplayString string) int {
-	currentTaskDisplay, _ := strconv.Atoi(currentTaskDisplayString)
-
-	if len(bothDisplayTaskLimits) != 0 {
-		topDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[0])
-		bottomDisplayTaskLimit, _ := strconv.Atoi(bothDisplayTaskLimits[1])
-		if topDisplayTaskLimit != currentTaskDisplay {
-			return topDisplayTaskLimit
-		} else if bottomDisplayTaskLimit != currentTaskDisplay {
-			return bottomDisplayTaskLimit
-		} else {
-			return currentTaskDisplay
+func getTasksPerPage(valueFromUrl string) int {
+	validOptions := []int{25, 50, 100}
+	tasksPerPage, _ := strconv.Atoi(valueFromUrl)
+	for _, opt := range validOptions {
+		if opt == tasksPerPage {
+			return tasksPerPage
 		}
 	}
-	return 25
+	return validOptions[0]
 }
 
 func getLoggedInTeamId(myDetails sirius.UserDetails, defaultWorkflowTeam int) int {
@@ -79,8 +56,7 @@ func getAssigneeIdForTask(logger *logging.Logger, teamId, assigneeId string) (in
 
 func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []sirius.ReturnedTeamCollection) (sirius.ReturnedTeamCollection, error) {
 	selectors := []string{
-		r.URL.Query().Get("change-team"),
-		r.FormValue("change-team"),
+		r.URL.Query().Get("team"),
 		strconv.Itoa(loggedInTeamId),
 		strconv.Itoa(defaultTeamId),
 	}
@@ -100,18 +76,56 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
 		ctx := getContext(r)
-		search, _ := strconv.Atoi(r.FormValue("page"))
-		if search < 1 {
-			search = 1
+
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		err := r.ParseForm()
-		if err != nil {
-			logger.Print("ParseForm error: " + err.Error())
-			return err
+		var vars WorkflowVars
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				logger.Print("ParseForm error: " + err.Error())
+				return err
+			}
+
+			assignTeam := r.FormValue("assignTeam")
+			if assignTeam == "0" {
+				vars.Errors = sirius.ValidationErrors{
+					"selection": map[string]string{"": "Please select a team"},
+				}
+			}
+
+			//this is where it picks up the new user to assign task to
+			newAssigneeIdForTask, err := getAssigneeIdForTask(logger, assignTeam, r.FormValue("assignCM"))
+			if err != nil {
+				logger.Print("getAssigneeIdForTask error: " + err.Error())
+				return err
+			}
+
+			selectedTasks := r.Form["selected-tasks"]
+
+			// Attempt to save
+			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks)
+			if err != nil {
+				logger.Print("AssignTasksToCaseManager: " + err.Error())
+				return err
+			}
+
+			if vars.Errors == nil {
+				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(selectedTasks))
+			}
 		}
 
-		displayTaskLimit := checkForChangesToSelectedPagination(r.Form["tasksPerPage"], r.FormValue("currentTaskDisplay"))
+		params := r.URL.Query()
+
+		page, _ := strconv.Atoi(params.Get("page"))
+		if page < 1 {
+			page = 1
+		}
+
+		tasksPerPage := getTasksPerPage(params.Get("per-page"))
 
 		myDetails, err := client.GetCurrentUserDetails(ctx)
 		if err != nil {
@@ -133,8 +147,12 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		selectedAssignees := r.Form["selected-assignee"]
-		selectedUnassigned := r.FormValue("selected-unassigned")
+		var userSelectedAssignees []string
+		if params.Has("assignee") {
+			userSelectedAssignees = params["assignee"]
+		}
+		selectedAssignees := userSelectedAssignees
+		selectedUnassigned := params.Get("unassigned")
 
 		if selectedUnassigned == selectedTeam.Selector {
 			selectedAssignees = append(selectedAssignees, strconv.Itoa(selectedTeam.Id))
@@ -143,23 +161,26 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 		}
 
-		selectedTaskType := r.Form["selected-task-type"]
+		var selectedTaskTypes []string
+		if params.Has("task-type") {
+			selectedTaskTypes = params["task-type"]
+		}
 
-		taskTypes, err := client.GetTaskTypes(ctx, selectedTaskType)
+		taskTypes, err := client.GetTaskTypes(ctx, selectedTaskTypes)
 		if err != nil {
 			logger.Print("GetTaskTypes error " + err.Error())
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, search, displayTaskLimit, selectedTeam, selectedTaskType, taskTypes, selectedAssignees)
+		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
 
 		if err != nil {
 			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
-		if search > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			search = taskList.Pages.PageTotal
-			taskList, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeam, selectedTaskType, taskTypes, selectedAssignees)
+		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
+			page = taskList.Pages.PageTotal
+			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
 
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
@@ -167,78 +188,27 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 		}
 
-		pageDetails := client.GetPageDetails(taskList, search, displayTaskLimit)
+		pageDetails := client.GetPageDetails(taskList, page, tasksPerPage)
 
 		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes)
 
-		vars := workflowVars{
-			Path:               r.URL.Path,
-			XSRFToken:          ctx.XSRFToken,
-			MyDetails:          myDetails,
-			TaskList:           taskList,
-			PageDetails:        pageDetails,
-			LoadTasks:          taskTypes,
-			TeamSelection:      teamSelection,
-			SelectedTeam:       selectedTeam,
-			SelectedAssignees:  selectedAssignees,
-			SelectedUnassigned: selectedUnassigned,
-			AppliedFilters:     appliedFilters,
-		}
+		vars.Path = r.URL.Path
+		vars.XSRFToken = ctx.XSRFToken
+		vars.MyDetails = myDetails
+		vars.TaskList = taskList
+		vars.PageDetails = pageDetails
+		vars.LoadTasks = taskTypes
+		vars.TeamSelection = teamSelection
+		vars.SelectedTeam = selectedTeam
+		vars.SelectedAssignees = userSelectedAssignees
+		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedTaskTypes = selectedTaskTypes
+		vars.AppliedFilters = appliedFilters
 
 		if err != nil {
 			return StatusError(http.StatusNotFound)
 		}
 
-		switch r.Method {
-		case http.MethodGet:
-			return tmpl.ExecuteTemplate(w, "page", vars)
-		case http.MethodPost:
-			var newAssigneeIdForTask int
-			selectedTeamToAssignTaskString := r.FormValue("assignTeam")
-			if selectedTeamToAssignTaskString == "0" {
-				vars.Errors = sirius.ValidationErrors{
-					"selection": map[string]string{"": "Please select a team"},
-				}
-
-				return tmpl.ExecuteTemplate(w, "page", vars)
-			}
-			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err = getAssigneeIdForTask(logger, selectedTeamToAssignTaskString, r.FormValue("assignCM"))
-			if err != nil {
-				logger.Print("getAssigneeIdForTask error: " + err.Error())
-				return err
-			}
-
-			err := r.ParseForm()
-			if err != nil {
-				logger.Print("ParseForm error: " + err.Error())
-				return err
-			}
-
-			taskIdArray := r.Form["selected-tasks"]
-
-			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, taskIdArray)
-			if err != nil {
-				logger.Print("AssignTasksToCaseManager: " + err.Error())
-				return err
-			}
-
-			if vars.Errors == nil {
-				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(taskIdArray))
-			}
-
-			vars.TaskList, err = client.GetTaskList(ctx, search, displayTaskLimit, selectedTeam, selectedTaskType, taskTypes, selectedAssignees)
-			if err != nil {
-				logger.Print("vars.TaskList error: " + err.Error())
-				return err
-			}
-
-			vars.PageDetails = client.GetPageDetails(vars.TaskList, search, displayTaskLimit)
-
-			return tmpl.ExecuteTemplate(w, "page", vars)
-		default:
-			return StatusError(http.StatusMethodNotAllowed)
-		}
+		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
 }

@@ -190,7 +190,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
-	assert.Equal(workflowVars{
+	assert.Equal(WorkflowVars{
 		Path: "/path",
 		MyDetails: sirius.UserDetails{
 			ID:        123,
@@ -241,7 +241,6 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 			},
 			Name: "Lay Team 1 - (Supervision)",
 		},
-		SelectedAssignees:  []string{"13"},
 		SelectedUnassigned: "",
 		AppliedFilters:     []string{"Lay Team 1 - (Supervision)"},
 	}, template.lastVars)
@@ -279,7 +278,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 
 	assert.Equal(1, template.count)
 	assert.Equal("page", template.lastName)
-	assert.Equal(workflowVars{
+	assert.Equal(WorkflowVars{
 		Path: "/path",
 		MyDetails: sirius.UserDetails{
 			ID:        123,
@@ -331,7 +330,6 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 			},
 			Name: "Lay Team 1 - (Supervision)",
 		},
-		SelectedAssignees:  []string{"13"},
 		SelectedUnassigned: "",
 		AppliedFilters:     []string{"Lay Team 1 - (Supervision)"},
 	}, template.lastVars)
@@ -388,14 +386,6 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 	assert.Nil(err)
 }
 
-func TestCheckForChangesToSelectedPagination(t *testing.T) {
-	assert.Equal(t, 50, checkForChangesToSelectedPagination([]string{"25", "50"}, "25"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{"25", "50"}, "50"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{"25", "25"}, "25"))
-	assert.Equal(t, 100, checkForChangesToSelectedPagination([]string{"50", "100"}, "50"))
-	assert.Equal(t, 25, checkForChangesToSelectedPagination([]string{}, "100"))
-}
-
 func TestGetLoggedInTeamId(t *testing.T) {
 	assert.Equal(t, 13, getLoggedInTeamId(sirius.UserDetails{
 		ID:          65,
@@ -450,7 +440,7 @@ func TestGetSelectedTeam(t *testing.T) {
 	}{
 		{
 			name:           "Select team from URL parameter",
-			url:            "?change-team=13",
+			url:            "?team=13",
 			loggedInTeamId: 1,
 			defaultTeamId:  2,
 			expectedTeam:   teams[1],
@@ -474,7 +464,7 @@ func TestGetSelectedTeam(t *testing.T) {
 		},
 		{
 			name:           "Return error if no valid team can be selected",
-			url:            "?change-team=16",
+			url:            "?team=16",
 			loggedInTeamId: 3,
 			defaultTeamId:  5,
 			expectedTeam:   sirius.ReturnedTeamCollection{},
