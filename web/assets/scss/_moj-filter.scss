@@ -6,11 +6,21 @@
   &__options {
     box-shadow: none;
     padding: govuk-spacing(2) govuk-spacing(4) 0;
+
+    .govuk-checkboxes__item {
+      float: none;
+    }
   }
 
   &__selected-group {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+  }
+
+  &__content {
+    .govuk-button {
+      margin-left: 1em;
+    }
   }
 }

@@ -33,7 +33,8 @@ describe("Reassign Tasks", () => {
         cy.get(":nth-child(1) > :nth-child(5) > .govuk-label").contains('Allocations User3')
     });
 
-    it("allows you to assign a task to a team", () => {
+    it("allows you to assign a task to a team and retains pagination and filters", () => {
+        cy.visit('/supervision/workflow/1?testVar=testVal');
         cy.setCookie("success-route", "assignTasksToCasemanager");
         cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
         cy.get("#manage-task").should('be.visible').click()
@@ -43,6 +44,7 @@ describe("Reassign Tasks", () => {
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 tasks have been reassigned')
+        cy.url().should('contain', '/supervision/workflow/1?testVar=testVal')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {

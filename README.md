@@ -38,6 +38,13 @@ Alternatively to set it up not using Docker use below. This hosts it on `localho
 - `go build main.go `
 - `./main `
 
+### Enabling code completion in .gotmpl files in GoLand
+
+Go to `Settings -> Editor -> File Types -> Go template files` in your IDE and add `*.gotmpl` to the list of file name patterns.
+
+Define the type of `{{ . }}` in the context of your template by adding a line like this at the top of the template:
+`{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}`
+
   -------------------------------------------------------------------
 ## Run Cypress tests
 
