@@ -72,6 +72,15 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
 }
 
+func setTaskCount(handle string, metaData sirius.TaskList) int {
+	for _, q := range metaData.MetaData {
+		if handle == q.Type {
+			return q.Count
+		}
+	}
+	return 0
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -192,12 +201,27 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes)
 
+		var taskTypeList []sirius.ApiTaskTypes
+
+		for _, u := range taskTypes {
+			taskTypeAndCount := sirius.ApiTaskTypes{
+				Handle:     u.Handle,
+				Incomplete: u.Incomplete,
+				Category:   u.Category,
+				Complete:   u.Complete,
+				User:       u.User,
+				IsSelected: u.IsSelected,
+				TaskCount:  setTaskCount(u.Handle, taskList),
+			}
+			taskTypeList = append(taskTypeList, taskTypeAndCount)
+		}
+
 		vars.Path = r.URL.Path
 		vars.XSRFToken = ctx.XSRFToken
 		vars.MyDetails = myDetails
 		vars.TaskList = taskList
 		vars.PageDetails = pageDetails
-		vars.LoadTasks = taskTypes
+		vars.LoadTasks = taskTypeList
 		vars.TeamSelection = teamSelection
 		vars.SelectedTeam = selectedTeam
 		vars.SelectedAssignees = userSelectedAssignees

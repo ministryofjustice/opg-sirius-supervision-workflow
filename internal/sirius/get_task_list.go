@@ -50,10 +50,16 @@ type PageInformation struct {
 	PageTotal   int `json:"total"`
 }
 
+type MetaData struct {
+	Type  string `json:"type"`
+	Count int    `json:"count"`
+}
+
 type TaskList struct {
 	WholeTaskList []ApiTask       `json:"tasks"`
 	Pages         PageInformation `json:"pages"`
 	TotalTasks    int             `json:"total"`
+	MetaData      []MetaData      `json:"metadata"`
 	ActiveFilters []string
 }
 

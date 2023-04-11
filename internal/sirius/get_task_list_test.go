@@ -82,6 +82,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalTasks: 13,
+		MetaData:   []MetaData{},
 	}
 
 	selectedTeam := ReturnedTeamCollection{Id: 13}
