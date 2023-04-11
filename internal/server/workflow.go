@@ -192,12 +192,27 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes)
 
+		var taskTypeList []sirius.ApiTaskTypes
+
+		for _, u := range taskTypes {
+			taskTypeAndCount := sirius.ApiTaskTypes{
+				Handle:     u.Handle,
+				Incomplete: u.Incomplete,
+				Category:   u.Category,
+				Complete:   u.Complete,
+				User:       u.User,
+				IsSelected: u.IsSelected,
+				TaskCount:  setTaskCount(u.Handle, taskList),
+			}
+			taskTypeList = append(taskTypeList, taskTypeAndCount)
+		}
+
 		vars.Path = r.URL.Path
 		vars.XSRFToken = ctx.XSRFToken
 		vars.MyDetails = myDetails
 		vars.TaskList = taskList
 		vars.PageDetails = pageDetails
-		vars.LoadTasks = taskTypes
+		vars.LoadTasks = taskTypeList
 		vars.TeamSelection = teamSelection
 		vars.SelectedTeam = selectedTeam
 		vars.SelectedAssignees = userSelectedAssignees
@@ -211,4 +226,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
+}
+
+func setTaskCount(handle string, metaData sirius.TaskList) int {
+	for _, q := range metaData.MetaData {
+		if handle == q.Type {
+			return q.Count
+		}
+	}
+	return 0
 }
