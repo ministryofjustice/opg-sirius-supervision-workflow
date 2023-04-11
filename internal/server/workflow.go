@@ -72,6 +72,15 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
 }
 
+func setTaskCount(handle string, metaData sirius.TaskList) int {
+	for _, q := range metaData.MetaData {
+		if handle == q.Type {
+			return q.Count
+		}
+	}
+	return 0
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -226,13 +235,4 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
-}
-
-func setTaskCount(handle string, metaData sirius.TaskList) int {
-	for _, q := range metaData.MetaData {
-		if handle == q.Type {
-			return q.Count
-		}
-	}
-	return 0
 }
