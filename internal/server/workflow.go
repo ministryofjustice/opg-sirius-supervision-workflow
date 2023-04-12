@@ -73,7 +73,7 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 }
 
 func setTaskCount(handle string, metaData sirius.TaskList) int {
-	for _, q := range metaData.MetaData {
+	for _, q := range metaData.MetaData.TaskTypeCount {
 		if handle == q.Type {
 			return q.Count
 		}

@@ -17,7 +17,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 	json := `
 	{
 		"limit":25,
-		"metadata":[],
+		"metadata":{"taskTypeCount": [{"type" : "FCC", "count": 14}]},
 		"pages":{"current":1,"total":1},
 		"total":13,
 		"tasks":[
@@ -82,7 +82,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalTasks: 13,
-		MetaData:   []MetaData{},
+		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}},
 	}
 
 	selectedTeam := ReturnedTeamCollection{Id: 13}

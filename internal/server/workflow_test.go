@@ -483,8 +483,10 @@ func TestGetSelectedTeam(t *testing.T) {
 
 func TestSetTaskCountWithMatchingTaskType(t *testing.T) {
 	var mockTaskListData = sirius.TaskList{
-		MetaData: []sirius.MetaData{
-			{Type: "ORAL", Count: 25},
+		MetaData: sirius.MetaData{
+			[]sirius.TypeAndCount{
+				{Type: "ORAL", Count: 25},
+			},
 		},
 	}
 
@@ -493,8 +495,10 @@ func TestSetTaskCountWithMatchingTaskType(t *testing.T) {
 
 func TestSetTaskCountNoMatchingTaskTypeWillReturnZero(t *testing.T) {
 	var mockTaskListData = sirius.TaskList{
-		MetaData: []sirius.MetaData{
-			{Type: "ORAL", Count: 25},
+		MetaData: sirius.MetaData{
+			[]sirius.TypeAndCount{
+				{Type: "ORAL", Count: 25},
+			},
 		},
 	}
 
