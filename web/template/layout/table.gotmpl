@@ -56,7 +56,7 @@
             </td>
             {{ if eq $.SelectedTeam.Type "PA" }}
                 <td class="govuk-table__cell">
-                  <a {{ if ne .ClientInformation.FeePayer.Id 0 }}href="{{ sirius .ClientInformation.FeePayer.GetURL }}"{{ end }} class="govuk-link" id="hook-open-case">
+                  <a {{ if ne .ClientInformation.FeePayer.Id 0 }}href="{{ sirius .ClientInformation.FeePayer.GetURL }}"{{ end }} class="govuk-link">
                       {{ .ClientInformation.FeePayer.DisplayName }}
                   </a>
                 </td>
