@@ -13,6 +13,7 @@ type ApiTaskTypes struct {
 	Complete   string `json:"complete"`
 	User       bool   `json:"user"`
 	IsSelected bool
+	TaskCount  int
 }
 
 type WholeTaskTypesList struct {
