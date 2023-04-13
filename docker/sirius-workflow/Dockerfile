@@ -1,4 +1,4 @@
-FROM golang:1.19.4-alpine as base
+FROM golang:1.20.3-alpine as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0
@@ -21,7 +21,7 @@ EXPOSE 2345
 
 ENTRYPOINT ["air"]
 
-FROM node:19.3.0-alpine3.16 as asset-env
+FROM node:19.9.0-alpine3.16 as asset-env
 
 WORKDIR /app
 
