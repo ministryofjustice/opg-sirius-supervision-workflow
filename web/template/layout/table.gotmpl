@@ -21,6 +21,9 @@
         </th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
+        {{ if eq .SelectedTeam.Type "PA" }}
+            <th scope="col" class="govuk-table__header" aria-sort="none">Deputy</th>
+        {{ end }}
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Assigned to</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Due date</th>
@@ -51,6 +54,13 @@
                 <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
               </label>
             </td>
+            {{ if eq $.SelectedTeam.Type "PA" }}
+                <td class="govuk-table__cell">
+                  <a {{ if ne .ClientInformation.FeePayer.Id 0 }}href="{{ sirius .ClientInformation.FeePayer.GetURL }}"{{ end }} class="govuk-link" id="hook-open-case">
+                      {{ .ClientInformation.FeePayer.DisplayName }}
+                  </a>
+                </td>
+            {{ end }}
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-display-name"> {{ .ClientInformation.ClientSupervisionCaseOwner.CaseManagerName }}
                 {{ if .ClientInformation.ClientSupervisionCaseOwner.Team }}
@@ -83,11 +93,11 @@
         {{ $length := len .AppliedFilters }}
         {{ if eq $length 0 }}
           <tr class="govuk-table__row">
-              <td colspan="6" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
+              <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
           </tr>
         {{ else if ne $length 0}}
           <tr class="govuk-table__row">
-          <td colspan="6" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+          <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
           </tr>
         {{ end }}
       {{ end }}
