@@ -480,3 +480,27 @@ func TestGetSelectedTeam(t *testing.T) {
 		})
 	}
 }
+
+func TestSetTaskCountWithMatchingTaskType(t *testing.T) {
+	var mockTaskListData = sirius.TaskList{
+		MetaData: sirius.MetaData{
+			TaskTypeCount: []sirius.TypeAndCount{
+				{Type: "ORAL", Count: 25},
+			},
+		},
+	}
+
+	assert.Equal(t, 25, setTaskCount("ORAL", mockTaskListData))
+}
+
+func TestSetTaskCountNoMatchingTaskTypeWillReturnZero(t *testing.T) {
+	var mockTaskListData = sirius.TaskList{
+		MetaData: sirius.MetaData{
+			TaskTypeCount: []sirius.TypeAndCount{
+				{Type: "ORAL", Count: 25},
+			},
+		},
+	}
+
+	assert.Equal(t, 0, setTaskCount("FREA", mockTaskListData))
+}
