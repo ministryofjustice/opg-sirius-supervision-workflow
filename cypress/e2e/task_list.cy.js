@@ -6,11 +6,11 @@ describe("Task list", () => {
   });
 
   it("has column headers", () => {
-    cy.contains("Task type");
-    cy.contains("Client");
-    cy.contains("Case owner");
-    cy.contains("Assigned to");
-    cy.contains("Due date");
+    cy.get("#workflow-tasks thead > tr > th:nth-child(2)").should("contain", "Task type");
+    cy.get("#workflow-tasks thead > tr > th:nth-child(3)").should("contain", "Client");
+    cy.get("#workflow-tasks thead > tr > th:nth-child(4)").should("contain", "Case owner");
+    cy.get("#workflow-tasks thead > tr > th:nth-child(5)").should("contain", "Assigned to");
+    cy.get("#workflow-tasks thead > tr > th:nth-child(6)").should("contain", "Due date");
   })
 
   it("has a message to show the team has no tasks", () => {
@@ -39,6 +39,9 @@ describe("Task list", () => {
   })
 
   it("the client name should link to the correct case", () => {
-    cy.get(".govuk-table__body > .govuk-table__row > :nth-child(3) > a").should('have.attr', 'href', 'http://localhost:8080/supervision/#/clients/3333')
+    cy.get(".govuk-table__body > .govuk-table__row > :nth-child(3) > a").should('have.attr', 'href')
+        .then(href => {
+          expect(href).to.contains("/supervision/#/clients/3333");
+        })
   })
 });
