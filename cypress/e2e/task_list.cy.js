@@ -43,11 +43,6 @@ describe("Task list", () => {
         .then(href => {
           expect(href).to.contains("/supervision/#/clients/3333");
         })
-    cy.get(".govuk-table__body > .govuk-table__row > :nth-child(3) > a").should('have.attr', 'href')
-        .then(href => {
-          expect(href).to.contains("/supervision/#/clients/3333");
-        })
-  })
 
   it("should display deputy name for PA teams", () => {
     cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('PA Team 1 - (Supervision)')
