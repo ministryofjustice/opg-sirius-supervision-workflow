@@ -12,7 +12,7 @@
         <th scope="col" class="govuk-table__header govuk-table__select">
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input js-mt-checkbox-select-all" label="table-select-all-checkbox" id="selectAll" name="organisation" type="checkbox" autocomplete="off" />
+              <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" autocomplete="off" />
               <label class="govuk-label govuk-checkboxes__label" for="selectAll">
                 <span class="govuk-visually-hidden">Select</span>
               </label>
@@ -44,7 +44,7 @@
               <label class="govuk-label" for="api-tasktype">{{ .TaskTypeName }}</label>
             </td>
             <td class="govuk-table__cell">
-              <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link" id="hook-open-case">
+              <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link">
                 {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
               </a>
               <label class="govuk-label" for="client-caserec-number">

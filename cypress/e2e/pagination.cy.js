@@ -7,57 +7,57 @@ describe("Pagination", () => {
 
   describe("First page, ellipses and final page", () => {
     beforeEach(() => {
-      cy.get("#display-rows").select('25')
+      cy.get("#top-nav .display-rows").select('25')
           .invoke('val').should('contain', 'per-page=25')
     })
 
     it("will not show previous arrow on page 1 but will show it on other pages", () => {
-      cy.get("#previous-page-pagination-link").should('not.exist')
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get(".previous-page-pagination-link").should('not.exist')
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
     })
 
     it("shows next button apart from on last page", () => {
-      cy.get("#next-page-pagination-link").should('be.visible', 'Next')
-      cy.get("#final-page-pagination-link").click()
-      cy.get("#next-page-pagination-link").should('not.exist')
+      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
+      cy.get("#top-nav .final-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
     it("shows first page and ellipses once you are past page 3", () => {
-      cy.get("#first-ellipses").should('not.exist');
-      cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#first-ellipses").should('not.exist');
-      cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#first-ellipses").should('not.exist');
-      cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#first-ellipses").should('exist');
-      cy.get("#first-page-pagination-link").should('exist');
+      cy.get(".first-ellipses").should('not.exist');
+      cy.get(".first-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".first-ellipses").should('not.exist');
+      cy.get(".first-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".first-ellipses").should('not.exist');
+      cy.get(".first-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".first-ellipses").should('exist');
+      cy.get(".first-page-pagination-link").should('exist');
     })
 
     it("shows last page and final ellipses until you are past page 3", () => {
-      cy.get("#final-ellipses").should('exist');
-      cy.get("#final-page-pagination-link").should('exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#final-ellipses").should('exist');
-      cy.get("#final-page-pagination-link").should('exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#final-ellipses").should('not.exist');
-      cy.get("#final-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#final-ellipses").should('not.exist');
-      cy.get("#final-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").click()
-      cy.get("#final-ellipses").should('not.exist');
-      cy.get("#final-page-pagination-link").should('not.exist');
+      cy.get(".final-ellipses").should('exist');
+      cy.get("#top-nav .final-page-pagination-link").should('exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".final-ellipses").should('exist');
+      cy.get("#top-nav .final-page-pagination-link").should('exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".final-ellipses").should('not.exist');
+      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".final-ellipses").should('not.exist');
+      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(".final-ellipses").should('not.exist');
+      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
     })
   });
 
   describe("View 25", () => {
     beforeEach(() => {
-      cy.get("#display-rows").select('25')
+      cy.get("#top-nav .display-rows").select('25')
           .invoke('val').should('contain', 'per-page=25')
     })
 
@@ -65,19 +65,19 @@ describe("Pagination", () => {
       cy.get(".moj-pagination__results").should('contain', '1')
       cy.get(".moj-pagination__results").should('contain', '25')
       cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#next-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".moj-pagination__results").should('contain', '26')
       cy.get(".moj-pagination__results").should('contain', '50')
       cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#next-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".moj-pagination__results").should('contain', '51')
       cy.get(".moj-pagination__results").should('contain', '75')
       cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#next-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".moj-pagination__results").should('contain', '76')
       cy.get(".moj-pagination__results").should('contain', '100')
       cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#next-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".moj-pagination__results").should('contain', '101')
       cy.get(".moj-pagination__results").should('contain', '101')
       cy.get(".moj-pagination__results").should('contain', '101')
@@ -86,7 +86,7 @@ describe("Pagination", () => {
 
   describe("View 50", () => {
     beforeEach(() => {
-      cy.get("#display-rows").select('50')
+      cy.get("#top-nav .display-rows").select('50')
           .invoke('val').should('contain', 'per-page=50')
     })
 
@@ -94,7 +94,7 @@ describe("Pagination", () => {
       cy.get(".moj-pagination__results").should('contain', '1')
       cy.get(".moj-pagination__results").should('contain', '50')
       cy.get(".moj-pagination__results").should('contain', '51')
-      cy.get("#next-page-pagination-link").click()
+      cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".moj-pagination__results").should('contain', '51')
       cy.get(".moj-pagination__results").should('contain', '51')
       cy.get(".moj-pagination__results").should('contain', '51')
@@ -104,7 +104,7 @@ describe("Pagination", () => {
 
   describe("View 100", () => {
     beforeEach(() => {
-      cy.get("#display-rows").select('100')
+      cy.get("#top-nav .display-rows").select('100')
           .invoke('val').should('contain', 'per-page=100')
     })
 
@@ -115,12 +115,12 @@ describe("Pagination", () => {
     })
 
     it("will not show previous link, next link, first page, first ellipses, final page or final ellipses when only one page", () => {
-      cy.get("#first-ellipses").should('not.exist');
-      cy.get("#first-page-pagination-link").should('not.exist');
-      cy.get("#final-ellipses").should('not.exist');
-      cy.get("#final-page-pagination-link").should('not.exist');
-      cy.get("#next-page-pagination-link").should('not.exist');
-      cy.get("#previous-page-pagination-link").should('not.exist');
+      cy.get(".first-ellipses").should('not.exist');
+      cy.get(".first-page-pagination-link").should('not.exist');
+      cy.get(".final-ellipses").should('not.exist');
+      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
+      cy.get("#top-nav .next-page-pagination-link").should('not.exist');
+      cy.get(".previous-page-pagination-link").should('not.exist');
     })
   });
 });

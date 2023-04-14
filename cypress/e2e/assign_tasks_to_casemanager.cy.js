@@ -36,7 +36,7 @@ describe("Reassign Tasks", () => {
     it("allows you to assign a task to a team and retains pagination and filters", () => {
         cy.visit('/supervision/workflow/1?testVar=testVal');
         cy.setCookie("success-route", "assignTasksToCasemanager");
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
@@ -49,9 +49,9 @@ describe("Reassign Tasks", () => {
 
     it("allows you to assign multiple tasks to an individual in a team", () => {
         cy.setCookie("success-route", "assignTasksToCasemanager");
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
-        cy.get(":nth-child(2) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
-        cy.get(":nth-child(5) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#select-task-1").click()
+        cy.get("#select-task-2").click()
+        cy.get("#select-task-5").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
@@ -63,7 +63,7 @@ describe("Reassign Tasks", () => {
     });
 
     it("can cancel out of reassigning a task", () => {
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").check('0')
+        cy.get("#select-task-1").check('1')
         cy.get("#manage-task").click()
         cy.get("#edit-cancel").click()
         cy.get(".moj-manage-tasks__edit-panel").should('not.be.visible')

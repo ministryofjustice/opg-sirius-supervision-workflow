@@ -10,13 +10,13 @@ describe("Filters", () => {
 });
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()
-    cy.get(':nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('contain', 'Casework')
+    cy.get('#list-of-tasks-to-filter label').should('contain', 'Casework')
   })
 
   it("can hide the filters", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('#option-select-title-task-type').click()
-    cy.get('.govuk-fieldset > :nth-child(1) > .govuk-checkboxes__item > .govuk-label').should('not.be.visible')
+    cy.get('#list-of-tasks-to-filter label').should('not.be.visible')
   })
 
   it("can apply a filter which adds task type heading", () => {
@@ -40,7 +40,7 @@ describe("Filters", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('[type="checkbox"]').eq(0).check()
     cy.get('[data-module=apply-filters]').click()
-    cy.get("#display-rows").select('100')
+    cy.get("#top-nav .display-rows").select('100')
     cy.url().should('include', 'task-type=CWGN')
   })
 
