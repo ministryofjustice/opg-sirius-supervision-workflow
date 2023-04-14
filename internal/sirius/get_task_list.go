@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+type RefData struct {
+	Handle string `json:"handle"`
+	Label  string `json:"label"`
+}
+
 type CaseManagement struct {
 	CaseManagerName string     `json:"displayName"`
 	Id              int        `json:"id"`
@@ -24,12 +29,19 @@ type CaseItemsDetails struct {
 	CaseItemClient Clients `json:"client"`
 }
 
+type Deputy struct {
+	Id          int     `json:"id"`
+	DisplayName string  `json:"displayName"`
+	Type        RefData `json:"deputyType"`
+}
+
 type Clients struct {
 	ClientId                   int            `json:"id"`
 	ClientCaseRecNumber        string         `json:"caseRecNumber"`
 	ClientFirstName            string         `json:"firstname"`
 	ClientSurname              string         `json:"surname"`
 	ClientSupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
+	FeePayer                   Deputy         `json:"feePayer"`
 }
 
 type ApiTask struct {
@@ -116,6 +128,14 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
 
 	return TaskList, err
+}
+
+func (d *Deputy) GetURL() string {
+	url := "/supervision/deputies/%d"
+	if d.Type.Handle == "LAY" {
+		url = "/supervision/#/deputy-hub/%d"
+	}
+	return fmt.Sprintf(url, d.Id)
 }
 
 func CreateFilter(taskTypeSelected []string, selectedAssignees []string) string {

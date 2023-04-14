@@ -460,6 +460,45 @@ module.exports = function () {
           }
         ],
         "total": 1
+      },
+      {
+        "id": 24,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [
+          {
+            "assignee": {
+              "displayName": "PATeam1 User1",
+              "id": 86
+            },
+            "caseItems": [
+              {
+                "client": {
+                  "caseRecNumber": "51132787",
+                  "firstname": "Beth",
+                  "id": 6354,
+                  "supervisionCaseOwner": {
+                    "displayName": "Lay Team 2 - (Supervision)"
+                  },
+                  "feePayer": {
+                    "id": 12,
+                    "displayName": "Mr Fee-paying Deputy",
+                    "deputyType": {
+                      "handle": "PA",
+                      "label": "PA"
+                    }
+                  },
+                  "surname": "Lay"
+                }
+              }
+            ],
+            "dueDate": "11/11/2011",
+            "name": "Case work - Complaint review"
+          }
+        ],
+        "total": 1
       }
     ],
     "tasks-view-25": [
