@@ -136,6 +136,9 @@ export default class ManageTasks {
         });
 
         sortedAlphbetically.forEach((caseManager) => {
+          if (caseManager.suspended) {
+            return;
+          }
           str +=
             "<option value=" +
             caseManager.id +
