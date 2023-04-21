@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 defaults:
   run:
@@ -116,10 +117,10 @@ jobs:
           fetch-depth: '0'
       - name: Extract branch name
         run: |
-          if [ "$GITHUB_EVENT_NAME" == "push" ]; then
+          if [ "${{ github.head_ref }}" == "" ]; then
             echo BRANCH_NAME=main >> $GITHUB_ENV
           else
-            echo BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g') >> $GITHUB_ENV
+            echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
           fi
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@v1
