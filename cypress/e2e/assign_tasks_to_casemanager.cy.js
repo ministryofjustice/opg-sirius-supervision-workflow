@@ -8,18 +8,22 @@ describe("Reassign Tasks", () => {
                     {
                         "id": 76,
                         "displayName": "LayTeam1 User4",
+                        "suspended": false,
                     },
                     {
                         "id": 75,
                         "displayName": "LayTeam1 User3",
+                        "suspended": true,
                     },
                     {
                         "id": 74,
                         "displayName": "LayTeam1 User2",
+                        "suspended": false,
                     },
                     {
                         "id": 73,
                         "displayName": "LayTeam1 User1",
+                        "suspended": false,
                     }
                 ]
             }})
@@ -56,6 +60,8 @@ describe("Reassign Tasks", () => {
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
+        cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
         cy.get('#assignCM').select('LayTeam1 User4');
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
