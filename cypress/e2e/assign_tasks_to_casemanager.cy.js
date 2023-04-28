@@ -8,18 +8,22 @@ describe("Reassign Tasks", () => {
                     {
                         "id": 76,
                         "displayName": "LayTeam1 User4",
+                        "suspended": false,
                     },
                     {
                         "id": 75,
                         "displayName": "LayTeam1 User3",
+                        "suspended": true,
                     },
                     {
                         "id": 74,
                         "displayName": "LayTeam1 User2",
+                        "suspended": false,
                     },
                     {
                         "id": 73,
                         "displayName": "LayTeam1 User1",
+                        "suspended": false,
                     }
                 ]
             }})
@@ -33,9 +37,10 @@ describe("Reassign Tasks", () => {
         cy.get(":nth-child(1) > :nth-child(5) > .govuk-label").contains('Allocations User3')
     });
 
-    it("allows you to assign a task to a team", () => {
+    it("allows you to assign a task to a team and retains pagination and filters", () => {
+        cy.visit('/supervision/workflow/1?testVar=testVal');
         cy.setCookie("success-route", "assignTasksToCasemanager");
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
@@ -43,17 +48,20 @@ describe("Reassign Tasks", () => {
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 tasks have been reassigned')
+        cy.url().should('contain', '/supervision/workflow/1?testVar=testVal')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {
         cy.setCookie("success-route", "assignTasksToCasemanager");
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
-        cy.get(":nth-child(2) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
-        cy.get(":nth-child(5) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").click()
+        cy.get("#select-task-1").click()
+        cy.get("#select-task-2").click()
+        cy.get("#select-task-5").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
+        cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
         cy.get('#assignCM').select('LayTeam1 User4');
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
@@ -61,7 +69,7 @@ describe("Reassign Tasks", () => {
     });
 
     it("can cancel out of reassigning a task", () => {
-        cy.get(":nth-child(1) > :nth-child(1) > .govuk-checkboxes > .govuk-checkboxes__item > #select-task-0").check('0')
+        cy.get("#select-task-1").check('1')
         cy.get("#manage-task").click()
         cy.get("#edit-cancel").click()
         cy.get(".moj-manage-tasks__edit-panel").should('not.be.visible')

@@ -1,20 +1,16 @@
-{{ define "team-selection" }}  
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
+{{ define "team-selection" }}
   <div class="moj-team-banner__container govuk-grid-column-full govuk-!-padding-right-6 govuk-!-padding-left-6">
-    {{ range .TeamSelection }}
-      {{if eq .Id .UserSelectedTeam}}
-      <h1 class="govuk-heading-m" id="{{ .Name }}">{{ .Name }}</h1>
-      {{end}}
-    {{ end }}
+    <h1 class="govuk-heading-m" id="{{ .SelectedTeam.Name }}">{{ .SelectedTeam.Name }}</h1>
     <div class="govuk-form-group">
-      <label class="govuk-label" for="change-team">
+      <label class="govuk-label">
         Change view
       </label>
-      <select class="govuk-select ignore-pagination-bottom" for="pagination-selected-team" data-module="app-select-submit" name="change-team">
+      <select class="govuk-select" data-module="jump-menu" name="team" aria-label="Change view">
         {{ range .TeamSelection }}
-          <option value="{{ .Id }}" id="pagination-selected-team" name="change-team-option" label="{{ .Name }}" {{if eq .Id .UserSelectedTeam}}selected{{end}}>{{ .Name }}</option>
+          <option value="{{ $.GetTeamUrl .Selector }}" name="team-option" label="{{ .Name }}" {{ if eq .Selector $.SelectedTeam.Selector }}selected{{ end }}>{{ .Name }}</option>
         {{ end }}
       </select>
     </div>
-    <input type="hidden" name="teamIdFromForm" value="{{ .TeamIdFromForm }}"/>
   </div>
 {{ end }}

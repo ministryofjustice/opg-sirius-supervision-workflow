@@ -4,7 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 )
+
+type RefData struct {
+	Handle string `json:"handle"`
+	Label  string `json:"label"`
+}
 
 type CaseManagement struct {
 	CaseManagerName string     `json:"displayName"`
@@ -22,12 +29,19 @@ type CaseItemsDetails struct {
 	CaseItemClient Clients `json:"client"`
 }
 
+type Deputy struct {
+	Id          int     `json:"id"`
+	DisplayName string  `json:"displayName"`
+	Type        RefData `json:"deputyType"`
+}
+
 type Clients struct {
 	ClientId                   int            `json:"id"`
 	ClientCaseRecNumber        string         `json:"caseRecNumber"`
 	ClientFirstName            string         `json:"firstname"`
 	ClientSurname              string         `json:"surname"`
 	ClientSupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
+	FeePayer                   Deputy         `json:"feePayer"`
 }
 
 type ApiTask struct {
@@ -48,21 +62,38 @@ type PageInformation struct {
 	PageTotal   int `json:"total"`
 }
 
+type MetaData struct {
+	TaskTypeCount []TypeAndCount `json:"taskTypeCount"`
+}
+
+type TypeAndCount struct {
+	Type  string `json:"type"`
+	Count int    `json:"count"`
+}
+
 type TaskList struct {
 	WholeTaskList []ApiTask       `json:"tasks"`
 	Pages         PageInformation `json:"pages"`
 	TotalTasks    int             `json:"total"`
+	MetaData      MetaData        `json:"metadata"`
 	ActiveFilters []string
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeamId int, taskTypeSelected []string, LoadTasks []ApiTaskTypes, assigneeSelected []string) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []ApiTaskTypes, selectedAssignees []string) (TaskList, error) {
 	var v TaskList
-	var taskTypeFilters string
-	var assigneeFilters string
+	var teamIds []string
 
-	taskTypeFilters = CreateTaskTypeFilter(taskTypeSelected, taskTypeFilters)
-	assigneeFilters = CreateAssigneeFilter(assigneeSelected, assigneeFilters)
-	req, err := c.newRequest(ctx, http.MethodGet, fmt.Sprintf("/api/v1/assignees/team/%d/tasks?filter=status:Not+started,%s%s&limit=%d&page=%d&sort=dueDate:asc", selectedTeamId, taskTypeFilters, assigneeFilters, displayTaskLimit, search), nil)
+	filter := CreateFilter(taskTypeSelected, selectedAssignees)
+
+	if selectedTeam.Id != 0 {
+		teamIds = []string{"teamIds[]=" + strconv.Itoa(selectedTeam.Id)}
+	}
+	for _, team := range selectedTeam.Teams {
+		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
+	}
+
+	endpoint := fmt.Sprintf("/api/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=dueDate:asc", strings.Join(teamIds, "&"), filter, displayTaskLimit, search)
+	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
@@ -99,31 +130,23 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 	return TaskList, err
 }
 
-func CreateTaskTypeFilter(taskTypeSelected []string, taskTypeFilters string) string {
-	if len(taskTypeSelected) == 0 {
-		taskTypeFilters += ","
-	} else {
-		for _, s := range taskTypeSelected {
-			taskTypeFilters += "type:" + s + ","
-		}
+func (d *Deputy) GetURL() string {
+	url := "/supervision/deputies/%d"
+	if d.Type.Handle == "LAY" {
+		url = "/supervision/#/deputy-hub/%d"
 	}
-	return taskTypeFilters
+	return fmt.Sprintf(url, d.Id)
 }
 
-func CreateAssigneeFilter(assigneeSelected []string, assigneeFilters string) string {
-	if len(assigneeSelected) == 1 {
-		for _, s := range assigneeSelected {
-			assigneeFilters += "assigneeid_or_null:" + s
-		}
-	} else if len(assigneeSelected) > 1 {
-		for _, s := range assigneeSelected {
-			assigneeFilters += "assigneeid_or_null:" + s + ","
-		}
-		assigneeFilterLength := len(assigneeFilters)
-		length := assigneeFilterLength - 1
-		assigneeFilters = assigneeFilters[0:length]
+func CreateFilter(taskTypeSelected []string, selectedAssignees []string) string {
+	filter := "status:Not+started,"
+	for _, t := range taskTypeSelected {
+		filter += "type:" + t + ","
 	}
-	return assigneeFilters
+	for _, a := range selectedAssignees {
+		filter += "assigneeid_or_null:" + a + ","
+	}
+	return strings.TrimRight(filter, ",")
 }
 
 func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {

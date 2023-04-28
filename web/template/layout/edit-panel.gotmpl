@@ -1,3 +1,4 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "edit-panel" }}
 
 <section id="edit-panel">
@@ -17,15 +18,14 @@
         </div>
       </header>
       <div class="govuk-width-container">
-        <div id="reassign-task-form" class="ignore-pagination-bottom">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
           <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
           <label class="govuk-label" for="assignTeam">Assign to a team</label>
-            <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
+          <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
             <option value="0" selected>Select a team</option>
               {{ range .TeamSelection }}
-              <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
+                <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
           </select>
         </div>
@@ -34,13 +34,13 @@
           <label class="govuk-label" for="assignCM">
             Assign to a case manager
           </label>
-          <select class="govuk-select ignore-pagination-bottom" id="assignCM" name="assignCM">
+          <select class="govuk-select" id="assignCM" name="assignCM">
             <option value="" label="Select a case manager" selected>Select a case manager</option>
           </select>
         </div>
 
         <br>
-        <button id="edit-save" class="govuk-button govuk-!-margin-right-1 ignore-pagination-bottom" type="submit" formmethod="post" >Save and continue</button>
+        <button id="edit-save" class="govuk-button govuk-!-margin-right-1" type="submit">Save and continue</button>
         <a href="#" id="edit-cancel" class="govuk-button govuk-button--cancel govuk-!-margin-right-1 js-mt-cancel">Cancel</a>
       </div>
     </section>

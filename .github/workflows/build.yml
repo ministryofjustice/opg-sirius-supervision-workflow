@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 defaults:
   run:
@@ -36,7 +37,7 @@ jobs:
           go mod download
 
       - name: Setup gotestsum
-        uses: autero1/action-gotestsum@v1.0.0
+        uses: autero1/action-gotestsum@v2.0.0
         with:
           gotestsum_version: 1.6.4
 
@@ -116,10 +117,10 @@ jobs:
           fetch-depth: '0'
       - name: Extract branch name
         run: |
-          if [ "$GITHUB_EVENT_NAME" == "push" ]; then
+          if [ "${{ github.head_ref }}" == "" ]; then
             echo BRANCH_NAME=main >> $GITHUB_ENV
           else
-            echo BRANCH_NAME=$(echo ${{ github.head_ref }} | sed 's/\//-/g') >> $GITHUB_ENV
+            echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
           fi
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@v1
@@ -127,9 +128,19 @@ jobs:
       - name: Build Container
         run: |
           docker build --tag sirius/sirius-workflow:latest -f docker/sirius-workflow/Dockerfile .
-      - name: Scan
-        run: |
-          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image sirius/sirius-workflow:latest
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: sirius/sirius-workflow:latest
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Bump version
         id: bump_version
@@ -179,7 +190,7 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

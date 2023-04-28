@@ -1,4 +1,230 @@
 module.exports = function () {
+  let repeatableTasks = [
+    {
+      "assignee": {
+        "displayName": "Allocations User3",
+        "id": 86
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "51132787",
+            "firstname": "Lizzo",
+            "id": 3333,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Surname"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Case work - Complaint review"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations User3",
+        "id": 69
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "48806317",
+            "firstname": "Jimi",
+            "id": 2564,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Hendrix"
+          }
+        }
+      ],
+      "dueDate": "28/02/2018",
+      "name": "Order - Allocate to team"
+    },
+    {
+      "assignee": {
+        "displayName": "Margaret Bavaria-Straubing",
+        "id": 99
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "83948321",
+            "firstname": "Elton",
+            "id": 1458,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "John"
+          }
+        }
+      ],
+      "dueDate": "01/12/2018",
+      "name": "Case work - Call back request"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations User13",
+        "id": 88
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "58748192",
+            "firstname": "Elvis",
+            "id": 1237,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Presley"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Case work - Complaint review"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations User10",
+        "id": 12
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "33731087",
+            "firstname": "Sean",
+            "id": 4561,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Bean"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Case work - Safeguarding"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations - (Supervision)",
+        "id": 58
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "91221815",
+            "firstname": "David",
+            "id": 4561,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Attenborough"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Correspondence - Review failed draft"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations - (Supervision)",
+        "id": 94
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "52556905",
+            "firstname": "Alexander",
+            "id": 7894,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Bell"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Finance - Sop processing"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations User3",
+        "id": 77
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "94277087",
+            "firstname": "Henry",
+            "id": 3691,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Cavill"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Report - Full staff review"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations User1",
+        "id": 46
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "93766765",
+            "firstname": "Henry",
+            "id": 2583,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Ford"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Visit - Review report"
+    },
+    {
+      "assignee": {
+        "displayName": "Allocations - (Supervision)",
+        "id": 64
+      },
+      "caseItems": [
+        {
+          "client": {
+            "caseRecNumber": "62168380",
+            "firstname": "Matt",
+            "id": 1472,
+            "supervisionCaseOwner": {
+              "displayName": "Allocations - (Supervision)"
+            },
+            "surname": "Smith"
+          }
+        }
+      ],
+      "dueDate": "01/02/2021",
+      "name": "Order - Review the order"
+    }
+  ]
+
+  // Generate a number of tasks by repeating the repeatableTasks
+  let generateTasks = function (number) {
+    let tasks = []
+    for (let i = 1; i <= number; i++) {
+      let mod = i % repeatableTasks.length
+      let taskNum = mod === 0 ? repeatableTasks.length : mod
+      let task = structuredClone(repeatableTasks[taskNum - 1])
+      task["id"] = i;
+      tasks.push(task)
+    }
+    return tasks
+  }
+
   return {
     "successes": [
       {
@@ -62,37 +288,13 @@ module.exports = function () {
         "email": "Allocations.team@opgtest.com",
         "members": [
           {
-            "id": 76,
-            "name": "Allocations",
+            "id": 766,
+            "name": "LayTeam1 User1",
             "phoneNumber": "12345678",
-            "displayName": "Allocations User4",
+            "displayName": "LayTeam1 User1",
             "deleted": false,
-            "email": "lay1-4@opgtest.com"
+            "email": "lay1-user1@opgtest.com"
           },
-          {
-            "id": 75,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User3",
-            "deleted": false,
-            "email": "lay1-3@opgtest.com"
-          },
-          {
-            "id": 74,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User2",
-            "deleted": false,
-            "email": "lay1-2@opgtest.com"
-          },
-          {
-            "id": 73,
-            "name": "Allocations",
-            "phoneNumber": "12345678",
-            "displayName": "Allocations User1",
-            "deleted": false,
-            "email": "lay1-1@opgtest.com"
-          }
         ],
         "teamType": {
           "handle": "LAY",
@@ -216,218 +418,7 @@ module.exports = function () {
           "current": 1,
           "total": 1
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Harry",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Potter"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Neville",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Longbottom"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Ron",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Weasley"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Robert",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Strange"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Lay Team 1 - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Lay Team 1 - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Lay Team 1 - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Lay Team 1 - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          }
-        ],
+        "tasks": generateTasks(10),
         "total": 10
       },
       {
@@ -469,6 +460,45 @@ module.exports = function () {
           }
         ],
         "total": 1
+      },
+      {
+        "id": 24,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [
+          {
+            "assignee": {
+              "displayName": "PATeam1 User1",
+              "id": 86
+            },
+            "caseItems": [
+              {
+                "client": {
+                  "caseRecNumber": "51132787",
+                  "firstname": "Beth",
+                  "id": 6354,
+                  "supervisionCaseOwner": {
+                    "displayName": "Lay Team 2 - (Supervision)"
+                  },
+                  "feePayer": {
+                    "id": 12,
+                    "displayName": "Mr Fee-paying Deputy",
+                    "deputyType": {
+                      "handle": "PA",
+                      "label": "PA"
+                    }
+                  },
+                  "surname": "Lay"
+                }
+              }
+            ],
+            "dueDate": "11/11/2011",
+            "name": "Case work - Complaint review"
+          }
+        ],
+        "total": 1
       }
     ],
     "tasks-view-25": [
@@ -479,533 +509,7 @@ module.exports = function () {
           "current": 1,
           "total": 5
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Lizzo",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Surname"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Jimi",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hendrix"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Margaret Bavaria-Straubing",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Elton",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "John"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Elvis",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Presley"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          }
-        ],
+        "tasks": generateTasks(25),
         "total": 101
       },
       {
@@ -1015,533 +519,7 @@ module.exports = function () {
           "current": 2,
           "total": 5
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Mickey",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Mouse"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Minnie",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Mouse"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Margaret Bavaria-Straubing",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Donald",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Duck"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Elsa",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Frozen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Olaf",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Snowman"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          }
-        ],
+        "tasks": generateTasks(25),
         "total": 101
       },
       {
@@ -1551,533 +529,7 @@ module.exports = function () {
           "current": 3,
           "total": 5
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Rhaenyra",
-                  "id": 1594,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Daemon",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Margaret Bavaria-Straubing",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Alicent",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hightower"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Aemond",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Corlys",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Velaryon"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "Criston",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cole"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Viserys",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Laenor",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Velaryon"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Otto",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hightower"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Larys",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strong"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Harwin",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strong"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          }
-        ],
+        "tasks": generateTasks(25),
         "total": 101
       },
       {
@@ -2087,533 +539,7 @@ module.exports = function () {
           "current": 4,
           "total": 5
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Rhaenyra",
-                  "id": 1594,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Daemon",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Margaret Bavaria-Straubing",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Alicent",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hightower"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Aemond",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Corlys",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Velaryon"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "Criston",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cole"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Viserys",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Laenor",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Velaryon"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Otto",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hightower"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Larys",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strong"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Harwin",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strong"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Client Alexander Zacchaeus",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Client Wolfeschlegelsteinhausenbergerdorff"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - General"
-          }
-        ],
+        "tasks": generateTasks(25),
         "total": 101
       },
       {
@@ -2623,29 +549,7 @@ module.exports = function () {
           "current": 5,
           "total": 5
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Daemon",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Targaryen"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          }
-        ],
+        "tasks": generateTasks(1),
         "total": 101
       }
     ],
@@ -2657,533 +561,7 @@ module.exports = function () {
           "current": 1,
           "total": 2
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Daft",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Punk"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Taylor",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Swft"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Robert",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strange"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Harry",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Styles"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Tom",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hanks"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Martin",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Freeman"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Robert",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strange"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          }
-        ],
+        "tasks": generateTasks(50),
         "total": 51
       },
       {
@@ -3193,29 +571,7 @@ module.exports = function () {
           "current": 2,
           "total": 2
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Lady",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Gaga"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          }
-        ],
+        "tasks": generateTasks(1),
         "total": 51
       }
     ],
@@ -3227,218 +583,7 @@ module.exports = function () {
           "current": 1,
           "total": 1
         },
-        "tasks": [
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 86
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "51132787",
-                  "firstname": "Harry",
-                  "id": 3333,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Styles"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 69
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "48806317",
-                  "firstname": "Tom",
-                  "id": 2564,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Hanks"
-                }
-              }
-            ],
-            "dueDate": "28/02/2018",
-            "name": "Order - Allocate to team"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 99
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "83948321",
-                  "firstname": "Martin",
-                  "id": 1458,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Freeman"
-                }
-              }
-            ],
-            "dueDate": "01/12/2018",
-            "name": "Case work - Call back request"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User13",
-              "id": 88
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "58748192",
-                  "firstname": "Robert",
-                  "id": 1237,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Strange"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Complaint review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User10",
-              "id": 12
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "33731087",
-                  "firstname": "Sean",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bean"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Case work - Safeguarding"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 58
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "91221815",
-                  "firstname": "David",
-                  "id": 4561,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Attenborough"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Correspondence - Review failed draft"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 94
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "52556905",
-                  "firstname": "Alexander",
-                  "id": 7894,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Bell"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Finance - Sop processing"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User3",
-              "id": 77
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "94277087",
-                  "firstname": "Henry",
-                  "id": 3691,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Cavill"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Report - Full staff review"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations User1",
-              "id": 46
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "93766765",
-                  "firstname": "Henry",
-                  "id": 2583,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Ford"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Visit - Review report"
-          },
-          {
-            "assignee": {
-              "displayName": "Allocations - (Supervision)",
-              "id": 64
-            },
-            "caseItems": [
-              {
-                "client": {
-                  "caseRecNumber": "62168380",
-                  "firstname": "Matt",
-                  "id": 1472,
-                  "supervisionCaseOwner": {
-                    "displayName": "Allocations - (Supervision)"
-                  },
-                  "surname": "Smith"
-                }
-              }
-            ],
-            "dueDate": "01/02/2021",
-            "name": "Order - Review the order"
-          }
-        ],
+        "tasks": generateTasks(10),
         "total": 10
       }
     ]

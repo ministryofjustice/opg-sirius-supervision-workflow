@@ -1,48 +1,37 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "assigned" }}
 <div class="moj-filter__options" data-filter-name="moj-filter-name-assigned">
 
   <div class="app-c-option-select">
     <div class="app-c-option-select__heading js-container-heading filter-toggle-button">
       <button class="js-container-button app-c-option-select__title app-c-option-select__button" type="button" aria-expanded="false" id="option-select-title-assignee" aria-controls="list_of_countries_to_filter">Assigned</button>
-      <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="arrowUp" class="app-c-option-select__icon app-c-option-select__icon--up filter-arrow-up hide" aria-hidden="true" focusable="false">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up filter-arrow-up hide" aria-hidden="true" focusable="false">
         <path d="m798.16 609.84l-256-256c-16.683-16.683-43.691-16.683-60.331 0l-256 256c-16.683 16.683-16.683 43.691 0 60.331s43.691 16.683 60.331 0l225.84-225.84 225.84 225.84c16.683 16.683 43.691 16.683 60.331 0s16.683-43.691 0-60.331z"></path>
       </svg>
-      <svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" id="arrowDown" class="app-c-option-select__icon app-c-option-select__icon--down filter-arrow-down" aria-hidden="true" focusable="false">
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--down filter-arrow-down" aria-hidden="true" focusable="false">
         <path d="m225.84 414.16l256 256c16.683 16.683 43.691 16.683 60.331 0l256-256c16.683-16.683 16.683-43.691 0-60.331s-43.691-16.683-60.331 0l-225.84 225.84-225.84-225.84c-16.683-16.683-43.691-16.683-60.331 0s-16.683 43.691 0 60.331z"></path>
       </svg>
     </div>
   </div>
 
-    {{/* <div class="app-c-option-select__filter"> <label for="input-3eca3372" class="govuk-label govuk-visually-hidden">
-        Enter a name
-      </label>
-      <input name="option-select-filter" id="assignedSearch" class="filterCheckboxes app-c-option-select__filter-input govuk-input" type="text" aria-describedby="checkboxes-19682d1b-count" aria-controls="checkboxes-19682d1b">
-    </div> */}}
-
   <div role="group" aria-labelledby="option-select-title-countries" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list_of_assignee_to_filter" tabindex="-1" style="height: 254.333px;">
     <div class="app-c-option-select__container-inner js-auto-height-inner">
-      <fieldset class="govuk-fieldset">
-        <div class="govuk-checkboxes govuk-checkboxes--small">
-          {{ range .TeamSelection }}
-            {{if eq .Id .UserSelectedTeam}}
-              <div class="govuk-checkboxes__item filter__checkbox">
-                <input class="govuk-checkboxes__input assigned assignee-type" id="Not Assigned" name="selected-assignee" type="checkbox" value="{{ .UserSelectedTeam }}" {{if .IsTeamSelected }}checked{{end}}>
-                {{end}}
-                {{ end }}
-                <label class="govuk-label govuk-checkboxes__label" for="">
-                  Not Assigned
-                </label>
-              </div>
-        </div>
-        {{ range .Assignees.Members }}
+      <fieldset class="govuk-fieldset" aria-label="Assigned">
+        <legend class="hide">Assignees</legend>
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
-            <input class="govuk-checkboxes__input assigned assignee-type" id="{{.TeamMembersDisplayName}}" name="selected-assignee" type="checkbox" value="{{ .TeamMembersId }}" {{if .IsSelected }}checked{{end}}>
-            <label class="govuk-label govuk-checkboxes__label" for="">
-              {{ .TeamMembersDisplayName }}
-            </label>
+            <input class="govuk-checkboxes__input" id="not_assigned" name="unassigned" type="checkbox" value="{{ .SelectedTeam.Selector }}" data-module="filter" {{ if eq .SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
+            <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned</label>
           </div>
         </div>
+
+        {{ range .SelectedTeam.GetAssigneesForFilter }}
+          <div class="govuk-checkboxes govuk-checkboxes--small">
+            <div class="govuk-checkboxes__item filter__checkbox">
+              <input class="govuk-checkboxes__input" id="assignee_{{ .ID }}" name="assignee" type="checkbox" value="{{ .ID }}" data-module="filter" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }} />
+              <label class="govuk-label govuk-checkboxes__label" for="assignee_{{ .ID }}">{{ .Name }}</label>
+            </div>
+          </div>
         {{ end }}
       </fieldset>
     </div>
