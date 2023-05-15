@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 )
 
 type mockWorkflowInformation struct {
@@ -42,7 +43,7 @@ func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelec
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
