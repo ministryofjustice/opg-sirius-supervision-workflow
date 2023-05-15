@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestGetTaskListCanReturn200(t *testing.T) {
@@ -87,7 +88,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 
 	selectedTeam := ReturnedTeamCollection{Id: 13}
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []ApiTaskTypes{}, []string{""})
+	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []ApiTaskTypes{}, []string{""}, nil, nil)
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
@@ -120,7 +121,7 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 
 			client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{})
+			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{}, nil, nil)
 
 			expectedResponse := TaskList{
 				WholeTaskList: nil,
@@ -166,11 +167,15 @@ func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T)
 }
 
 func TestCreateFilter(t *testing.T) {
-	assert.Equal(t, CreateFilter([]string{}, []string{}), "status:Not+started")
-	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}), "status:Not+started,assigneeid_or_null:LayTeam1")
+	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
+
+	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil), "status:Not+started")
+	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil), "status:Not+started,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {

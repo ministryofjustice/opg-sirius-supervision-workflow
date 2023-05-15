@@ -36,6 +36,19 @@ describe("Filters", () => {
     cy.url().should('include', 'task-type=ORAL')
   })
 
+  it("can filter by due date", () => {
+    cy.get('#option-select-title-due-date').click()
+    cy.get('#due-date-from').type("2022-12-17")
+    cy.get('#due-date-to').type("2022-12-18")
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'due-date-from=2022-12-17')
+    cy.url().should('include', 'due-date-to=2022-12-18')
+    cy.get('.moj-filter__tag').contains('From: 2022-12-17')
+    cy.get('.moj-filter__tag').contains('To: 2022-12-18')
+    cy.get('#due-date-from').should('have.value', "2022-12-17")
+    cy.get('#due-date-to').should('have.value', "2022-12-18")
+  })
+
   it("retains task type filter when changing views", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('[type="checkbox"]').eq(0).check()

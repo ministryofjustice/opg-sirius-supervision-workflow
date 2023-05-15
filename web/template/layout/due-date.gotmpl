@@ -1,0 +1,33 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
+{{ define "due-date" }}
+<div class="moj-filter__options" data-filter-name="moj-filter-name-due-date">
+
+  <div class="app-c-option-select">
+    <div class="app-c-option-select__heading js-container-heading filter-toggle-button">
+      <button class="js-container-button app-c-option-select__title app-c-option-select__button" type="button" aria-expanded="false" id="option-select-title-due-date">Due date</button>
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up filter-arrow-up hide" aria-hidden="true" focusable="false">
+        <path d="m798.16 609.84l-256-256c-16.683-16.683-43.691-16.683-60.331 0l-256 256c-16.683 16.683-16.683 43.691 0 60.331s43.691 16.683 60.331 0l225.84-225.84 225.84 225.84c16.683 16.683 43.691 16.683 60.331 0s16.683-43.691 0-60.331z"></path>
+      </svg>
+      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--down filter-arrow-down" aria-hidden="true" focusable="false">
+        <path d="m225.84 414.16l256 256c16.683 16.683 43.691 16.683 60.331 0l256-256c16.683-16.683 16.683-43.691 0-60.331s-43.691-16.683-60.331 0l-225.84 225.84-225.84-225.84c-16.683-16.683-43.691-16.683-60.331 0s-16.683 43.691 0 60.331z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <div role="group" aria-labelledby="option-select-title-due-date" class="app-c-option-select__container js-options-container filter-inner-container hide" id="due_date_filter" tabindex="-1">
+    <div class="app-c-option-select__container-inner js-auto-height-inner">
+      <fieldset class="govuk-fieldset" aria-label="Due date">
+        <legend class="hide">Due date</legend>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="due-date-from">Date from</label>
+          <input class="govuk-input" data-module="filter" id="due-date-from" name="due-date-from" type="date" value="{{ .SelectedDueDateFrom }}">
+        </div>
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="due-date-to">Date to</label>
+          <input class="govuk-input" data-module="filter" id="due-date-to" name="due-date-to" type="date" value="{{ .SelectedDueDateTo }}">
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+{{ end }}
