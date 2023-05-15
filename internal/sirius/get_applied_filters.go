@@ -1,6 +1,8 @@
 package sirius
 
-func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []string, selectedUnassigned string, taskTypes []ApiTaskTypes) []string {
+import "time"
+
+func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []string, selectedUnassigned string, taskTypes []ApiTaskTypes, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
 	var appliedFilters []string
 
 	for _, u := range taskTypes {
@@ -17,6 +19,14 @@ func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []
 		if u.IsSelected(selectedAssignees) {
 			appliedFilters = append(appliedFilters, u.Name)
 		}
+	}
+
+	if dueDateFrom != nil {
+		appliedFilters = append(appliedFilters, "Due date from "+dueDateFrom.Format("02/01/2006")+" (inclusive)")
+	}
+
+	if dueDateTo != nil {
+		appliedFilters = append(appliedFilters, "Due date to "+dueDateTo.Format("02/01/2006")+" (inclusive)")
 	}
 
 	return appliedFilters

@@ -5,10 +5,13 @@
 
   &__options {
     box-shadow: none;
-    padding: govuk-spacing(2) govuk-spacing(4) 0;
+    margin: govuk-spacing(2) govuk-spacing(4) 0;
+    padding: 0 0 govuk-spacing(4);
+    border-bottom: 1px solid govuk-colour("mid-grey");
 
     .govuk-checkboxes__item {
       float: none;
+      margin-left: 10px;
     }
   }
 
