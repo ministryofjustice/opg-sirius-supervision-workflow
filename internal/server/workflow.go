@@ -8,12 +8,13 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
 	AssignTasksToCaseManager(sirius.Context, int, []string) error
@@ -79,6 +80,17 @@ func setTaskCount(handle string, metaData sirius.TaskList) int {
 		}
 	}
 	return 0
+}
+
+func getSelectedDateFilter(value string) (*time.Time, error) {
+	if value == "" {
+		return nil, nil
+	}
+	parsed, err := time.Parse("2006-01-02", value)
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
 }
 
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
@@ -181,7 +193,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
+		selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
+		if err != nil {
+			logger.Print("DueDateFrom error " + err.Error())
+			return err
+		}
+
+		selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
+		if err != nil {
+			logger.Print("DueDateTo error " + err.Error())
+			return err
+		}
+
+		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
 
 		if err != nil {
 			logger.Print("GetTaskList error " + err.Error())
@@ -189,7 +213,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 			page = taskList.Pages.PageTotal
-			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
+			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
 
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
@@ -199,7 +223,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		pageDetails := client.GetPageDetails(taskList, page, tasksPerPage)
 
-		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes)
+		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 		var taskTypeList []sirius.ApiTaskTypes
 
@@ -228,6 +252,13 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.AppliedFilters = appliedFilters
+
+		if selectedDueDateFrom != nil {
+			vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
+		}
+		if selectedDueDateTo != nil {
+			vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
+		}
 
 		if err != nil {
 			return StatusError(http.StatusNotFound)
