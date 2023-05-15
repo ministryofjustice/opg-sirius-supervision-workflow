@@ -505,3 +505,50 @@ func TestSetTaskCountNoMatchingTaskTypeWillReturnZero(t *testing.T) {
 
 	assert.Equal(t, 0, setTaskCount("FREA", mockTaskListData))
 }
+
+func TestGetSelectedDateFilter(t *testing.T) {
+	testDate := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+
+	tests := []struct {
+		name         string
+		value        string
+		expectedDate *time.Time
+		expectedErr  error
+	}{
+		{
+			name:         "Valid date",
+			value:        "2022-12-17",
+			expectedDate: &testDate,
+			expectedErr:  nil,
+		},
+		{
+			name:         "Blank date",
+			value:        "",
+			expectedDate: nil,
+			expectedErr:  nil,
+		},
+		{
+			name:         "Invalid date",
+			value:        "17/12/2022",
+			expectedDate: nil,
+			expectedErr:  errors.New("parsing time \"17/12/2022\" as \"2006-01-02\": cannot parse \"17/12/2022\" as \"2006\""),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			date, err := getSelectedDateFilter(test.value)
+
+			if test.expectedErr == nil {
+				assert.Nil(t, err)
+			} else {
+				assert.Equal(t, test.expectedErr.Error(), err.Error())
+			}
+
+			if test.expectedDate == nil {
+				assert.Nil(t, date)
+			} else {
+				assert.Equal(t, test.expectedDate.Format("2006-01-02"), date.Format("2006-01-02"))
+			}
+		})
+	}
+}
