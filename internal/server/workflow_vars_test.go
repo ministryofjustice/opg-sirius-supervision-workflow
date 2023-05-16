@@ -7,12 +7,14 @@ import (
 )
 
 type urlFields struct {
-	SelectedTeam       string
-	CurrentPage        int
-	PerPageLimit       int
-	SelectedAssignees  []string
-	SelectedUnassigned string
-	SelectedTaskTypes  []string
+	SelectedTeam        string
+	CurrentPage         int
+	PerPageLimit        int
+	SelectedAssignees   []string
+	SelectedUnassigned  string
+	SelectedTaskTypes   []string
+	SelectedDueDateFrom string
+	SelectedDueDateTo   string
 }
 
 func createWorkflowVars(fields urlFields) WorkflowVars {
@@ -22,9 +24,11 @@ func createWorkflowVars(fields urlFields) WorkflowVars {
 			CurrentPage:     fields.CurrentPage,
 			StoredTaskLimit: fields.PerPageLimit,
 		},
-		SelectedAssignees:  fields.SelectedAssignees,
-		SelectedUnassigned: fields.SelectedUnassigned,
-		SelectedTaskTypes:  fields.SelectedTaskTypes,
+		SelectedAssignees:   fields.SelectedAssignees,
+		SelectedUnassigned:  fields.SelectedUnassigned,
+		SelectedTaskTypes:   fields.SelectedTaskTypes,
+		SelectedDueDateFrom: fields.SelectedDueDateFrom,
+		SelectedDueDateTo:   fields.SelectedDueDateTo,
 	}
 }
 
@@ -52,6 +56,11 @@ func TestWorkflowVars_GetClearFiltersUrl(t *testing.T) {
 		{
 			name:   "Task types are removed",
 			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
+			want:   "?team=lay&page=1&per-page=25",
+		},
+		{
+			name:   "Due date filters are removed",
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
@@ -115,6 +124,12 @@ func TestWorkflowVars_GetPaginationUrl(t *testing.T) {
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25&task-type=1&task-type=2",
 		},
+		{
+			name:   "Due date filters are retained",
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			args:   args{page: 2, perPage: 25},
+			want:   "?team=lay&page=2&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -143,21 +158,33 @@ func TestWorkflowVars_GetRemoveFilterUrl(t *testing.T) {
 	}{
 		{
 			name:   "Assignee filter removed",
-			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "assignee", value: 2},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&unassigned=1",
+			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Unassigned filter removed",
-			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "unassigned", value: 1},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2",
+			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Task type filter removed",
-			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "task-type", value: 3},
-			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1",
+			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
+		},
+		{
+			name:   "Due date from filter removed",
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			args:   args{name: "due-date-from", value: "2022-12-17"},
+			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-to=2022-12-18",
+		},
+		{
+			name:   "Due date to filter removed",
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			args:   args{name: "due-date-to", value: "2022-12-18"},
+			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17",
 		},
 		{
 			name:   "Page is reset back to 1 on removing a filter",
@@ -167,9 +194,9 @@ func TestWorkflowVars_GetRemoveFilterUrl(t *testing.T) {
 		},
 		{
 			name:   "All filters retained if filter not found",
-			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "non-existent", value: 3},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1",
+			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 	}
 	for _, tt := range tests {
@@ -216,6 +243,12 @@ func TestWorkflowVars_GetTeamUrl(t *testing.T) {
 			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25&task-type=1&task-type=2",
+		},
+		{
+			name:   "Due date filters are retained",
+			fields: urlFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			team:   "pro",
+			want:   "?team=pro&page=1&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Page is reset back to 1",

@@ -54,11 +54,24 @@
             {{ end }}
           </ul>
         {{ end }}
+
+        {{ if or (.SelectedDueDateFrom) (.SelectedDueDateTo) }}
+          <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Due date</h3>
+          <ul class="moj-filter-tags">
+              {{ if .SelectedDueDateFrom }}
+                <li><a href="{{ .GetRemoveFilterUrl "due-date-from" .SelectedDueDateFrom }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> From: {{ .SelectedDueDateFrom }}</a></li>
+              {{ end }}
+              {{ if .SelectedDueDateTo }}
+                <li><a href="{{ .GetRemoveFilterUrl "due-date-to" .SelectedDueDateTo }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> To: {{ .SelectedDueDateTo }}</a></li>
+              {{ end }}
+          </ul>
+        {{ end }}
       </div>
     </div>
   
     {{ template "task-type" . }}
     {{ template "assigned" . }}
+    {{ template "due-date" . }}
 
     <button class="govuk-button govuk-!-margin-top-4" data-module="apply-filters">Apply filters</button>
  

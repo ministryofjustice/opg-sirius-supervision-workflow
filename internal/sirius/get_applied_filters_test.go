@@ -3,6 +3,7 @@ package sirius
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
@@ -54,12 +55,14 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 
 	var selectedAssignees []string
 	var selectedUnassigned string
+	var selectedDueDateFrom *time.Time
+	var selectedDueDateTo *time.Time
 
 	expectedFilter := []string{
 		"Casework - General",
 	}
 
-	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes)
+	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 1, len(appliedFilters))
@@ -104,13 +107,15 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 
 	var selectedAssignees []string
 	var selectedUnassigned string
+	var selectedDueDateFrom *time.Time
+	var selectedDueDateTo *time.Time
 
 	expectedFilter := []string{
 		"Casework - General",
 		"Order - Allocate to team",
 	}
 
-	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes)
+	appliedFilters := GetAppliedFilters(teamCollection[0], selectedAssignees, selectedUnassigned, apiTaskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
@@ -165,13 +170,15 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 
 	selectedAssignees := []string{"2"}
 	var selectedUnassigned string
+	var selectedDueDateFrom *time.Time
+	var selectedDueDateTo *time.Time
 
 	expectedFilter := []string{
 		"Order - Allocate to team",
 		"Test Two",
 	}
 
-	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 2, len(appliedFilters))
@@ -226,6 +233,8 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 
 	selectedAssignees := []string{"1"}
 	selectedUnassigned := teamCollection[1].Selector
+	var selectedDueDateFrom *time.Time
+	var selectedDueDateTo *time.Time
 
 	expectedFilter := []string{
 		"Casework - General",
@@ -234,10 +243,35 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 		"Test One",
 	}
 
-	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 4, len(appliedFilters))
+}
+
+func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
+	var apiTaskTypes []ApiTaskTypes
+	selectedTeam := ReturnedTeamCollection{
+		Id:        12,
+		Name:      "Supervision Team 1",
+		Type:      "Supervision",
+		TypeLabel: "Only",
+		Selector:  "12",
+	}
+	var selectedAssignees []string
+	var selectedUnassigned string
+	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
+
+	expectedFilter := []string{
+		"Due date from 17/12/2022 (inclusive)",
+		"Due date to 18/12/2022 (inclusive)",
+	}
+
+	appliedFilters := GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, apiTaskTypes, &selectedDueDateFrom, &selectedDueDateTo)
+
+	assert.Equal(t, expectedFilter, appliedFilters)
+	assert.Equal(t, 2, len(appliedFilters))
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
@@ -290,8 +324,10 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 	var selectedAssignees []string
 	var selectedUnassigned string
 	var expectedFilter []string
+	var selectedDueDateFrom *time.Time
+	var selectedDueDateTo *time.Time
 
-	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes)
+	appliedFilters := GetAppliedFilters(teamCollection[1], selectedAssignees, selectedUnassigned, apiTaskTypes, selectedDueDateFrom, selectedDueDateTo)
 
 	assert.Equal(t, expectedFilter, appliedFilters)
 	assert.Equal(t, 0, len(appliedFilters))

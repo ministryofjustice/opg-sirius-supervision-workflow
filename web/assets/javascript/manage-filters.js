@@ -81,7 +81,10 @@ export default class ManageFilters {
   _applyFilters() {
     let url = this.clearFilters.getAttribute("href");
     this.filters.forEach(function (filter) {
-      if (filter.checked) {
+      if (!filter.value) {
+        return
+      }
+      if (filter.checked || filter.type !== "checkbox") {
         url += "&" + filter.name + "=" + filter.value
       }
     });
