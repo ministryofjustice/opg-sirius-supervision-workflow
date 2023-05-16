@@ -166,11 +166,12 @@ func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T)
 }
 
 func TestCreateFilter(t *testing.T) {
-	assert.Equal(t, CreateFilter([]string{}, []string{}), "status:Not+started")
-	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}), "status:Not+started,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{}, []string{}, SetUpLoadTasks()), "status:Not+started")
+	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, SetUpLoadTasks()), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, SetUpLoadTasks()), "status:Not+started,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{"ECM_TASKS"}, []string{}, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:RRRR")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
@@ -422,6 +423,7 @@ func SetUpLoadTasks() []ApiTaskTypes {
 			User:       true,
 			Category:   "supervision",
 			IsSelected: true,
+			EcmTask:    true,
 		},
 		{
 			Handle:     "ORAL",
@@ -430,6 +432,16 @@ func SetUpLoadTasks() []ApiTaskTypes {
 			User:       true,
 			Category:   "supervision",
 			IsSelected: false,
+			EcmTask:    false,
+		},
+		{
+			Handle:     "RRRR",
+			Incomplete: "Visit - Review red report",
+			Complete:   "Visit - Review red report",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: false,
+			EcmTask:    true,
 		},
 	}
 	return loadTasks

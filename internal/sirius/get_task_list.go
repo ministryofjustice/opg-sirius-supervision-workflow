@@ -79,11 +79,11 @@ type TaskList struct {
 	ActiveFilters []string
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []ApiTaskTypes, selectedAssignees []string) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 
-	filter := CreateFilter(taskTypeSelected, selectedAssignees)
+	filter := CreateFilter(taskTypeSelected, selectedAssignees, taskTypes)
 
 	if selectedTeam.Id != 0 {
 		teamIds = []string{"teamIds[]=" + strconv.Itoa(selectedTeam.Id)}
@@ -125,7 +125,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskList := v
 
-	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
+	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, taskTypes)
 
 	return TaskList, err
 }
@@ -138,8 +138,16 @@ func (d *Deputy) GetURL() string {
 	return fmt.Sprintf(url, d.Id)
 }
 
-func CreateFilter(taskTypeSelected []string, selectedAssignees []string) string {
+func CreateFilter(taskTypeSelected []string, selectedAssignees []string, taskTypes []ApiTaskTypes) string {
 	filter := "status:Not+started,"
+
+	for _, t := range taskTypeSelected {
+		if t == "ECM_TASKS" {
+			taskTypeSelected = getEcmTaskTypesString(taskTypes)
+			break
+		}
+	}
+
 	for _, t := range taskTypeSelected {
 		filter += "type:" + t + ","
 	}
@@ -217,4 +225,14 @@ func GetClientInformation(s ApiTask) Clients {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}
 	return s.ApiClients[0]
+}
+
+func getEcmTaskTypesString(taskTypes []ApiTaskTypes) []string {
+	var ecmTasks []string
+	for _, taskType := range taskTypes {
+		if taskType.EcmTask {
+			ecmTasks = append(ecmTasks, taskType.Handle)
+		}
+	}
+	return ecmTasks
 }
