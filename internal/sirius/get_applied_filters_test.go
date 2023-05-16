@@ -27,11 +27,11 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 			Type: "Supervision",
 			Members: []TeamMember{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -132,11 +132,11 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 			Type: "Supervision",
 			Members: []TeamMember{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -187,11 +187,11 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 			Type: "Supervision",
 			Members: []TeamMember{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -269,11 +269,11 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 			Type: "Supervision",
 			Members: []TeamMember{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},

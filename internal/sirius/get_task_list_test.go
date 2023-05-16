@@ -100,7 +100,7 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 		expectedURL  string
 	}{
 		{
-			name:         "Single Team ID requested",
+			name:         "Single Team Id requested",
 			selectedTeam: ReturnedTeamCollection{Id: 13},
 			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=dueDate:asc",
 		},

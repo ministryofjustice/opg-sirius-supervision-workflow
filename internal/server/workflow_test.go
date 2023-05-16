@@ -82,13 +82,11 @@ func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, n
 }
 
 var mockUserDetailsData = sirius.UserDetails{
-	ID:        123,
 	Firstname: "John",
 	Surname:   "Doe",
-	Teams: []sirius.MyDetailsTeam{
+	Teams: []sirius.UserTeams{
 		{
-			TeamId:      13,
-			DisplayName: "Lay Team 1 - (Supervision)",
+			TeamId: 13,
 		},
 	},
 }
@@ -130,7 +128,7 @@ var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
 		Id: 13,
 		Members: []sirius.TeamMember{
 			{
-				ID:   86,
+				Id:   86,
 				Name: "LayTeam1 User11",
 			},
 		},
@@ -191,13 +189,11 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert.Equal(WorkflowVars{
 		Path: "/path",
 		MyDetails: sirius.UserDetails{
-			ID:        123,
 			Firstname: "John",
 			Surname:   "Doe",
-			Teams: []sirius.MyDetailsTeam{
+			Teams: []sirius.UserTeams{
 				{
-					TeamId:      13,
-					DisplayName: "Lay Team 1 - (Supervision)",
+					TeamId: 13,
 				},
 			},
 		},
@@ -219,7 +215,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 				Id: 13,
 				Members: []sirius.TeamMember{
 					{
-						ID:   86,
+						Id:   86,
 						Name: "LayTeam1 User11",
 					},
 				},
@@ -230,7 +226,7 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 			Id: 13,
 			Members: []sirius.TeamMember{
 				{
-					ID:   86,
+					Id:   86,
 					Name: "LayTeam1 User11",
 				},
 			},
@@ -276,13 +272,11 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 	assert.Equal(WorkflowVars{
 		Path: "/path",
 		MyDetails: sirius.UserDetails{
-			ID:        123,
 			Firstname: "John",
 			Surname:   "Doe",
-			Teams: []sirius.MyDetailsTeam{
+			Teams: []sirius.UserTeams{
 				{
-					TeamId:      13,
-					DisplayName: "Lay Team 1 - (Supervision)",
+					TeamId: 13,
 				},
 			},
 		},
@@ -305,7 +299,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 				Id: 13,
 				Members: []sirius.TeamMember{
 					{
-						ID:   86,
+						Id:   86,
 						Name: "LayTeam1 User11",
 					},
 				},
@@ -316,7 +310,7 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 			Id: 13,
 			Members: []sirius.TeamMember{
 				{
-					ID:   86,
+					Id:   86,
 					Name: "LayTeam1 User11",
 				},
 			},
@@ -380,23 +374,14 @@ func TestPostWorkflowIsPermitted(t *testing.T) {
 
 func TestGetLoggedInTeamId(t *testing.T) {
 	assert.Equal(t, 13, getLoggedInTeamId(sirius.UserDetails{
-		ID:          65,
-		Name:        "case",
-		PhoneNumber: "12345678",
-		Teams: []sirius.MyDetailsTeam{
+		Teams: []sirius.UserTeams{
 			{
-				TeamId:      13,
-				DisplayName: "Lay Team 1 - (Supervision)",
+				TeamId: 13,
 			},
 		},
-		DisplayName: "case manager",
 	}, 25))
 
-	assert.Equal(t, 25, getLoggedInTeamId(sirius.UserDetails{
-		ID:          65,
-		Name:        "case",
-		DisplayName: "case manager",
-	}, 25))
+	assert.Equal(t, 25, getLoggedInTeamId(sirius.UserDetails{}, 25))
 }
 
 func TestGetAssigneeIdForTask(t *testing.T) {

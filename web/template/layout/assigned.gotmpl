@@ -28,8 +28,8 @@
         {{ range .SelectedTeam.GetAssigneesForFilter }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
-              <input class="govuk-checkboxes__input" id="assignee_{{ .ID }}" name="assignee" type="checkbox" value="{{ .ID }}" data-module="filter" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }} />
-              <label class="govuk-label govuk-checkboxes__label" for="assignee_{{ .ID }}">{{ .Name }}</label>
+              <input class="govuk-checkboxes__input" id="assignee_{{ .Id }}" name="assignee" type="checkbox" value="{{ .Id }}" data-module="filter" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }} />
+              <label class="govuk-label govuk-checkboxes__label" for="assignee_{{ .Id }}">{{ .Name }}</label>
             </div>
           </div>
         {{ end }}

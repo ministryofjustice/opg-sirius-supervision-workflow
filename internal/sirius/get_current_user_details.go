@@ -7,14 +7,13 @@ import (
 )
 
 type UserDetails struct {
-	Teams     []MyDetailsTeam `json:"teams"`
-	Firstname string          `json:"firstname"`
-	Surname   string          `json:"surname"`
+	Firstname string      `json:"firstname"`
+	Surname   string      `json:"surname"`
+	Teams     []UserTeams `json:"teams"`
 }
 
-type MyDetailsTeam struct {
-	DisplayName string `json:"displayName"`
-	TeamId      int    `json:"id"`
+type UserTeams struct {
+	TeamId int `json:"id"`
 }
 
 func (c *Client) GetCurrentUserDetails(ctx Context) (UserDetails, error) {

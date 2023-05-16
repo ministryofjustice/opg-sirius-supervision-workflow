@@ -45,10 +45,9 @@ func TestGetCurrentUserDetails(t *testing.T) {
 	}
 
 	expectedResponse := UserDetails{
-		Teams: []MyDetailsTeam{
+		Teams: []UserTeams{
 			{
-				DisplayName: "Lay Team 1 - (Supervision)",
-				TeamId:      13,
+				TeamId: 13,
 			},
 		},
 		Firstname: "case",
@@ -121,7 +120,7 @@ func TestMyDetailsReturns200(t *testing.T) {
 	}
 
 	expectedResponse := UserDetails{
-		Teams:     []MyDetailsTeam{},
+		Teams:     []UserTeams{},
 		Firstname: "case",
 		Surname:   "manager",
 	}

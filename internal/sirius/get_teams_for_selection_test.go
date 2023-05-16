@@ -87,7 +87,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Selector: "21",
 			Members: []TeamMember{
 				{
-					ID:   71,
+					Id:   71,
 					Name: "Allocations User1",
 				},
 			},
@@ -163,30 +163,30 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 func TestReturnedTeamCollection_GetAssigneesForFilter(t *testing.T) {
 	team := ReturnedTeamCollection{
 		Members: []TeamMember{
-			{ID: 1, Name: "B"},
-			{ID: 2, Name: "A"},
+			{Id: 1, Name: "B"},
+			{Id: 2, Name: "A"},
 		},
 		Teams: []ReturnedTeamCollection{
 			{
 				Members: []TeamMember{
-					{ID: 4, Name: "D"},
-					{ID: 2, Name: "A"},
-					{ID: 3, Name: "C"},
+					{Id: 4, Name: "D"},
+					{Id: 2, Name: "A"},
+					{Id: 3, Name: "C"},
 				},
 			},
 			{
 				Members: []TeamMember{
-					{ID: 3, Name: "C"},
+					{Id: 3, Name: "C"},
 				},
 			},
 		},
 	}
 
 	expected := []TeamMember{
-		{ID: 2, Name: "A"},
-		{ID: 1, Name: "B"},
-		{ID: 3, Name: "C"},
-		{ID: 4, Name: "D"},
+		{Id: 2, Name: "A"},
+		{Id: 1, Name: "B"},
+		{Id: 3, Name: "C"},
+		{Id: 4, Name: "D"},
 	}
 
 	assert.Equal(t, expected, team.GetAssigneesForFilter())
@@ -201,18 +201,18 @@ func TestReturnedTeamCollection_HasTeam(t *testing.T) {
 		},
 	}
 
-	assert.Truef(t, team.HasTeam(10), "Parent team ID 10 not found")
-	assert.Truef(t, team.HasTeam(12), "Check team ID 12 not found")
-	assert.Truef(t, team.HasTeam(13), "Child team ID 13 not found")
-	assert.False(t, team.HasTeam(11), "Child team ID 11 should not exist")
+	assert.Truef(t, team.HasTeam(10), "Parent team Id 10 not found")
+	assert.Truef(t, team.HasTeam(12), "Check team Id 12 not found")
+	assert.Truef(t, team.HasTeam(13), "Child team Id 13 not found")
+	assert.False(t, team.HasTeam(11), "Child team Id 11 should not exist")
 }
 
 func TestTeamMember_IsSelected(t *testing.T) {
-	selectedTeamMember := TeamMember{ID: 10}
-	unselectedTeamMember := TeamMember{ID: 11}
+	selectedTeamMember := TeamMember{Id: 10}
+	unselectedTeamMember := TeamMember{Id: 11}
 
 	selectedAssignees := []string{"9", "10", "12", "13"}
 
-	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team ID 10 is not selected")
-	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
+	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team Id 10 is not selected")
+	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team Id 11 is selected")
 }

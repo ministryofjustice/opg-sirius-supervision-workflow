@@ -49,7 +49,7 @@
             {{ end }}
             {{ range .SelectedTeam.GetAssigneesForFilter }}
               {{ if .IsSelected $.SelectedAssignees }}
-                <li><a href="{{ $.GetRemoveFilterUrl "assignee" .ID }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Name }}</a></li>
+                <li><a href="{{ $.GetRemoveFilterUrl "assignee" .Id }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Name }}</a></li>
               {{ end }}
             {{ end }}
           </ul>

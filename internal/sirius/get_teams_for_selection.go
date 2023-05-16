@@ -8,15 +8,15 @@ import (
 )
 
 type TeamMember struct {
-	ID   int    `json:"id"`
+	Id   int    `json:"id"`
 	Name string `json:"displayName"`
 }
 
 type TeamCollection struct {
-	ID          int    `json:"id"`
+	Id          int    `json:"id"`
 	DisplayName string `json:"displayName"`
 	Members     []struct {
-		ID          int    `json:"id"`
+		Id          int    `json:"id"`
 		DisplayName string `json:"displayName"`
 	} `json:"members"`
 	TeamType *struct {
@@ -41,8 +41,8 @@ func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
 	ids := map[int]bool{}
 	var deduped []TeamMember
 	for _, assignee := range assignees {
-		if _, value := ids[assignee.ID]; !value {
-			ids[assignee.ID] = true
+		if _, value := ids[assignee.Id]; !value {
+			ids[assignee.Id] = true
 			deduped = append(deduped, assignee)
 		}
 	}
@@ -67,7 +67,7 @@ func (r ReturnedTeamCollection) HasTeam(id int) bool {
 func (m TeamMember) IsSelected(selectedAssignees []string) bool {
 	for _, a := range selectedAssignees {
 		id, _ := strconv.Atoi(a)
-		if m.ID == id {
+		if m.Id == id {
 			return true
 		}
 	}
@@ -125,16 +125,16 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, er
 		}
 
 		team := ReturnedTeamCollection{
-			Id:       t.ID,
+			Id:       t.Id,
 			Name:     t.DisplayName,
 			Type:     t.TeamType.Handle,
-			Selector: strconv.Itoa(t.ID),
+			Selector: strconv.Itoa(t.Id),
 			Teams:    []ReturnedTeamCollection{},
 		}
 
 		for _, m := range t.Members {
 			team.Members = append(team.Members, TeamMember{
-				ID:   m.ID,
+				Id:   m.Id,
 				Name: m.DisplayName,
 			})
 		}
