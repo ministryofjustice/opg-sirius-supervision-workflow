@@ -25,7 +25,7 @@
         {{end}}
 
         <ul class="govuk-pagination__list">
-          {{if and (ne .PageDetails.CurrentPage 1) (gt .TaskList.Pages.PageTotal 2) (gt .PageDetails.CurrentPage 3) }}
+          {{if and (ne .PageDetails.CurrentPage 1) (gt .TaskList.Pages.Total 2) (gt .PageDetails.CurrentPage 3) }}
             <li class="govuk-pagination__item gov {{if eq .PageDetails.FirstPage .PageDetails.CurrentPage }}govuk-pagination__item--current{{end}} first-page-pagination-link">
                 <a href="{{ .GetPaginationUrl .PageDetails.FirstPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq .PageDetails.FirstPage .PageDetails.CurrentPage }} current{{end}}">
                     {{ .PageDetails.FirstPage }}
@@ -33,14 +33,14 @@
             </li>
             <li class="govuk-pagination__item govuk-pagination__item--ellipses first-ellipses">&ctdot;</li>
           {{end}}
-          {{ if gt .TaskList.Pages.PageTotal 0}}
+          {{ if gt .TaskList.Pages.Total 0}}
               {{ range .PageDetails.LimitedPagination }}
                   <li class="govuk-pagination__item {{if eq . $.PageDetails.CurrentPage }}govuk-pagination__item--current{{end}}">
                     <a href="{{ $.GetPaginationUrl . }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq . $.PageDetails.CurrentPage }}current{{end}}" aria-label="Page {{ . }}">{{ . }}</a>
                   </li>
               {{ end }}
           {{ end }}
-          {{ if and (ne .PageDetails.CurrentPage .TaskList.Pages.PageTotal) (eq .PageDetails.UpperEllipsesLimit true) }}
+          {{ if and (ne .PageDetails.CurrentPage .TaskList.Pages.Total) (eq .PageDetails.UpperEllipsesLimit true) }}
             <li class="govuk-pagination__item govuk-pagination__item--ellipses final-ellipses">&ctdot;</li>
             <li class="govuk-pagination__item {{if eq .PageDetails.LastPage .PageDetails.CurrentPage }}govuk-pagination__item--current{{end}} final-page-pagination-link">
               <a href="{{ .GetPaginationUrl .PageDetails.LastPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button {{if eq .PageDetails.LastPage .PageDetails.CurrentPage }}current{{end}}"  aria-label="Page {{ .PageDetails.LastPage }}">{{ .PageDetails.LastPage }}</a>
@@ -48,7 +48,7 @@
           {{ end }}
         </ul>
 
-        {{ if and (gt .TaskList.Pages.PageTotal 1) (ne .PageDetails.CurrentPage .TaskList.Pages.PageTotal) }}
+        {{ if and (gt .TaskList.Pages.Total 1) (ne .PageDetails.CurrentPage .TaskList.Pages.Total) }}
             <div class="govuk-pagination__next next-page-pagination-link">
               <a href="{{ .GetPaginationUrl .PageDetails.NextPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="next">
                   <span class="govuk-pagination__link-title">Next</span>

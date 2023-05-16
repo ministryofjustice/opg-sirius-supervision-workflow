@@ -105,10 +105,7 @@ func errorHandler(logger *zap.Logger, tmplError Template, prefix, siriusURL stri
 
 				w.WriteHeader(code)
 				err = tmplError.ExecuteTemplate(w, "page", errorVars{
-					Firstname: "",
-					Surname:   "",
 					SiriusURL: siriusURL,
-					Path:      "",
 					Code:      code,
 					Error:     err.Error(),
 				})

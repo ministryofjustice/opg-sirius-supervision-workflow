@@ -17,7 +17,7 @@ type mockWorkflowInformation struct {
 	lastCtx           sirius.Context
 	err               error
 	userData          sirius.UserDetails
-	taskTypeData      []sirius.ApiTaskTypes
+	taskTypeData      []sirius.TaskTypes
 	taskListData      sirius.TaskList
 	pageDetailsData   sirius.PageDetails
 	teamSelectionData []sirius.ReturnedTeamCollection
@@ -33,7 +33,7 @@ func (m *mockWorkflowInformation) GetCurrentUserDetails(ctx sirius.Context) (sir
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
+func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.TaskTypes, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -43,7 +43,7 @@ func (m *mockWorkflowInformation) GetTaskTypes(ctx sirius.Context, taskTypeSelec
 	return m.taskTypeData, m.err
 }
 
-func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
+func (m *mockWorkflowInformation) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []sirius.TaskTypes, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -93,34 +93,31 @@ var mockUserDetailsData = sirius.UserDetails{
 	},
 }
 
-var mockTaskTypeData = []sirius.ApiTaskTypes{
+var mockTaskTypeData = []sirius.TaskTypes{
 	{
-		Handle:     "CDFC",
-		Incomplete: "Correspondence - Review failed draft",
-		Category:   "supervision",
-		Complete:   "Correspondence - Reviewed draft failure",
-		User:       true,
+		Handle: "CDFC",
+		Name:   "Correspondence - Review failed draft",
 	},
 }
 
 var mockTaskListData = sirius.TaskList{
-	WholeTaskList: []sirius.ApiTask{
+	Tasks: []sirius.ApiTask{
 		{
-			ApiTaskAssignee: sirius.CaseManagement{
-				CaseManagerName: "Assignee Duke Clive Henry Hetley Junior Jones",
+			Assignee: sirius.CaseOwner{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
-			ApiTaskType:    "Case work - General",
-			ApiTaskDueDate: "01/02/2021",
-			ApiTaskCaseItems: []sirius.CaseItemsDetails{
+			TaskType: "Case work - General",
+			DueDate:  "01/02/2021",
+			CaseItems: []sirius.CaseItems{
 				{
-					CaseItemClient: sirius.Clients{
-						ClientCaseRecNumber: "caseRecNumber",
-						ClientFirstName:     "Client Alexander Zacchaeus",
-						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.CaseManagement{
-							CaseManagerName: "Supervision - Team - Name",
+					Client: sirius.ApiClient{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						CaseOwner: sirius.CaseOwner{
+							Name: "Supervision - Team - Name",
 						},
-						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},
 				},
 			},
@@ -164,10 +161,10 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 	assert := assert.New(t)
 
 	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
+		Tasks: []sirius.ApiTask{{}},
 		Pages: sirius.PageInformation{
-			PageCurrent: 2,
-			PageTotal:   1,
+			Current: 2,
+			Total:   1,
 		},
 	}
 
@@ -205,19 +202,16 @@ func TestGetUserDetailsWithNoTasksWillReturnWithNoErrors(t *testing.T) {
 			},
 		},
 		TaskList: sirius.TaskList{
-			WholeTaskList: []sirius.ApiTask{{}},
+			Tasks: []sirius.ApiTask{{}},
 			Pages: sirius.PageInformation{
-				PageCurrent: 2,
-				PageTotal:   1,
+				Current: 2,
+				Total:   1,
 			},
 		},
-		LoadTasks: []sirius.ApiTaskTypes{
+		LoadTasks: []sirius.TaskTypes{
 			{
-				Handle:     "CDFC",
-				Incomplete: "Correspondence - Review failed draft",
-				Category:   "supervision",
-				Complete:   "Correspondence - Reviewed draft failure",
-				User:       true,
+				Handle: "CDFC",
+				Name:   "Correspondence - Review failed draft",
 			},
 		},
 		TeamSelection: []sirius.ReturnedTeamCollection{
@@ -251,10 +245,10 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 	assert := assert.New(t)
 
 	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
+		Tasks: []sirius.ApiTask{{}},
 		Pages: sirius.PageInformation{
-			PageCurrent: 10,
-			PageTotal:   2,
+			Current: 10,
+			Total:   2,
 		},
 	}
 
@@ -294,19 +288,16 @@ func TestNonExistentPageNumberWillReturnTheHighestExistingPageNumber(t *testing.
 		},
 
 		TaskList: sirius.TaskList{
-			WholeTaskList: []sirius.ApiTask{{}},
+			Tasks: []sirius.ApiTask{{}},
 			Pages: sirius.PageInformation{
-				PageCurrent: 10,
-				PageTotal:   2,
+				Current: 10,
+				Total:   2,
 			},
 		},
-		LoadTasks: []sirius.ApiTaskTypes{
+		LoadTasks: []sirius.TaskTypes{
 			{
-				Handle:     "CDFC",
-				Incomplete: "Correspondence - Review failed draft",
-				Category:   "supervision",
-				Complete:   "Correspondence - Reviewed draft failure",
-				User:       true,
+				Handle: "CDFC",
+				Name:   "Correspondence - Review failed draft",
 			},
 		},
 		TeamSelection: []sirius.ReturnedTeamCollection{

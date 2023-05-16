@@ -7,31 +7,24 @@ import (
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: true,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: false,
 		},
 	}
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:        12,
-			Name:      "Lay Team 1 - (Supervision)",
-			Type:      "Supervision",
-			TypeLabel: "Only",
+			Id:   12,
+			Name: "Lay Team 1 - (Supervision)",
+			Type: "Supervision",
 			Members: []TeamMember{
 				{
 					ID:   1,
@@ -45,11 +38,10 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 			Selector: "12",
 		},
 		{
-			Id:        13,
-			Name:      "Allocations Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "13",
+			Id:       13,
+			Name:     "Allocations Team",
+			Type:     "Supervision",
+			Selector: "13",
 		},
 	}
 
@@ -69,39 +61,31 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: true,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: true,
 		},
 	}
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:        12,
-			Name:      "Lay Team 1 - (Supervision)",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "12",
+			Id:       12,
+			Name:     "Lay Team 1 - (Supervision)",
+			Type:     "Supervision",
+			Selector: "12",
 		},
 		{
-			Id:        13,
-			Name:      "Allocations Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "13",
+			Id:       13,
+			Name:     "Allocations Team",
+			Type:     "Supervision",
+			Selector: "13",
 		},
 	}
 
@@ -122,38 +106,30 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: false,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: true,
 		},
 	}
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:        12,
-			Name:      "Supervision Team 1",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "12",
+			Id:       12,
+			Name:     "Supervision Team 1",
+			Type:     "Supervision",
+			Selector: "12",
 		},
 		{
-			Id:        13,
-			Name:      "Allocations Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
+			Id:   13,
+			Name: "Allocations Team",
+			Type: "Supervision",
 			Members: []TeamMember{
 				{
 					ID:   1,
@@ -185,38 +161,30 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 }
 
 func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: true,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: true,
 		},
 	}
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:        12,
-			Name:      "Supervision Team 1",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "12",
+			Id:       12,
+			Name:     "Supervision Team 1",
+			Type:     "Supervision",
+			Selector: "12",
 		},
 		{
-			Id:        13,
-			Name:      "Allocations Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
+			Id:   13,
+			Name: "Allocations Team",
+			Type: "Supervision",
 			Members: []TeamMember{
 				{
 					ID:   1,
@@ -275,38 +243,30 @@ func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: false,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: false,
 		},
 	}
 
 	teamCollection := []ReturnedTeamCollection{
 		{
-			Id:        12,
-			Name:      "Supervision Team 1",
-			Type:      "Supervision",
-			TypeLabel: "Only",
-			Selector:  "12",
+			Id:       12,
+			Name:     "Supervision Team 1",
+			Type:     "Supervision",
+			Selector: "12",
 		},
 		{
-			Id:        13,
-			Name:      "Allocations Team",
-			Type:      "Supervision",
-			TypeLabel: "Only",
+			Id:   13,
+			Name: "Allocations Team",
+			Type: "Supervision",
 			Members: []TeamMember{
 				{
 					ID:   1,

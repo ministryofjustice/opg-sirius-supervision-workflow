@@ -13,8 +13,8 @@ import (
 
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.TaskTypes, error)
+	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.TaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
 	AssignTasksToCaseManager(sirius.Context, int, []string) error
@@ -211,8 +211,8 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			logger.Print("GetTaskList error " + err.Error())
 			return err
 		}
-		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			page = taskList.Pages.PageTotal
+		if page > taskList.Pages.Total && taskList.Pages.Total > 0 {
+			page = taskList.Pages.Total
 			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
 
 			if err != nil {
@@ -225,15 +225,12 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 
-		var taskTypeList []sirius.ApiTaskTypes
+		var taskTypeList []sirius.TaskTypes
 
 		for _, u := range taskTypes {
-			taskTypeAndCount := sirius.ApiTaskTypes{
+			taskTypeAndCount := sirius.TaskTypes{
 				Handle:     u.Handle,
-				Incomplete: u.Incomplete,
-				Category:   u.Category,
-				Complete:   u.Complete,
-				User:       u.User,
+				Name:       u.Name,
 				IsSelected: u.IsSelected,
 				TaskCount:  setTaskCount(u.Handle, taskList),
 			}

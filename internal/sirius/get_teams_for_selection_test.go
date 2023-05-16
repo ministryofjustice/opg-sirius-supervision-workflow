@@ -81,11 +81,10 @@ func TestGetTeamsForSelection(t *testing.T) {
 
 	expectedResponse := []ReturnedTeamCollection{
 		{
-			Id:        21,
-			Name:      "Allocations - (Supervision)",
-			Type:      "ALLOCATIONS",
-			TypeLabel: "Allocations",
-			Selector:  "21",
+			Id:       21,
+			Name:     "Allocations - (Supervision)",
+			Type:     "ALLOCATIONS",
+			Selector: "21",
 			Members: []TeamMember{
 				{
 					ID:   71,
@@ -95,12 +94,11 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Teams: []ReturnedTeamCollection{},
 		},
 		{
-			Id:        22,
-			Name:      "Lay Team 1",
-			Type:      "LAY",
-			TypeLabel: "Lay Team",
-			Selector:  "22",
-			Teams:     []ReturnedTeamCollection{},
+			Id:       22,
+			Name:     "Lay Team 1",
+			Type:     "LAY",
+			Selector: "22",
+			Teams:    []ReturnedTeamCollection{},
 		},
 		{
 			Name:     "Lay deputy team",
@@ -108,22 +106,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Members:  []TeamMember{},
 			Teams: []ReturnedTeamCollection{
 				{
-					Id:        22,
-					Name:      "Lay Team 1",
-					Type:      "LAY",
-					TypeLabel: "Lay Team",
-					Selector:  "22",
-					Teams:     []ReturnedTeamCollection{},
+					Id:       22,
+					Name:     "Lay Team 1",
+					Type:     "LAY",
+					Selector: "22",
+					Teams:    []ReturnedTeamCollection{},
 				},
 			},
 		},
 		{
-			Id:        23,
-			Name:      "Pro Team 1",
-			Type:      "PRO",
-			TypeLabel: "Pro Team",
-			Selector:  "23",
-			Teams:     []ReturnedTeamCollection{},
+			Id:       23,
+			Name:     "Pro Team 1",
+			Type:     "PRO",
+			Selector: "23",
+			Teams:    []ReturnedTeamCollection{},
 		},
 		{
 			Name:     "Professional deputy team",
@@ -131,12 +127,11 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Members:  []TeamMember{},
 			Teams: []ReturnedTeamCollection{
 				{
-					Id:        23,
-					Name:      "Pro Team 1",
-					Type:      "PRO",
-					TypeLabel: "Pro Team",
-					Selector:  "23",
-					Teams:     []ReturnedTeamCollection{},
+					Id:       23,
+					Name:     "Pro Team 1",
+					Type:     "PRO",
+					Selector: "23",
+					Teams:    []ReturnedTeamCollection{},
 				},
 			},
 		},

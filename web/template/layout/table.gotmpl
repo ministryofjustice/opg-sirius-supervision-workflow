@@ -31,13 +31,13 @@
     </thead>
     <tbody class="govuk-table__body">
       {{if ne .TaskList.TotalTasks 0}}
-        {{ range .TaskList.WholeTaskList }}
+        {{ range .TaskList.Tasks }}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}" autocomplete="off" />
-                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .Id }}" id="select-task-{{ .Id }}" autocomplete="off" />
+                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .Id }}">
                     <span class="govuk-visually-hidden">Select</span>
                   </label>
                 </div>
@@ -47,11 +47,11 @@
               <label class="govuk-label" for="api-tasktype">{{ .TaskTypeName }}</label>
             </td>
             <td class="govuk-table__cell">
-              <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link">
-                {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
+              <a {{ if ne .ClientInformation.Id 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.Id) }}"{{ end }}class="govuk-link">
+                {{ .ClientInformation.FirstName }} {{ .ClientInformation.Surname }}
               </a>
               <label class="govuk-label" for="client-caserec-number">
-                <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
+                <span class="secondary">{{ .ClientInformation.CaseRecNumber }}</span>
               </label>
             </td>
             {{ if eq $.SelectedTeam.Type "PA" }}
@@ -62,9 +62,9 @@
                 </td>
             {{ end }}
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="assignee-display-name"> {{ .ClientInformation.ClientSupervisionCaseOwner.CaseManagerName }}
-                {{ if .ClientInformation.ClientSupervisionCaseOwner.Team }}
-                  {{ range .ClientInformation.ClientSupervisionCaseOwner.Team }}
+              <label class="govuk-label" for="assignee-display-name"> {{ .ClientInformation.CaseOwner.Name }}
+                {{ if .ClientInformation.CaseOwner.Team }}
+                  {{ range .ClientInformation.CaseOwner.Team }}
                   <span class="secondary">{{ .Name }}</span>
                   {{ end }}
                   </label>
@@ -72,20 +72,20 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-name-and-team">
-                {{ if $.SelectedTeam.HasTeam .ApiTaskAssignee.Id }}
+                {{ if $.SelectedTeam.HasTeam .Assignee.Id }}
                   Not assigned
                 {{ else }}
-                  {{ .ApiTaskAssignee.CaseManagerName }}
+                  {{ .Assignee.Name }}
                 {{ end }}
-                {{ if .ApiTaskAssignee.Team }}
-                      {{ range .ApiTaskAssignee.Team }}
+                {{ if .Assignee.Team }}
+                      {{ range .Assignee.Team }}
                         <span class="secondary">{{ .Name }} </span>
                   {{ end }}
                 {{ end }}
               </label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+              <label class="govuk-label" for="task-duedate">{{ .DueDate }}</label>
             </td>
           </tr>
         {{ end }}

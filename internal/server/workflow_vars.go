@@ -12,7 +12,7 @@ type WorkflowVars struct {
 	MyDetails           sirius.UserDetails
 	TaskList            sirius.TaskList
 	PageDetails         sirius.PageDetails
-	LoadTasks           []sirius.ApiTaskTypes
+	LoadTasks          []sirius.TaskTypes
 	TeamSelection       []sirius.ReturnedTeamCollection
 	SelectedTeam        sirius.ReturnedTeamCollection
 	SelectedAssignees   []string

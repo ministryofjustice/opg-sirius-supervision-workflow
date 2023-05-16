@@ -2,12 +2,12 @@ package sirius
 
 import "time"
 
-func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []string, selectedUnassigned string, taskTypes []ApiTaskTypes, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
+func GetAppliedFilters(selectedTeam ReturnedTeamCollection, selectedAssignees []string, selectedUnassigned string, taskTypes []TaskTypes, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
 	var appliedFilters []string
 
 	for _, u := range taskTypes {
 		if u.IsSelected {
-			appliedFilters = append(appliedFilters, u.Incomplete)
+			appliedFilters = append(appliedFilters, u.Name)
 		}
 	}
 

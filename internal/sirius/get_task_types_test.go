@@ -30,10 +30,10 @@ func TestGetTaskTypes(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ApiTaskTypes{
+	expectedResponse := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
+			Name:       "Casework - General",
 			Category:   "supervision",
 			Complete:   "Casework - General",
 			User:       true,
@@ -41,7 +41,7 @@ func TestGetTaskTypes(t *testing.T) {
 		},
 		{
 			Handle:     "CNC",
-			Incomplete: "Casework - Non-compliant",
+			Name:       "Casework - Non-compliant",
 			Category:   "supervision",
 			Complete:   "Casework - compliant",
 			User:       true,
@@ -77,10 +77,10 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ApiTaskTypes{
+	expectedResponse := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
+			Name:       "Casework - General",
 			Category:   "supervision",
 			Complete:   "Casework - General",
 			User:       true,
@@ -88,7 +88,7 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 		},
 		{
 			Handle:     "CNC",
-			Incomplete: "Casework - Non-compliant",
+			Name:       "Casework - Non-compliant",
 			Category:   "supervision",
 			Complete:   "Casework - compliant",
 			User:       true,
@@ -96,7 +96,7 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 		},
 		{
 			Handle:     "FCIC",
-			Incomplete: "First Contact - Introductory call",
+			Name:       "First Contact - Introductory call",
 			Category:   "supervision",
 			Complete:   "First Contact - Introductory called",
 			User:       true,

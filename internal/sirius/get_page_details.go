@@ -20,11 +20,11 @@ func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit 
 
 	PageDetails := k
 
-	for i := 1; i <= tasklist.Pages.PageTotal; i++ {
+	for i := 1; i <= tasklist.Pages.Total; i++ {
 		PageDetails.ListOfPages = append(PageDetails.ListOfPages, i)
 	}
 
-	PageDetails.CurrentPage = tasklist.Pages.PageCurrent
+	PageDetails.CurrentPage = tasklist.Pages.Current
 
 	PageDetails.PreviousPage = GetPreviousPageNumber(search)
 
@@ -60,54 +60,54 @@ func GetPreviousPageNumber(search int) int {
 }
 
 func GetNextPageNumber(taskList TaskList, search int) int {
-	if search < taskList.Pages.PageTotal {
+	if search < taskList.Pages.Total {
 		if search == 0 {
 			return search + 2
 		} else {
 			return search + 1
 		}
 	} else {
-		return taskList.Pages.PageTotal
+		return taskList.Pages.Total
 	}
 }
 
 func GetShowingLowerLimitNumber(taskList TaskList, displayTaskLimit int) int {
-	if taskList.Pages.PageCurrent == 1 && taskList.TotalTasks != 0 {
+	if taskList.Pages.Current == 1 && taskList.TotalTasks != 0 {
 		return 1
-	} else if taskList.Pages.PageCurrent == 1 && taskList.TotalTasks == 0 {
+	} else if taskList.Pages.Current == 1 && taskList.TotalTasks == 0 {
 		return 0
 	} else {
-		previousPageNumber := taskList.Pages.PageCurrent - 1
+		previousPageNumber := taskList.Pages.Current - 1
 		return previousPageNumber*displayTaskLimit + 1
 	}
 }
 
 func GetShowingUpperLimitNumber(taskList TaskList, displayTaskLimit int) int {
-	if taskList.Pages.PageCurrent*displayTaskLimit > taskList.TotalTasks {
+	if taskList.Pages.Current*displayTaskLimit > taskList.TotalTasks {
 		return taskList.TotalTasks
 	} else {
-		return taskList.Pages.PageCurrent * displayTaskLimit
+		return taskList.Pages.Current * displayTaskLimit
 	}
 }
 
 func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
 	var twoBeforeCurrentPage int
 	var twoAfterCurrentPage int
-	if taskList.Pages.PageCurrent > 2 {
-		twoBeforeCurrentPage = taskList.Pages.PageCurrent - 3
+	if taskList.Pages.Current > 2 {
+		twoBeforeCurrentPage = taskList.Pages.Current - 3
 	} else {
 		twoBeforeCurrentPage = 0
 	}
-	if taskList.Pages.PageCurrent+2 <= PageDetails.LastPage {
-		twoAfterCurrentPage = taskList.Pages.PageCurrent + 2
-	} else if taskList.Pages.PageCurrent+1 <= PageDetails.LastPage {
-		twoAfterCurrentPage = taskList.Pages.PageCurrent + 1
+	if taskList.Pages.Current+2 <= PageDetails.LastPage {
+		twoAfterCurrentPage = taskList.Pages.Current + 2
+	} else if taskList.Pages.Current+1 <= PageDetails.LastPage {
+		twoAfterCurrentPage = taskList.Pages.Current + 1
 	} else {
-		twoAfterCurrentPage = taskList.Pages.PageCurrent
+		twoAfterCurrentPage = taskList.Pages.Current
 	}
 	return PageDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
 func GetUpperEllipsesLimit(pages PageInformation, search int) bool {
-	return (pages.PageTotal - search) >= 3
+	return (pages.Total - search) >= 3
 }

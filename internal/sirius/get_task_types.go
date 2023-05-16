@@ -6,21 +6,18 @@ import (
 	"sort"
 )
 
-type ApiTaskTypes struct {
+type TaskTypes struct {
 	Handle     string `json:"handle"`
-	Incomplete string `json:"incomplete"`
-	Category   string `json:"category"`
-	Complete   string `json:"complete"`
-	User       bool   `json:"user"`
+	Name       string `json:"incomplete"`
 	IsSelected bool
 	TaskCount  int
 }
 
 type WholeTaskTypesList struct {
-	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
+	AllTaskList map[string]TaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
+func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]TaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
@@ -52,24 +49,19 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 		return nil, err
 	}
 
-	WholeTaskTypeList := v.AllTaskList
+	var taskTypeList []TaskTypes
 
-	var taskTypeList []ApiTaskTypes
-
-	for _, u := range WholeTaskTypeList {
-		taskType := ApiTaskTypes{
+	for _, u := range v.AllTaskList {
+		taskType := TaskTypes{
 			Handle:     u.Handle,
-			Incomplete: u.Incomplete,
-			Category:   u.Category,
-			Complete:   u.Complete,
-			User:       u.User,
+			Name:       u.Name,
 			IsSelected: IsSelected(u.Handle, taskTypeSelected),
 		}
 		taskTypeList = append(taskTypeList, taskType)
 	}
 
 	sort.Slice(taskTypeList, func(i, j int) bool {
-		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
+		return taskTypeList[i].Name < taskTypeList[j].Name
 	})
 
 	return taskTypeList, err

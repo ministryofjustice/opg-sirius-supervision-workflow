@@ -15,27 +15,22 @@ type TeamMember struct {
 type TeamCollection struct {
 	ID          int    `json:"id"`
 	DisplayName string `json:"displayName"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phoneNumber"`
 	Members     []struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
-		Email       string `json:"email"`
 	} `json:"members"`
 	TeamType *struct {
 		Handle string `json:"handle"`
-		Label  string `json:"label"`
 	} `json:"teamType"`
 }
 
 type ReturnedTeamCollection struct {
-	Id        int
-	Members   []TeamMember
-	Name      string
-	Type      string
-	TypeLabel string
-	Selector  string
-	Teams     []ReturnedTeamCollection
+	Id       int
+	Members  []TeamMember
+	Name     string
+	Type     string
+	Selector string
+	Teams    []ReturnedTeamCollection
 }
 
 func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
@@ -130,12 +125,11 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, er
 		}
 
 		team := ReturnedTeamCollection{
-			Id:        t.ID,
-			Name:      t.DisplayName,
-			Type:      t.TeamType.Handle,
-			TypeLabel: t.TeamType.Label,
-			Selector:  strconv.Itoa(t.ID),
-			Teams:     []ReturnedTeamCollection{},
+			Id:       t.ID,
+			Name:     t.DisplayName,
+			Type:     t.TeamType.Handle,
+			Selector: strconv.Itoa(t.ID),
+			Teams:    []ReturnedTeamCollection{},
 		}
 
 		for _, m := range t.Members {

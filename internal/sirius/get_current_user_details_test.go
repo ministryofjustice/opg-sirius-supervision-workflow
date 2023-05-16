@@ -45,23 +45,14 @@ func TestGetCurrentUserDetails(t *testing.T) {
 	}
 
 	expectedResponse := UserDetails{
-		ID:          65,
-		Name:        "case",
-		PhoneNumber: "12345678",
 		Teams: []MyDetailsTeam{
 			{
 				DisplayName: "Lay Team 1 - (Supervision)",
 				TeamId:      13,
 			},
 		},
-		DisplayName: "case manager",
-		Deleted:     false,
-		Email:       "case.manager@opgtest.com",
-		Firstname:   "case",
-		Surname:     "manager",
-		Roles:       []string{"Case Manager"},
-		Locked:      false,
-		Suspended:   false,
+		Firstname: "case",
+		Surname:   "manager",
 	}
 
 	teams, err := client.GetCurrentUserDetails(getContext(nil))
@@ -130,18 +121,9 @@ func TestMyDetailsReturns200(t *testing.T) {
 	}
 
 	expectedResponse := UserDetails{
-		ID:          55,
-		Name:        "case",
-		PhoneNumber: "12345678",
-		Teams:       []MyDetailsTeam{},
-		DisplayName: "case manager",
-		Deleted:     false,
-		Email:       "case.manager@opgtest.com",
-		Firstname:   "case",
-		Surname:     "manager",
-		Roles:       []string{"OPG User", "Case Manager"},
-		Locked:      false,
-		Suspended:   false,
+		Teams:     []MyDetailsTeam{},
+		Firstname: "case",
+		Surname:   "manager",
 	}
 
 	user, err := client.GetCurrentUserDetails(getContext(nil))

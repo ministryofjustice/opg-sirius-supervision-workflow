@@ -11,8 +11,8 @@ import (
 func CreateTaskList(pageCurrent int, pageTotal int, totalTasks int) TaskList {
 	taskList := TaskList{
 		Pages: PageInformation{
-			PageCurrent: pageCurrent,
-			PageTotal:   pageTotal,
+			Current: pageCurrent,
+			Total:   pageTotal,
 		},
 		TotalTasks: totalTasks,
 	}

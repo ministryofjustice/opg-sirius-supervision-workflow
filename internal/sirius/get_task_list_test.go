@@ -50,37 +50,36 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 	}
 
 	expectedResponse := TaskList{
-		WholeTaskList: []ApiTask{
+		Tasks: []ApiTask{
 			{
-				ApiTaskAssignee: CaseManagement{
+				Assignee: CaseOwner{
 					"Allocations - (Supervision)",
 					22,
 					[]UserTeam{},
 				},
-				ApiTaskCaseItems: nil,
-				ApiClients:       nil,
-				ApiTaskDueDate:   "29/11/2022",
-				ApiTaskId:        119,
-				ApiTaskHandle:    "ORAL",
-				ApiTaskType:      "",
-				ApiCaseOwnerTask: false,
-				TaskTypeName:     "",
-				ClientInformation: Clients{
-					ClientId:            61,
-					ClientCaseRecNumber: "92902877",
-					ClientFirstName:     "Antoine",
-					ClientSurname:       "Burgundy",
-					ClientSupervisionCaseOwner: CaseManagement{
-						CaseManagerName: "Allocations - (Supervision)",
-						Id:              22,
-						Team:            []UserTeam{},
+				CaseItems:    nil,
+				Clients:      nil,
+				DueDate:      "29/11/2022",
+				Id:           119,
+				TypeHandle:   "ORAL",
+				TaskType:     "",
+				TaskTypeName: "",
+				ClientInformation: ApiClient{
+					Id:            61,
+					CaseRecNumber: "92902877",
+					FirstName:     "Antoine",
+					Surname:       "Burgundy",
+					CaseOwner: CaseOwner{
+						Name: "Allocations - (Supervision)",
+						Id:   22,
+						Team: []UserTeam{},
 					},
 				},
 			},
 		},
 		Pages: PageInformation{
-			PageCurrent: 1,
-			PageTotal:   1,
+			Current: 1,
+			Total:   1,
 		},
 		TotalTasks: 13,
 		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}},
@@ -88,7 +87,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 
 	selectedTeam := ReturnedTeamCollection{Id: 13}
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []ApiTaskTypes{}, []string{""}, nil, nil)
+	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []TaskTypes{}, []string{""}, nil, nil)
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
@@ -121,10 +120,10 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 
 			client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{}, nil, nil)
+			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []TaskTypes{}, []string{}, nil, nil)
 
 			expectedResponse := TaskList{
-				WholeTaskList: nil,
+				Tasks:         nil,
 				Pages:         PageInformation{},
 				TotalTasks:    0,
 				ActiveFilters: nil,
@@ -180,27 +179,27 @@ func TestCreateFilter(t *testing.T) {
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
 	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+		Assignee: CaseOwner{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
 		},
-		ApiTaskCaseItems: []CaseItemsDetails{{
-			CaseItemClient: Clients{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "Pamela",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              4321,
-					CaseManagerName: "Richard Fox",
+		CaseItems: []CaseItems{{
+			Client: ApiClient{
+				CaseRecNumber: "13636617",
+				FirstName:     "Pamela",
+				Id:            37259351,
+				CaseOwner: CaseOwner{
+					Id:   4321,
+					Name: "Richard Fox",
 				},
-				ClientSurname: "Pragnell",
+				Surname: "Pragnell",
 			},
 		}},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate:      "01/06/2021",
+		Id:           40904862,
+		TypeHandle:   ApiTaskHandleInput,
+		TaskType:     ApiTaskTypeInput,
+		TaskTypeName: TaskTypeNameInput,
 	}
 	return v
 }
@@ -261,14 +260,14 @@ func TestGetAssigneeIdWithACaseAndAssigneeNotToCaseOwner(t *testing.T) {
 
 func TestGetClientInformationWithACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientSurname:       "Pragnell",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              4321,
+	expectedResult := ApiClient{
+		Id:            37259351,
+		CaseRecNumber: "13636617",
+		FirstName:     "Pamela",
+		Surname:       "Pragnell",
+		CaseOwner: CaseOwner{
+			Name: "Richard Fox",
+			Id:   4321,
 		},
 	}
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
@@ -276,14 +275,14 @@ func TestGetClientInformationWithACase(t *testing.T) {
 
 func TestGetClientInformationWithoutACase(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              1234,
+	expectedResult := ApiClient{
+		Id:            37259351,
+		CaseRecNumber: "13636617",
+		FirstName:     "WithoutACase",
+		Surname:       "WithoutACase",
+		CaseOwner: CaseOwner{
+			Name: "Richard Fox",
+			Id:   1234,
 			Team: []UserTeam{
 				{
 					Name: "Go TaskForce Team",
@@ -331,29 +330,29 @@ func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t 
 
 func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
 	taskType := SetUpTaskTypeWithACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              4321,
-			CaseManagerName: "Richard Fox",
+	expectedResult := ApiClient{
+		CaseRecNumber: "13636617",
+		FirstName:     "Pamela",
+		Id:            37259351,
+		CaseOwner: CaseOwner{
+			Id:   4321,
+			Name: "Richard Fox",
 		},
-		ClientSurname: "Pragnell",
+		Surname: "Pragnell",
 	}
 	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
 func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              1234,
-			CaseManagerName: "Richard Fox",
+	expectedResult := ApiClient{
+		CaseRecNumber: "13636617",
+		FirstName:     "WithoutACase",
+		Surname:       "WithoutACase",
+		Id:            37259351,
+		CaseOwner: CaseOwner{
+			Id:   1234,
+			Name: "Richard Fox",
 			Team: []UserTeam{
 				{
 					Name: "Go TaskForce Team",
@@ -367,18 +366,18 @@ func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
 
 func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
 	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+		Assignee: CaseOwner{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
 		},
-		ApiClients: []Clients{
+		Clients: []ApiClient{
 			{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "WithoutACase",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              1234,
-					CaseManagerName: "Richard Fox",
+				CaseRecNumber: "13636617",
+				FirstName:     "WithoutACase",
+				Id:            37259351,
+				CaseOwner: CaseOwner{
+					Id:   1234,
+					Name: "Richard Fox",
 					Team: []UserTeam{
 						{
 							Name: "Go TaskForce Team",
@@ -386,24 +385,24 @@ func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput strin
 						},
 					},
 				},
-				ClientSurname: "WithoutACase",
+				Surname: "WithoutACase",
 			},
 		},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate:      "01/06/2021",
+		Id:           40904862,
+		TypeHandle:   ApiTaskHandleInput,
+		TaskType:     ApiTaskTypeInput,
+		TaskTypeName: TaskTypeNameInput,
 	}
 	return v
 }
 
 func SetUpTaskTypeWithoutAClient() ApiTask {
 	v := ApiTask{
-		ApiTaskCaseItems: []CaseItemsDetails{
+		CaseItems: []CaseItems{
 			{
-				CaseItemClient: Clients{
-					ClientSupervisionCaseOwner: CaseManagement{
+				Client: ApiClient{
+					CaseOwner: CaseOwner{
 						Team: []UserTeam{
 							{
 								Name: "Go TaskForce Team",
@@ -418,22 +417,16 @@ func SetUpTaskTypeWithoutAClient() ApiTask {
 	return v
 }
 
-func SetUpLoadTasks() []ApiTaskTypes {
-	loadTasks := []ApiTaskTypes{
+func SetUpLoadTasks() []TaskTypes {
+	loadTasks := []TaskTypes{
 		{
 			Handle:     "CWGN",
-			Incomplete: "Casework - General",
-			Complete:   "Casework - General",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Casework - General",
 			IsSelected: true,
 		},
 		{
 			Handle:     "ORAL",
-			Incomplete: "Order - Allocate to team",
-			Complete:   "Order - Allocate to team",
-			User:       true,
-			Category:   "supervision",
+			Name:       "Order - Allocate to team",
 			IsSelected: false,
 		},
 	}
@@ -442,7 +435,7 @@ func SetUpLoadTasks() []ApiTaskTypes {
 
 func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
 	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
+		Assignee: CaseOwner{
 			Team: []UserTeam{
 				{
 					Name: TeamName,
@@ -468,7 +461,7 @@ func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
 
 	taskList := TaskList{
 		Pages: PageInformation{
-			PageCurrent: pageCurrent,
+			Current: pageCurrent,
 		},
 	}
 	pageDetails := PageDetails{
