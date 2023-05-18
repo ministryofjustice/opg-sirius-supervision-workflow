@@ -379,14 +379,16 @@ module.exports = function () {
           "complete": "Casework - General",
           "handle": "CWGN",
           "incomplete": "Casework - General",
-          "user": true
+          "user": true,
+          "ecmTask": true
         },
         "ORAL": {
           "category": "supervision",
           "complete": "Order - Allocate to team",
           "handle": "ORAL",
           "incomplete": "Order - Allocate to team",
-          "user": true
+          "user": true,
+          "ecmTask": false
         }
       }
     },

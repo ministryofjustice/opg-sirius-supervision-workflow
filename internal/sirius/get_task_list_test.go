@@ -170,12 +170,13 @@ func TestCreateFilter(t *testing.T) {
 	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
 	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
 
-	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil), "status:Not+started")
-	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil), "status:Not+started,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
+	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil, SetUpLoadTasks()), "status:Not+started")
+	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil, SetUpLoadTasks()), "status:Not+started,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo, SetUpLoadTasks()), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
+	assert.Equal(t, CreateFilter([]string{"ECM_TASKS"}, []string{}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:RRRR")
 }
 
 func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
@@ -427,6 +428,7 @@ func SetUpLoadTasks() []ApiTaskTypes {
 			User:       true,
 			Category:   "supervision",
 			IsSelected: true,
+			EcmTask:    true,
 		},
 		{
 			Handle:     "ORAL",
@@ -435,6 +437,16 @@ func SetUpLoadTasks() []ApiTaskTypes {
 			User:       true,
 			Category:   "supervision",
 			IsSelected: false,
+			EcmTask:    false,
+		},
+		{
+			Handle:     "RRRR",
+			Incomplete: "Visit - Review red report",
+			Complete:   "Visit - Review red report",
+			User:       true,
+			Category:   "supervision",
+			IsSelected: false,
+			EcmTask:    true,
 		},
 	}
 	return loadTasks

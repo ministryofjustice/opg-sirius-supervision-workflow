@@ -12,6 +12,7 @@ type ApiTaskTypes struct {
 	Category   string `json:"category"`
 	Complete   string `json:"complete"`
 	User       bool   `json:"user"`
+	EcmTask    bool   `json:"ecmTask"`
 	IsSelected bool
 	TaskCount  int
 }
@@ -63,6 +64,7 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 			Category:   u.Category,
 			Complete:   u.Complete,
 			User:       u.User,
+			EcmTask:    u.EcmTask,
 			IsSelected: IsSelected(u.Handle, taskTypeSelected),
 		}
 		taskTypeList = append(taskTypeList, taskType)
@@ -71,6 +73,15 @@ func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTask
 	sort.Slice(taskTypeList, func(i, j int) bool {
 		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
 	})
+
+	// prepend the "ECM Tasks" filter option
+	taskTypeList = append([]ApiTaskTypes{
+		{
+			Handle:     "ECM_TASKS",
+			Incomplete: "ECM Tasks",
+			IsSelected: IsSelected("ECM_TASKS", taskTypeSelected),
+		},
+	}, taskTypeList...)
 
 	return taskTypeList, err
 }

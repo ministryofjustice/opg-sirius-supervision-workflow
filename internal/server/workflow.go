@@ -93,6 +93,30 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
+func calculateTaskCounts(taskTypes []sirius.ApiTaskTypes, tasks sirius.TaskList) []sirius.ApiTaskTypes {
+	var taskTypeList []sirius.ApiTaskTypes
+	ecmTasksCount := 0
+
+	for _, t := range taskTypes {
+		tasksWithCounts := sirius.ApiTaskTypes{
+			Handle:     t.Handle,
+			Incomplete: t.Incomplete,
+			Category:   t.Category,
+			Complete:   t.Complete,
+			User:       t.User,
+			IsSelected: t.IsSelected,
+			TaskCount:  setTaskCount(t.Handle, tasks),
+		}
+		if t.EcmTask {
+			ecmTasksCount += tasksWithCounts.TaskCount
+		}
+		taskTypeList = append(taskTypeList, tasksWithCounts)
+	}
+
+	taskTypeList[0].TaskCount = ecmTasksCount
+	return taskTypeList
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -225,20 +249,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 
-		var taskTypeList []sirius.ApiTaskTypes
-
-		for _, u := range taskTypes {
-			taskTypeAndCount := sirius.ApiTaskTypes{
-				Handle:     u.Handle,
-				Incomplete: u.Incomplete,
-				Category:   u.Category,
-				Complete:   u.Complete,
-				User:       u.User,
-				IsSelected: u.IsSelected,
-				TaskCount:  setTaskCount(u.Handle, taskList),
-			}
-			taskTypeList = append(taskTypeList, taskTypeAndCount)
-		}
+		taskTypeList := calculateTaskCounts(taskTypes, taskList)
 
 		vars.Path = r.URL.Path
 		vars.XSRFToken = ctx.XSRFToken

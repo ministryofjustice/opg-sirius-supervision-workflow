@@ -8,6 +8,7 @@ services:
     volumes:
       - ..:/app:rw,delegated
       - ../json-server/config:/app/config
+      - /app/web/static
     environment:
       SIRIUS_URL: http://json-server:3000
       SIRIUS_PUBLIC_URL: http://localhost:8080
