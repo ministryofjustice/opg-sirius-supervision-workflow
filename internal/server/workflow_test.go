@@ -552,3 +552,60 @@ func TestGetSelectedDateFilter(t *testing.T) {
 		})
 	}
 }
+
+func TestCalculateTaskCounts(t *testing.T) {
+	taskTypes := []sirius.ApiTaskTypes{
+		{
+			Handle: "ECM_TASKS",
+		},
+		{
+			Handle:  "CDFC",
+			EcmTask: false,
+		},
+		{
+			Handle:  "NONO",
+			EcmTask: false,
+		},
+		{
+			Handle:  "ECM_1",
+			EcmTask: true,
+		},
+		{
+			Handle:  "ECM_2",
+			EcmTask: true,
+		},
+	}
+	tasks := sirius.TaskList{
+		MetaData: sirius.MetaData{
+			TaskTypeCount: []sirius.TypeAndCount{
+				{Type: "CDFC", Count: 25},
+				{Type: "ECM_1", Count: 33},
+				{Type: "ECM_2", Count: 44},
+			},
+		},
+	}
+
+	expected := []sirius.ApiTaskTypes{
+		{
+			Handle:    "ECM_TASKS",
+			TaskCount: 77,
+		}, {
+			Handle:    "CDFC",
+			TaskCount: 25,
+		},
+		{
+			Handle:    "NONO",
+			TaskCount: 0,
+		},
+		{
+			Handle:    "ECM_1",
+			TaskCount: 33,
+		},
+		{
+			Handle:    "ECM_2",
+			TaskCount: 44,
+		},
+	}
+
+	assert.Equal(t, expected, calculateTaskCounts(taskTypes, tasks))
+}
