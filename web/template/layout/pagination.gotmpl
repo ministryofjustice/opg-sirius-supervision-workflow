@@ -12,7 +12,7 @@
       {{ else }}
         {{.TaskList.TotalTasks}}
       {{ end }}</b> of <b>{{ .TaskList.TotalTasks }}</b> tasks</p>
-      <div class="numbered-pages">
+      <div class="flex-container">
         {{ if ne .PageDetails.CurrentPage 1 }}
             <div class="govuk-pagination__prev previous-page-pagination-link">
               <a href="{{ .GetPaginationUrl .PageDetails.PreviousPage }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="prev">
