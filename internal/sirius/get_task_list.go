@@ -54,6 +54,7 @@ type ApiTask struct {
 	ApiTaskHandle     string             `json:"type"`
 	ApiTaskType       string             `json:"name"`
 	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
+	ApiPriorityTask   bool               `json:"isPriority"`
 	TaskTypeName      string
 	ClientInformation Clients
 }
@@ -178,6 +179,7 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			ApiTaskType:       s.ApiTaskType,
 			TaskTypeName:      GetTaskName(s, loadTasks),
 			ClientInformation: GetClientInformation(s),
+			ApiPriorityTask:   s.ApiPriorityTask,
 		}
 		list = append(list, task)
 	}

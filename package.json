@@ -6,7 +6,7 @@
     "build": "yarn build:js && yarn build:css && yarn build:images",
     "build:js": "esbuild --bundle web/assets/main.js --minify --outfile=web/static/javascript/all.js --sourcemap --resolve-extensions=.mjs,.js",
     "build:css": "sass --load-path . --style compressed web/assets/main.scss web/static/stylesheets/all.css",
-    "build:images": "mkdir -p web/static/assets/images && cp node_modules/govuk-frontend/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/static/assets/images",
+    "build:images": "mkdir -p web/static/assets/images && cp node_modules/govuk-frontend/govuk/assets/images/* node_modules/@ministryofjustice/frontend/moj/assets/images/* web/assets/images/*  web/static/assets/images",
     "clean": "rm -rf web/static",
     "test-sirius": "cd internal/sirius && go test",
     "test-server": "cd internal/server && go test",
