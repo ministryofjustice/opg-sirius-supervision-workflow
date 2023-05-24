@@ -47,7 +47,7 @@ describe("Reassign Tasks", () => {
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('1 tasks have been reassigned')
+        cy.get("#success-banner").contains('1 task(s) have been reassigned')
         cy.url().should('contain', '/supervision/workflow/1?testVar=testVal')
     });
 
@@ -65,7 +65,7 @@ describe("Reassign Tasks", () => {
         cy.get('#assignCM').select('LayTeam1 User4');
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('3 tasks have been reassigned')
+        cy.get("#success-banner").contains('3 task(s) have been reassigned')
     });
 
     it("can cancel out of reassigning a task", () => {
@@ -74,4 +74,27 @@ describe("Reassign Tasks", () => {
         cy.get("#edit-cancel").click()
         cy.get(".moj-manage-tasks__edit-panel").should('not.be.visible')
     });
+
+    it("Only set the priority for a task", () => {
+        cy.visit('/supervision/workflow/1?testVar=testVal');
+        cy.setCookie("success-route", "assignTasksToCasemanager");
+        cy.get("#select-task-1").click()
+        cy.get("#manage-task").should('be.visible').click()
+        cy.get('#priority').select('Yes')
+        cy.get('#edit-save').click()
+        cy.get("#success-banner").should('be.visible')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) as a priority')
+    })
+
+    it("Reassign and set the priority for a task", () => {
+        cy.visit('/supervision/workflow/1?testVar=testVal');
+        cy.setCookie("success-route", "assignTasksToCasemanager");
+        cy.get("#select-task-1").click()
+        cy.get("#manage-task").should('be.visible').click()
+        cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
+        cy.get('#priority').select('Yes')
+        cy.get('#edit-save').click()
+        cy.get("#success-banner").should('be.visible')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to 1 as a priority')
+    })
 });
