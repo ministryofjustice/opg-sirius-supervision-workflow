@@ -16,12 +16,10 @@ table {
           span.overdue {border-left: 5px solid #d4351c; padding-left: 5px; font-weight: bold;}
           span.secondary {font-weight: normal; color: black;}
         }
-      &.urgent {
+      &.priority {
         background: #fffbe3;
         td {
-          span.urgent {
-            //background: url("/public/images/flag.svg") no-repeat 3px 3px;
-            //padding-left: 20px;
+          span.priority {
             font-weight: bold;
             color: #d4351c;
           }
