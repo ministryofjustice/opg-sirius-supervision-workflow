@@ -14,7 +14,58 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
 
-	r := io.NopCloser(bytes.NewReader([]byte(nil)))
+	json := `{	
+			"id":98,
+			"type":"ORAL",
+			"status":"Not started",
+			"dueDate":"25\/05\/2023",
+			"name":"",
+			"description":"A client has been created",
+			"ragRating":2,
+			"assignee":{
+				"id":25,
+				"teams":[],
+				"displayName":"Allocations - (Supervision)"
+			},
+			"createdTime":"10\/05\/2023 09:27:05",
+			"caseItems":[],
+			"persons":[
+				{
+					"id":42,
+					"uId":"7000-0000-0856",
+					"caseRecNumber":"71115167",
+					"salutation":"Mr",
+					"firstname":"Luke",
+					"middlenames":"",
+					"surname":"Crete",
+					"supervisionCaseOwner":{
+						"id":25,
+						"teams":[],
+						"displayName":"Allocations - (Supervision)"}
+						}
+			],
+			"clients":[
+				{
+					"id":42,
+					"uId":"7000-0000-0856",
+					"caseRecNumber":"71115167",
+					"salutation":"Mr",
+					"firstname":"Luke",
+					"middlenames":"",
+					"surname":"Crete",
+					"supervisionCaseOwner":
+						{
+							"id":25,
+							"teams":[],
+							"displayName":"Allocations - (Supervision)"
+						}
+				}
+			],
+			"caseOwnerTask":false,
+			"isPriority":true
+		}`
+
+	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
@@ -23,7 +74,9 @@ func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 		}, nil
 	}
 
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
+	expectedResponse := "Allocations - (Supervision)"
+	assigneeDisplayName, err := client.AssignTasksToCaseManager(getContext(nil), 1, []string{"76"}, "")
+	assert.Equal(t, expectedResponse, assigneeDisplayName)
 	assert.Equal(t, nil, err)
 }
 
@@ -36,7 +89,7 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
 
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
+	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
@@ -53,7 +106,7 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 	defer svr.Close()
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
+	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 	assert.Equal(t, ErrUnauthorized, err)
 }
 
@@ -66,7 +119,7 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	defer svr.Close()
 
 	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
-	err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
+	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,

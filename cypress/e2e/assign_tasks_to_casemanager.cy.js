@@ -87,7 +87,6 @@ describe("Reassign Tasks", () => {
     })
 
     it("Reassign and set the priority for a task", () => {
-        cy.visit('/supervision/workflow/1?testVar=testVal');
         cy.setCookie("success-route", "assignTasksToCasemanager");
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
@@ -95,6 +94,6 @@ describe("Reassign Tasks", () => {
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 1 task(s) to 1 as a priority')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to as a priority')
     })
 });

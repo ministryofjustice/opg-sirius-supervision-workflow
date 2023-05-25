@@ -12,8 +12,8 @@ type ReassignTaskDetails struct {
 	IsPriority string   `json:"isPriority"`
 }
 
-func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) error {
-
+func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
+	var u ApiTask
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
@@ -23,26 +23,26 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 	})
 
 	if err != nil {
-		return err
+		return "", err
 	}
 	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/reassign-tasks", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
-		return err
+		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logResponse(req, resp, err)
-		return err
+		return "", err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		return ErrUnauthorized
+		return "", ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -52,13 +52,14 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 
 		if err := json.NewDecoder(resp.Body).Decode(&v); err == nil && len(v.ValidationErrors) > 0 {
 			c.logResponse(req, resp, err)
-			return &ValidationError{
+			return "", &ValidationError{
 				Errors: v.ValidationErrors,
 			}
 		}
 
-		return newStatusError(resp)
+		return "", newStatusError(resp)
 	}
 
-	return nil
+	json.NewDecoder(resp.Body).Decode(&u)
+	return u.ApiTaskAssignee.CaseManagerName, err
 }

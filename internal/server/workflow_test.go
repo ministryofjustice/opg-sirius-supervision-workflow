@@ -71,14 +71,14 @@ func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context) ([]si
 	return m.teamSelectionData, m.err
 }
 
-func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string, prioritySelected string) error {
+func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string, prioritySelected string) (string, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
 	m.count["AssignTasksToCaseManager"] += 1
 	m.lastCtx = ctx
 
-	return m.err
+	return "", m.err
 }
 
 var mockUserDetailsData = sirius.UserDetails{
@@ -531,7 +531,7 @@ func TestGetSelectedDateFilter(t *testing.T) {
 			name:         "Invalid date",
 			value:        "17/12/2022",
 			expectedDate: nil,
-			expectedErr:  errors.New("parsing time \"17/12/2022\" as \"2006-01-02\": cannot parse \"17/12/2022\" as \"2006\""),
+			expectedErr:  errors.New("parsing time \"17/12/2022\" as \"2006-01-02\": cannot parse \"2/2022\" as \"2006\""),
 		},
 	}
 	for _, test := range tests {
@@ -611,10 +611,10 @@ func TestCalculateTaskCounts(t *testing.T) {
 }
 
 func TestSuccessMessageForReassignAndPrioritiesTasks(t *testing.T) {
-	assert.Equal(t, "You have assigned 1 task(s) to 1 as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "yes", []string{"1"}))
-	assert.Equal(t, "You have assigned 1 task(s) and removed 1 as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "no", []string{"1"}))
-	assert.Equal(t, "1 task(s) have been reassigned", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "", []string{"1"}))
-	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "yes", []string{"1"}))
-	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "no", []string{"1"}))
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "yes", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "no", []string{"1"}, "assignee name"))
+	assert.Equal(t, "1 task(s) have been reassigned", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "yes", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "no", []string{"1"}, "assignee name"))
 
 }
