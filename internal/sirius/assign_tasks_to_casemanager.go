@@ -60,6 +60,10 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 		return "", newStatusError(resp)
 	}
 
-	json.NewDecoder(resp.Body).Decode(&u)
+	err = json.NewDecoder(resp.Body).Decode(&u)
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return "", err
+	}
 	return u.ApiTaskAssignee.CaseManagerName, err
 }
