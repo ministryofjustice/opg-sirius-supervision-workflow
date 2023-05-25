@@ -44,7 +44,7 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
-        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 200})
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 task(s) have been reassigned')
@@ -94,6 +94,6 @@ describe("Reassign Tasks", () => {
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 1 task(s) to as a priority')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision) as a priority')
     })
 });
