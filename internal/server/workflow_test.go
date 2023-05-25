@@ -531,7 +531,7 @@ func TestGetSelectedDateFilter(t *testing.T) {
 			name:         "Invalid date",
 			value:        "17/12/2022",
 			expectedDate: nil,
-			expectedErr:  errors.New("parsing time \"17/12/2022\" as \"2006-01-02\": cannot parse \"2/2022\" as \"2006\""),
+			expectedErr:  errors.New("parsing time \"17/12/2022\" as \"2006-01-02\": cannot parse \"17/12/2022\" as \"2006\""),
 		},
 	}
 	for _, test := range tests {
