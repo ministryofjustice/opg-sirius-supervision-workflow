@@ -226,11 +226,58 @@ module.exports = function () {
   }
 
   return {
-    "successes": [
-      {
-        "id": "assignTasksToCasemanager"
-      }
-    ],
+    "successes-assignTasksToCasemanager":
+        {
+          "id": 98,
+          "type": "ORAL",
+          "status": "Not started",
+          "dueDate": "25\/05\/2023",
+          "name": "",
+          "description": "A client has been created",
+          "ragRating": 2,
+          "assignee": {
+            "id": 25,
+            "teams": [],
+            "displayName": "Pro Team 1 - (Supervision)"
+          },
+          "createdTime": "10\/05\/2023 09:27:05",
+          "caseItems": [],
+          "persons": [
+            {
+              "id": 42,
+              "uId": "7000-0000-0856",
+              "caseRecNumber": "71115167",
+              "salutation": "Mr",
+              "firstname": "Luke",
+              "middlenames": "",
+              "surname": "Crete",
+              "supervisionCaseOwner": {
+                "id": 25,
+                "teams": [],
+                "displayName": "Pro Team 1 - (Supervision)"
+              }
+            }
+          ],
+          "clients": [
+            {
+              "id": 42,
+              "uId": "7000-0000-0856",
+              "caseRecNumber": "71115167",
+              "salutation": "Mr",
+              "firstname": "Luke",
+              "middlenames": "",
+              "surname": "Crete",
+              "supervisionCaseOwner":
+                  {
+                    "id": 25,
+                    "teams": [],
+                    "displayName": "Pro Team 1 - (Supervision)"
+                  }
+            }
+          ],
+          "caseOwnerTask": false,
+          "isPriority": true
+        },
     "assign-tasks-to-casemanager": {},
     "teams": [
       {
@@ -402,7 +449,8 @@ module.exports = function () {
       "name": "case",
       "phoneNumber": "12345678",
       "roles": [
-        "Case Manager"
+        "Case Manager",
+        "Manager"
       ],
       "surname": "manager",
       "suspended": false,
