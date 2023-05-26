@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -151,7 +152,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
-				return errors.New("Only managers can set priority on tasks")
+				if strings.Contains(err.Error(), "403") {
+					return errors.New("Only managers can set priority on tasks")
+				}
 			}
 
 			vars.SuccessMessage = successMessageForReassignAndPrioritiesTasks(vars, assignTeam, prioritySelected, selectedTasks, assigneeDisplayName)
