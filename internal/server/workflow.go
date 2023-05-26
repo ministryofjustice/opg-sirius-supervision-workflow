@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type WorkflowInformation interface {
 	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
-	AssignTasksToCaseManager(sirius.Context, int, []string) error
+	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
 
 func getTasksPerPage(valueFromUrl string) int {
@@ -136,12 +137,6 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			assignTeam := r.FormValue("assignTeam")
-			if assignTeam == "0" {
-				vars.Errors = sirius.ValidationErrors{
-					"selection": map[string]string{"": "Please select a team"},
-				}
-			}
-
 			//this is where it picks up the new user to assign task to
 			newAssigneeIdForTask, err := getAssigneeIdForTask(logger, assignTeam, r.FormValue("assignCM"))
 			if err != nil {
@@ -151,16 +146,18 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			selectedTasks := r.Form["selected-tasks"]
 
+			prioritySelected := r.FormValue("priority")
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks)
+			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks, prioritySelected)
+
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
-				return err
+				if strings.Contains(err.Error(), "403") {
+					return errors.New("Only managers can set priority on tasks")
+				}
 			}
 
-			if vars.Errors == nil {
-				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(selectedTasks))
-			}
+			vars.SuccessMessage = successMessageForReassignAndPrioritiesTasks(vars, assignTeam, prioritySelected, selectedTasks, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -277,4 +274,23 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
+}
+
+func successMessageForReassignAndPrioritiesTasks(vars WorkflowVars, assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
+	if len(vars.Errors) != 0 {
+		return ""
+	}
+
+	if assignTeam != "0" && prioritySelected == "yes" {
+		return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(selectedTasks), assigneeDisplayName)
+	} else if assignTeam != "0" && prioritySelected == "no" {
+		return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
+	} else if assignTeam != "0" {
+		return fmt.Sprintf("%d task(s) have been reassigned", len(selectedTasks))
+	} else if assignTeam == "0" && prioritySelected == "yes" {
+		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
+	} else if assignTeam == "0" && prioritySelected == "no" {
+		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
+	}
+	return ""
 }
