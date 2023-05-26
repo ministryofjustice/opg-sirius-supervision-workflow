@@ -152,7 +152,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return errors.New("Only managers can set priority on tasks")
 			}
-			fmt.Println(assigneeDisplayName)
+
 			vars.SuccessMessage = successMessageForReassignAndPrioritiesTasks(vars, assignTeam, prioritySelected, selectedTasks, assigneeDisplayName)
 		}
 
@@ -273,17 +273,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 }
 
 func successMessageForReassignAndPrioritiesTasks(vars WorkflowVars, assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
-	errorCheck := len(vars.Errors) == 0
-	fmt.Println(errorCheck)
-	if errorCheck && assignTeam != "0" && prioritySelected == "yes" {
+	if len(vars.Errors) == 0 {
+		return ""
+	}
+
+	if assignTeam != "0" && prioritySelected == "yes" {
 		return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(selectedTasks), assigneeDisplayName)
-	} else if errorCheck && assignTeam != "0" && prioritySelected == "no" {
+	} else if assignTeam != "0" && prioritySelected == "no" {
 		return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
-	} else if errorCheck && assignTeam != "0" {
+	} else if assignTeam != "0" {
 		return fmt.Sprintf("%d task(s) have been reassigned", len(selectedTasks))
-	} else if errorCheck && assignTeam == "0" && prioritySelected == "yes" {
+	} else if assignTeam == "0" && prioritySelected == "yes" {
 		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
-	} else if errorCheck && assignTeam == "0" && prioritySelected == "no" {
+	} else if assignTeam == "0" && prioritySelected == "no" {
 		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
 	}
 	return ""
