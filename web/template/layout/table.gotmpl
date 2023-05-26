@@ -32,11 +32,7 @@
     <tbody class="govuk-table__body">
       {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
-            {{ if .ApiPriorityTask }}
-            <tr class="govuk-table__row priority">
-            {{ else }}
-            <tr class="govuk-table__row">
-            {{ end }}
+          <tr class="govuk-table__row {{ if .ApiPriorityTask }} priority {{ end }}">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">

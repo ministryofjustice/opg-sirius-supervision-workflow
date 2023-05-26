@@ -148,6 +148,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			prioritySelected := r.FormValue("priority")
 			// Attempt to save
 			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks, prioritySelected)
+
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
 				return errors.New("Only managers can set priority on tasks")
@@ -273,7 +274,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 }
 
 func successMessageForReassignAndPrioritiesTasks(vars WorkflowVars, assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
-	if len(vars.Errors) == 0 {
+	if len(vars.Errors) != 0 {
 		return ""
 	}
 
