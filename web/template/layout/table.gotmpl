@@ -32,7 +32,7 @@
     <tbody class="govuk-table__body">
       {{if ne .TaskList.TotalTasks 0}}
         {{ range .TaskList.WholeTaskList }}
-          <tr class="govuk-table__row">
+          <tr class="govuk-table__row {{ if .ApiPriorityTask }} priority {{ end }}">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
@@ -45,6 +45,9 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="api-tasktype">{{ .TaskTypeName }}</label>
+                {{ if .ApiPriorityTask }}
+                    <span class="priority secondary">Priority</span>
+                {{ end }}
             </td>
             <td class="govuk-table__cell">
               <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link">

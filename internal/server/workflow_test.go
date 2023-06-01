@@ -71,14 +71,14 @@ func (m *mockWorkflowInformation) GetTeamsForSelection(ctx sirius.Context) ([]si
 	return m.teamSelectionData, m.err
 }
 
-func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string) error {
+func (m *mockWorkflowInformation) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string, prioritySelected string) (string, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
 	m.count["AssignTasksToCaseManager"] += 1
 	m.lastCtx = ctx
 
-	return m.err
+	return "", m.err
 }
 
 var mockUserDetailsData = sirius.UserDetails{
@@ -608,4 +608,13 @@ func TestCalculateTaskCounts(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, calculateTaskCounts(taskTypes, tasks))
+}
+
+func TestSuccessMessageForReassignAndPrioritiesTasks(t *testing.T) {
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "yes", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "no", []string{"1"}, "assignee name"))
+	assert.Equal(t, "1 task(s) have been reassigned", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "2", "", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "yes", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiesTasks(WorkflowVars{Error: ""}, "0", "no", []string{"1"}, "assignee name"))
+
 }
