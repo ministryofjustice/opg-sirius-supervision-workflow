@@ -76,6 +76,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 						Team:            []UserTeam{},
 					},
 				},
+				CalculatedDueDateColour: "red",
 			},
 		},
 		Pages: PageInformation{
@@ -519,4 +520,84 @@ func TestDeputy_GetURL(t *testing.T) {
 			assert.Equal(t, test.expectedUrl, deputy.GetURL())
 		})
 	}
+}
+
+func TestGetCalculatedDueDateColour(t *testing.T) {
+	tests := []struct {
+		name           string
+		mockToday      string
+		dueDate        string
+		expectedColour string
+	}{
+		{
+			name:           "Monday next week will be green",
+			mockToday:      "06/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "green",
+		},
+		{
+			name:           "Due date in the past will be red",
+			mockToday:      "06/06/2023",
+			dueDate:        "05/06/2023",
+			expectedColour: "red",
+		},
+		{
+			name:           "Professional deputy URL",
+			mockToday:      "06/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "green",
+		},
+		{
+			name:           "Due date tomorrow will return dueTomorrow",
+			mockToday:      "06/06/2023",
+			dueDate:        "07/06/2023",
+			expectedColour: "dueTomorrow",
+		},
+		{
+			name:           "Due date this week but not tomorrow will return amber",
+			mockToday:      "06/06/2023",
+			dueDate:        "08/06/2023",
+			expectedColour: "amber",
+		},
+		{
+			name:           "Due date that is not next week but after will return none",
+			mockToday:      "06/06/2023",
+			dueDate:        "19/06/2023",
+			expectedColour: "none",
+		},
+		{
+			name:           "Sunday today due date Monday will return green",
+			mockToday:      "11/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "green",
+		},
+		{
+			name:           "Due date is today will return dueToday",
+			mockToday:      "11/06/2023",
+			dueDate:        "11/06/2023",
+			expectedColour: "dueToday",
+		},
+		{
+			name:           "Due date is today will return dueToday",
+			mockToday:      "06/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "green",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			mockNow := func() time.Time {
+				fakeTime, _ := time.Parse("02/01/2006", test.mockToday)
+				return fakeTime
+			}
+			assert.Equal(t, test.expectedColour, GetCalculatedDueDateColour(test.dueDate, mockNow))
+		})
+	}
+}
+
+func TestFormatTheDate(t *testing.T) {
+	mockDate := time.Date(2023, 06, 11, 0, 0, 0, 0, time.Local)
+	expectedResponse, _ := time.Parse("02/01/2006", "11/06/2023")
+	result := formatDate(mockDate)
+	assert.Equal(t, expectedResponse, result)
 }
