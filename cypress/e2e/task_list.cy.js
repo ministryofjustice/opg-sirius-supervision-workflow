@@ -34,8 +34,9 @@ describe("Task list", () => {
     cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "Allocations User3")
   })
 
-  it("should have a table with the column Due date", () => {
+  it("should have a table with the column Due date with overdue label", () => {
     cy.get(".govuk-table__body > :nth-child(1) > :nth-child(6)").should("contain", "01/02/2021")
+    cy.get('.govuk-tag--red').first().should('contain', "Overdue")
   })
 
   it("the client name should link to the correct case", () => {

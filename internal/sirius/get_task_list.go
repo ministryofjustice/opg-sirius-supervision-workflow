@@ -189,57 +189,69 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 }
 
 func GetCalculatedDueDateColour(date string, now func() time.Time) string {
-	today := now().Unix()
-	checkWhatDayItIsTomorrow := time.Now().AddDate(0, 0, 1)
+	todayFormatted := formatDate(now())
+	checkWhatDayItIsTomorrow := now().AddDate(0, 0, 1)
 	dateFormatted, _ := time.Parse("02/01/2006", date)
 
-	var startOfNextWeek int64 = 0
-	var endOfNextWeek int64 = 0
+	var startOfNextWeek time.Time
+	var endOfNextWeek time.Time
 
 	switch checkWhatDayItIsTomorrow.Weekday() {
 	case time.Monday:
-		startOfNextWeek = checkWhatDayItIsTomorrow.Unix()
-		endOfNextWeek = now().AddDate(0, 0, 7).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 1)
+		endOfNextWeek = now().AddDate(0, 0, 7)
 
 	case time.Tuesday:
-		startOfNextWeek = now().AddDate(0, 0, 7).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 13).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 7)
+		endOfNextWeek = now().AddDate(0, 0, 13)
 
 	case time.Wednesday:
-		startOfNextWeek = now().AddDate(0, 0, 6).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 12).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 6)
+		endOfNextWeek = now().AddDate(0, 0, 12)
 
 	case time.Thursday:
-		startOfNextWeek = now().AddDate(0, 0, 5).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 11).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 5)
+		endOfNextWeek = now().AddDate(0, 0, 11)
 
 	case time.Friday:
-		startOfNextWeek = now().AddDate(0, 0, 4).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 10).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 4)
+		endOfNextWeek = now().AddDate(0, 0, 10)
 
 	case time.Saturday:
-		startOfNextWeek = now().AddDate(0, 0, 3).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 9).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 3)
+		endOfNextWeek = now().AddDate(0, 0, 9)
 
 	case time.Sunday:
-		startOfNextWeek = now().AddDate(0, 0, 2).Unix()
-		endOfNextWeek = now().AddDate(0, 0, 8).Unix()
+		startOfNextWeek = now().AddDate(0, 0, 2)
+		endOfNextWeek = now().AddDate(0, 0, 8)
 	}
+	startOfNextWeekDate := formatDate(startOfNextWeek)
+	endOfNextWeekDate := formatDate(endOfNextWeek)
 
 	switch {
-	case dateFormatted.Unix() >= startOfNextWeek && dateFormatted.Unix() <= endOfNextWeek:
+	case dateFormatted.Equal(todayFormatted):
+		return "dueToday"
+
+	case (dateFormatted.After(startOfNextWeekDate) || dateFormatted.Equal(startOfNextWeekDate)) &&
+		(dateFormatted.Before(endOfNextWeekDate) || dateFormatted.Equal(endOfNextWeekDate)):
 		return "green"
 
-	case dateFormatted.Unix() == today || dateFormatted.Unix() < today:
+	case dateFormatted.Before(todayFormatted):
 		return "red"
 
 	case dateFormatted.Weekday() == checkWhatDayItIsTomorrow.Weekday():
 		return "dueTomorrow"
 
-	case dateFormatted.Unix() > today && dateFormatted.Unix() < startOfNextWeek:
+	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):
 		return "amber"
 	}
 	return "none"
+}
+
+func formatDate(dateToFormat time.Time) time.Time {
+	dateAsString := dateToFormat.Format("02/01/2006")
+	formattedDate, _ := time.Parse("02/01/2006", dateAsString)
+	return formattedDate
 }
 
 func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {

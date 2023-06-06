@@ -88,9 +88,15 @@
               </label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+                {{ if .CalculatedDueDateColour }}
+                    <label class="govuk-label" for="task-duedate"><strong>{{ .ApiTaskDueDate }}</strong></label>
+                {{ else }}
+                    <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+                {{ end }}
                 {{ if eq .CalculatedDueDateColour "red"}}
                 <span><strong class="govuk-tag govuk-tag--red">Overdue</strong></span>
+                {{ else if eq .CalculatedDueDateColour "dueToday"}}
+                <span><strong class="govuk-tag govuk-tag--red">Due Today</strong></span>
                 {{ else if eq .CalculatedDueDateColour "dueTomorrow"}}
                 <span><strong class="govuk-tag govuk-tag--orange">Due Tomorrow</strong></span>
                 {{ else if eq .CalculatedDueDateColour "amber"}}
