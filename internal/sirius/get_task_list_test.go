@@ -76,7 +76,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 						Team:            []UserTeam{},
 					},
 				},
-				CalculatedDueDateColour: "red",
+				CalculatedDueDateColour: "inThePast",
 			},
 		},
 		Pages: PageInformation{
@@ -533,19 +533,13 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			name:           "Monday next week will be green",
 			mockToday:      "06/06/2023",
 			dueDate:        "12/06/2023",
-			expectedColour: "green",
+			expectedColour: "dueNextWeek",
 		},
 		{
 			name:           "Due date in the past will be red",
 			mockToday:      "06/06/2023",
 			dueDate:        "05/06/2023",
-			expectedColour: "red",
-		},
-		{
-			name:           "Professional deputy URL",
-			mockToday:      "06/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "green",
+			expectedColour: "inThePast",
 		},
 		{
 			name:           "Due date tomorrow will return dueTomorrow",
@@ -557,7 +551,7 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			name:           "Due date this week but not tomorrow will return amber",
 			mockToday:      "06/06/2023",
 			dueDate:        "08/06/2023",
-			expectedColour: "amber",
+			expectedColour: "dueThisWeek",
 		},
 		{
 			name:           "Due date that is not next week but after will return none",
@@ -569,7 +563,7 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			name:           "Sunday today due date Monday will return green",
 			mockToday:      "11/06/2023",
 			dueDate:        "12/06/2023",
-			expectedColour: "green",
+			expectedColour: "dueNextWeek",
 		},
 		{
 			name:           "Due date is today will return dueToday",
@@ -581,7 +575,7 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			name:           "Due date is today will return dueToday",
 			mockToday:      "06/06/2023",
 			dueDate:        "12/06/2023",
-			expectedColour: "green",
+			expectedColour: "dueNextWeek",
 		},
 	}
 	for _, test := range tests {
@@ -590,7 +584,7 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 				fakeTime, _ := time.Parse("02/01/2006", test.mockToday)
 				return fakeTime
 			}
-			assert.Equal(t, test.expectedColour, GetCalculatedDueDateColour(test.dueDate, mockNow))
+			assert.Equal(t, test.expectedColour, GetCalculatedDueDateStatus(test.dueDate, mockNow))
 		})
 	}
 }

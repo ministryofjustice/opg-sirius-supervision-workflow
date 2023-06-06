@@ -93,15 +93,15 @@
                 {{ else }}
                     <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
                 {{ end }}
-                {{ if eq .CalculatedDueDateColour "red"}}
+                {{ if eq .CalculatedDueDateColour "inThePast"}}
                 <span><strong class="govuk-tag govuk-tag--red">Overdue</strong></span>
                 {{ else if eq .CalculatedDueDateColour "dueToday"}}
                 <span><strong class="govuk-tag govuk-tag--red">Due Today</strong></span>
                 {{ else if eq .CalculatedDueDateColour "dueTomorrow"}}
                 <span><strong class="govuk-tag govuk-tag--orange">Due Tomorrow</strong></span>
-                {{ else if eq .CalculatedDueDateColour "amber"}}
+                {{ else if eq .CalculatedDueDateColour "dueThisWeek"}}
                 <span><strong class="govuk-tag govuk-tag--orange">Due This Week</strong></span>
-                {{ else if eq .CalculatedDueDateColour "green"}}
+                {{ else if eq .CalculatedDueDateColour "dueNextWeek"}}
                 <span><strong class="govuk-tag govuk-tag--green">Due Next Week</strong></span>
                 {{ end }}
             </td>

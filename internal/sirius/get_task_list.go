@@ -181,22 +181,22 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			TaskTypeName:            GetTaskName(s, loadTasks),
 			ClientInformation:       GetClientInformation(s),
 			ApiPriorityTask:         s.ApiPriorityTask,
-			CalculatedDueDateColour: GetCalculatedDueDateColour(s.ApiTaskDueDate, time.Now),
+			CalculatedDueDateColour: GetCalculatedDueDateStatus(s.ApiTaskDueDate, time.Now),
 		}
 		list = append(list, task)
 	}
 	return list
 }
 
-func GetCalculatedDueDateColour(date string, now func() time.Time) string {
+func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
 	todayFormatted := formatDate(now())
-	checkWhatDayItIsTomorrow := now().AddDate(0, 0, 1)
+	getTomorrowsDay := now().AddDate(0, 0, 1).Weekday()
 	dateFormatted, _ := time.Parse("02/01/2006", date)
 
 	var startOfNextWeek time.Time
 	var endOfNextWeek time.Time
 
-	switch checkWhatDayItIsTomorrow.Weekday() {
+	switch getTomorrowsDay {
 	case time.Monday:
 		startOfNextWeek = now().AddDate(0, 0, 1)
 		endOfNextWeek = now().AddDate(0, 0, 7)
@@ -225,6 +225,7 @@ func GetCalculatedDueDateColour(date string, now func() time.Time) string {
 		startOfNextWeek = now().AddDate(0, 0, 2)
 		endOfNextWeek = now().AddDate(0, 0, 8)
 	}
+	
 	startOfNextWeekDate := formatDate(startOfNextWeek)
 	endOfNextWeekDate := formatDate(endOfNextWeek)
 
@@ -234,16 +235,16 @@ func GetCalculatedDueDateColour(date string, now func() time.Time) string {
 
 	case (dateFormatted.After(startOfNextWeekDate) || dateFormatted.Equal(startOfNextWeekDate)) &&
 		(dateFormatted.Before(endOfNextWeekDate) || dateFormatted.Equal(endOfNextWeekDate)):
-		return "green"
+		return "dueNextWeek"
 
 	case dateFormatted.Before(todayFormatted):
-		return "red"
+		return "inThePast"
 
-	case dateFormatted.Weekday() == checkWhatDayItIsTomorrow.Weekday():
+	case dateFormatted.Weekday() == getTomorrowsDay:
 		return "dueTomorrow"
 
 	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):
-		return "amber"
+		return "dueThisWeek"
 	}
 	return "none"
 }
