@@ -46,17 +46,18 @@ type Clients struct {
 }
 
 type ApiTask struct {
-	ApiTaskAssignee   CaseManagement     `json:"assignee"`
-	ApiTaskCaseItems  []CaseItemsDetails `json:"caseItems"`
-	ApiClients        []Clients          `json:"clients"`
-	ApiTaskDueDate    string             `json:"dueDate"`
-	ApiTaskId         int                `json:"id"`
-	ApiTaskHandle     string             `json:"type"`
-	ApiTaskType       string             `json:"name"`
-	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
-	ApiPriorityTask   bool               `json:"isPriority"`
-	TaskTypeName      string
-	ClientInformation Clients
+	ApiTaskAssignee         CaseManagement     `json:"assignee"`
+	ApiTaskCaseItems        []CaseItemsDetails `json:"caseItems"`
+	ApiClients              []Clients          `json:"clients"`
+	ApiTaskDueDate          string             `json:"dueDate"`
+	ApiTaskId               int                `json:"id"`
+	ApiTaskHandle           string             `json:"type"`
+	ApiTaskType             string             `json:"name"`
+	ApiCaseOwnerTask        bool               `json:"caseOwnerTask"`
+	ApiPriorityTask         bool               `json:"isPriority"`
+	TaskTypeName            string
+	CalculatedDueDateColour string
+	ClientInformation       Clients
 }
 
 type PageInformation struct {
@@ -173,17 +174,72 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 				Id:              GetAssigneeId(s),
 				Team:            GetAssigneeTeams(s),
 			},
-			ApiTaskDueDate:    s.ApiTaskDueDate,
-			ApiTaskId:         s.ApiTaskId,
-			ApiTaskHandle:     s.ApiTaskHandle,
-			ApiTaskType:       s.ApiTaskType,
-			TaskTypeName:      GetTaskName(s, loadTasks),
-			ClientInformation: GetClientInformation(s),
-			ApiPriorityTask:   s.ApiPriorityTask,
+			ApiTaskDueDate:          s.ApiTaskDueDate,
+			ApiTaskId:               s.ApiTaskId,
+			ApiTaskHandle:           s.ApiTaskHandle,
+			ApiTaskType:             s.ApiTaskType,
+			TaskTypeName:            GetTaskName(s, loadTasks),
+			ClientInformation:       GetClientInformation(s),
+			ApiPriorityTask:         s.ApiPriorityTask,
+			CalculatedDueDateColour: GetCalculatedDueDateColour(s.ApiTaskDueDate, time.Now),
 		}
 		list = append(list, task)
 	}
 	return list
+}
+
+func GetCalculatedDueDateColour(date string, now func() time.Time) string {
+	today := now().Unix()
+	checkWhatDayItIsTomorrow := time.Now().AddDate(0, 0, 1)
+	dateFormatted, _ := time.Parse("02/01/2006", date)
+
+	var startOfNextWeek int64 = 0
+	var endOfNextWeek int64 = 0
+
+	switch checkWhatDayItIsTomorrow.Weekday() {
+	case time.Monday:
+		startOfNextWeek = checkWhatDayItIsTomorrow.Unix()
+		endOfNextWeek = now().AddDate(0, 0, 7).Unix()
+
+	case time.Tuesday:
+		startOfNextWeek = now().AddDate(0, 0, 7).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 13).Unix()
+
+	case time.Wednesday:
+		startOfNextWeek = now().AddDate(0, 0, 6).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 12).Unix()
+
+	case time.Thursday:
+		startOfNextWeek = now().AddDate(0, 0, 5).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 11).Unix()
+
+	case time.Friday:
+		startOfNextWeek = now().AddDate(0, 0, 4).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 10).Unix()
+
+	case time.Saturday:
+		startOfNextWeek = now().AddDate(0, 0, 3).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 9).Unix()
+
+	case time.Sunday:
+		startOfNextWeek = now().AddDate(0, 0, 2).Unix()
+		endOfNextWeek = now().AddDate(0, 0, 8).Unix()
+	}
+
+	switch {
+	case dateFormatted.Unix() >= startOfNextWeek && dateFormatted.Unix() <= endOfNextWeek:
+		return "green"
+
+	case dateFormatted.Unix() == today || dateFormatted.Unix() < today:
+		return "red"
+
+	case dateFormatted.Weekday() == checkWhatDayItIsTomorrow.Weekday():
+		return "dueTomorrow"
+
+	case dateFormatted.Unix() > today && dateFormatted.Unix() < startOfNextWeek:
+		return "amber"
+	}
+	return "none"
 }
 
 func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {

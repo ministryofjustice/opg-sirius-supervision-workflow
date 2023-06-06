@@ -76,6 +76,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 						Team:            []UserTeam{},
 					},
 				},
+				CalculatedDueDateColour: "red",
 			},
 		},
 		Pages: PageInformation{
@@ -519,4 +520,20 @@ func TestDeputy_GetURL(t *testing.T) {
 			assert.Equal(t, test.expectedUrl, deputy.GetURL())
 		})
 	}
+}
+
+func TestGetCalculatedDueDateColourReturnGreen(t *testing.T) {
+	mockNow := func() time.Time {
+		return time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+	}
+
+	assert.Equal(t, "green", GetCalculatedDueDateColour("05/06/2023", mockNow))
+}
+
+func TestGetCalculatedDueDateColourReturnRed(t *testing.T) {
+	mockNow := func() time.Time {
+		fakeTime, _ := time.Parse("02/01/2006", "06/06/2023")
+		return fakeTime
+	}
+	assert.Equal(t, "red", GetCalculatedDueDateColour("05/06/2023", mockNow))
 }
