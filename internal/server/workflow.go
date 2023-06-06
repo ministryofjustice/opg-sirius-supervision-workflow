@@ -8,15 +8,17 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type WorkflowInformation interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
-	AssignTasksToCaseManager(sirius.Context, int, []string) error
+	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
 
 func getTasksPerPage(valueFromUrl string) int {
@@ -81,6 +83,41 @@ func setTaskCount(handle string, metaData sirius.TaskList) int {
 	return 0
 }
 
+func getSelectedDateFilter(value string) (*time.Time, error) {
+	if value == "" {
+		return nil, nil
+	}
+	parsed, err := time.Parse("2006-01-02", value)
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
+}
+
+func calculateTaskCounts(taskTypes []sirius.ApiTaskTypes, tasks sirius.TaskList) []sirius.ApiTaskTypes {
+	var taskTypeList []sirius.ApiTaskTypes
+	ecmTasksCount := 0
+
+	for _, t := range taskTypes {
+		tasksWithCounts := sirius.ApiTaskTypes{
+			Handle:     t.Handle,
+			Incomplete: t.Incomplete,
+			Category:   t.Category,
+			Complete:   t.Complete,
+			User:       t.User,
+			IsSelected: t.IsSelected,
+			TaskCount:  setTaskCount(t.Handle, tasks),
+		}
+		if t.EcmTask {
+			ecmTasksCount += tasksWithCounts.TaskCount
+		}
+		taskTypeList = append(taskTypeList, tasksWithCounts)
+	}
+
+	taskTypeList[0].TaskCount = ecmTasksCount
+	return taskTypeList
+}
+
 func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWorkflowTeam int) Handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		logger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -100,12 +137,6 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			}
 
 			assignTeam := r.FormValue("assignTeam")
-			if assignTeam == "0" {
-				vars.Errors = sirius.ValidationErrors{
-					"selection": map[string]string{"": "Please select a team"},
-				}
-			}
-
 			//this is where it picks up the new user to assign task to
 			newAssigneeIdForTask, err := getAssigneeIdForTask(logger, assignTeam, r.FormValue("assignCM"))
 			if err != nil {
@@ -115,16 +146,18 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 			selectedTasks := r.Form["selected-tasks"]
 
+			prioritySelected := r.FormValue("priority")
 			// Attempt to save
-			err = client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks)
+			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks, prioritySelected)
+
 			if err != nil {
 				logger.Print("AssignTasksToCaseManager: " + err.Error())
-				return err
+				if strings.Contains(err.Error(), "403") {
+					return errors.New("Only managers can set priority on tasks")
+				}
 			}
 
-			if vars.Errors == nil {
-				vars.SuccessMessage = fmt.Sprintf("%d tasks have been reassigned", len(selectedTasks))
-			}
+			vars.SuccessMessage = successMessageForReassignAndPrioritiesTasks(vars, assignTeam, prioritySelected, selectedTasks, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -181,7 +214,19 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
+		selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
+		if err != nil {
+			logger.Print("DueDateFrom error " + err.Error())
+			return err
+		}
+
+		selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
+		if err != nil {
+			logger.Print("DueDateTo error " + err.Error())
+			return err
+		}
+
+		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
 
 		if err != nil {
 			logger.Print("GetTaskList error " + err.Error())
@@ -189,7 +234,7 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		}
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 			page = taskList.Pages.PageTotal
-			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees)
+			taskList, err = client.GetTaskList(ctx, page, tasksPerPage, selectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
 
 			if err != nil {
 				logger.Print("GetTaskList error " + err.Error())
@@ -199,22 +244,9 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 
 		pageDetails := client.GetPageDetails(taskList, page, tasksPerPage)
 
-		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes)
+		appliedFilters := sirius.GetAppliedFilters(selectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 
-		var taskTypeList []sirius.ApiTaskTypes
-
-		for _, u := range taskTypes {
-			taskTypeAndCount := sirius.ApiTaskTypes{
-				Handle:     u.Handle,
-				Incomplete: u.Incomplete,
-				Category:   u.Category,
-				Complete:   u.Complete,
-				User:       u.User,
-				IsSelected: u.IsSelected,
-				TaskCount:  setTaskCount(u.Handle, taskList),
-			}
-			taskTypeList = append(taskTypeList, taskTypeAndCount)
-		}
+		taskTypeList := calculateTaskCounts(taskTypes, taskList)
 
 		vars.Path = r.URL.Path
 		vars.XSRFToken = ctx.XSRFToken
@@ -229,10 +261,36 @@ func loggingInfoForWorkflow(client WorkflowInformation, tmpl Template, defaultWo
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.AppliedFilters = appliedFilters
 
+		if selectedDueDateFrom != nil {
+			vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
+		}
+		if selectedDueDateTo != nil {
+			vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
+		}
+
 		if err != nil {
 			return StatusError(http.StatusNotFound)
 		}
 
 		return tmpl.ExecuteTemplate(w, "page", vars)
 	}
+}
+
+func successMessageForReassignAndPrioritiesTasks(vars WorkflowVars, assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
+	if len(vars.Errors) != 0 {
+		return ""
+	}
+
+	if assignTeam != "0" && prioritySelected == "yes" {
+		return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(selectedTasks), assigneeDisplayName)
+	} else if assignTeam != "0" && prioritySelected == "no" {
+		return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
+	} else if assignTeam != "0" {
+		return fmt.Sprintf("%d task(s) have been reassigned", len(selectedTasks))
+	} else if assignTeam == "0" && prioritySelected == "yes" {
+		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
+	} else if assignTeam == "0" && prioritySelected == "no" {
+		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
+	}
+	return ""
 }

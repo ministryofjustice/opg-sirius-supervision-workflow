@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type RefData struct {
@@ -53,6 +54,7 @@ type ApiTask struct {
 	ApiTaskHandle     string             `json:"type"`
 	ApiTaskType       string             `json:"name"`
 	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
+	ApiPriorityTask   bool               `json:"isPriority"`
 	TaskTypeName      string
 	ClientInformation Clients
 }
@@ -79,11 +81,11 @@ type TaskList struct {
 	ActiveFilters []string
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, LoadTasks []ApiTaskTypes, selectedAssignees []string) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 
-	filter := CreateFilter(taskTypeSelected, selectedAssignees)
+	filter := CreateFilter(taskTypeSelected, selectedAssignees, dueDateFrom, dueDateTo, taskTypes)
 
 	if selectedTeam.Id != 0 {
 		teamIds = []string{"teamIds[]=" + strconv.Itoa(selectedTeam.Id)}
@@ -125,7 +127,7 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 
 	TaskList := v
 
-	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, LoadTasks)
+	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, taskTypes)
 
 	return TaskList, err
 }
@@ -138,13 +140,26 @@ func (d *Deputy) GetURL() string {
 	return fmt.Sprintf(url, d.Id)
 }
 
-func CreateFilter(taskTypeSelected []string, selectedAssignees []string) string {
+func CreateFilter(taskTypeSelected []string, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time, taskTypes []ApiTaskTypes) string {
 	filter := "status:Not+started,"
+
+	for _, t := range taskTypeSelected {
+		if t == "ECM_TASKS" {
+			taskTypeSelected = getEcmTaskTypesString(taskTypes)
+			break
+		}
+	}
 	for _, t := range taskTypeSelected {
 		filter += "type:" + t + ","
 	}
 	for _, a := range selectedAssignees {
 		filter += "assigneeid_or_null:" + a + ","
+	}
+	if dueDateFrom != nil {
+		filter += "due_date_from:" + dueDateFrom.Format("2006-01-02") + ","
+	}
+	if dueDateTo != nil {
+		filter += "due_date_to:" + dueDateTo.Format("2006-01-02") + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
@@ -164,6 +179,7 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 			ApiTaskType:       s.ApiTaskType,
 			TaskTypeName:      GetTaskName(s, loadTasks),
 			ClientInformation: GetClientInformation(s),
+			ApiPriorityTask:   s.ApiPriorityTask,
 		}
 		list = append(list, task)
 	}
@@ -217,4 +233,14 @@ func GetClientInformation(s ApiTask) Clients {
 		return s.ApiTaskCaseItems[0].CaseItemClient
 	}
 	return s.ApiClients[0]
+}
+
+func getEcmTaskTypesString(taskTypes []ApiTaskTypes) []string {
+	var ecmTasks []string
+	for _, taskType := range taskTypes {
+		if taskType.EcmTask {
+			ecmTasks = append(ecmTasks, taskType.Handle)
+		}
+	}
+	return ecmTasks
 }
