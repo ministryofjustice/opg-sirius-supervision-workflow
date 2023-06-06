@@ -2,9 +2,9 @@
 {{ define "table" }}
 
 <section data-module="manage-tasks" class="moj-manage-tasks">
- 
+
   {{ template "edit-panel" . }}
-  
+
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
     <thead class="govuk-table__head">
@@ -88,7 +88,22 @@
               </label>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+                {{ if .CalculatedDueDateColour }}
+                    <label class="govuk-label" for="task-duedate"><strong>{{ .ApiTaskDueDate }}</strong></label>
+                {{ else }}
+                    <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+                {{ end }}
+                {{ if eq .CalculatedDueDateColour "inThePast"}}
+                <span><strong class="govuk-tag govuk-tag--red">Overdue</strong></span>
+                {{ else if eq .CalculatedDueDateColour "dueToday"}}
+                <span><strong class="govuk-tag govuk-tag--red">Due Today</strong></span>
+                {{ else if eq .CalculatedDueDateColour "dueTomorrow"}}
+                <span><strong class="govuk-tag govuk-tag--orange">Due Tomorrow</strong></span>
+                {{ else if eq .CalculatedDueDateColour "dueThisWeek"}}
+                <span><strong class="govuk-tag govuk-tag--orange">Due This Week</strong></span>
+                {{ else if eq .CalculatedDueDateColour "dueNextWeek"}}
+                <span><strong class="govuk-tag govuk-tag--green">Due Next Week</strong></span>
+                {{ end }}
             </td>
           </tr>
         {{ end }}

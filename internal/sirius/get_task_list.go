@@ -46,17 +46,18 @@ type Clients struct {
 }
 
 type ApiTask struct {
-	ApiTaskAssignee   CaseManagement     `json:"assignee"`
-	ApiTaskCaseItems  []CaseItemsDetails `json:"caseItems"`
-	ApiClients        []Clients          `json:"clients"`
-	ApiTaskDueDate    string             `json:"dueDate"`
-	ApiTaskId         int                `json:"id"`
-	ApiTaskHandle     string             `json:"type"`
-	ApiTaskType       string             `json:"name"`
-	ApiCaseOwnerTask  bool               `json:"caseOwnerTask"`
-	ApiPriorityTask   bool               `json:"isPriority"`
-	TaskTypeName      string
-	ClientInformation Clients
+	ApiTaskAssignee         CaseManagement     `json:"assignee"`
+	ApiTaskCaseItems        []CaseItemsDetails `json:"caseItems"`
+	ApiClients              []Clients          `json:"clients"`
+	ApiTaskDueDate          string             `json:"dueDate"`
+	ApiTaskId               int                `json:"id"`
+	ApiTaskHandle           string             `json:"type"`
+	ApiTaskType             string             `json:"name"`
+	ApiCaseOwnerTask        bool               `json:"caseOwnerTask"`
+	ApiPriorityTask         bool               `json:"isPriority"`
+	TaskTypeName            string
+	CalculatedDueDateColour string
+	ClientInformation       Clients
 }
 
 type PageInformation struct {
@@ -173,17 +174,85 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 				Id:              GetAssigneeId(s),
 				Team:            GetAssigneeTeams(s),
 			},
-			ApiTaskDueDate:    s.ApiTaskDueDate,
-			ApiTaskId:         s.ApiTaskId,
-			ApiTaskHandle:     s.ApiTaskHandle,
-			ApiTaskType:       s.ApiTaskType,
-			TaskTypeName:      GetTaskName(s, loadTasks),
-			ClientInformation: GetClientInformation(s),
-			ApiPriorityTask:   s.ApiPriorityTask,
+			ApiTaskDueDate:          s.ApiTaskDueDate,
+			ApiTaskId:               s.ApiTaskId,
+			ApiTaskHandle:           s.ApiTaskHandle,
+			ApiTaskType:             s.ApiTaskType,
+			TaskTypeName:            GetTaskName(s, loadTasks),
+			ClientInformation:       GetClientInformation(s),
+			ApiPriorityTask:         s.ApiPriorityTask,
+			CalculatedDueDateColour: GetCalculatedDueDateStatus(s.ApiTaskDueDate, time.Now),
 		}
 		list = append(list, task)
 	}
 	return list
+}
+
+func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
+	todayFormatted := formatDate(now())
+	getTomorrowsDay := now().AddDate(0, 0, 1).Weekday()
+	dateFormatted, _ := time.Parse("02/01/2006", date)
+
+	var startOfNextWeek time.Time
+	var endOfNextWeek time.Time
+
+	switch getTomorrowsDay {
+	case time.Monday:
+		startOfNextWeek = now().AddDate(0, 0, 1)
+		endOfNextWeek = now().AddDate(0, 0, 7)
+
+	case time.Tuesday:
+		startOfNextWeek = now().AddDate(0, 0, 7)
+		endOfNextWeek = now().AddDate(0, 0, 13)
+
+	case time.Wednesday:
+		startOfNextWeek = now().AddDate(0, 0, 6)
+		endOfNextWeek = now().AddDate(0, 0, 12)
+
+	case time.Thursday:
+		startOfNextWeek = now().AddDate(0, 0, 5)
+		endOfNextWeek = now().AddDate(0, 0, 11)
+
+	case time.Friday:
+		startOfNextWeek = now().AddDate(0, 0, 4)
+		endOfNextWeek = now().AddDate(0, 0, 10)
+
+	case time.Saturday:
+		startOfNextWeek = now().AddDate(0, 0, 3)
+		endOfNextWeek = now().AddDate(0, 0, 9)
+
+	case time.Sunday:
+		startOfNextWeek = now().AddDate(0, 0, 2)
+		endOfNextWeek = now().AddDate(0, 0, 8)
+	}
+	
+	startOfNextWeekDate := formatDate(startOfNextWeek)
+	endOfNextWeekDate := formatDate(endOfNextWeek)
+
+	switch {
+	case dateFormatted.Equal(todayFormatted):
+		return "dueToday"
+
+	case (dateFormatted.After(startOfNextWeekDate) || dateFormatted.Equal(startOfNextWeekDate)) &&
+		(dateFormatted.Before(endOfNextWeekDate) || dateFormatted.Equal(endOfNextWeekDate)):
+		return "dueNextWeek"
+
+	case dateFormatted.Before(todayFormatted):
+		return "inThePast"
+
+	case dateFormatted.Weekday() == getTomorrowsDay:
+		return "dueTomorrow"
+
+	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):
+		return "dueThisWeek"
+	}
+	return "none"
+}
+
+func formatDate(dateToFormat time.Time) time.Time {
+	dateAsString := dateToFormat.Format("02/01/2006")
+	formattedDate, _ := time.Parse("02/01/2006", dateAsString)
+	return formattedDate
 }
 
 func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
