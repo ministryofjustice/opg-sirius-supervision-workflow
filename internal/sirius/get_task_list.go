@@ -190,8 +190,7 @@ func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
 
 func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
 	todayFormatted := formatDate(now())
-	getTomorrowsDate := now().AddDate(0, 0, 1)
-	getTomorrowsDay := getTomorrowsDate.Weekday()
+	getTomorrowsDay := now().AddDate(0, 0, 1).Weekday()
 	dateFormatted, _ := time.Parse("02/01/2006", date)
 
 	var startOfNextWeek time.Time
