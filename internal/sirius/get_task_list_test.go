@@ -530,40 +530,10 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 		expectedColour string
 	}{
 		{
-			name:           "Monday next week will be green",
-			mockToday:      "06/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "dueNextWeek",
-		},
-		{
-			name:           "Due date in the past will be red",
+			name:           "Due date in the past will be inThePast",
 			mockToday:      "06/06/2023",
 			dueDate:        "05/06/2023",
 			expectedColour: "inThePast",
-		},
-		{
-			name:           "Due date tomorrow will return dueTomorrow",
-			mockToday:      "06/06/2023",
-			dueDate:        "07/06/2023",
-			expectedColour: "dueTomorrow",
-		},
-		{
-			name:           "Due date this week but not tomorrow will return amber",
-			mockToday:      "06/06/2023",
-			dueDate:        "08/06/2023",
-			expectedColour: "dueThisWeek",
-		},
-		{
-			name:           "Due date that is not next week but after will return none",
-			mockToday:      "06/06/2023",
-			dueDate:        "19/06/2023",
-			expectedColour: "none",
-		},
-		{
-			name:           "Sunday today due date Monday will return green",
-			mockToday:      "11/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "dueNextWeek",
 		},
 		{
 			name:           "Due date is today will return dueToday",
@@ -572,10 +542,52 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			expectedColour: "dueToday",
 		},
 		{
-			name:           "Due date is today will return dueToday",
+			name:           "Due date tomorrow will return dueTomorrow",
+			mockToday:      "06/06/2023",
+			dueDate:        "07/06/2023",
+			expectedColour: "dueTomorrow",
+		},
+		{
+			name:           "Due date this week but not tomorrow will return dueThisWeek",
+			mockToday:      "06/06/2023",
+			dueDate:        "08/06/2023",
+			expectedColour: "dueThisWeek",
+		},
+		{
+			name:           "Monday next week will be dueNextWeek",
 			mockToday:      "06/06/2023",
 			dueDate:        "12/06/2023",
 			expectedColour: "dueNextWeek",
+		},
+		{
+			name:           "Due date on same week day as today but next week will return due next week",
+			mockToday:      "06/06/2023",
+			dueDate:        "14/06/2023",
+			expectedColour: "dueNextWeek",
+		},
+		{
+			name:           "Sunday today due date Monday will return dueNextWeek",
+			mockToday:      "11/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "dueNextWeek",
+		},
+		{
+			name:           "Due date next week will return dueNextWeek",
+			mockToday:      "06/06/2023",
+			dueDate:        "12/06/2023",
+			expectedColour: "dueNextWeek",
+		},
+		{
+			name:           "Due date on same week day as today but in future will return none",
+			mockToday:      "06/06/2023",
+			dueDate:        "23/06/2023",
+			expectedColour: "none",
+		},
+		{
+			name:           "Due date that is not next week but after will return none",
+			mockToday:      "06/06/2023",
+			dueDate:        "19/06/2023",
+			expectedColour: "none",
 		},
 	}
 	for _, test := range tests {
