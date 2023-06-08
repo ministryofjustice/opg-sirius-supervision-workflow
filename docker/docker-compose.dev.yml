@@ -11,7 +11,8 @@ services:
       - /app/web/static
     environment:
       SIRIUS_URL: http://json-server:3000
-      SIRIUS_PUBLIC_URL: http://localhost:8080
+      SIRIUS_PUBLIC_URL: http://localhost:8888
+      PREFIX: /supervision/workflow
 
   json-server:
     build:
