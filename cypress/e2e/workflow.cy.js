@@ -2,11 +2,11 @@ describe("Work flow", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow/");
+      cy.visit("/");
   });
 
   it("homepage redirects to client tasks page", () => {
-    cy.url().should('contain', '/supervision/workflow/client-tasks')
+    cy.url().should('contain', '/client-tasks')
   });
 
   it("shows user that is logged in within banner", () => {
