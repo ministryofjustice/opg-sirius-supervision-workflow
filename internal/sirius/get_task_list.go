@@ -241,7 +241,7 @@ func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
 	case dateFormatted.Before(todayFormatted):
 		return "inThePast"
 
-	case dateFormatted.Equal(getTomorrowsDate):
+	case (dateFormatted.Weekday() == getTomorrowsDay) && (dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate)):
 		return "dueTomorrow"
 
 	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):
