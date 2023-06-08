@@ -1,104 +1,80 @@
 package server
 
 import (
-	"fmt"
+	"errors"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"net/http"
 	"strconv"
 )
 
 type WorkflowVars struct {
-	Path                string
-	XSRFToken           string
-	MyDetails           sirius.UserDetails
-	TaskList            sirius.TaskList
-	PageDetails         sirius.PageDetails
-	LoadTasks           []sirius.ApiTaskTypes
-	TeamSelection       []sirius.ReturnedTeamCollection
-	SelectedTeam        sirius.ReturnedTeamCollection
-	SelectedAssignees   []string
-	SelectedUnassigned  string
-	SelectedTaskTypes   []string
-	SelectedDueDateFrom string
-	SelectedDueDateTo   string
-	AppliedFilters      []string
-	SuccessMessage      string
-	Error               string
-	Errors              sirius.ValidationErrors
+	Path           string
+	XSRFToken      string
+	MyDetails      sirius.UserDetails
+	TeamSelection  []sirius.ReturnedTeamCollection
+	SelectedTeam   sirius.ReturnedTeamCollection
+	SuccessMessage string
+	Errors         sirius.ValidationErrors
 }
 
-func (w WorkflowVars) buildUrl(team string, page int, tasksPerPage int, selectedTaskTypes []string, selectedAssignees []string, selectedUnassigned string, dueDateFrom string, dueDateTo string) string {
-	url := fmt.Sprintf("?team=%s&page=%d&per-page=%d", team, page, tasksPerPage)
-	for _, taskType := range selectedTaskTypes {
-		url += "&task-type=" + taskType
-	}
-	for _, assignee := range selectedAssignees {
-		url += "&assignee=" + assignee
-	}
-	if selectedUnassigned != "" {
-		url += "&unassigned=" + selectedUnassigned
-	}
-	if dueDateFrom != "" {
-		url += "&due-date-from=" + dueDateFrom
-	}
-	if dueDateTo != "" {
-		url += "&due-date-to=" + dueDateTo
-	}
-	return url
+type WorkflowVarsClient interface {
+	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
+	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
 }
 
-func (w WorkflowVars) GetTeamUrl(team string) string {
-	return w.buildUrl(team, 1, w.PageDetails.StoredTaskLimit, w.SelectedTaskTypes, []string{}, "", w.SelectedDueDateFrom, w.SelectedDueDateTo)
-}
+func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId int) (*WorkflowVars, error) {
+	ctx := getContext(r)
 
-func (w WorkflowVars) GetPaginationUrl(page int, tasksPerPage ...int) string {
-	perPage := w.PageDetails.StoredTaskLimit
-	if len(tasksPerPage) > 0 {
-		perPage = tasksPerPage[0]
+	myDetails, err := client.GetCurrentUserDetails(ctx)
+	if err != nil {
+		return nil, err
 	}
-	return w.buildUrl(w.SelectedTeam.Selector, page, perPage, w.SelectedTaskTypes, w.SelectedAssignees, w.SelectedUnassigned, w.SelectedDueDateFrom, w.SelectedDueDateTo)
+
+	teamSelection, err := client.GetTeamsForSelection(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	loggedInTeamId := getLoggedInTeamId(myDetails, defaultTeamId)
+
+	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, defaultTeamId, teamSelection)
+	if err != nil {
+		return nil, err
+	}
+
+	vars := WorkflowVars{
+		Path:          r.URL.Path,
+		XSRFToken:     ctx.XSRFToken,
+		MyDetails:     myDetails,
+		TeamSelection: teamSelection,
+		SelectedTeam:  selectedTeam,
+	}
+
+	return &vars, nil
 }
 
-func (w WorkflowVars) GetClearFiltersUrl() string {
-	return w.buildUrl(w.SelectedTeam.Selector, 1, w.PageDetails.StoredTaskLimit, []string{}, []string{}, "", "", "")
+func getLoggedInTeamId(myDetails sirius.UserDetails, defaultTeamId int) int {
+	if len(myDetails.Teams) < 1 {
+		return defaultTeamId
+	} else {
+		return myDetails.Teams[0].TeamId
+	}
 }
 
-func (w WorkflowVars) GetRemoveFilterUrl(name string, value interface{}) string {
-	taskTypes := w.SelectedTaskTypes
-	assignees := w.SelectedAssignees
-	unassigned := w.SelectedUnassigned
-	dueDateFrom := w.SelectedDueDateFrom
-	dueDateTo := w.SelectedDueDateTo
+func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []sirius.ReturnedTeamCollection) (sirius.ReturnedTeamCollection, error) {
+	selectors := []string{
+		r.URL.Query().Get("team"),
+		strconv.Itoa(loggedInTeamId),
+		strconv.Itoa(defaultTeamId),
+	}
 
-	removeFilter := func(filters []string, filter string) []string {
-		var newFilters []string
-		for _, v := range filters {
-			if v != filter {
-				newFilters = append(newFilters, v)
+	for _, selector := range selectors {
+		for _, team := range teamSelection {
+			if team.Selector == selector {
+				return team, nil
 			}
 		}
-		return newFilters
 	}
 
-	var stringValue string
-	switch v := value.(type) {
-	case int:
-		stringValue = strconv.Itoa(v)
-	case string:
-		stringValue = v
-	}
-
-	switch name {
-	case "task-type":
-		taskTypes = removeFilter(taskTypes, stringValue)
-	case "assignee":
-		assignees = removeFilter(assignees, stringValue)
-	case "unassigned":
-		unassigned = ""
-	case "due-date-from":
-		dueDateFrom = ""
-	case "due-date-to":
-		dueDateTo = ""
-	}
-
-	return w.buildUrl(w.SelectedTeam.Selector, 1, w.PageDetails.StoredTaskLimit, taskTypes, assignees, unassigned, dueDateFrom, dueDateTo)
+	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
 }

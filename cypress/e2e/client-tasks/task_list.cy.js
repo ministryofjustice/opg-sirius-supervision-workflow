@@ -2,7 +2,7 @@ describe("Task list", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow/1");
+      cy.visit("/client-tasks");
   });
 
   it("has column headers", () => {
