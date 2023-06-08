@@ -548,6 +548,18 @@ func TestGetCalculatedDueDateColour(t *testing.T) {
 			expectedColour: "dueTomorrow",
 		},
 		{
+			name:           "Due date on same date as today will not return due tomorrow if its next week",
+			mockToday:      "06/06/2023",
+			dueDate:        "14/06/2023",
+			expectedColour: "dueNextWeek",
+		},
+		{
+			name:           "Due date on same date as today will not return due tomorrow if its next week",
+			mockToday:      "06/06/2023",
+			dueDate:        "23/06/2023",
+			expectedColour: "none",
+		},
+		{
 			name:           "Due date this week but not tomorrow will return amber",
 			mockToday:      "06/06/2023",
 			dueDate:        "08/06/2023",
