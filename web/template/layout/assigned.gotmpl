@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
 {{ define "assigned" }}
 <div class="moj-filter__options" data-filter-name="moj-filter-name-assigned">
 
@@ -20,12 +20,12 @@
         <legend class="hide">Assignees</legend>
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
-            <input class="govuk-checkboxes__input" id="not_assigned" name="unassigned" type="checkbox" value="{{ .SelectedTeam.Selector }}" data-module="filter" {{ if eq .SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
+            <input class="govuk-checkboxes__input" id="not_assigned" name="unassigned" type="checkbox" value="{{ .App.SelectedTeam.Selector }}" data-module="filter" {{ if eq .App.SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
             <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned</label>
           </div>
         </div>
 
-        {{ range .SelectedTeam.GetAssigneesForFilter }}
+        {{ range .App.SelectedTeam.GetAssigneesForFilter }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
               <input class="govuk-checkboxes__input" id="assignee_{{ .ID }}" name="assignee" type="checkbox" value="{{ .ID }}" data-module="filter" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }} />

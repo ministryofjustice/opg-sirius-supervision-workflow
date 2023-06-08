@@ -6,7 +6,7 @@ describe("Filters", () => {
     cy.window().then((win) => {
       win.sessionStorage.clear()
     })
-    cy.visit("/supervision/workflow/1");
+    cy.visit("/supervision/workflow/client-tasks");
 });
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()

@@ -76,10 +76,10 @@ func main() {
 	webDir := getEnv("WEB_DIR", "web")
 	siriusURL := getEnv("SIRIUS_URL", "http://localhost:8080")
 	siriusPublicURL := getEnv("SIRIUS_PUBLIC_URL", "")
-	DefaultWorkflowTeam := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
+	defaultTeamIdString := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
 	prefix := getEnv("PREFIX", "")
 
-	layouts, _ := template.
+	templates := template.
 		New("").
 		Funcs(map[string]interface{}{
 			"join": func(sep string, items []string) string {
@@ -100,14 +100,24 @@ func main() {
 			"sirius": func(s string) string {
 				return siriusPublicURL + s
 			},
-		}).
-		ParseGlob(webDir + "/template/layout/*.gotmpl")
+		})
 
-	files, _ := filepath.Glob(webDir + "/template/*.gotmpl")
+	templateDirPath := webDir + "/template"
+	templateDir, _ := os.Open(templateDirPath)
+	templateDirs, _ := templateDir.Readdir(0)
+	_ = templateDir.Close()
+
+	for _, dir := range templateDirs {
+		if dir.IsDir() {
+			templates, _ = templates.ParseGlob(templateDirPath + "/" + dir.Name() + "/*.gotmpl")
+		}
+	}
+
+	files, _ := filepath.Glob(templateDirPath + "/*.gotmpl")
 	tmpls := map[string]*template.Template{}
 
 	for _, file := range files {
-		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
+		tmpls[filepath.Base(file)] = template.Must(template.Must(templates.Clone()).ParseFiles(file))
 	}
 
 	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
@@ -122,20 +132,17 @@ func main() {
 
 	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
 	if err != nil {
-		sugar.Infow("Error returned by Sirius New Client",
-			"error", err,
-		)
+		sugar.Infow("Error returned by Sirius New Client", "error", err)
 	}
 
-	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
+	defaultTeamId, err := strconv.Atoi(defaultTeamIdString)
 	if err != nil {
 		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
-
 	}
 
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: server.New(serverLogger, client, tmpls, prefix, siriusPublicURL, webDir, defaultWorkflowTeam),
+		Handler: server.New(serverLogger, client, tmpls, prefix, siriusPublicURL, webDir, defaultTeamId),
 	}
 
 	go func() {

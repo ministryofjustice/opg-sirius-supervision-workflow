@@ -27,7 +27,7 @@ describe("Reassign Tasks", () => {
                     }
                 ]
             }})
-        cy.visit("/supervision/workflow/1");
+        cy.visit("/supervision/workflow/client-tasks");
     });
 
     it("shows me a table of tasks", () => {
@@ -38,7 +38,7 @@ describe("Reassign Tasks", () => {
     });
 
     it("allows you to assign a task to a team and retains pagination and filters", () => {
-        cy.visit('/supervision/workflow/1?testVar=testVal');
+        cy.visit('/supervision/workflow/client-tasks?testVar=testVal');
         cy.setCookie("success-route", "999");
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
@@ -48,7 +48,7 @@ describe("Reassign Tasks", () => {
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('1 task(s) have been reassigned')
-        cy.url().should('contain', '/supervision/workflow/1?testVar=testVal')
+        cy.url().should('contain', '/supervision/workflow/client-tasks?testVar=testVal')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {
@@ -76,7 +76,7 @@ describe("Reassign Tasks", () => {
     });
 
     it("Only set the priority for a task", () => {
-        cy.visit('/supervision/workflow/1?testVar=testVal');
+        cy.visit('/supervision/workflow/client-tasks?testVar=testVal');
         cy.setCookie("success-route", "999");
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()

@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
 {{ define "table" }}
 
 <section data-module="manage-tasks" class="moj-manage-tasks">
@@ -21,7 +21,7 @@
         </th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
-        {{ if eq .SelectedTeam.Type "PA" }}
+        {{ if eq .App.SelectedTeam.Type "PA" }}
             <th scope="col" class="govuk-table__header" aria-sort="none">Deputy</th>
         {{ end }}
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
@@ -57,7 +57,7 @@
                 <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
               </label>
             </td>
-            {{ if eq $.SelectedTeam.Type "PA" }}
+            {{ if eq $.App.SelectedTeam.Type "PA" }}
                 <td class="govuk-table__cell">
                   <a {{ if ne .ClientInformation.FeePayer.Id 0 }}href="{{ sirius .ClientInformation.FeePayer.GetURL }}"{{ end }} class="govuk-link">
                       {{ .ClientInformation.FeePayer.DisplayName }}
@@ -75,7 +75,7 @@
             </td>
             <td class="govuk-table__cell">
               <label class="govuk-label" for="assignee-name-and-team">
-                {{ if $.SelectedTeam.HasTeam .ApiTaskAssignee.Id }}
+                {{ if $.App.SelectedTeam.HasTeam .ApiTaskAssignee.Id }}
                   Not assigned
                 {{ else }}
                   {{ .ApiTaskAssignee.CaseManagerName }}
