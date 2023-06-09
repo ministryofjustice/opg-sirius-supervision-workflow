@@ -79,47 +79,6 @@ func main() {
 	defaultTeamIdString := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
 	prefix := getEnv("PREFIX", "")
 
-	templates := template.
-		New("").
-		Funcs(map[string]interface{}{
-			"join": func(sep string, items []string) string {
-				return strings.Join(items, sep)
-			},
-			"contains": func(xs []string, needle string) bool {
-				for _, x := range xs {
-					if x == needle {
-						return true
-					}
-				}
-
-				return false
-			},
-			"prefix": func(s string) string {
-				return prefix + s
-			},
-			"sirius": func(s string) string {
-				return siriusPublicURL + s
-			},
-		})
-
-	templateDirPath := webDir + "/template"
-	templateDir, _ := os.Open(templateDirPath)
-	templateDirs, _ := templateDir.Readdir(0)
-	_ = templateDir.Close()
-
-	for _, dir := range templateDirs {
-		if dir.IsDir() {
-			templates, _ = templates.ParseGlob(templateDirPath + "/" + dir.Name() + "/*.gotmpl")
-		}
-	}
-
-	files, _ := filepath.Glob(templateDirPath + "/*.gotmpl")
-	tmpls := map[string]*template.Template{}
-
-	for _, file := range files {
-		tmpls[filepath.Base(file)] = template.Must(template.Must(templates.Clone()).ParseFiles(file))
-	}
-
 	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
@@ -140,9 +99,11 @@ func main() {
 		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
 	}
 
+	templates := createTemplates(webDir, prefix, siriusPublicURL)
+
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: server.New(serverLogger, client, tmpls, prefix, siriusPublicURL, webDir, defaultTeamId),
+		Handler: server.New(serverLogger, client, templates, prefix, siriusPublicURL, webDir, defaultTeamId),
 	}
 
 	go func() {
@@ -178,4 +139,47 @@ func getEnv(key, def string) string {
 	}
 
 	return def
+}
+
+func createTemplates(webDir string, prefix string, siriusPublicURL string) map[string]*template.Template {
+	templates := map[string]*template.Template{}
+	templateFunctions := map[string]interface{}{
+		"join": func(sep string, items []string) string {
+			return strings.Join(items, sep)
+		},
+		"contains": func(xs []string, needle string) bool {
+			for _, x := range xs {
+				if x == needle {
+					return true
+				}
+			}
+
+			return false
+		},
+		"prefix": func(s string) string {
+			return prefix + s
+		},
+		"sirius": func(s string) string {
+			return siriusPublicURL + s
+		},
+	}
+
+	templateDirPath := webDir + "/template"
+	templateDir, _ := os.Open(templateDirPath)
+	templateDirs, _ := templateDir.Readdir(0)
+	_ = templateDir.Close()
+
+	mainTemplates, _ := filepath.Glob(templateDirPath + "/*.gotmpl")
+
+	for _, file := range mainTemplates {
+		tmpl := template.New(filepath.Base(file)).Funcs(templateFunctions)
+		for _, dir := range templateDirs {
+			if dir.IsDir() {
+				tmpl, _ = tmpl.ParseGlob(templateDirPath + "/" + dir.Name() + "/*.gotmpl")
+			}
+		}
+		templates[tmpl.Name()] = template.Must(tmpl.ParseFiles(file))
+	}
+
+	return templates
 }

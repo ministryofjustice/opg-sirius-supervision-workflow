@@ -132,7 +132,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		vars.AppliedFilters = sirius.GetAppliedFilters(app.SelectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 		vars.LoadTasks = calculateTaskCounts(taskTypes, taskList)
 
-		return tmpl.ExecuteTemplate(w, "page", vars)
+		return tmpl.Execute(w, vars)
 	}
 }
 

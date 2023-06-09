@@ -1,59 +1,36 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
-{{ template "page" . }}
+{{ template "tab" . }}
 
-{{ define "title" }} OPG Sirius Workflow {{ end }}
+{{ define "title" }}Client tasks{{ end }}
 
-{{ define "main" }}
-
+{{ define "tab-content" }}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div id="filters-column" class="govuk-grid-column-one-quarter">
+        {{ template "client-tasks-filters" . }}
+    </div>
+
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
+              {{ template "client-tasks-pagination" . }}
+          </nav>
+        </div>
+      </div>
 
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full moj-team-banner">
-            {{ template "team-selection" . }}
-        </div>
         <div class="govuk-grid-column-full">
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-              {{ template "sub-navigation" . }}
-            </div>
-          </div>
-          <div class="govuk-grid-row">
-            <div class="govuk-grid-column-three-quarters">
-              {{ template "error-summary" .App.Errors }}
-            </div>
-          </div>
-          <div class="govuk-grid-row">
-            <div id="filters-column" class="govuk-grid-column-one-quarter">
-              {{ template "client-tasks-filters" . }}
-            </div>
+          <form method="post">
+              {{ template "client-tasks-list" . }}
+          </form>
+        </div>
+      </div>
 
-            <div class="govuk-grid-column-three-quarters">
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                  <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
-                    {{ template "pagination" . }}
-                  </nav>
-                </div>
-              </div>
-
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                  <form method="post">
-                    {{ template "table" . }}
-                  </form>
-                </div>
-              </div>
-
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                  <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
-                    {{ template "pagination" . }}
-                  </nav>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
+              {{ template "client-tasks-pagination" . }}
+          </nav>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ type Client interface {
 }
 
 type Template interface {
-	ExecuteTemplate(io.Writer, string, interface{}) error
+	Execute(wr io.Writer, data any) error
 }
 
 func New(logger *zap.Logger, client Client, templates map[string]*template.Template, prefix, siriusPublicURL, webDir string, defaultTeamId int) http.Handler {
