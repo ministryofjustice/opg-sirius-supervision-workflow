@@ -82,7 +82,7 @@ func wrapHandler(client Client, logger *zap.Logger, tmplError Template, prefix, 
 				w.WriteHeader(code)
 				errVars.Code = code
 				errVars.Error = err.Error()
-				err = tmplError.ExecuteTemplate(w, "page", errVars)
+				err = tmplError.Execute(w, errVars)
 
 				if err != nil {
 					sugar.Errorw("Failed to render error template", err)
