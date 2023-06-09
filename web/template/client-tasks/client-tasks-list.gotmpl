@@ -1,9 +1,9 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
-{{ define "table" }}
+{{ define "client-tasks-list" }}
 
 <section data-module="manage-tasks" class="moj-manage-tasks">
 
-  {{ template "edit-panel" . }}
+  {{ template "client-tasks-edit-panel" . }}
 
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
