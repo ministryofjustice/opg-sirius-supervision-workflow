@@ -1,9 +1,12 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "tabs" }}
   <nav class="moj-sub-navigation" aria-label="Sub navigation">
     <ul class="moj-sub-navigation__list">
-      <li class="moj-sub-navigation__item">
-        <a class="moj-sub-navigation__link" aria-current="page">Client tasks</a>
-      </li>
+      {{ range .Tabs }}
+        <li class="moj-sub-navigation__item">
+          <a class="moj-sub-navigation__link" {{ if $.IsTabSelected . }}aria-current="page" {{ else }}href="{{ $.GetTabURL . }}"{{ end }}>{{ .Title }}</a>
+        </li>
+      {{ end }}
     </ul>
   </nav>
 {{ end }}

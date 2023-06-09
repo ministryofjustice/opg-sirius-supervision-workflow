@@ -5,6 +5,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type WorkflowVars struct {
@@ -13,8 +14,14 @@ type WorkflowVars struct {
 	MyDetails      sirius.UserDetails
 	TeamSelection  []sirius.ReturnedTeamCollection
 	SelectedTeam   sirius.ReturnedTeamCollection
+	Tabs           []Tab
 	SuccessMessage string
 	Errors         sirius.ValidationErrors
+}
+
+type Tab struct {
+	Title    string
+	basePath string
 }
 
 type WorkflowVarsClient interface {
@@ -48,6 +55,16 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId i
 		MyDetails:     myDetails,
 		TeamSelection: teamSelection,
 		SelectedTeam:  selectedTeam,
+		Tabs: []Tab{
+			{
+				Title:    "Client tasks",
+				basePath: "client-tasks",
+			},
+			{
+				Title:    "Caseload",
+				basePath: "caseload",
+			},
+		},
 	}
 
 	return &vars, nil
@@ -77,4 +94,12 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	}
 
 	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
+}
+
+func (w WorkflowVars) IsTabSelected(tab Tab) bool {
+	return strings.HasSuffix(w.Path, tab.basePath)
+}
+
+func (w WorkflowVars) GetTabURL(tab Tab) string {
+	return tab.basePath + "?team=" + w.SelectedTeam.Selector
 }
