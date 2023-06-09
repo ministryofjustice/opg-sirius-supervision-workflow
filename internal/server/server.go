@@ -31,6 +31,10 @@ func New(logger *zap.Logger, client Client, templates map[string]*template.Templ
 		wrap(
 			clientTasks(client, templates["client-tasks.gotmpl"])))
 
+	mux.Handle("/caseload",
+		wrap(
+			caseload(client, templates["caseload.gotmpl"])))
+
 	mux.Handle("/health-check", healthCheck())
 
 	static := http.FileServer(http.Dir(webDir + "/static"))
