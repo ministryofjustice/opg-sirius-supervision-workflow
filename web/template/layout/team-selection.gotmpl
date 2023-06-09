@@ -1,14 +1,13 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "team-selection" }}
   <div class="moj-team-banner__container govuk-grid-column-full">
-    <h1 class="govuk-heading-m" id="{{ .SelectedTeam.Name }}">{{ .SelectedTeam.Name }}</h1>
+    <h1 class="govuk-heading-m" id="{{ .App.SelectedTeam.Name }}">{{ .App.SelectedTeam.Name }}</h1>
     <div class="govuk-form-group">
       <label class="govuk-label">
         Change view
       </label>
       <select class="govuk-select" data-module="jump-menu" name="team" aria-label="Change view">
-        {{ range .TeamSelection }}
-          <option value="{{ $.GetTeamUrl .Selector }}" name="team-option" label="{{ .Name }}" {{ if eq .Selector $.SelectedTeam.Selector }}selected{{ end }}>{{ .Name }}</option>
+        {{ range .App.TeamSelection }}
+          <option value="{{ $.GetTeamUrl .Selector }}" name="team-option" label="{{ .Name }}" {{ if eq .Selector $.App.SelectedTeam.Selector }}selected{{ end }}>{{ .Name }}</option>
         {{ end }}
       </select>
     </div>

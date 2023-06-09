@@ -24,11 +24,7 @@
 
       <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-      {{ if .Error }}
-        {{ template "error-header" . }}
-      {{ else }}
-        {{ template "header" . }}
-      {{ end }}
+      {{ template "header" . }}
 
       <div class="govuk-width-container app-width-container">
         <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">

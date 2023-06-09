@@ -2,7 +2,7 @@ describe("Pagination", () => {
   beforeEach(() => {
     cy.setCookie("Other", "other");
     cy.setCookie("XSRF-TOKEN", "abcde");
-    cy.visit("/supervision/workflow/1");
+    cy.visit("/client-tasks");
   });
 
   describe("First page, ellipses and final page", () => {
