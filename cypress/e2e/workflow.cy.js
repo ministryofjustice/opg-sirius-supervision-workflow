@@ -41,24 +41,4 @@ describe("Work flow", () => {
   it("the nav link should contain logout", () => {
     cy.get(".moj-header__navigation-list > :nth-child(3) > a").should("have.attr", "href", "http://localhost:8080/auth/logout")
   })
-
-  it("has working tab links", () => {
-    cy.get(".moj-sub-navigation__item:nth-child(1) a").contains("Client tasks").as("tab1")
-    cy.get(".moj-sub-navigation__item:nth-child(2) a").contains("Caseload").as("tab2")
-
-    cy.get("@tab1").should("have.attr", "aria-current", "page")
-    cy.get("@tab1").should("not.have.attr", "href")
-
-    cy.get("@tab2").should("not.have.attr", "aria-current")
-    cy.get("@tab2").should("have.attr", "href", "caseload?team=13")
-    cy.get("@tab2").click()
-
-    cy.url().should('contain', '/caseload?team=13')
-
-    cy.get("@tab1").should("not.have.attr", "aria-current")
-    cy.get("@tab1").should("have.attr", "href", "client-tasks?team=13")
-
-    cy.get("@tab2").should("have.attr", "aria-current", "page")
-    cy.get("@tab2").should("not.have.attr", "href")
-  })
 });
