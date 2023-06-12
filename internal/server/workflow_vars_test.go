@@ -13,7 +13,7 @@ type mockWorkflowVarsClient struct {
 	lastCtx           sirius.Context
 	err               error
 	userData          sirius.UserDetails
-	teamSelectionData []sirius.ReturnedTeamCollection
+	teamSelectionData []sirius.Team
 }
 
 func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
@@ -26,7 +26,7 @@ func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (siri
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]sirius.ReturnedTeamCollection, error) {
+func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]sirius.Team, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -48,7 +48,7 @@ var mockUserDetailsData = sirius.UserDetails{
 	},
 }
 
-var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
+var mockTeamSelectionData = []sirius.Team{
 	{
 		Id: 13,
 		Members: []sirius.TeamMember{
@@ -92,7 +92,7 @@ func TestGetLoggedInTeamId(t *testing.T) {
 }
 
 func TestGetSelectedTeam(t *testing.T) {
-	teams := []sirius.ReturnedTeamCollection{
+	teams := []sirius.Team{
 		{Selector: "1"},
 		{Selector: "13"},
 		{Selector: "2"},
@@ -103,7 +103,7 @@ func TestGetSelectedTeam(t *testing.T) {
 		url            string
 		loggedInTeamId int
 		defaultTeamId  int
-		expectedTeam   sirius.ReturnedTeamCollection
+		expectedTeam   sirius.Team
 		expectedError  error
 	}{
 		{
@@ -135,7 +135,7 @@ func TestGetSelectedTeam(t *testing.T) {
 			url:            "?team=16",
 			loggedInTeamId: 3,
 			defaultTeamId:  5,
-			expectedTeam:   sirius.ReturnedTeamCollection{},
+			expectedTeam:   sirius.Team{},
 			expectedError:  errors.New("invalid team selection"),
 		},
 	}

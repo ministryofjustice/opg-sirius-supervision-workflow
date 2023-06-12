@@ -12,8 +12,8 @@ type WorkflowVars struct {
 	Path           string
 	XSRFToken      string
 	MyDetails      sirius.UserDetails
-	TeamSelection  []sirius.ReturnedTeamCollection
-	SelectedTeam   sirius.ReturnedTeamCollection
+	TeamSelection  []sirius.Team
+	SelectedTeam   sirius.Team
 	Tabs           []Tab
 	SuccessMessage string
 	Errors         sirius.ValidationErrors
@@ -26,7 +26,7 @@ type Tab struct {
 
 type WorkflowVarsClient interface {
 	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
+	GetTeamsForSelection(sirius.Context) ([]sirius.Team, error)
 }
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
@@ -82,7 +82,7 @@ func getLoggedInTeamId(myDetails sirius.UserDetails, defaultTeamId int) int {
 	}
 }
 
-func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []sirius.ReturnedTeamCollection) (sirius.ReturnedTeamCollection, error) {
+func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []sirius.Team) (sirius.Team, error) {
 	selectors := []string{
 		r.URL.Query().Get("team"),
 		strconv.Itoa(loggedInTeamId),
@@ -97,7 +97,7 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 		}
 	}
 
-	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
+	return sirius.Team{}, errors.New("invalid team selection")
 }
 
 func (w WorkflowVars) IsTabSelected(tab Tab) bool {

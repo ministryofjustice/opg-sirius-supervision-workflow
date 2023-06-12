@@ -18,7 +18,7 @@ type caseloadURLFields struct {
 func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	return CaseloadVars{
 		App: WorkflowVars{
-			SelectedTeam: sirius.ReturnedTeamCollection{Selector: fields.SelectedTeam},
+			SelectedTeam: sirius.Team{Selector: fields.SelectedTeam},
 		},
 	}
 }
