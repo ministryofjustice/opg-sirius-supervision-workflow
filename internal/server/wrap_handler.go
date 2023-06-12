@@ -38,14 +38,14 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client Client, logger *zap.Logger, tmplError Template, prefix, siriusURL string, defaultTeamId int) func(next Handler) http.Handler {
+func wrapHandler(client Client, logger *zap.Logger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 
 			var errVars ErrorVars
 
-			vars, err := NewWorkflowVars(client, r, defaultTeamId)
+			vars, err := NewWorkflowVars(client, r, envVars)
 			if err == nil {
 				errVars.App = *vars
 				err = next(*vars, w, r)
@@ -61,12 +61,12 @@ func wrapHandler(client Client, logger *zap.Logger, tmplError Template, prefix, 
 
 			if err != nil {
 				if err == sirius.ErrUnauthorized {
-					http.Redirect(w, r, siriusURL+"/auth", http.StatusFound)
+					http.Redirect(w, r, envVars.SiriusURL+"/auth", http.StatusFound)
 					return
 				}
 
 				if redirect, ok := err.(RedirectError); ok {
-					http.Redirect(w, r, prefix+redirect.To(), http.StatusFound)
+					http.Redirect(w, r, envVars.Prefix+redirect.To(), http.StatusFound)
 					return
 				}
 

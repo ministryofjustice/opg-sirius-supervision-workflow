@@ -1,0 +1,38 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadVars*/ -}}
+{{ template "tab" . }}
+
+{{ define "title" }}Caseload{{ end }}
+
+{{ define "tab-content" }}
+  <div class="govuk-grid-row">
+    <div id="filters-column" class="govuk-grid-column-one-quarter">
+      Filters go here...
+    </div>
+
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
+            Pagination goes here...
+          </nav>
+        </div>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <form method="post">
+            List goes here...
+          </form>
+        </div>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
+            Pagination goes here...
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

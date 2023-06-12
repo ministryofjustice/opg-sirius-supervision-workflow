@@ -5,6 +5,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type WorkflowVars struct {
@@ -13,8 +14,14 @@ type WorkflowVars struct {
 	MyDetails      sirius.UserDetails
 	TeamSelection  []sirius.ReturnedTeamCollection
 	SelectedTeam   sirius.ReturnedTeamCollection
+	Tabs           []Tab
 	SuccessMessage string
 	Errors         sirius.ValidationErrors
+}
+
+type Tab struct {
+	Title    string
+	basePath string
 }
 
 type WorkflowVarsClient interface {
@@ -22,7 +29,7 @@ type WorkflowVarsClient interface {
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
 }
 
-func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId int) (*WorkflowVars, error) {
+func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
 	ctx := getContext(r)
 
 	myDetails, err := client.GetCurrentUserDetails(ctx)
@@ -35,9 +42,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId i
 		return nil, err
 	}
 
-	loggedInTeamId := getLoggedInTeamId(myDetails, defaultTeamId)
+	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultTeamId)
 
-	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, defaultTeamId, teamSelection)
+	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultTeamId, teamSelection)
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +55,20 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId i
 		MyDetails:     myDetails,
 		TeamSelection: teamSelection,
 		SelectedTeam:  selectedTeam,
+		Tabs: []Tab{
+			{
+				Title:    "Client tasks",
+				basePath: "client-tasks",
+			},
+		},
+	}
+
+	if envVars.ShowCaseload {
+		vars.Tabs = append(vars.Tabs,
+			Tab{
+				Title:    "Caseload",
+				basePath: "caseload",
+			})
 	}
 
 	return &vars, nil
@@ -77,4 +98,12 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	}
 
 	return sirius.ReturnedTeamCollection{}, errors.New("invalid team selection")
+}
+
+func (w WorkflowVars) IsTabSelected(tab Tab) bool {
+	return strings.HasSuffix(w.Path, tab.basePath)
+}
+
+func (w WorkflowVars) GetTabURL(tab Tab) string {
+	return tab.basePath + "?team=" + w.SelectedTeam.Selector
 }
