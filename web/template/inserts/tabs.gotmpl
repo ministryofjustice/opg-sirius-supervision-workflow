@@ -4,7 +4,7 @@
     <ul class="moj-sub-navigation__list">
       {{ range .Tabs }}
         <li class="moj-sub-navigation__item">
-          <a class="moj-sub-navigation__link" {{ if $.IsTabSelected . }}aria-current="page" {{ else }}href="{{ $.GetTabURL . }}"{{ end }}>{{ .Title }}</a>
+          <a class="moj-sub-navigation__link" {{ if .IsSelected $ }}aria-current="page" {{ else }}href="{{ .GetURL $.SelectedTeam }}"{{ end }}>{{ .Title }}</a>
         </li>
       {{ end }}
     </ul>

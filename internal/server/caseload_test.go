@@ -30,12 +30,52 @@ func TestCaseload(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
-	app := WorkflowVars{Path: "test-path"}
+	app := WorkflowVars{
+		Path:            "test-path",
+		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "LAY"},
+		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+	}
 	err := caseload(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
 	assert.Equal(t, CaseloadVars{App: app}, template.lastVars)
+}
+
+func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
+	client := &mockCaseloadClient{}
+	template := &mockTemplates{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	app := WorkflowVars{
+		Path:            "test-path",
+		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "PRO", Selector: "19"},
+		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+	}
+	err := caseload(client, template)(app, w, r)
+
+	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
+	assert.Equal(t, 0, template.count)
+}
+
+func TestCaseload_RedirectsToClientTasksWhenFeatureFlagIsOff(t *testing.T) {
+	client := &mockCaseloadClient{}
+	template := &mockTemplates{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	app := WorkflowVars{
+		Path:            "test-path",
+		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "LAY", Selector: "19"},
+		EnvironmentVars: EnvironmentVars{ShowCaseload: false},
+	}
+	err := caseload(client, template)(app, w, r)
+
+	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
+	assert.Equal(t, 0, template.count)
 }
 
 func TestCaseload_MethodNotAllowed(t *testing.T) {
@@ -83,7 +123,8 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createCaseloadVars(tt.fields)
-			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(tt.team), "GetTeamUrl(%v)", tt.team)
+			team := sirius.ReturnedTeamCollection{Selector: tt.team}
+			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}
 }
