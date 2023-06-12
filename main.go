@@ -25,11 +25,10 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
+func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 	resource, err := ecs.NewResourceDetector().Detect(ctx)
-	sugar := logger.Sugar()
 	if err != nil {
-		sugar.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx,
@@ -38,7 +37,7 @@ func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
 		otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
-		sugar.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	idg := xray.NewIDGenerator()
@@ -54,27 +53,19 @@ func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
 
 	return func() {
 		if err := tp.Shutdown(ctx); err != nil {
-			sugar.Fatal(err)
+			logger.Fatal(err)
 		}
 	}
 }
 
 func main() {
-	serverLogger, err := zap.NewProduction()
-	sugar := serverLogger.Sugar()
+	logger := zap.Must(zap.NewProduction(zap.Fields(zap.String("service_name", "opg-sirius-workflow")))).Sugar()
+	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow")
 
-	if err != nil {
-		sugar.Infow("Error creating logger: %v\n", err)
-	}
-
-	if err := serverLogger.Sync(); err != nil {
-		sugar.Infow("Error syncing logger: %v\n", err)
-	}
-
-	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	defer func() { _ = logger.Sync() }()
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
-		shutdown := initTracerProvider(context.Background(), serverLogger)
+		shutdown := initTracerProvider(context.Background(), logger)
 		defer shutdown()
 	}
 
@@ -83,43 +74,43 @@ func main() {
 
 	envVars, err := server.NewEnvironmentVars()
 	if err != nil {
-		sugar.Fatalw("Error creating EnvironmentVars", "error", err)
+		logger.Fatalw("Error creating EnvironmentVars", "error", err)
 	}
 
 	client, err := sirius.NewClient(http.DefaultClient, envVars.SiriusURL, apiCallLogger)
 	if err != nil {
-		sugar.Fatalw("Error returned by Sirius New Client", "error", err)
+		logger.Fatalw("Error returned by Sirius New Client", "error", err)
 	}
 
 	templates := createTemplates(envVars)
 
 	server := &http.Server{
 		Addr:    ":" + envVars.Port,
-		Handler: server.New(serverLogger, client, templates, envVars),
+		Handler: server.New(logger, client, templates, envVars),
 	}
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			sugar.Infow("Error returned by server.ListenAndServe()",
+			logger.Infow("Error returned by server.ListenAndServe()",
 				"error", err,
 			)
-			sugar.Fatal(err)
+			logger.Fatal(err)
 		}
 	}()
 
-	sugar.Infow("Running at :" + envVars.Port)
+	logger.Infow("Running at :" + envVars.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-c
-	sugar.Infow("signal received: ", sig)
+	logger.Infow("signal received: ", sig)
 
 	tc, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(tc); err != nil {
-		sugar.Infow("Error returned by server.Shutdown",
+		logger.Infow("Error returned by server.Shutdown",
 			"error", err,
 		)
 	}
