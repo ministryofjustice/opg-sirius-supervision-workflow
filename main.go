@@ -17,7 +17,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -72,13 +71,6 @@ func main() {
 		sugar.Infow("Error syncing logger: %v\n", err)
 	}
 
-	port := getEnv("PORT", "1234")
-	webDir := getEnv("WEB_DIR", "web")
-	siriusURL := getEnv("SIRIUS_URL", "http://localhost:8080")
-	siriusPublicURL := getEnv("SIRIUS_PUBLIC_URL", "")
-	defaultTeamIdString := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
-	prefix := getEnv("PREFIX", "")
-
 	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
@@ -89,21 +81,21 @@ func main() {
 	httpClient := http.DefaultClient
 	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
+	envVars, err := server.NewEnvironmentVars()
 	if err != nil {
-		sugar.Infow("Error returned by Sirius New Client", "error", err)
+		sugar.Fatalw("Error creating EnvironmentVars", "error", err)
 	}
 
-	defaultTeamId, err := strconv.Atoi(defaultTeamIdString)
+	client, err := sirius.NewClient(http.DefaultClient, envVars.SiriusURL, apiCallLogger)
 	if err != nil {
-		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
+		sugar.Fatalw("Error returned by Sirius New Client", "error", err)
 	}
 
-	templates := createTemplates(webDir, prefix, siriusPublicURL)
+	templates := createTemplates(envVars)
 
 	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: server.New(serverLogger, client, templates, prefix, siriusPublicURL, webDir, defaultTeamId),
+		Addr:    ":" + envVars.Port,
+		Handler: server.New(serverLogger, client, templates, envVars),
 	}
 
 	go func() {
@@ -115,7 +107,7 @@ func main() {
 		}
 	}()
 
-	sugar.Infow("Running at :" + port)
+	sugar.Infow("Running at :" + envVars.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
@@ -133,15 +125,7 @@ func main() {
 	}
 }
 
-func getEnv(key, def string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-
-	return def
-}
-
-func createTemplates(webDir string, prefix string, siriusPublicURL string) map[string]*template.Template {
+func createTemplates(envVars server.EnvironmentVars) map[string]*template.Template {
 	templates := map[string]*template.Template{}
 	templateFunctions := map[string]interface{}{
 		"join": func(sep string, items []string) string {
@@ -157,14 +141,14 @@ func createTemplates(webDir string, prefix string, siriusPublicURL string) map[s
 			return false
 		},
 		"prefix": func(s string) string {
-			return prefix + s
+			return envVars.Prefix + s
 		},
 		"sirius": func(s string) string {
-			return siriusPublicURL + s
+			return envVars.SiriusPublicURL + s
 		},
 	}
 
-	templateDirPath := webDir + "/template"
+	templateDirPath := envVars.WebDir + "/template"
 	templateDir, _ := os.Open(templateDirPath)
 	templateDirs, _ := templateDir.Readdir(0)
 	_ = templateDir.Close()

@@ -57,7 +57,8 @@ var mockTeamSelectionData = []sirius.ReturnedTeamCollection{
 				Name: "LayTeam1 User11",
 			},
 		},
-		Name: "Lay Team 1 - (Supervision)",
+		Name:     "Lay Team 1 - (Supervision)",
+		Selector: "13",
 	},
 }
 
@@ -65,8 +66,8 @@ func TestNewWorkflowVars(t *testing.T) {
 	client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: mockTeamSelectionData}
 	r, _ := http.NewRequest("GET", "/path", nil)
 
-	defaultTeamId := 19
-	vars, err := NewWorkflowVars(client, r, defaultTeamId)
+	envVars := EnvironmentVars{DefaultTeamId: 19}
+	vars, err := NewWorkflowVars(client, r, envVars)
 
 	assert.Nil(t, err)
 	assert.Equal(t, WorkflowVars{
@@ -77,6 +78,7 @@ func TestNewWorkflowVars(t *testing.T) {
 		SelectedTeam:   mockTeamSelectionData[0],
 		SuccessMessage: "",
 		Errors:         nil,
+		Tabs:           vars.Tabs,
 	}, *vars)
 }
 
@@ -145,4 +147,17 @@ func TestGetSelectedTeam(t *testing.T) {
 			assert.Equal(t, test.expectedError, err)
 		})
 	}
+}
+
+func TestWorkflowVars_IsTabSelected(t *testing.T) {
+	w := WorkflowVars{Path: "test-path"}
+
+	assert.True(t, w.IsTabSelected(Tab{basePath: "test-path"}))
+	assert.False(t, w.IsTabSelected(Tab{basePath: "other-path"}))
+}
+
+func TestWorkflowVars_GetTabURL(t *testing.T) {
+	w := WorkflowVars{SelectedTeam: mockTeamSelectionData[0]}
+
+	assert.Equal(t, "test-path?team=13", w.GetTabURL(Tab{basePath: "test-path"}))
 }
