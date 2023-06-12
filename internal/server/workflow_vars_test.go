@@ -66,8 +66,8 @@ func TestNewWorkflowVars(t *testing.T) {
 	client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: mockTeamSelectionData}
 	r, _ := http.NewRequest("GET", "/path", nil)
 
-	defaultTeamId := 19
-	vars, err := NewWorkflowVars(client, r, defaultTeamId)
+	envVars := EnvironmentVars{DefaultTeamId: 19}
+	vars, err := NewWorkflowVars(client, r, envVars)
 
 	assert.Nil(t, err)
 	assert.Equal(t, WorkflowVars{

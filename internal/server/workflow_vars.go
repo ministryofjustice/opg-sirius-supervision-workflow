@@ -29,7 +29,7 @@ type WorkflowVarsClient interface {
 	GetTeamsForSelection(sirius.Context) ([]sirius.ReturnedTeamCollection, error)
 }
 
-func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId int) (*WorkflowVars, error) {
+func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
 	ctx := getContext(r)
 
 	myDetails, err := client.GetCurrentUserDetails(ctx)
@@ -42,9 +42,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId i
 		return nil, err
 	}
 
-	loggedInTeamId := getLoggedInTeamId(myDetails, defaultTeamId)
+	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultTeamId)
 
-	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, defaultTeamId, teamSelection)
+	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultTeamId, teamSelection)
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +60,15 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, defaultTeamId i
 				Title:    "Client tasks",
 				basePath: "client-tasks",
 			},
-			{
+		},
+	}
+
+	if envVars.ShowCaseload {
+		vars.Tabs = append(vars.Tabs,
+			Tab{
 				Title:    "Caseload",
 				basePath: "caseload",
-			},
-		},
+			})
 	}
 
 	return &vars, nil
