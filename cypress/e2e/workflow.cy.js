@@ -1,4 +1,4 @@
-describe("Work flow", () => {
+describe("Workflow", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
@@ -6,7 +6,7 @@ describe("Work flow", () => {
   });
 
   it("homepage redirects to client tasks page", () => {
-    cy.visit("/caseload");
+    cy.visit("/caseload?team=21");
     cy.url().should('not.contain', '/client-tasks')
     cy.visit("/");
     cy.url().should('contain', '/client-tasks')
