@@ -71,14 +71,15 @@ func TestNewWorkflowVars(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, WorkflowVars{
-		Path:           "/path",
-		XSRFToken:      "",
-		MyDetails:      mockUserDetailsData,
-		TeamSelection:  mockTeamSelectionData,
-		SelectedTeam:   mockTeamSelectionData[0],
-		SuccessMessage: "",
-		Errors:         nil,
-		Tabs:           vars.Tabs,
+		Path:            "/path",
+		XSRFToken:       "",
+		MyDetails:       mockUserDetailsData,
+		TeamSelection:   mockTeamSelectionData,
+		SelectedTeam:    mockTeamSelectionData[0],
+		SuccessMessage:  "",
+		Errors:          nil,
+		Tabs:            vars.Tabs,
+		EnvironmentVars: envVars,
 	}, *vars)
 }
 
@@ -149,15 +150,18 @@ func TestGetSelectedTeam(t *testing.T) {
 	}
 }
 
-func TestWorkflowVars_IsTabSelected(t *testing.T) {
-	w := WorkflowVars{Path: "test-path"}
+func TestTab_GetURL(t *testing.T) {
+	tab := Tab{basePath: "test-path"}
+	team := mockTeamSelectionData[0]
 
-	assert.True(t, w.IsTabSelected(Tab{basePath: "test-path"}))
-	assert.False(t, w.IsTabSelected(Tab{basePath: "other-path"}))
+	assert.Equal(t, "test-path?team=13", tab.GetURL(team))
 }
 
-func TestWorkflowVars_GetTabURL(t *testing.T) {
-	w := WorkflowVars{SelectedTeam: mockTeamSelectionData[0]}
+func TestTab_IsSelected(t *testing.T) {
+	app := WorkflowVars{Path: "test-path"}
+	selectedTab := Tab{basePath: "test-path"}
+	unselectedTab := Tab{basePath: "other-path"}
 
-	assert.Equal(t, "test-path?team=13", w.GetTabURL(Tab{basePath: "test-path"}))
+	assert.True(t, selectedTab.IsSelected(app))
+	assert.False(t, unselectedTab.IsSelected(app))
 }

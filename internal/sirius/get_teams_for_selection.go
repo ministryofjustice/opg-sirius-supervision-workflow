@@ -69,6 +69,14 @@ func (t Team) HasTeam(id int) bool {
 	return false
 }
 
+func (t Team) IsLay() bool {
+	return t.Type == "LAY" || t.Selector == "lay-team"
+}
+
+func (t Team) IsPro() bool {
+	return t.Type == "PRO" || t.Selector == "pro-team"
+}
+
 func (m TeamMember) IsSelected(selectedAssignees []string) bool {
 	for _, a := range selectedAssignees {
 		id, _ := strconv.Atoi(a)
@@ -145,10 +153,10 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
 			})
 		}
 
-		if t.TeamType.Handle == "LAY" {
+		if team.IsLay() {
 			layTeam.Members = append(layTeam.Members, team.Members...)
 			layTeam.Teams = append(layTeam.Teams, team)
-		} else if t.TeamType.Handle == "PRO" {
+		} else if team.IsPro() {
 			proTeam.Members = append(proTeam.Members, team.Members...)
 			proTeam.Teams = append(proTeam.Teams, team)
 		}

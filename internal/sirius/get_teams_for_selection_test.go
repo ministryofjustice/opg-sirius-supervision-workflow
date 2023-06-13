@@ -221,3 +221,15 @@ func TestTeamMember_IsSelected(t *testing.T) {
 	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team ID 10 is not selected")
 	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
 }
+
+func TestTeam_IsLay(t *testing.T) {
+	assert.True(t, Team{Type: "LAY"}.IsLay())
+	assert.True(t, Team{Type: "", Selector: "lay-team"}.IsLay())
+	assert.False(t, Team{Type: "NOT LAY"}.IsLay())
+}
+
+func TestTeam_IsPro(t *testing.T) {
+	assert.True(t, Team{Type: "PRO"}.IsPro())
+	assert.True(t, Team{Type: "", Selector: "pro-team"}.IsPro())
+	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
+}

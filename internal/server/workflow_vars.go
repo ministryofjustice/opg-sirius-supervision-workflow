@@ -9,14 +9,15 @@ import (
 )
 
 type WorkflowVars struct {
-	Path           string
-	XSRFToken      string
-	MyDetails      sirius.UserDetails
-	TeamSelection  []sirius.Team
-	SelectedTeam   sirius.Team
-	Tabs           []Tab
-	SuccessMessage string
-	Errors         sirius.ValidationErrors
+	Path            string
+	XSRFToken       string
+	MyDetails       sirius.UserDetails
+	TeamSelection   []sirius.Team
+	SelectedTeam    sirius.Team
+	Tabs            []Tab
+	SuccessMessage  string
+	Errors          sirius.ValidationErrors
+	EnvironmentVars EnvironmentVars
 }
 
 type Tab struct {
@@ -61,9 +62,10 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 				basePath: "client-tasks",
 			},
 		},
+		EnvironmentVars: envVars,
 	}
 
-	if envVars.ShowCaseload {
+	if selectedTeam.IsLay() && envVars.ShowCaseload {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
 				Title:    "Caseload",
@@ -100,10 +102,10 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	return sirius.Team{}, errors.New("invalid team selection")
 }
 
-func (w WorkflowVars) IsTabSelected(tab Tab) bool {
-	return strings.HasSuffix(w.Path, tab.basePath)
+func (t Tab) GetURL(team sirius.Team) string {
+	return t.basePath + "?team=" + team.Selector
 }
 
-func (w WorkflowVars) GetTabURL(tab Tab) string {
-	return tab.basePath + "?team=" + w.SelectedTeam.Selector
+func (t Tab) IsSelected(app WorkflowVars) bool {
+	return strings.HasSuffix(app.Path, t.basePath)
 }

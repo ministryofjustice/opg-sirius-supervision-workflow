@@ -241,8 +241,12 @@ func (ctv ClientTasksVars) buildUrl(team string, page int, tasksPerPage int, sel
 	return url
 }
 
-func (ctv ClientTasksVars) GetTeamUrl(team string) string {
-	return ctv.buildUrl(team, 1, ctv.PageDetails.StoredTaskLimit, ctv.SelectedTaskTypes, []string{}, "", ctv.SelectedDueDateFrom, ctv.SelectedDueDateTo)
+func (ctv ClientTasksVars) GetTeamUrl(team sirius.Team) string {
+	perPage := ctv.PageDetails.StoredTaskLimit
+	if perPage == 0 {
+		perPage = 25
+	}
+	return ctv.buildUrl(team.Selector, 1, perPage, ctv.SelectedTaskTypes, []string{}, "", ctv.SelectedDueDateFrom, ctv.SelectedDueDateTo)
 }
 
 func (ctv ClientTasksVars) GetPaginationUrl(page int, tasksPerPage ...int) string {
