@@ -536,6 +536,12 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 			want:   "?team=pro&page=1&per-page=50",
 		},
 		{
+			name:   "Per page limit defaults to 25",
+			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 0},
+			team:   "pro",
+			want:   "?team=pro&page=1&per-page=25",
+		},
+		{
 			name:   "Assignees are removed",
 			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
 			team:   "pro",
@@ -569,7 +575,8 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createClientTasksVars(tt.fields)
-			assert.Equalf(t, "client-tasks"+tt.want, w.GetTeamUrl(tt.team), "GetTeamUrl(%v)", tt.team)
+			team := sirius.ReturnedTeamCollection{Selector: tt.team}
+			assert.Equalf(t, "client-tasks"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}
 }

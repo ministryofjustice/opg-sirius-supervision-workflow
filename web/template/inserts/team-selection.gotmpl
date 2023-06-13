@@ -7,7 +7,7 @@
       </label>
       <select class="govuk-select" data-module="jump-menu" name="team" aria-label="Change view">
         {{ range .App.TeamSelection }}
-          <option value="{{ $.GetTeamUrl .Selector }}" name="team-option" label="{{ .Name }}" {{ if eq .Selector $.App.SelectedTeam.Selector }}selected{{ end }}>{{ .Name }}</option>
+          <option value="{{ $.GetTeamUrl . }}" name="team-option" label="{{ .Name }}" {{ if eq .Selector $.App.SelectedTeam.Selector }}selected{{ end }}>{{ .Name }}</option>
         {{ end }}
       </select>
     </div>
