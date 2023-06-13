@@ -26,7 +26,7 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []ReturnedTeamCollection{
+	teamCollection := []Team{
 		{
 			Id:        12,
 			Name:      "Lay Team 1 - (Supervision)",
@@ -88,7 +88,7 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []ReturnedTeamCollection{
+	teamCollection := []Team{
 		{
 			Id:        12,
 			Name:      "Lay Team 1 - (Supervision)",
@@ -141,7 +141,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 		},
 	}
 
-	teamCollection := []ReturnedTeamCollection{
+	teamCollection := []Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",
@@ -204,7 +204,7 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 		},
 	}
 
-	teamCollection := []ReturnedTeamCollection{
+	teamCollection := []Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",
@@ -251,7 +251,7 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 
 func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
 	var apiTaskTypes []ApiTaskTypes
-	selectedTeam := ReturnedTeamCollection{
+	selectedTeam := Team{
 		Id:        12,
 		Name:      "Supervision Team 1",
 		Type:      "Supervision",
@@ -294,7 +294,7 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []ReturnedTeamCollection{
+	teamCollection := []Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",

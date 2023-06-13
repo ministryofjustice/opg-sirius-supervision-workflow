@@ -87,7 +87,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}},
 	}
 
-	selectedTeam := ReturnedTeamCollection{Id: 13}
+	selectedTeam := Team{Id: 13}
 
 	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []ApiTaskTypes{}, []string{""}, nil, nil)
 
@@ -98,17 +98,17 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 func TestGetTaskListCanThrow500Error(t *testing.T) {
 	tests := []struct {
 		name         string
-		selectedTeam ReturnedTeamCollection
+		selectedTeam Team
 		expectedURL  string
 	}{
 		{
 			name:         "Single Team ID requested",
-			selectedTeam: ReturnedTeamCollection{Id: 13},
+			selectedTeam: Team{Id: 13},
 			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=dueDate:asc",
 		},
 		{
 			name:         "Multiple Team IDs requested",
-			selectedTeam: ReturnedTeamCollection{Id: 0, Teams: []ReturnedTeamCollection{{Id: 12}, {Id: 13}}},
+			selectedTeam: Team{Id: 0, Teams: []Team{{Id: 12}, {Id: 13}}},
 			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=12&teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=dueDate:asc",
 		},
 	}
