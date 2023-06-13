@@ -10,7 +10,7 @@ import (
 
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.ReturnedTeamCollection, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, int, int, sirius.Team, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }

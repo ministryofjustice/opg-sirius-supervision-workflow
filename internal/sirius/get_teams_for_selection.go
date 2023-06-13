@@ -28,19 +28,19 @@ type TeamCollection struct {
 	} `json:"teamType"`
 }
 
-type ReturnedTeamCollection struct {
+type Team struct {
 	Id        int
 	Members   []TeamMember
 	Name      string
 	Type      string
 	TypeLabel string
 	Selector  string
-	Teams     []ReturnedTeamCollection
+	Teams     []Team
 }
 
-func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
-	assignees := r.Members
-	for _, team := range r.Teams {
+func (t Team) GetAssigneesForFilter() []TeamMember {
+	assignees := t.Members
+	for _, team := range t.Teams {
 		assignees = append(assignees, team.Members...)
 	}
 	ids := map[int]bool{}
@@ -57,11 +57,11 @@ func (r ReturnedTeamCollection) GetAssigneesForFilter() []TeamMember {
 	return deduped
 }
 
-func (r ReturnedTeamCollection) HasTeam(id int) bool {
-	if r.Id == id {
+func (t Team) HasTeam(id int) bool {
+	if t.Id == id {
 		return true
 	}
-	for _, t := range r.Teams {
+	for _, t := range t.Teams {
 		if t.Id == id {
 			return true
 		}
@@ -79,9 +79,9 @@ func (m TeamMember) IsSelected(selectedAssignees []string) bool {
 	return false
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, error) {
+func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
 	var v []TeamCollection
-	var q []ReturnedTeamCollection
+	var q []Team
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
@@ -110,18 +110,18 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, er
 		return q, err
 	}
 
-	layTeam := ReturnedTeamCollection{
+	layTeam := Team{
 		Members:  []TeamMember{},
 		Name:     "Lay deputy team",
 		Selector: "lay-team",
-		Teams:    []ReturnedTeamCollection{},
+		Teams:    []Team{},
 	}
 
-	proTeam := ReturnedTeamCollection{
+	proTeam := Team{
 		Members:  []TeamMember{},
 		Name:     "Professional deputy team",
 		Selector: "pro-team",
-		Teams:    []ReturnedTeamCollection{},
+		Teams:    []Team{},
 	}
 
 	for _, t := range v {
@@ -129,13 +129,13 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]ReturnedTeamCollection, er
 			continue
 		}
 
-		team := ReturnedTeamCollection{
+		team := Team{
 			Id:        t.ID,
 			Name:      t.DisplayName,
 			Type:      t.TeamType.Handle,
 			TypeLabel: t.TeamType.Label,
 			Selector:  strconv.Itoa(t.ID),
-			Teams:     []ReturnedTeamCollection{},
+			Teams:     []Team{},
 		}
 
 		for _, m := range t.Members {
