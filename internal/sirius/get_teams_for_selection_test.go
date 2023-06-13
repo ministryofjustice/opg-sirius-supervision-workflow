@@ -222,14 +222,14 @@ func TestTeamMember_IsSelected(t *testing.T) {
 	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
 }
 
-func TestReturnedTeamCollection_IsLay(t *testing.T) {
-	assert.True(t, ReturnedTeamCollection{Type: "LAY"}.IsLay())
-	assert.True(t, ReturnedTeamCollection{Type: "", Selector: "lay-team"}.IsLay())
-	assert.False(t, ReturnedTeamCollection{Type: "NOT LAY"}.IsLay())
+func TestTeam_IsLay(t *testing.T) {
+	assert.True(t, Team{Type: "LAY"}.IsLay())
+	assert.True(t, Team{Type: "", Selector: "lay-team"}.IsLay())
+	assert.False(t, Team{Type: "NOT LAY"}.IsLay())
 }
 
-func TestReturnedTeamCollection_IsPro(t *testing.T) {
-	assert.True(t, ReturnedTeamCollection{Type: "PRO"}.IsPro())
-	assert.True(t, ReturnedTeamCollection{Type: "", Selector: "pro-team"}.IsPro())
-	assert.False(t, ReturnedTeamCollection{Type: "NOT PRO"}.IsPro())
+func TestTeam_IsPro(t *testing.T) {
+	assert.True(t, Team{Type: "PRO"}.IsPro())
+	assert.True(t, Team{Type: "", Selector: "pro-team"}.IsPro())
+	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
 }

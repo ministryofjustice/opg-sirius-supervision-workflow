@@ -35,6 +35,6 @@ func (cv CaseloadVars) buildUrl(team string) string {
 	return fmt.Sprintf("caseload?team=%s", team)
 }
 
-func (cv CaseloadVars) GetTeamUrl(team sirius.ReturnedTeamCollection) string {
+func (cv CaseloadVars) GetTeamUrl(team sirius.Team) string {
 	return cv.buildUrl(team.Selector)
 }

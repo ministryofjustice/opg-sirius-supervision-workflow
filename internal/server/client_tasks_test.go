@@ -575,7 +575,7 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createClientTasksVars(tt.fields)
-			team := sirius.ReturnedTeamCollection{Selector: tt.team}
+			team := sirius.Team{Selector: tt.team}
 			assert.Equalf(t, "client-tasks"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}

@@ -241,7 +241,7 @@ func (ctv ClientTasksVars) buildUrl(team string, page int, tasksPerPage int, sel
 	return url
 }
 
-func (ctv ClientTasksVars) GetTeamUrl(team sirius.ReturnedTeamCollection) string {
+func (ctv ClientTasksVars) GetTeamUrl(team sirius.Team) string {
 	perPage := ctv.PageDetails.StoredTaskLimit
 	if perPage == 0 {
 		perPage = 25

@@ -9,13 +9,14 @@ import (
 )
 
 type WorkflowVars struct {
-	Path           string
-	XSRFToken      string
-	MyDetails      sirius.UserDetails
-	TeamSelection  []sirius.Team
-	SelectedTeam   sirius.Team
-	Tabs           []Tab
-	SuccessMessage string
+	Path            string
+	XSRFToken       string
+	MyDetails       sirius.UserDetails
+	TeamSelection   []sirius.Team
+	SelectedTeam    sirius.Team
+	Tabs            []Tab
+	SuccessMessage  string
+	Errors          sirius.ValidationErrors
 	EnvironmentVars EnvironmentVars
 }
 

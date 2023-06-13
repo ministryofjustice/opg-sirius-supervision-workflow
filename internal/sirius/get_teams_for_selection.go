@@ -69,12 +69,12 @@ func (t Team) HasTeam(id int) bool {
 	return false
 }
 
-func (r ReturnedTeamCollection) IsLay() bool {
-	return r.Type == "LAY" || r.Selector == "lay-team"
+func (t Team) IsLay() bool {
+	return t.Type == "LAY" || t.Selector == "lay-team"
 }
 
-func (r ReturnedTeamCollection) IsPro() bool {
-	return r.Type == "PRO" || r.Selector == "pro-team"
+func (t Team) IsPro() bool {
+	return t.Type == "PRO" || t.Selector == "pro-team"
 }
 
 func (m TeamMember) IsSelected(selectedAssignees []string) bool {

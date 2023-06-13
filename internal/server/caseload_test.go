@@ -32,7 +32,7 @@ func TestCaseload(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "LAY"},
+		SelectedTeam:    sirius.Team{Type: "LAY"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -51,7 +51,7 @@ func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "PRO", Selector: "19"},
+		SelectedTeam:    sirius.Team{Type: "PRO", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -69,7 +69,7 @@ func TestCaseload_RedirectsToClientTasksWhenFeatureFlagIsOff(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    sirius.ReturnedTeamCollection{Type: "LAY", Selector: "19"},
+		SelectedTeam:    sirius.Team{Type: "LAY", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: false},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -123,7 +123,7 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createCaseloadVars(tt.fields)
-			team := sirius.ReturnedTeamCollection{Selector: tt.team}
+			team := sirius.Team{Selector: tt.team}
 			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}
