@@ -38,7 +38,7 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client Client, logger *zap.Logger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
+func wrapHandler(client Client, logger *zap.SugaredLogger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -51,8 +51,7 @@ func wrapHandler(client Client, logger *zap.Logger, tmplError Template, envVars 
 				err = next(*vars, w, r)
 			}
 
-			sugar := logger.Sugar()
-			sugar.Infow(
+			logger.Infow(
 				"Application Request",
 				"method", r.Method,
 				"uri", r.URL.RequestURI(),
@@ -70,7 +69,7 @@ func wrapHandler(client Client, logger *zap.Logger, tmplError Template, envVars 
 					return
 				}
 
-				sugar.Errorw("Error handler", err)
+				logger.Errorw("Error handler", err)
 
 				code := http.StatusInternalServerError
 				if status, ok := err.(StatusError); ok {
@@ -85,7 +84,7 @@ func wrapHandler(client Client, logger *zap.Logger, tmplError Template, envVars 
 				err = tmplError.Execute(w, errVars)
 
 				if err != nil {
-					sugar.Errorw("Failed to render error template", err)
+					logger.Errorw("Failed to render error template", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}
