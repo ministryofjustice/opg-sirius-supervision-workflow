@@ -21,7 +21,7 @@ type WholeTaskTypesList struct {
 	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
 }
 
-func (c *Client) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
+func (c *ApiClient) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
