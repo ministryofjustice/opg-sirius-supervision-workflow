@@ -14,7 +14,7 @@ type ReassignTaskDetails struct {
 }
 
 func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
-	var u ApiTask
+	var u Task
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
@@ -70,5 +70,5 @@ func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask i
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-	return u.ApiTaskAssignee.CaseManagerName, err
+	return u.Assignee.Name, err
 }

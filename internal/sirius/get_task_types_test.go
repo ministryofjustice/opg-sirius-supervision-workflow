@@ -30,7 +30,7 @@ func TestGetTaskTypes(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ApiTaskTypes{
+	expectedResponse := []TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
@@ -82,7 +82,7 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ApiTaskTypes{
+	expectedResponse := []TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
@@ -140,7 +140,7 @@ func TestGetTaskTypesCanMarkSelectedForEcmTasks(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ApiTaskTypes{
+	expectedResponse := []TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",

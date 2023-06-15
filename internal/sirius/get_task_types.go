@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-type ApiTaskTypes struct {
+type TaskType struct {
 	Handle     string `json:"handle"`
 	Incomplete string `json:"incomplete"`
 	Category   string `json:"category"`
@@ -18,10 +18,10 @@ type ApiTaskTypes struct {
 }
 
 type WholeTaskTypesList struct {
-	AllTaskList map[string]ApiTaskTypes `json:"task_types"`
+	AllTaskList map[string]TaskType `json:"task_types"`
 }
 
-func (c *ApiClient) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiTaskTypes, error) {
+func (c *ApiClient) GetTaskTypes(ctx Context, selectedTaskTypes []string) ([]TaskType, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
@@ -55,17 +55,17 @@ func (c *ApiClient) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiT
 
 	WholeTaskTypeList := v.AllTaskList
 
-	var taskTypeList []ApiTaskTypes
+	var taskTypeList []TaskType
 
 	for _, u := range WholeTaskTypeList {
-		taskType := ApiTaskTypes{
+		taskType := TaskType{
 			Handle:     u.Handle,
 			Incomplete: u.Incomplete,
 			Category:   u.Category,
 			Complete:   u.Complete,
 			User:       u.User,
 			EcmTask:    u.EcmTask,
-			IsSelected: IsSelected(u.Handle, taskTypeSelected),
+			IsSelected: IsSelected(u.Handle, selectedTaskTypes),
 		}
 		taskTypeList = append(taskTypeList, taskType)
 	}
@@ -75,11 +75,11 @@ func (c *ApiClient) GetTaskTypes(ctx Context, taskTypeSelected []string) ([]ApiT
 	})
 
 	// prepend the "ECM Tasks" filter option
-	taskTypeList = append([]ApiTaskTypes{
+	taskTypeList = append([]TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
-			IsSelected: IsSelected("ECM_TASKS", taskTypeSelected),
+			IsSelected: IsSelected("ECM_TASKS", selectedTaskTypes),
 		},
 	}, taskTypeList...)
 

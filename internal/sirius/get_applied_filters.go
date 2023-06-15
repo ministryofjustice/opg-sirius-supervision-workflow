@@ -2,7 +2,7 @@ package sirius
 
 import "time"
 
-func GetAppliedFilters(selectedTeam Team, selectedAssignees []string, selectedUnassigned string, taskTypes []ApiTaskTypes, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
+func GetAppliedFilters(selectedTeam Team, selectedAssignees []string, selectedUnassigned string, taskTypes []TaskType, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
 	var appliedFilters []string
 
 	for _, u := range taskTypes {

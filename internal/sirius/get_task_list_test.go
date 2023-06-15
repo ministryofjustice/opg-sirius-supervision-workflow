@@ -50,33 +50,31 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 	}
 
 	expectedResponse := TaskList{
-		WholeTaskList: []ApiTask{
+		Tasks: []Task{
 			{
-				ApiTaskAssignee: CaseManagement{
-					"Allocations - (Supervision)",
-					22,
-					[]UserTeam{},
+				Assignee: Assignee{
+					Name: "Unassigned",
 				},
-				ApiTaskCaseItems: nil,
-				ApiClients:       nil,
-				ApiTaskDueDate:   "29/11/2022",
-				ApiTaskId:        119,
-				ApiTaskHandle:    "ORAL",
-				ApiTaskType:      "",
-				ApiCaseOwnerTask: false,
-				TaskTypeName:     "",
-				ClientInformation: Clients{
-					ClientId:            61,
-					ClientCaseRecNumber: "92902877",
-					ClientFirstName:     "Antoine",
-					ClientSurname:       "Burgundy",
-					ClientSupervisionCaseOwner: CaseManagement{
-						CaseManagerName: "Allocations - (Supervision)",
-						Id:              22,
-						Team:            []UserTeam{},
+				CaseItems: []CaseItem{},
+				Clients: []Client{
+					{
+						Id:            61,
+						CaseRecNumber: "92902877",
+						FirstName:     "Antoine",
+						Surname:       "Burgundy",
+						SupervisionCaseOwner: Assignee{
+							Name:  "Allocations - (Supervision)",
+							Id:    22,
+							Teams: []UserTeam{},
+						},
+						FeePayer: Deputy{},
 					},
 				},
-				CalculatedDueDateColour: "inThePast",
+				DueDate:       "29/11/2022",
+				Id:            119,
+				Type:          "ORAL",
+				Name:          "",
+				CaseOwnerTask: true,
 			},
 		},
 		Pages: PageInformation{
@@ -89,7 +87,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 
 	selectedTeam := Team{Id: 13}
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []ApiTaskTypes{}, []string{""}, nil, nil)
+	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []TaskType{}, []string{""}, nil, nil)
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
@@ -122,13 +120,12 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 
 			client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{}, nil, nil)
+			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []TaskType{}, []string{}, nil, nil)
 
 			expectedResponse := TaskList{
-				WholeTaskList: nil,
-				Pages:         PageInformation{},
-				TotalTasks:    0,
-				ActiveFilters: nil,
+				Tasks:      nil,
+				Pages:      PageInformation{},
+				TotalTasks: 0,
 			}
 
 			assert.Equal(t, expectedResponse, assigneeTeams)
@@ -171,257 +168,156 @@ func TestCreateFilter(t *testing.T) {
 	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
 	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
 
-	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil, SetUpLoadTasks()), "status:Not+started")
-	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil, SetUpLoadTasks()), "status:Not+started,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo, SetUpLoadTasks()), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
-	assert.Equal(t, CreateFilter([]string{"ECM_TASKS"}, []string{}, nil, nil, SetUpLoadTasks()), "status:Not+started,type:CWGN,type:RRRR")
+	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil, SetUpTaskTypes()), "status:Not+started")
+	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil, SetUpTaskTypes()), "status:Not+started,assigneeid_or_null:LayTeam1")
+	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo, SetUpTaskTypes()), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
+	assert.Equal(t, CreateFilter([]string{"ECM_TASKS"}, []string{}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:RRRR")
 }
 
-func SetUpTaskTypeWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+func SetUpTaskWithACase(ApiTaskHandleInput string, ApiTaskTypeInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) Task {
+	v := Task{
+		Assignee: Assignee{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
 		},
-		ApiTaskCaseItems: []CaseItemsDetails{{
-			CaseItemClient: Clients{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "Pamela",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              4321,
-					CaseManagerName: "Richard Fox",
+		CaseItems: []CaseItem{{
+			Client: Client{
+				CaseRecNumber: "13636617",
+				FirstName:     "Pamela",
+				Id:            37259351,
+				SupervisionCaseOwner: Assignee{
+					Id:   4321,
+					Name: "Richard Fox",
 				},
-				ClientSurname: "Pragnell",
+				Surname: "Pragnell",
 			},
 		}},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate: "01/06/2021",
+		Id:      40904862,
+		Type:    ApiTaskHandleInput,
+		Name:    ApiTaskTypeInput,
 	}
 	return v
 }
 
-func TestGetTaskNameWillReturnIncompleteNameAsTaskTypeName(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("CWGN", "", "", "", 0)
-	loadTasks := SetUpLoadTasks()
-	assert.Equal(t, GetTaskName(taskType, loadTasks), "Casework - General")
-}
-
-func TestGetTaskNameWillReturnOriginalTaskNameIfNoMatchToHandle(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("FAKE", "Fake type", "", "", 0)
-	loadTasks := SetUpLoadTasks()
-	assert.Equal(t, GetTaskName(taskType, loadTasks), "Fake type")
-}
-
-func TestGetTaskNameWillOverwriteAnIncorrectNameWithHandleName(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("CWGN", "Fake name that doesnt match handle", "", "", 0)
-	loadTasks := SetUpLoadTasks()
-	expectedResult := "Casework - General"
-	assert.Equal(t, GetTaskName(taskType, loadTasks), expectedResult)
-}
-
-func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheCaseItems(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("", "", "", "Unassigned", 0)
-	expectedResult := "Richard Fox"
-	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
-}
-func TestGetAssigneeDisplayNameIfTaskIsAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "Unassigned", 0)
-	expectedResult := "Richard Fox"
-	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
-}
-
-func TestGetAssigneeDisplayNameIfTaskIsNotAssignedToCaseOwnerWillTakeTheClients(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
-	expectedResult := "Go Taskforce"
-	assert.Equal(t, GetAssigneeDisplayName(taskType), expectedResult)
-}
-
-func TestGetAssigneeIdWithOutACase(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 0)
-	expectedResult := 1234
-	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
-}
-
-func TestGetAssigneeIdWithACase(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 0)
-	expectedResult := 4321
-	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
-}
-
-func TestGetAssigneeIdWithACaseAndAssigneeNotToCaseOwner(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := 1122
-	assert.Equal(t, GetAssigneeId(taskType), expectedResult)
-}
-
-func TestGetClientInformationWithACase(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientSurname:       "Pragnell",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              4321,
-		},
-	}
-	assert.Equal(t, GetClientInformation(taskType), expectedResult)
-}
-
-func TestGetClientInformationWithoutACase(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "Go Taskforce", 1122)
-	expectedResult := Clients{
-		ClientId:            37259351,
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientSupervisionCaseOwner: CaseManagement{
-			CaseManagerName: "Richard Fox",
-			Id:              1234,
-			Team: []UserTeam{
-				{
-					Name: "Go TaskForce Team",
-					Id:   999,
-				},
-			},
-		},
-	}
-
-	assert.Equal(t, GetClientInformation(taskType), expectedResult)
-}
-
-func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
-	taskType := SetUpUserTeamStruct("Test Team Name", 11)
-	expectedResult := []UserTeam{
+func TestTask_GetName(t *testing.T) {
+	taskTypes := SetUpTaskTypes()
+	tests := []struct {
+		name     string
+		task     Task
+		wantName string
+	}{
 		{
-			Name: "Test Team Name",
-			Id:   11,
+			name:     "Incomplete name used as task name",
+			task:     SetUpTaskWithACase("CWGN", "", "", 0),
+			wantName: "Casework - General",
 		},
-	}
-	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
-}
-
-func TestGetAssigneeTeamsReplacesContentWithClientsInfoIfNoTeam(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
-	expectedResult := []UserTeam{
 		{
-			Name: "Go TaskForce Team",
-			Id:   999,
+			name:     "Original task name used when cannot be matched to a task type",
+			task:     SetUpTaskWithACase("FAKE", "Fake type", "", 0),
+			wantName: "Fake type",
 		},
-	}
-	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
-}
-
-func TestGetAssigneeTeamsReplacesContentWithAPICaseitemsInfoIfNoTeamOrClients(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutAClient()
-	expectedResult := []UserTeam{
 		{
-			Name: "Go TaskForce Team",
-			Id:   888,
+			name:     "Task type name overwrites an incorrect name with a matching handle",
+			task:     SetUpTaskWithACase("CWGN", "Fake name that doesnt match handle", "", 0),
+			wantName: "Casework - General",
 		},
 	}
-	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
-}
-
-func TestGetClientInformationPullsInfoFromCaseItemClients(t *testing.T) {
-	taskType := SetUpTaskTypeWithACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "Pamela",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              4321,
-			CaseManagerName: "Richard Fox",
-		},
-		ClientSurname: "Pragnell",
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.wantName, test.task.GetName(taskTypes))
+		})
 	}
-	assert.Equal(t, GetClientInformation(taskType), expectedResult)
 }
 
-func TestGetClientInformationReturnsInfoIfCaseItemClientsNull(t *testing.T) {
-	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
-	expectedResult := Clients{
-		ClientCaseRecNumber: "13636617",
-		ClientFirstName:     "WithoutACase",
-		ClientSurname:       "WithoutACase",
-		ClientId:            37259351,
-		ClientSupervisionCaseOwner: CaseManagement{
-			Id:              1234,
-			CaseManagerName: "Richard Fox",
-			Team: []UserTeam{
-				{
-					Name: "Go TaskForce Team",
-					Id:   999,
-				},
-			},
+func TestTask_GetAssignee(t *testing.T) {
+	tests := []struct {
+		name         string
+		task         Task
+		wantAssignee string
+	}{
+		{
+			name:         "Unassigned task gets Assignee from Clients",
+			task:         SetUpTaskWithACase("", "", "Unassigned", 0),
+			wantAssignee: "Richard Fox",
+		},
+		{
+			name:         "Unassigned task gets Assignee from CaseItems",
+			task:         SetUpTaskWithoutACase("Unassigned", 0),
+			wantAssignee: "Richard Fox",
+		},
+		{
+			name:         "Assigned task get Assignee from task",
+			task:         SetUpTaskWithoutACase("Go Taskforce", 0),
+			wantAssignee: "Go Taskforce",
 		},
 	}
-	assert.Equal(t, GetClientInformation(taskType), expectedResult)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.wantAssignee, test.task.GetAssignee().Name)
+		})
+	}
 }
 
-func SetUpTaskTypeWithoutACase(ApiTaskHandleInput string, ApiTaskTypeInput string, TaskTypeNameInput string, AssigneeDisplayNameInput string, AssigneeIdInput int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			CaseManagerName: AssigneeDisplayNameInput,
-			Id:              AssigneeIdInput,
+func TestTask_GetClient(t *testing.T) {
+	tests := []struct {
+		name string
+		task Task
+		want string
+	}{
+		{
+			name: "Get client from task case",
+			task: SetUpTaskWithACase("", "", "Go Taskforce", 1122),
+			want: "Pamela",
 		},
-		ApiClients: []Clients{
+		{
+			name: "Get client from task without cases",
+			task: SetUpTaskWithoutACase("Go Taskforce", 1122),
+			want: "WithoutACase",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, test.want, test.task.GetClient().FirstName)
+		})
+	}
+}
+
+func SetUpTaskWithoutACase(AssigneeDisplayNameInput string, AssigneeIdInput int) Task {
+	v := Task{
+		Assignee: Assignee{
+			Name: AssigneeDisplayNameInput,
+			Id:   AssigneeIdInput,
+		},
+		Clients: []Client{
 			{
-				ClientCaseRecNumber: "13636617",
-				ClientFirstName:     "WithoutACase",
-				ClientId:            37259351,
-				ClientSupervisionCaseOwner: CaseManagement{
-					Id:              1234,
-					CaseManagerName: "Richard Fox",
-					Team: []UserTeam{
+				CaseRecNumber: "13636617",
+				FirstName:     "WithoutACase",
+				Id:            37259351,
+				SupervisionCaseOwner: Assignee{
+					Id:   1234,
+					Name: "Richard Fox",
+					Teams: []UserTeam{
 						{
 							Name: "Go TaskForce Team",
 							Id:   999,
 						},
 					},
 				},
-				ClientSurname: "WithoutACase",
+				Surname: "WithoutACase",
 			},
 		},
-		ApiTaskDueDate: "01/06/2021",
-		ApiTaskId:      40904862,
-		ApiTaskHandle:  ApiTaskHandleInput,
-		ApiTaskType:    ApiTaskTypeInput,
-		TaskTypeName:   TaskTypeNameInput,
+		DueDate: "01/06/2021",
+		Id:      40904862,
 	}
 	return v
 }
 
-func SetUpTaskTypeWithoutAClient() ApiTask {
-	v := ApiTask{
-		ApiTaskCaseItems: []CaseItemsDetails{
-			{
-				CaseItemClient: Clients{
-					ClientSupervisionCaseOwner: CaseManagement{
-						Team: []UserTeam{
-							{
-								Name: "Go TaskForce Team",
-								Id:   888,
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	return v
-}
-
-func SetUpLoadTasks() []ApiTaskTypes {
-	loadTasks := []ApiTaskTypes{
+func SetUpTaskTypes() []TaskType {
+	taskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -450,21 +346,7 @@ func SetUpLoadTasks() []ApiTaskTypes {
 			EcmTask:    true,
 		},
 	}
-	return loadTasks
-}
-
-func SetUpUserTeamStruct(TeamName string, TeamId int) ApiTask {
-	v := ApiTask{
-		ApiTaskAssignee: CaseManagement{
-			Team: []UserTeam{
-				{
-					Name: TeamName,
-					Id:   TeamId,
-				},
-			},
-		},
-	}
-	return v
+	return taskTypes
 }
 
 func makeListOfPagesRange(min, max int) []int {
@@ -476,7 +358,6 @@ func makeListOfPagesRange(min, max int) []int {
 }
 
 func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
-
 	ListOfPages := makeListOfPagesRange(1, lastPage)
 
 	taskList := TaskList{
@@ -522,88 +403,79 @@ func TestDeputy_GetURL(t *testing.T) {
 	}
 }
 
-func TestGetCalculatedDueDateColour(t *testing.T) {
+func TestTask_GetDueDateStatus(t *testing.T) {
 	tests := []struct {
-		name           string
-		mockToday      string
-		dueDate        string
-		expectedColour string
+		name      string
+		mockToday string
+		dueDate   string
+		want      DueDateStatus
 	}{
 		{
-			name:           "Due date in the past will be inThePast",
-			mockToday:      "06/06/2023",
-			dueDate:        "05/06/2023",
-			expectedColour: "inThePast",
+			name:      "Due date is in the past",
+			mockToday: "06/06/2023",
+			dueDate:   "05/06/2023",
+			want:      DueDateStatus{"Overdue", "red"},
 		},
 		{
-			name:           "Due date is today will return dueToday",
-			mockToday:      "11/06/2023",
-			dueDate:        "11/06/2023",
-			expectedColour: "dueToday",
+			name:      "Due date is today",
+			mockToday: "11/06/2023",
+			dueDate:   "11/06/2023",
+			want:      DueDateStatus{"Due Today", "red"},
 		},
 		{
-			name:           "Due date tomorrow will return dueTomorrow",
-			mockToday:      "06/06/2023",
-			dueDate:        "07/06/2023",
-			expectedColour: "dueTomorrow",
+			name:      "Due date is tomorrow",
+			mockToday: "06/06/2023",
+			dueDate:   "07/06/2023",
+			want:      DueDateStatus{"Due Tomorrow", "orange"},
 		},
 		{
-			name:           "Due date this week but not tomorrow will return dueThisWeek",
-			mockToday:      "06/06/2023",
-			dueDate:        "08/06/2023",
-			expectedColour: "dueThisWeek",
+			name:      "Due date is this week but not tomorrow",
+			mockToday: "06/06/2023",
+			dueDate:   "08/06/2023",
+			want:      DueDateStatus{"Due This Week", "orange"},
 		},
 		{
-			name:           "Monday next week will be dueNextWeek",
-			mockToday:      "06/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "dueNextWeek",
+			name:      "Due date is Monday next week",
+			mockToday: "06/06/2023",
+			dueDate:   "12/06/2023",
+			want:      DueDateStatus{"Due Next Week", "green"},
 		},
 		{
-			name:           "Due date on same week day as today but next week will return due next week",
-			mockToday:      "06/06/2023",
-			dueDate:        "14/06/2023",
-			expectedColour: "dueNextWeek",
+			name:      "Due date on same week day as today but next week",
+			mockToday: "06/06/2023",
+			dueDate:   "13/06/2023",
+			want:      DueDateStatus{"Due Next Week", "green"},
 		},
 		{
-			name:           "Sunday today due date Monday will return dueNextWeek",
-			mockToday:      "11/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "dueNextWeek",
+			name:      "Sunday today due date Monday",
+			mockToday: "11/06/2023",
+			dueDate:   "12/06/2023",
+			want:      DueDateStatus{"Due Next Week", "green"},
 		},
 		{
-			name:           "Due date next week will return dueNextWeek",
-			mockToday:      "06/06/2023",
-			dueDate:        "12/06/2023",
-			expectedColour: "dueNextWeek",
+			name:      "Due date next week",
+			mockToday: "06/06/2023",
+			dueDate:   "12/06/2023",
+			want:      DueDateStatus{"Due Next Week", "green"},
 		},
 		{
-			name:           "Due date on same week day as today but in future will return none",
-			mockToday:      "06/06/2023",
-			dueDate:        "23/06/2023",
-			expectedColour: "none",
+			name:      "Due date on same week day as today but in future",
+			mockToday: "06/06/2023",
+			dueDate:   "23/06/2023",
+			want:      DueDateStatus{"", ""},
 		},
 		{
-			name:           "Due date that is not next week but after will return none",
-			mockToday:      "06/06/2023",
-			dueDate:        "19/06/2023",
-			expectedColour: "none",
+			name:      "Due date that is not next week but after",
+			mockToday: "06/06/2023",
+			dueDate:   "19/06/2023",
+			want:      DueDateStatus{"", ""},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			mockNow := func() time.Time {
-				fakeTime, _ := time.Parse("02/01/2006", test.mockToday)
-				return fakeTime
-			}
-			assert.Equal(t, test.expectedColour, GetCalculatedDueDateStatus(test.dueDate, mockNow))
+			task := Task{DueDate: test.dueDate}
+			mockNow, _ := time.Parse("02/01/2006", test.mockToday)
+			assert.Equal(t, test.want, task.GetDueDateStatus(mockNow))
 		})
 	}
-}
-
-func TestFormatTheDate(t *testing.T) {
-	mockDate := time.Date(2023, 06, 11, 0, 0, 0, 0, time.Local)
-	expectedResponse, _ := time.Parse("02/01/2006", "11/06/2023")
-	result := formatDate(mockDate)
-	assert.Equal(t, expectedResponse, result)
 }
