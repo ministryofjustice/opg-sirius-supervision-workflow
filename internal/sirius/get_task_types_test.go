@@ -12,7 +12,7 @@ import (
 
 func TestGetTaskTypes(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -63,7 +63,7 @@ func TestGetTaskTypes(t *testing.T) {
 
 func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -121,7 +121,7 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 
 func TestGetTaskTypesCanMarkSelectedForEcmTasks(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -184,7 +184,7 @@ func TestGetTaskTypesReturns500Error(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.GetTaskTypes(getContext(nil), []string{"CWGN", "CNC"})
 
