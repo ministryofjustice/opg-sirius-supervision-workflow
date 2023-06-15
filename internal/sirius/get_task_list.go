@@ -82,7 +82,7 @@ type TaskList struct {
 	ActiveFilters []string
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam Team, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
+func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam Team, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 

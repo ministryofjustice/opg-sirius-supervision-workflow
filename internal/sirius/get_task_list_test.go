@@ -13,7 +13,7 @@ import (
 
 func TestGetTaskListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 	{
@@ -120,7 +120,7 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 			}))
 			defer svr.Close()
 
-			client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+			client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{}, nil, nil)
 
@@ -309,7 +309,7 @@ func TestGetAssigneeTeamsReturnsOriginalContentIfGivenATeam(t *testing.T) {
 	assert.Equal(t, GetAssigneeTeams(taskType), expectedResult)
 }
 
-func TestGetAssigneeTeamsReplacesContentWithAPIClientsInfoIfNoTeam(t *testing.T) {
+func TestGetAssigneeTeamsReplacesContentWithClientsInfoIfNoTeam(t *testing.T) {
 	taskType := SetUpTaskTypeWithoutACase("", "", "", "", 0)
 	expectedResult := []UserTeam{
 		{

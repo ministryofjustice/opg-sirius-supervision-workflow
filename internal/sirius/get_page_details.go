@@ -15,7 +15,7 @@ type PageDetails struct {
 	UpperEllipsesLimit bool
 }
 
-func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
+func (c *ApiClient) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
 	var k PageDetails
 
 	PageDetails := k
