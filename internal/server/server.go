@@ -14,6 +14,7 @@ import (
 type Client interface {
 	WorkflowVarsClient
 	ClientTasksClient
+	CaseloadClient
 }
 
 type Template interface {
