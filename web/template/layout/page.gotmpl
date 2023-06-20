@@ -3,7 +3,7 @@
   <html lang="en" class="govuk-template app-html-class">
     <head>
       <meta charset="utf-8">
-      <title>{{ block "title" . }}{{ end }} - Sirius</title>
+      <title>{{ block "title" . }}{{ end }} - OPG Sirius Workflow</title>
       <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
       <meta name="api-base-uri" content="{{ sirius "" }}">
       <meta name="theme-color" content="blue">
@@ -24,11 +24,7 @@
 
       <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
-      {{ if .Error }}
-        {{ template "error-header" . }}
-      {{ else }}
-        {{ template "header" . }}
-      {{ end }}
+      {{ template "header" . }}
 
       <div class="govuk-width-container app-width-container">
         <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">

@@ -1,0 +1,38 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
+{{ template "tab" . }}
+
+{{ define "title" }}Client tasks{{ end }}
+
+{{ define "tab-content" }}
+  <div class="govuk-grid-row">
+    <div id="filters-column" class="govuk-grid-column-one-quarter">
+        {{ template "client-tasks-filters" . }}
+    </div>
+
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
+              {{ template "client-tasks-pagination" . }}
+          </nav>
+        </div>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <form method="post">
+              {{ template "client-tasks-list" . }}
+          </form>
+        </div>
+      </div>
+
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
+              {{ template "client-tasks-pagination" . }}
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

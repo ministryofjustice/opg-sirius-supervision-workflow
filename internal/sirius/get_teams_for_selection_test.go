@@ -79,7 +79,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []ReturnedTeamCollection{
+	expectedResponse := []Team{
 		{
 			Id:        21,
 			Name:      "Allocations - (Supervision)",
@@ -92,7 +92,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 					Name: "Allocations User1",
 				},
 			},
-			Teams: []ReturnedTeamCollection{},
+			Teams: []Team{},
 		},
 		{
 			Id:        22,
@@ -100,20 +100,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Type:      "LAY",
 			TypeLabel: "Lay Team",
 			Selector:  "22",
-			Teams:     []ReturnedTeamCollection{},
+			Teams:     []Team{},
 		},
 		{
 			Name:     "Lay deputy team",
 			Selector: "lay-team",
 			Members:  []TeamMember{},
-			Teams: []ReturnedTeamCollection{
+			Teams: []Team{
 				{
 					Id:        22,
 					Name:      "Lay Team 1",
 					Type:      "LAY",
 					TypeLabel: "Lay Team",
 					Selector:  "22",
-					Teams:     []ReturnedTeamCollection{},
+					Teams:     []Team{},
 				},
 			},
 		},
@@ -123,20 +123,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Type:      "PRO",
 			TypeLabel: "Pro Team",
 			Selector:  "23",
-			Teams:     []ReturnedTeamCollection{},
+			Teams:     []Team{},
 		},
 		{
 			Name:     "Professional deputy team",
 			Selector: "pro-team",
 			Members:  []TeamMember{},
-			Teams: []ReturnedTeamCollection{
+			Teams: []Team{
 				{
 					Id:        23,
 					Name:      "Pro Team 1",
 					Type:      "PRO",
 					TypeLabel: "Pro Team",
 					Selector:  "23",
-					Teams:     []ReturnedTeamCollection{},
+					Teams:     []Team{},
 				},
 			},
 		},
@@ -165,13 +165,13 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 	}, err)
 }
 
-func TestReturnedTeamCollection_GetAssigneesForFilter(t *testing.T) {
-	team := ReturnedTeamCollection{
+func TestTeam_GetAssigneesForFilter(t *testing.T) {
+	team := Team{
 		Members: []TeamMember{
 			{ID: 1, Name: "B"},
 			{ID: 2, Name: "A"},
 		},
-		Teams: []ReturnedTeamCollection{
+		Teams: []Team{
 			{
 				Members: []TeamMember{
 					{ID: 4, Name: "D"},
@@ -197,10 +197,10 @@ func TestReturnedTeamCollection_GetAssigneesForFilter(t *testing.T) {
 	assert.Equal(t, expected, team.GetAssigneesForFilter())
 }
 
-func TestReturnedTeamCollection_HasTeam(t *testing.T) {
-	team := ReturnedTeamCollection{
+func TestTeam_HasTeam(t *testing.T) {
+	team := Team{
 		Id: 10,
-		Teams: []ReturnedTeamCollection{
+		Teams: []Team{
 			{Id: 12},
 			{Id: 13},
 		},
@@ -220,4 +220,16 @@ func TestTeamMember_IsSelected(t *testing.T) {
 
 	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team ID 10 is not selected")
 	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
+}
+
+func TestTeam_IsLay(t *testing.T) {
+	assert.True(t, Team{Type: "LAY"}.IsLay())
+	assert.True(t, Team{Type: "", Selector: "lay-team"}.IsLay())
+	assert.False(t, Team{Type: "NOT LAY"}.IsLay())
+}
+
+func TestTeam_IsPro(t *testing.T) {
+	assert.True(t, Team{Type: "PRO"}.IsPro())
+	assert.True(t, Team{Type: "", Selector: "pro-team"}.IsPro())
+	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
 }

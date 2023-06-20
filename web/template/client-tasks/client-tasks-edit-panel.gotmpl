@@ -1,13 +1,13 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
-{{ define "edit-panel" }}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
+{{ define "client-tasks-edit-panel" }}
 
 <section id="edit-panel">
  <button type="button" id="manage-task" class="govuk-button govuk-button--blue hide js-mt-edit-tasks-btn">
     Manage task
  </button>
 
-  {{ if .SuccessMessage }}
-    {{ template "success-banner" .}}
+  {{ if .App.SuccessMessage }}
+    {{ template "success-banner" .App.SuccessMessage }}
   {{ end }}
 
   <div class="govuk-width-container hide js-mt-edit-panel">
@@ -20,11 +20,11 @@
       <div class="govuk-width-container">
         <h4 class="govuk-heading-s"><span class="count-checked-checkboxes js-mt-task-count">0</span> tasks selected</h4>
         <div class="govuk-form-group govuk-!-display-inline-block govuk-!-margin-right-5">
-          <input type="hidden" name="xsrfToken" value="{{ .XSRFToken }}"  class="js-xsrfToken"/>
+          <input type="hidden" name="xsrfToken" value="{{ .App.XSRFToken }}"  class="js-xsrfToken"/>
           <label class="govuk-label" for="assignTeam">Assign to a team</label>
           <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
             <option value="0" selected>Select a team</option>
-              {{ range .TeamSelection }}
+              {{ range .App.TeamSelection }}
                 <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
           </select>

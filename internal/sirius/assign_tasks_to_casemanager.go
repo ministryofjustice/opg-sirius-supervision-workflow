@@ -3,6 +3,7 @@ package sirius
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -43,6 +44,10 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized
+	}
+
+	if resp.StatusCode == http.StatusForbidden {
+		return "", errors.New("Only managers can set priority on tasks")
 	}
 
 	if resp.StatusCode != http.StatusOK {

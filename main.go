@@ -17,7 +17,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -26,11 +25,10 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
+func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 	resource, err := ecs.NewResourceDetector().Detect(ctx)
-	sugar := logger.Sugar()
 	if err != nil {
-		sugar.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx,
@@ -39,7 +37,7 @@ func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
 		otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
-		sugar.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	idg := xray.NewIDGenerator()
@@ -55,120 +53,108 @@ func initTracerProvider(ctx context.Context, logger *zap.Logger) func() {
 
 	return func() {
 		if err := tp.Shutdown(ctx); err != nil {
-			sugar.Fatal(err)
+			logger.Fatal(err)
 		}
 	}
 }
 
 func main() {
-	serverLogger, err := zap.NewProduction()
-	sugar := serverLogger.Sugar()
+	logger := zap.Must(zap.NewProduction(zap.Fields(zap.String("service_name", "opg-sirius-workflow")))).Sugar()
+	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow")
 
-	if err != nil {
-		sugar.Infow("Error creating logger: %v\n", err)
-	}
-
-	if err := serverLogger.Sync(); err != nil {
-		sugar.Infow("Error syncing logger: %v\n", err)
-	}
-
-	port := getEnv("PORT", "1234")
-	webDir := getEnv("WEB_DIR", "web")
-	siriusURL := getEnv("SIRIUS_URL", "http://localhost:8080")
-	siriusPublicURL := getEnv("SIRIUS_PUBLIC_URL", "")
-	DefaultWorkflowTeam := getEnv("DEFAULT_WORKFLOW_TEAM", "21")
-	prefix := getEnv("PREFIX", "")
-
-	layouts, _ := template.
-		New("").
-		Funcs(map[string]interface{}{
-			"join": func(sep string, items []string) string {
-				return strings.Join(items, sep)
-			},
-			"contains": func(xs []string, needle string) bool {
-				for _, x := range xs {
-					if x == needle {
-						return true
-					}
-				}
-
-				return false
-			},
-			"prefix": func(s string) string {
-				return prefix + s
-			},
-			"sirius": func(s string) string {
-				return siriusPublicURL + s
-			},
-		}).
-		ParseGlob(webDir + "/template/layout/*.gotmpl")
-
-	files, _ := filepath.Glob(webDir + "/template/*.gotmpl")
-	tmpls := map[string]*template.Template{}
-
-	for _, file := range files {
-		tmpls[filepath.Base(file)] = template.Must(template.Must(layouts.Clone()).ParseFiles(file))
-	}
-
-	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow ")
+	defer func() { _ = logger.Sync() }()
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
-		shutdown := initTracerProvider(context.Background(), serverLogger)
+		shutdown := initTracerProvider(context.Background(), logger)
 		defer shutdown()
 	}
 
 	httpClient := http.DefaultClient
 	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
 
-	client, err := sirius.NewClient(http.DefaultClient, siriusURL, apiCallLogger)
+	envVars, err := server.NewEnvironmentVars()
 	if err != nil {
-		sugar.Infow("Error returned by Sirius New Client",
-			"error", err,
-		)
+		logger.Fatalw("Error creating EnvironmentVars", "error", err)
 	}
 
-	defaultWorkflowTeam, err := strconv.Atoi(DefaultWorkflowTeam)
+	client, err := sirius.NewClient(http.DefaultClient, envVars.SiriusURL, apiCallLogger)
 	if err != nil {
-		sugar.Infow("Error converting DEFAULT_WORKFLOW_TEAM to int")
-
+		logger.Fatalw("Error returned by Sirius New Client", "error", err)
 	}
+
+	templates := createTemplates(envVars)
 
 	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: server.New(serverLogger, client, tmpls, prefix, siriusPublicURL, webDir, defaultWorkflowTeam),
+		Addr:    ":" + envVars.Port,
+		Handler: server.New(logger, client, templates, envVars),
 	}
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			sugar.Infow("Error returned by server.ListenAndServe()",
+			logger.Infow("Error returned by server.ListenAndServe()",
 				"error", err,
 			)
-			sugar.Fatal(err)
+			logger.Fatal(err)
 		}
 	}()
 
-	sugar.Infow("Running at :" + port)
+	logger.Infow("Running at :" + envVars.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-c
-	sugar.Infow("signal received: ", sig)
+	logger.Infow("signal received: ", sig)
 
 	tc, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(tc); err != nil {
-		sugar.Infow("Error returned by server.Shutdown",
+		logger.Infow("Error returned by server.Shutdown",
 			"error", err,
 		)
 	}
 }
 
-func getEnv(key, def string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+func createTemplates(envVars server.EnvironmentVars) map[string]*template.Template {
+	templates := map[string]*template.Template{}
+	templateFunctions := map[string]interface{}{
+		"join": func(sep string, items []string) string {
+			return strings.Join(items, sep)
+		},
+		"contains": func(xs []string, needle string) bool {
+			for _, x := range xs {
+				if x == needle {
+					return true
+				}
+			}
+
+			return false
+		},
+		"prefix": func(s string) string {
+			return envVars.Prefix + s
+		},
+		"sirius": func(s string) string {
+			return envVars.SiriusPublicURL + s
+		},
 	}
 
-	return def
+	templateDirPath := envVars.WebDir + "/template"
+	templateDir, _ := os.Open(templateDirPath)
+	templateDirs, _ := templateDir.Readdir(0)
+	_ = templateDir.Close()
+
+	mainTemplates, _ := filepath.Glob(templateDirPath + "/*.gotmpl")
+
+	for _, file := range mainTemplates {
+		tmpl := template.New(filepath.Base(file)).Funcs(templateFunctions)
+		for _, dir := range templateDirs {
+			if dir.IsDir() {
+				tmpl, _ = tmpl.ParseGlob(templateDirPath + "/" + dir.Name() + "/*.gotmpl")
+			}
+		}
+		templates[tmpl.Name()] = template.Must(tmpl.ParseFiles(file))
+	}
+
+	return templates
 }

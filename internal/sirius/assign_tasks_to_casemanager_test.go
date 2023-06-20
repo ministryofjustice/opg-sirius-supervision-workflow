@@ -110,6 +110,18 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 	assert.Equal(t, ErrUnauthorized, err)
 }
 
+func TestAssignTasksToCaseManagerReturnsForbiddenClientError(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+	}))
+	defer svr.Close()
+
+	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
+	assert.Equal(t, "Only managers can set priority on tasks", err.Error())
+}
+
 func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	logger, _ := SetUpTest()
 

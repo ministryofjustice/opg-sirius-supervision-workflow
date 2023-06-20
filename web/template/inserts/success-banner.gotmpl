@@ -1,4 +1,3 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
 {{ define "success-banner" }}
   <div class="moj-banner moj-banner--success" data-module="moj-banner-auto-hide">
     <svg class="moj-banner__icon" fill="currentColor" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" height="25" width="25">
@@ -6,7 +5,7 @@
     </svg>
 
     <div class="moj-banner__message" id="success-banner">
-      <span class="moj-banner__assistive">Success</span>{{ .SuccessMessage }}
+      <span class="moj-banner__assistive">Success</span>{{ . }}
     </div>
   </div>
 {{ end }}

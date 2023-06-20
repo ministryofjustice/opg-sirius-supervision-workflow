@@ -82,7 +82,7 @@ type TaskList struct {
 	ActiveFilters []string
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam ReturnedTeamCollection, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
+func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam Team, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 
@@ -225,7 +225,7 @@ func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
 		startOfNextWeek = now().AddDate(0, 0, 2)
 		endOfNextWeek = now().AddDate(0, 0, 8)
 	}
-	
+
 	startOfNextWeekDate := formatDate(startOfNextWeek)
 	endOfNextWeekDate := formatDate(endOfNextWeek)
 
@@ -240,7 +240,7 @@ func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
 	case dateFormatted.Before(todayFormatted):
 		return "inThePast"
 
-	case dateFormatted.Weekday() == getTomorrowsDay:
+	case (dateFormatted.Weekday() == getTomorrowsDay) && (dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate)):
 		return "dueTomorrow"
 
 	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):

@@ -1,8 +1,15 @@
-describe("Work flow", () => {
+describe("Workflow", () => {
   beforeEach(() => {
       cy.setCookie("Other", "other");
       cy.setCookie("XSRF-TOKEN", "abcde");
-      cy.visit("/supervision/workflow/1");
+      cy.visit("/client-tasks");
+  });
+
+  it("homepage redirects to client tasks page", () => {
+    cy.visit("/caseload?team=21");
+    cy.url().should('not.contain', '/client-tasks')
+    cy.visit("/");
+    cy.url().should('contain', '/client-tasks')
   });
 
   it("shows user that is logged in within banner", () => {
@@ -33,5 +40,5 @@ describe("Work flow", () => {
   
   it("the nav link should contain logout", () => {
     cy.get(".moj-header__navigation-list > :nth-child(3) > a").should("have.attr", "href", "http://localhost:8080/auth/logout")
-  }) 
+  })
 });

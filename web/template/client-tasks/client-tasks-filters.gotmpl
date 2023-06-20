@@ -1,5 +1,5 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}
-{{ define "filters" }}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
+{{ define "client-tasks-filters" }}
 
 <div class="moj-filter" data-module="moj-manage-filters">
   <div class="moj-filter__header">
@@ -47,7 +47,7 @@
             {{ if .SelectedUnassigned }}
               <li><a href="{{ .GetRemoveFilterUrl "unassigned" .SelectedUnassigned }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> Not Assigned</a></li>
             {{ end }}
-            {{ range .SelectedTeam.GetAssigneesForFilter }}
+            {{ range .App.SelectedTeam.GetAssigneesForFilter }}
               {{ if .IsSelected $.SelectedAssignees }}
                 <li><a href="{{ $.GetRemoveFilterUrl "assignee" .ID }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Name }}</a></li>
               {{ end }}
