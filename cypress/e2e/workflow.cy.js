@@ -17,9 +17,10 @@ describe("Workflow", () => {
   });
 
   const expected = [
+    "Power of Attorney",
     "Supervision",
-    "LPA",
-    "Log out",
+    "Admin",
+    "Sign out",
   ];
 
   it("has working nav links within banner", () => {
@@ -30,12 +31,16 @@ describe("Workflow", () => {
     });
   })
 
+  it("the nav link should contain lpa", () => {
+    cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("have.attr", "href", "http://localhost:8080/lpa")
+  })
+
   it("the nav link should contain supervision", () => {
     cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("have.attr", "href", "http://localhost:8080/supervision")
   })  
   
   it("the nav link should contain lpa", () => {
-    cy.get(".moj-header__navigation-list > :nth-child(2) > a").should("have.attr", "href", "http://localhost:8080/lpa")
+    cy.get(".moj-header__navigation-list > :nth-child(2) > a").should("have.attr", "href", "http://localhost:8080/admin")
   })
   
   it("the nav link should contain logout", () => {

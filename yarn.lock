@@ -1492,6 +1492,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
+opg-sirius-header@ministryofjustice/opg-sirius-header:
+  version "1.0.0"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/8d4dd1cdc54ea21b816bd260e20dc480e08f2f3b"
+
 optionator@^0.9.1:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/optionator/-/optionator-0.9.1.tgz#4f236a6373dae0566a6d43e1326674f50c291499"
