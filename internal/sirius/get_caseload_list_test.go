@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 )
 
@@ -62,14 +61,14 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	expectedResponse := ClientList{
 		WholeClientList: []ApiClient{
 			{
-				ClientId:            63,
-				ClientCaseRecNumber: "42687883",
-				ClientFirstName:     "Ro",
-				ClientSurname:       "Bot",
+				Id:            63,
+				CaseRecNumber: "42687883",
+				FirstName:     "Ro",
+				Surname:       "Bot",
 				Case: []Order{
 					{
-						OrderId: 92,
-						OrderStatus: RefData{
+						Id: 92,
+						Status: RefData{
 							Handle: "CLOSED",
 							Label:  "Closed",
 						},
@@ -90,7 +89,7 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 
 	selectedTeam := Team{Id: 13}
 
-	assigneeTeams, err := client.GetCaseloadList(getContext(nil), strconv.Itoa(selectedTeam.Id))
+	assigneeTeams, err := client.GetCaseloadList(getContext(nil), selectedTeam.Id)
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)

@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
-	"strconv"
 )
 
 type CaseloadClient interface {
-	GetCaseloadList(sirius.Context, string) (sirius.ClientList, error)
+	GetCaseloadList(sirius.Context, int) (sirius.ClientList, error)
 }
 
 type CaseloadVars struct {
@@ -22,7 +21,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 		ctx := getContext(r)
-		teamSelected := strconv.Itoa(app.SelectedTeam.Id)
+		teamSelected := app.SelectedTeam.Id
 
 		clientList, err := client.GetCaseloadList(ctx, teamSelected)
 		if err != nil {
@@ -55,26 +54,19 @@ func (cv CaseloadVars) GetReportDueDate(order []sirius.Order) string {
 }
 
 func (cv CaseloadVars) GetClientStatus(orders []sirius.Order) string {
-	var clientStatus string
+	orderStatuses := make(map[string]string)
+
 	for _, s := range orders {
-		if s.OrderStatus.Label == "Active" {
-			return "Active"
+		label := s.Status.Label
+		orderStatuses[label] = label
+	}
+
+	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
+	for _, status := range statuses {
+		if _, found := orderStatuses[status]; found {
+			return status
 		}
 	}
-	for _, s := range orders {
-		if s.OrderStatus.Label == "Open" {
-			return "Open"
-		}
-	}
-	for _, s := range orders {
-		if s.OrderStatus.Label == "Closed" {
-			return "Closed"
-		}
-	}
-	for _, s := range orders {
-		if s.OrderStatus.Label == "Duplicate" {
-			return "Duplicate"
-		}
-	}
-	return clientStatus
+
+	return ""
 }

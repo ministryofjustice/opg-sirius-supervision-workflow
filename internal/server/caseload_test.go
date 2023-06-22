@@ -17,7 +17,7 @@ type mockCaseloadClient struct {
 
 type caseloadURLFields struct {
 	SelectedTeam string
-	OrderStatus  string
+	Status       string
 	DueDate      string
 }
 
@@ -30,13 +30,13 @@ func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 			WholeClientList: []sirius.ApiClient{
 				{Case: []sirius.Order{{
 					LatestAnnualReport: sirius.AnnualReport{DueDate: fields.DueDate},
-					OrderStatus:        sirius.RefData{Label: fields.OrderStatus}}}},
+					Status:             sirius.RefData{Label: fields.Status}}}},
 			},
 		},
 	}
 }
 
-func (m *mockCaseloadClient) GetCaseloadList(ctx sirius.Context, teamSelected string) (sirius.ClientList, error) {
+func (m *mockCaseloadClient) GetCaseloadList(ctx sirius.Context, teamSelected int) (sirius.ClientList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -154,45 +154,45 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 
 func TestCaseloadVars_GetClientStatus_with_an_active_order_will_return_active(t *testing.T) {
 	orders := []sirius.Order{
-		{OrderStatus: sirius.RefData{Label: "Closed"}},
-		{OrderStatus: sirius.RefData{Label: "Open"}},
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
-		{OrderStatus: sirius.RefData{Label: "Active"}},
-		{OrderStatus: sirius.RefData{Label: "Closed"}},
-		{OrderStatus: sirius.RefData{Label: "Open"}},
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Closed"}},
+		{Status: sirius.RefData{Label: "Open"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Active"}},
+		{Status: sirius.RefData{Label: "Closed"}},
+		{Status: sirius.RefData{Label: "Open"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
 	}
-	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", OrderStatus: "Active"})
+	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", Status: "Active"})
 	assert.Equal(t, "Active", w.GetClientStatus(orders))
 }
 
 func TestCaseloadVars_GetClientStatus_with_no_active_order_will_return_open(t *testing.T) {
 	orders := []sirius.Order{
-		{OrderStatus: sirius.RefData{Label: "Open"}},
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
-		{OrderStatus: sirius.RefData{Label: "Closed"}},
-		{OrderStatus: sirius.RefData{Label: "Open"}},
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Open"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Closed"}},
+		{Status: sirius.RefData{Label: "Open"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
 	}
-	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", OrderStatus: "Active"})
+	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", Status: "Active"})
 	assert.Equal(t, "Open", w.GetClientStatus(orders))
 }
 
 func TestCaseloadVars_GetClientStatus_with_no_active_order_will_return_closed(t *testing.T) {
 	orders := []sirius.Order{
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
-		{OrderStatus: sirius.RefData{Label: "Closed"}},
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Closed"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
 	}
-	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", OrderStatus: "Active"})
+	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", Status: "Active"})
 	assert.Equal(t, "Closed", w.GetClientStatus(orders))
 }
 
 func TestCaseloadVars_GetClientStatus_with_no_active_order_will_return_duplicate(t *testing.T) {
 	orders := []sirius.Order{
-		{OrderStatus: sirius.RefData{Label: "Duplicate"}},
+		{Status: sirius.RefData{Label: "Duplicate"}},
 	}
-	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", OrderStatus: "Active"})
+	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", Status: "Active"})
 	assert.Equal(t, "Duplicate", w.GetClientStatus(orders))
 }
 
@@ -202,6 +202,6 @@ func TestCaseloadVars_GetReportDueDate(t *testing.T) {
 			DueDate: "12/02/2020",
 		}},
 	}
-	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", OrderStatus: "Active", DueDate: "12/02/2020"})
+	w := createCaseloadVars(caseloadURLFields{SelectedTeam: "lay", Status: "Active", DueDate: "12/02/2020"})
 	assert.Equal(t, "12/02/2020", w.GetReportDueDate(orders))
 }

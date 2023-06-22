@@ -14,11 +14,11 @@
                         </div>
                     </div>
                 </th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Report due date</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Supervision level</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Client">Client</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Report due date">Report due date</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Case owner">Case owner</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Supervision level">Supervision level</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Status">Status</th>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -36,11 +36,11 @@
                             </div>
                         </td>
                         <td class="govuk-table__cell">
-                            <a {{ if ne .ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientId) }}"{{ end }} class="govuk-link">
-                                {{ .ClientFirstName }} {{ .ClientSurname }}
+                            <a {{ if ne .Id 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .Id) }}"{{ end }} class="govuk-link">
+                                {{ .FirstName }} {{ .Surname }}
                             </a>
                             <label class="govuk-label">
-                                <span class="secondary">{{ .ClientCaseRecNumber }}</span>
+                                <span class="secondary">{{ .CaseRecNumber }}</span>
                             </label>
                         </td>
                         <td class="govuk-table__cell">
@@ -49,9 +49,9 @@
                             </label>
                         </td>
                         <td class="govuk-table__cell">
-                            <label class="govuk-label" for="assignee-display-name"> {{ .ClientSupervisionCaseOwner.CaseManagerName }}
-                                {{ if .ClientSupervisionCaseOwner.Team }}
-                                {{ range .ClientSupervisionCaseOwner.Team }}
+                            <label class="govuk-label" for="assignee-display-name"> {{ .SupervisionCaseOwner.CaseManagerName }}
+                                {{ if .SupervisionCaseOwner.Team }}
+                                {{ range .SupervisionCaseOwner.Team }}
                                     <span class="secondary">{{ .Name }}</span>
                                 {{ end }}
                             </label>

@@ -11,19 +11,19 @@ type AnnualReport struct {
 }
 
 type Order struct {
-	OrderId            int          `json:"id"`
-	OrderStatus        RefData      `json:"orderStatus"`
+	Id                 int          `json:"id"`
+	Status             RefData      `json:"orderStatus"`
 	LatestAnnualReport AnnualReport `json:"latestAnnualReport"`
 }
 
 type ApiClient struct {
-	ClientId                   int            `json:"id"`
-	ClientCaseRecNumber        string         `json:"caseRecNumber"`
-	ClientFirstName            string         `json:"firstname"`
-	ClientSurname              string         `json:"surname"`
-	ClientSupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
-	Case                       []Order        `json:"cases"`
-	SupervisionLevel           string         `json:"supervisionLevel"`
+	Id                   int            `json:"id"`
+	CaseRecNumber        string         `json:"caseRecNumber"`
+	FirstName            string         `json:"firstname"`
+	Surname              string         `json:"surname"`
+	SupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
+	Case                 []Order        `json:"cases"`
+	SupervisionLevel     string         `json:"supervisionLevel"`
 }
 
 type ClientList struct {
@@ -32,10 +32,10 @@ type ClientList struct {
 	TotalClients    int             `json:"total"`
 }
 
-func (c *Client) GetCaseloadList(ctx Context, teamIds string) (ClientList, error) {
+func (c *Client) GetCaseloadList(ctx Context, teamId int) (ClientList, error) {
 	var v ClientList
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%s/clients", teamIds)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients", teamId)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
