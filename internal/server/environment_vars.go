@@ -29,7 +29,7 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		SiriusPublicURL: getEnv("SIRIUS_PUBLIC_URL", ""),
 		Prefix:          getEnv("PREFIX", ""),
 		DefaultTeamId:   defaultTeamId,
-		ShowCaseload:    true,
+		ShowCaseload:    getEnv("SHOW_CASELOAD", "0") == "1",
 	}, nil
 }
 
