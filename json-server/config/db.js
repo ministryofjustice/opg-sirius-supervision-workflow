@@ -636,6 +636,42 @@ module.exports = function () {
         "tasks": generateTasks(10),
         "total": 10
       }
-    ]
+    ],
+    "caseload":  {
+        "id": 44,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "total": 1,
+        "clients": [
+          {
+            "id": 63,
+            "caseRecNumber": "42687883",
+            "firstname": "Ro",
+            "surname": "Bot",
+            "supervisionCaseOwner":{
+              "id":25,
+              "teams":[],
+              "displayName":"Lay Team 1 - (Supervision)"
+            },
+            "cases": [
+              {
+                "id": 92,
+                "caseRecNumber": "33594483",
+                "latestAnnualReport": {
+                  "dueDate": "21/12/2023"
+                },
+                "orderStatus": {
+                  "handle": "CLOSED",
+                  "label": "Closed",
+                  "deprecated": false
+                },
+              }
+            ],
+            "supervisionLevel": "Minimal",
+          },
+        ]
+    },
   }
 }
