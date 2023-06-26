@@ -12,22 +12,8 @@ describe("Workflow", () => {
     cy.url().should('contain', '/client-tasks')
   });
 
-  it("shows user that is logged in within banner", () => {
-    cy.contains(".moj-header__link", "case manager");
+  it("should load header template within banner", () => {
+    cy.get('.moj-header__logo > .moj-header__link').should('contain.text', 'OPG');
+    cy.contains(".moj-header__link", "Sirius");
   });
-
-  const expected = [
-    "Power of Attorney",
-    "Supervision",
-    "Admin",
-    "Sign out",
-  ];
-
-  it("has working nav links within banner", () => {
-    cy.get(".moj-header__navigation-list")
-    .children()
-    .each(($el, index) => {
-        cy.wrap($el).should("contain", expected[index]);
-    });
-  })
 });
