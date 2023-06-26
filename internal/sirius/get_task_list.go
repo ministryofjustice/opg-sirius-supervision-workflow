@@ -132,7 +132,7 @@ func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, s
 	return v, nil
 }
 
-func (d *Deputy) GetURL() string {
+func (d Deputy) GetURL() string {
 	url := "/supervision/deputies/%d"
 	if d.Type.Handle == "LAY" {
 		url = "/supervision/#/deputy-hub/%d"
