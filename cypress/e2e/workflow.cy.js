@@ -32,18 +32,18 @@ describe("Workflow", () => {
   })
 
   it("the nav link should contain lpa", () => {
-    cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("contain.value", "/lpa")
+    cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("contain.text", "/lpa")
   })
 
   it("the nav link should contain supervision", () => {
-    cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("contain.value", "/supervision")
+    cy.get(".moj-header__navigation-list > :nth-child(1) > a").should("contain.text", "/supervision")
   })  
   
   it("the nav link should contain lpa", () => {
-    cy.get(".moj-header__navigation-list > :nth-child(2) > a").should("contain.value", "/admin")
+    cy.get(".moj-header__navigation-list > :nth-child(2) > a").should("contain.text", "/admin")
   })
   
   it("the nav link should contain logout", () => {
-    cy.get(".moj-header__navigation-list > :nth-child(3) > a").should("contain.value", "/auth/logout")
+    cy.get(".moj-header__navigation-list > :nth-child(3) > a").should("contain.text", "/auth/logout")
   })
 });
