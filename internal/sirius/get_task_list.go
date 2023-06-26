@@ -14,10 +14,10 @@ type RefData struct {
 	Label  string `json:"label"`
 }
 
-type CaseManagement struct {
-	CaseManagerName string     `json:"displayName"`
-	Id              int        `json:"id"`
-	Team            []UserTeam `json:"teams"`
+type Assignee struct {
+	Name  string     `json:"displayName"`
+	Id    int        `json:"id"`
+	Teams []UserTeam `json:"teams"`
 }
 
 type UserTeam struct {
@@ -26,8 +26,8 @@ type UserTeam struct {
 	Team []UserTeam `json:"teams"`
 }
 
-type CaseItemsDetails struct {
-	CaseItemClient Clients `json:"client"`
+type CaseItem struct {
+	Client Client `json:"client"`
 }
 
 type Deputy struct {
@@ -36,28 +36,32 @@ type Deputy struct {
 	Type        RefData `json:"deputyType"`
 }
 
-type Clients struct {
-	ClientId                   int            `json:"id"`
-	ClientCaseRecNumber        string         `json:"caseRecNumber"`
-	ClientFirstName            string         `json:"firstname"`
-	ClientSurname              string         `json:"surname"`
-	ClientSupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
-	FeePayer                   Deputy         `json:"feePayer"`
+type Client struct {
+	Id                   int      `json:"id"`
+	CaseRecNumber        string   `json:"caseRecNumber"`
+	FirstName            string   `json:"firstname"`
+	Surname              string   `json:"surname"`
+	SupervisionCaseOwner Assignee `json:"supervisionCaseOwner"`
+	FeePayer             Deputy   `json:"feePayer"`
+	Orders               []Order  `json:"cases"`
+	SupervisionLevel     string   `json:"supervisionLevel"`
 }
 
-type ApiTask struct {
-	ApiTaskAssignee         CaseManagement     `json:"assignee"`
-	ApiTaskCaseItems        []CaseItemsDetails `json:"caseItems"`
-	ApiClients              []Clients          `json:"clients"`
-	ApiTaskDueDate          string             `json:"dueDate"`
-	ApiTaskId               int                `json:"id"`
-	ApiTaskHandle           string             `json:"type"`
-	ApiTaskType             string             `json:"name"`
-	ApiCaseOwnerTask        bool               `json:"caseOwnerTask"`
-	ApiPriorityTask         bool               `json:"isPriority"`
-	TaskTypeName            string
-	CalculatedDueDateColour string
-	ClientInformation       Clients
+type Task struct {
+	Assignee      Assignee   `json:"assignee"`
+	CaseItems     []CaseItem `json:"caseItems"`
+	Clients       []Client   `json:"clients"`
+	DueDate       string     `json:"dueDate"`
+	Id            int        `json:"id"`
+	Type          string     `json:"type"`
+	Name          string     `json:"name"`
+	CaseOwnerTask bool       `json:"caseOwnerTask"`
+	IsPriority    bool       `json:"isPriority"`
+}
+
+type DueDateStatus struct {
+	Name   string
+	Colour string
 }
 
 type PageInformation struct {
@@ -75,14 +79,13 @@ type TypeAndCount struct {
 }
 
 type TaskList struct {
-	WholeTaskList []ApiTask       `json:"tasks"`
-	Pages         PageInformation `json:"pages"`
-	TotalTasks    int             `json:"total"`
-	MetaData      MetaData        `json:"metadata"`
-	ActiveFilters []string
+	Tasks      []Task          `json:"tasks"`
+	Pages      PageInformation `json:"pages"`
+	TotalTasks int             `json:"total"`
+	MetaData   MetaData        `json:"metadata"`
 }
 
-func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam Team, taskTypeSelected []string, taskTypes []ApiTaskTypes, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
+func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam Team, taskTypeSelected []string, taskTypes []TaskType, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 
@@ -126,14 +129,10 @@ func (c *Client) GetTaskList(ctx Context, search int, displayTaskLimit int, sele
 		return v, err
 	}
 
-	TaskList := v
-
-	TaskList.WholeTaskList = SetTaskTypeName(v.WholeTaskList, taskTypes)
-
-	return TaskList, err
+	return v, nil
 }
 
-func (d *Deputy) GetURL() string {
+func (d Deputy) GetURL() string {
 	url := "/supervision/deputies/%d"
 	if d.Type.Handle == "LAY" {
 		url = "/supervision/#/deputy-hub/%d"
@@ -141,7 +140,7 @@ func (d *Deputy) GetURL() string {
 	return fmt.Sprintf(url, d.Id)
 }
 
-func CreateFilter(taskTypeSelected []string, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time, taskTypes []ApiTaskTypes) string {
+func CreateFilter(taskTypeSelected []string, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time, taskTypes []TaskType) string {
 	filter := "status:Not+started,"
 
 	for _, t := range taskTypeSelected {
@@ -165,146 +164,92 @@ func CreateFilter(taskTypeSelected []string, selectedAssignees []string, dueDate
 	return strings.TrimRight(filter, ",")
 }
 
-func SetTaskTypeName(v []ApiTask, loadTasks []ApiTaskTypes) []ApiTask {
-	var list []ApiTask
-	for _, s := range v {
-		task := ApiTask{
-			ApiTaskAssignee: CaseManagement{
-				CaseManagerName: GetAssigneeDisplayName(s),
-				Id:              GetAssigneeId(s),
-				Team:            GetAssigneeTeams(s),
-			},
-			ApiTaskDueDate:          s.ApiTaskDueDate,
-			ApiTaskId:               s.ApiTaskId,
-			ApiTaskHandle:           s.ApiTaskHandle,
-			ApiTaskType:             s.ApiTaskType,
-			TaskTypeName:            GetTaskName(s, loadTasks),
-			ClientInformation:       GetClientInformation(s),
-			ApiPriorityTask:         s.ApiPriorityTask,
-			CalculatedDueDateColour: GetCalculatedDueDateStatus(s.ApiTaskDueDate, time.Now),
-		}
-		list = append(list, task)
-	}
-	return list
-}
-
-func GetCalculatedDueDateStatus(date string, now func() time.Time) string {
-	todayFormatted := formatDate(now())
-	getTomorrowsDay := now().AddDate(0, 0, 1).Weekday()
-	dateFormatted, _ := time.Parse("02/01/2006", date)
-
-	var startOfNextWeek time.Time
-	var endOfNextWeek time.Time
-
-	switch getTomorrowsDay {
-	case time.Monday:
-		startOfNextWeek = now().AddDate(0, 0, 1)
-		endOfNextWeek = now().AddDate(0, 0, 7)
-
-	case time.Tuesday:
-		startOfNextWeek = now().AddDate(0, 0, 7)
-		endOfNextWeek = now().AddDate(0, 0, 13)
-
-	case time.Wednesday:
-		startOfNextWeek = now().AddDate(0, 0, 6)
-		endOfNextWeek = now().AddDate(0, 0, 12)
-
-	case time.Thursday:
-		startOfNextWeek = now().AddDate(0, 0, 5)
-		endOfNextWeek = now().AddDate(0, 0, 11)
-
-	case time.Friday:
-		startOfNextWeek = now().AddDate(0, 0, 4)
-		endOfNextWeek = now().AddDate(0, 0, 10)
-
-	case time.Saturday:
-		startOfNextWeek = now().AddDate(0, 0, 3)
-		endOfNextWeek = now().AddDate(0, 0, 9)
-
-	case time.Sunday:
-		startOfNextWeek = now().AddDate(0, 0, 2)
-		endOfNextWeek = now().AddDate(0, 0, 8)
+func (t Task) GetDueDateStatus(now ...time.Time) DueDateStatus {
+	removeTime := func(t time.Time) time.Time {
+		y, m, d := t.Date()
+		return time.Date(y, m, d, 0, 0, 0, 0, time.Local)
 	}
 
-	startOfNextWeekDate := formatDate(startOfNextWeek)
-	endOfNextWeekDate := formatDate(endOfNextWeek)
-
-	switch {
-	case dateFormatted.Equal(todayFormatted):
-		return "dueToday"
-
-	case (dateFormatted.After(startOfNextWeekDate) || dateFormatted.Equal(startOfNextWeekDate)) &&
-		(dateFormatted.Before(endOfNextWeekDate) || dateFormatted.Equal(endOfNextWeekDate)):
-		return "dueNextWeek"
-
-	case dateFormatted.Before(todayFormatted):
-		return "inThePast"
-
-	case (dateFormatted.Weekday() == getTomorrowsDay) && (dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate)):
-		return "dueTomorrow"
-
-	case dateFormatted.After(todayFormatted) && dateFormatted.Before(startOfNextWeekDate):
-		return "dueThisWeek"
+	today := removeTime(time.Now())
+	if len(now) > 0 {
+		today = removeTime(now[0])
 	}
-	return "none"
+
+	dueDate, _ := time.Parse("02/01/2006", t.DueDate)
+	dueDate = removeTime(dueDate)
+
+	daysUntilNextWeek := int((7 + (time.Monday - today.Weekday())) % 7)
+	startOfNextWeek := today.AddDate(0, 0, daysUntilNextWeek)
+	endOfNextWeek := startOfNextWeek.AddDate(0, 0, 6)
+
+	if dueDate.Before(today) {
+		return DueDateStatus{"Overdue", "red"}
+	} else if dueDate.Equal(today) {
+		return DueDateStatus{"Due Today", "red"}
+	} else if dueDate.Sub(today).Hours() == 24 && dueDate.Before(startOfNextWeek) {
+		return DueDateStatus{"Due Tomorrow", "orange"}
+	} else if dueDate.Before(startOfNextWeek) {
+		return DueDateStatus{"Due This Week", "orange"}
+	} else if dueDate.Before(endOfNextWeek) || dueDate.Equal(endOfNextWeek) {
+		return DueDateStatus{"Due Next Week", "green"}
+	}
+
+	return DueDateStatus{"", ""}
 }
 
-func formatDate(dateToFormat time.Time) time.Time {
-	dateAsString := dateToFormat.Format("02/01/2006")
-	formattedDate, _ := time.Parse("02/01/2006", dateAsString)
-	return formattedDate
+func (t Task) GetClient() Client {
+	if len(t.CaseItems) != 0 {
+		return t.CaseItems[0].Client
+	}
+	return t.Clients[0]
 }
 
-func GetTaskName(task ApiTask, loadTasks []ApiTaskTypes) string {
-	for i := range loadTasks {
-		if task.ApiTaskHandle == loadTasks[i].Handle {
-			return loadTasks[i].Incomplete
+func (t Task) GetName(taskTypes []TaskType) string {
+	for _, taskType := range taskTypes {
+		if t.Type == taskType.Handle {
+			return taskType.Incomplete
 		}
 	}
-	return task.ApiTaskType
+	return t.Name
 }
 
-func GetAssigneeDisplayName(s ApiTask) string {
-	if s.ApiTaskAssignee.CaseManagerName == "Unassigned" {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.CaseManagerName
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.CaseManagerName
+func (t Task) GetAssignee() Assignee {
+	if t.Assignee.Name == "Unassigned" {
+		if len(t.Clients) != 0 {
+			return t.Clients[0].SupervisionCaseOwner
+		} else if len(t.CaseItems) != 0 {
+			return t.CaseItems[0].Client.SupervisionCaseOwner
 		}
 	}
-	return s.ApiTaskAssignee.CaseManagerName
+	return t.Assignee
 }
 
-func GetAssigneeTeams(s ApiTask) []UserTeam {
-	if len(s.ApiTaskAssignee.Team) == 0 {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.Team
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Team
+func (c Client) GetReportDueDate() string {
+	if len(c.Orders) > 0 {
+		return c.Orders[0].LatestAnnualReport.DueDate
+	}
+	return ""
+}
+
+func (c Client) GetStatus() string {
+	orderStatuses := make(map[string]string)
+
+	for _, order := range c.Orders {
+		label := order.Status.Label
+		orderStatuses[label] = label
+	}
+
+	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
+	for _, status := range statuses {
+		if _, found := orderStatuses[status]; found {
+			return status
 		}
 	}
-	return s.ApiTaskAssignee.Team
+
+	return ""
 }
 
-func GetAssigneeId(s ApiTask) int {
-	if s.ApiTaskAssignee.Id == 0 {
-		if len(s.ApiClients) != 0 {
-			return s.ApiClients[0].ClientSupervisionCaseOwner.Id
-		} else if len(s.ApiTaskCaseItems) != 0 {
-			return s.ApiTaskCaseItems[0].CaseItemClient.ClientSupervisionCaseOwner.Id
-		}
-	}
-	return s.ApiTaskAssignee.Id
-}
-
-func GetClientInformation(s ApiTask) Clients {
-	if len(s.ApiTaskCaseItems) != 0 {
-		return s.ApiTaskCaseItems[0].CaseItemClient
-	}
-	return s.ApiClients[0]
-}
-
-func getEcmTaskTypesString(taskTypes []ApiTaskTypes) []string {
+func getEcmTaskTypesString(taskTypes []TaskType) []string {
 	var ecmTasks []string
 	for _, taskType := range taskTypes {
 		if taskType.EcmTask {

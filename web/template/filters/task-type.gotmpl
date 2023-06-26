@@ -19,7 +19,7 @@
     <div class="app-c-option-select__container-inner js-auto-height-inner ">
       <fieldset class="govuk-fieldset" aria-label="Task type">
         <legend class="hide" >Task types</legend>
-        {{ range .LoadTasks }}
+        {{ range .TaskTypes }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
               <input class="govuk-checkboxes__input" id="task_{{ .Handle }}" name="task-type" type="checkbox" value="{{ .Handle }}" data-module="filter" {{if .IsSelected }}checked{{end}} />
