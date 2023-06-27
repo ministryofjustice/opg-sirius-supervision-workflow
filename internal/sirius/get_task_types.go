@@ -2,26 +2,16 @@ package sirius
 
 import (
 	"encoding/json"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
 )
 
-type TaskType struct {
-	Handle     string `json:"handle"`
-	Incomplete string `json:"incomplete"`
-	Category   string `json:"category"`
-	Complete   string `json:"complete"`
-	User       bool   `json:"user"`
-	EcmTask    bool   `json:"ecmTask"`
-	IsSelected bool
-	TaskCount  int
+type TaskTypesList struct {
+	TaskTypes map[string]model.TaskType `json:"task_types"`
 }
 
-type WholeTaskTypesList struct {
-	AllTaskList map[string]TaskType `json:"task_types"`
-}
-
-func (c *ApiClient) GetTaskTypes(ctx Context, selectedTaskTypes []string) ([]TaskType, error) {
+func (c *ApiClient) GetTaskTypes(ctx Context, selectedTaskTypes []string) ([]model.TaskType, error) {
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/tasktypes/supervision", nil)
 
 	if err != nil {
@@ -47,18 +37,16 @@ func (c *ApiClient) GetTaskTypes(ctx Context, selectedTaskTypes []string) ([]Tas
 		return nil, newStatusError(resp)
 	}
 
-	var v WholeTaskTypesList
+	var v TaskTypesList
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return nil, err
 	}
 
-	WholeTaskTypeList := v.AllTaskList
+	var taskTypes []model.TaskType
 
-	var taskTypeList []TaskType
-
-	for _, u := range WholeTaskTypeList {
-		taskType := TaskType{
+	for _, u := range v.TaskTypes {
+		taskType := model.TaskType{
 			Handle:     u.Handle,
 			Incomplete: u.Incomplete,
 			Category:   u.Category,
@@ -67,23 +55,23 @@ func (c *ApiClient) GetTaskTypes(ctx Context, selectedTaskTypes []string) ([]Tas
 			EcmTask:    u.EcmTask,
 			IsSelected: IsSelected(u.Handle, selectedTaskTypes),
 		}
-		taskTypeList = append(taskTypeList, taskType)
+		taskTypes = append(taskTypes, taskType)
 	}
 
-	sort.Slice(taskTypeList, func(i, j int) bool {
-		return taskTypeList[i].Incomplete < taskTypeList[j].Incomplete
+	sort.Slice(taskTypes, func(i, j int) bool {
+		return taskTypes[i].Incomplete < taskTypes[j].Incomplete
 	})
 
 	// prepend the "ECM Tasks" filter option
-	taskTypeList = append([]TaskType{
+	taskTypes = append([]model.TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
 			IsSelected: IsSelected("ECM_TASKS", selectedTaskTypes),
 		},
-	}, taskTypeList...)
+	}, taskTypes...)
 
-	return taskTypeList, err
+	return taskTypes, err
 }
 
 func IsSelected(handle string, taskTypeSelected []string) bool {

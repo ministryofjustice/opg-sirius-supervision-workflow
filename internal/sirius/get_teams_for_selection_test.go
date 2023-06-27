@@ -3,6 +3,7 @@ package sirius
 import (
 	"bytes"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -79,20 +80,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []Team{
+	expectedResponse := []model.Team{
 		{
 			Id:        21,
 			Name:      "Allocations - (Supervision)",
 			Type:      "ALLOCATIONS",
 			TypeLabel: "Allocations",
 			Selector:  "21",
-			Members: []TeamMember{
+			Members: []model.Assignee{
 				{
-					ID:   71,
+					Id:   71,
 					Name: "Allocations User1",
 				},
 			},
-			Teams: []Team{},
+			Teams: []model.Team{},
 		},
 		{
 			Id:        22,
@@ -100,20 +101,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Type:      "LAY",
 			TypeLabel: "Lay Team",
 			Selector:  "22",
-			Teams:     []Team{},
+			Teams:     []model.Team{},
 		},
 		{
 			Name:     "Lay deputy team",
 			Selector: "lay-team",
-			Members:  []TeamMember{},
-			Teams: []Team{
+			Members:  []model.Assignee{},
+			Teams: []model.Team{
 				{
 					Id:        22,
 					Name:      "Lay Team 1",
 					Type:      "LAY",
 					TypeLabel: "Lay Team",
 					Selector:  "22",
-					Teams:     []Team{},
+					Teams:     []model.Team{},
 				},
 			},
 		},
@@ -123,20 +124,20 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Type:      "PRO",
 			TypeLabel: "Pro Team",
 			Selector:  "23",
-			Teams:     []Team{},
+			Teams:     []model.Team{},
 		},
 		{
 			Name:     "Professional deputy team",
 			Selector: "pro-team",
-			Members:  []TeamMember{},
-			Teams: []Team{
+			Members:  []model.Assignee{},
+			Teams: []model.Team{
 				{
 					Id:        23,
 					Name:      "Pro Team 1",
 					Type:      "PRO",
 					TypeLabel: "Pro Team",
 					Selector:  "23",
-					Teams:     []Team{},
+					Teams:     []model.Team{},
 				},
 			},
 		},
@@ -163,73 +164,4 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 		URL:    svr.URL + "/api/v1/teams",
 		Method: http.MethodGet,
 	}, err)
-}
-
-func TestTeam_GetAssigneesForFilter(t *testing.T) {
-	team := Team{
-		Members: []TeamMember{
-			{ID: 1, Name: "B"},
-			{ID: 2, Name: "A"},
-		},
-		Teams: []Team{
-			{
-				Members: []TeamMember{
-					{ID: 4, Name: "D"},
-					{ID: 2, Name: "A"},
-					{ID: 3, Name: "C"},
-				},
-			},
-			{
-				Members: []TeamMember{
-					{ID: 3, Name: "C"},
-				},
-			},
-		},
-	}
-
-	expected := []TeamMember{
-		{ID: 2, Name: "A"},
-		{ID: 1, Name: "B"},
-		{ID: 3, Name: "C"},
-		{ID: 4, Name: "D"},
-	}
-
-	assert.Equal(t, expected, team.GetAssigneesForFilter())
-}
-
-func TestTeam_HasTeam(t *testing.T) {
-	team := Team{
-		Id: 10,
-		Teams: []Team{
-			{Id: 12},
-			{Id: 13},
-		},
-	}
-
-	assert.Truef(t, team.HasTeam(10), "Parent team ID 10 not found")
-	assert.Truef(t, team.HasTeam(12), "Check team ID 12 not found")
-	assert.Truef(t, team.HasTeam(13), "Child team ID 13 not found")
-	assert.False(t, team.HasTeam(11), "Child team ID 11 should not exist")
-}
-
-func TestTeamMember_IsSelected(t *testing.T) {
-	selectedTeamMember := TeamMember{ID: 10}
-	unselectedTeamMember := TeamMember{ID: 11}
-
-	selectedAssignees := []string{"9", "10", "12", "13"}
-
-	assert.Truef(t, selectedTeamMember.IsSelected(selectedAssignees), "Team ID 10 is not selected")
-	assert.False(t, unselectedTeamMember.IsSelected(selectedAssignees), "Team ID 11 is selected")
-}
-
-func TestTeam_IsLay(t *testing.T) {
-	assert.True(t, Team{Type: "LAY"}.IsLay())
-	assert.True(t, Team{Type: "", Selector: "lay-team"}.IsLay())
-	assert.False(t, Team{Type: "NOT LAY"}.IsLay())
-}
-
-func TestTeam_IsPro(t *testing.T) {
-	assert.True(t, Team{Type: "PRO"}.IsPro())
-	assert.True(t, Team{Type: "", Selector: "pro-team"}.IsPro())
-	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
 }

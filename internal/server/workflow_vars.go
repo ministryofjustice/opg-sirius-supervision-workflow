@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
@@ -11,9 +12,9 @@ import (
 type WorkflowVars struct {
 	Path            string
 	XSRFToken       string
-	MyDetails       sirius.UserDetails
-	TeamSelection   []sirius.Team
-	SelectedTeam    sirius.Team
+	MyDetails       model.Assignee
+	TeamSelection   []model.Team
+	SelectedTeam    model.Team
 	Tabs            []Tab
 	SuccessMessage  string
 	Errors          sirius.ValidationErrors
@@ -26,8 +27,8 @@ type Tab struct {
 }
 
 type WorkflowVarsClient interface {
-	GetCurrentUserDetails(sirius.Context) (sirius.UserDetails, error)
-	GetTeamsForSelection(sirius.Context) ([]sirius.Team, error)
+	GetCurrentUserDetails(sirius.Context) (model.Assignee, error)
+	GetTeamsForSelection(sirius.Context) ([]model.Team, error)
 }
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
@@ -76,15 +77,15 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 	return &vars, nil
 }
 
-func getLoggedInTeamId(myDetails sirius.UserDetails, defaultTeamId int) int {
+func getLoggedInTeamId(myDetails model.Assignee, defaultTeamId int) int {
 	if len(myDetails.Teams) < 1 {
 		return defaultTeamId
 	} else {
-		return myDetails.Teams[0].TeamId
+		return myDetails.Teams[0].Id
 	}
 }
 
-func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []sirius.Team) (sirius.Team, error) {
+func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []model.Team) (model.Team, error) {
 	selectors := []string{
 		r.URL.Query().Get("team"),
 		strconv.Itoa(loggedInTeamId),
@@ -99,10 +100,10 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 		}
 	}
 
-	return sirius.Team{}, errors.New("invalid team selection")
+	return model.Team{}, errors.New("invalid team selection")
 }
 
-func (t Tab) GetURL(team sirius.Team) string {
+func (t Tab) GetURL(team model.Team) string {
 	return t.basePath + "?team=" + team.Selector
 }
 

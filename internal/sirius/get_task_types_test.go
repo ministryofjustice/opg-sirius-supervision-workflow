@@ -3,6 +3,7 @@ package sirius
 import (
 	"bytes"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -30,7 +31,7 @@ func TestGetTaskTypes(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []TaskType{
+	expectedResponse := []model.TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
@@ -82,7 +83,7 @@ func TestGetTaskTypesCanMarkSelected(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []TaskType{
+	expectedResponse := []model.TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
@@ -140,7 +141,7 @@ func TestGetTaskTypesCanMarkSelectedForEcmTasks(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := []TaskType{
+	expectedResponse := []model.TaskType{
 		{
 			Handle:     "ECM_TASKS",
 			Incomplete: "ECM Tasks",
