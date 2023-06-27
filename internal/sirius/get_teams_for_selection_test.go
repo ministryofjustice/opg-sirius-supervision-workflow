@@ -13,7 +13,7 @@ import (
 
 func TestGetTeamsForSelection(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `[
 		{
@@ -154,7 +154,7 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.GetTeamsForSelection(getContext(nil))
 

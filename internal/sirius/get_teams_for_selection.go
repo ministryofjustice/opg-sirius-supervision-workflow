@@ -87,7 +87,7 @@ func (m TeamMember) IsSelected(selectedAssignees []string) bool {
 	return false
 }
 
-func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
+func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]Team, error) {
 	var v []TeamCollection
 	var q []Team
 

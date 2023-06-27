@@ -23,7 +23,7 @@
             </thead>
             <tbody class="govuk-table__body">
                 {{if ne .ClientList.TotalClients 0}}
-                    {{ range .ClientList.WholeClientList }}
+                    {{ range .ClientList.Clients }}
                     <tr class="govuk-table__row">
                         <td class="govuk-table__cell">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
@@ -39,29 +39,23 @@
                             <a {{ if ne .Id 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .Id) }}"{{ end }} class="govuk-link">
                                 {{ .FirstName }} {{ .Surname }}
                             </a>
-                            <label class="govuk-label">
-                                <span class="secondary">{{ .CaseRecNumber }}</span>
-                            </label>
+                            <label class="govuk-label"><span class="secondary">{{ .CaseRecNumber }}</span></label>
                         </td>
                         <td class="govuk-table__cell">
-                            <label class="govuk-label">
-                                {{ $.GetReportDueDate .Case }}
-                            </label>
+                            <label class="govuk-label">{{ .GetReportDueDate }}</label>
                         </td>
                         <td class="govuk-table__cell">
-                            <label class="govuk-label" for="assignee-display-name"> {{ .SupervisionCaseOwner.CaseManagerName }}
-                                {{ if .SupervisionCaseOwner.Team }}
-                                {{ range .SupervisionCaseOwner.Team }}
+                            <label class="govuk-label" for="assignee-display-name"> {{ .SupervisionCaseOwner.Name }}
+                                {{ range .SupervisionCaseOwner.Teams }}
                                     <span class="secondary">{{ .Name }}</span>
                                 {{ end }}
                             </label>
-                            {{ end }}
                         </td>
                         <td class="govuk-table__cell">
                             {{ .SupervisionLevel }}
                         </td>
                         <td class="govuk-table__cell">
-                            {{ $.GetClientStatus .Case }}
+                            {{ .GetStatus }}
                         </td>
                     </tr>
                     {{ end }}

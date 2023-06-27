@@ -16,23 +16,13 @@ type Order struct {
 	LatestAnnualReport AnnualReport `json:"latestAnnualReport"`
 }
 
-type ApiClient struct {
-	Id                   int            `json:"id"`
-	CaseRecNumber        string         `json:"caseRecNumber"`
-	FirstName            string         `json:"firstname"`
-	Surname              string         `json:"surname"`
-	SupervisionCaseOwner CaseManagement `json:"supervisionCaseOwner"`
-	Case                 []Order        `json:"cases"`
-	SupervisionLevel     string         `json:"supervisionLevel"`
-}
-
 type ClientList struct {
-	WholeClientList []ApiClient     `json:"clients"`
-	Pages           PageInformation `json:"pages"`
-	TotalClients    int             `json:"total"`
+	Clients      []Client        `json:"clients"`
+	Pages        PageInformation `json:"pages"`
+	TotalClients int             `json:"total"`
 }
 
-func (c *Client) GetCaseloadList(ctx Context, teamId int) (ClientList, error) {
+func (c *ApiClient) GetClientList(ctx Context, teamId int) (ClientList, error) {
 	var v ClientList
 
 	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients", teamId)
