@@ -3,6 +3,7 @@ package sirius
 import (
 	"bytes"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -59,20 +60,20 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	}
 
 	expectedResponse := ClientList{
-		Clients: []Client{
+		Clients: []model.Client{
 			{
 				Id:            63,
 				CaseRecNumber: "42687883",
 				FirstName:     "Ro",
 				Surname:       "Bot",
-				Orders: []Order{
+				Orders: []model.Order{
 					{
 						Id: 92,
-						Status: RefData{
+						Status: model.RefData{
 							Handle: "CLOSED",
 							Label:  "Closed",
 						},
-						LatestAnnualReport: AnnualReport{
+						LatestAnnualReport: model.AnnualReport{
 							DueDate: "21/12/2023",
 						},
 					},
@@ -80,14 +81,14 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 				SupervisionLevel: "Minimal",
 			},
 		},
-		Pages: PageInformation{
+		Pages: model.PageInformation{
 			PageCurrent: 1,
 			PageTotal:   1,
 		},
 		TotalClients: 1,
 	}
 
-	selectedTeam := Team{Id: 13}
+	selectedTeam := model.Team{Id: 13}
 
 	clientList, err := client.GetClientList(getContext(nil), selectedTeam.Id)
 
@@ -108,7 +109,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	expectedResponse := ClientList{
 		Clients:      nil,
-		Pages:        PageInformation{},
+		Pages:        model.PageInformation{},
 		TotalClients: 0,
 	}
 

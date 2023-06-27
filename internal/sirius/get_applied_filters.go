@@ -1,8 +1,11 @@
 package sirius
 
-import "time"
+import (
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"time"
+)
 
-func GetAppliedFilters(selectedTeam Team, selectedAssignees []string, selectedUnassigned string, taskTypes []TaskType, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
+func GetAppliedFilters(selectedTeam model.Team, selectedAssignees []string, selectedUnassigned string, taskTypes []model.TaskType, dueDateFrom *time.Time, dueDateTo *time.Time) []string {
 	var appliedFilters []string
 
 	for _, u := range taskTypes {
