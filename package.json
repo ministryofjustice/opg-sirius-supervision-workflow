@@ -18,7 +18,7 @@
   "dependencies": {
     "@ministryofjustice/frontend": "^1.0.0",
     "govuk-frontend": "^4.3.1",
-    "opg-sirius-header": "ministryofjustice/opg-sirius-header#1b69146b9d7554b437871db7ee1c7c53e588a844"
+    "opg-sirius-header": "ministryofjustice/opg-sirius-header#1b69146b9d7554b437871db7ee1c7c53e588a844",
   },
   "devDependencies": {
     "cypress": "^10.11.0",
