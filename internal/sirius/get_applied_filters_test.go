@@ -1,13 +1,14 @@
 package sirius
 
 import (
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []TaskType{
+	apiTaskTypes := []model.TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -26,19 +27,19 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []Team{
+	teamCollection := []model.Team{
 		{
 			Id:        12,
 			Name:      "Lay Team 1 - (Supervision)",
 			Type:      "Supervision",
 			TypeLabel: "Only",
-			Members: []TeamMember{
+			Members: []model.Assignee{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -69,7 +70,7 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []TaskType{
+	apiTaskTypes := []model.TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -88,7 +89,7 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []Team{
+	teamCollection := []model.Team{
 		{
 			Id:        12,
 			Name:      "Lay Team 1 - (Supervision)",
@@ -122,7 +123,7 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []TaskType{
+	apiTaskTypes := []model.TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -141,7 +142,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 		},
 	}
 
-	teamCollection := []Team{
+	teamCollection := []model.Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",
@@ -154,13 +155,13 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 			Name:      "Allocations Team",
 			Type:      "Supervision",
 			TypeLabel: "Only",
-			Members: []TeamMember{
+			Members: []model.Assignee{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -185,7 +186,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 }
 
 func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []TaskType{
+	apiTaskTypes := []model.TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -204,7 +205,7 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 		},
 	}
 
-	teamCollection := []Team{
+	teamCollection := []model.Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",
@@ -217,13 +218,13 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 			Name:      "Allocations Team",
 			Type:      "Supervision",
 			TypeLabel: "Only",
-			Members: []TeamMember{
+			Members: []model.Assignee{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},
@@ -250,8 +251,8 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 }
 
 func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
-	var apiTaskTypes []TaskType
-	selectedTeam := Team{
+	var apiTaskTypes []model.TaskType
+	selectedTeam := model.Team{
 		Id:        12,
 		Name:      "Supervision Team 1",
 		Type:      "Supervision",
@@ -275,7 +276,7 @@ func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-	apiTaskTypes := []TaskType{
+	apiTaskTypes := []model.TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -294,7 +295,7 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 		},
 	}
 
-	teamCollection := []Team{
+	teamCollection := []model.Team{
 		{
 			Id:        12,
 			Name:      "Supervision Team 1",
@@ -307,13 +308,13 @@ func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
 			Name:      "Allocations Team",
 			Type:      "Supervision",
 			TypeLabel: "Only",
-			Members: []TeamMember{
+			Members: []model.Assignee{
 				{
-					ID:   1,
+					Id:   1,
 					Name: "Test One",
 				},
 				{
-					ID:   2,
+					Id:   2,
 					Name: "Test Two",
 				},
 			},

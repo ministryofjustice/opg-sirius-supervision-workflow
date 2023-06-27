@@ -3,23 +3,14 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 )
 
-type AnnualReport struct {
-	DueDate string `json:"dueDate"`
-}
-
-type Order struct {
-	Id                 int          `json:"id"`
-	Status             RefData      `json:"orderStatus"`
-	LatestAnnualReport AnnualReport `json:"latestAnnualReport"`
-}
-
 type ClientList struct {
-	Clients      []Client        `json:"clients"`
-	Pages        PageInformation `json:"pages"`
-	TotalClients int             `json:"total"`
+	Clients      []model.Client        `json:"clients"`
+	Pages        model.PageInformation `json:"pages"`
+	TotalClients int                   `json:"total"`
 }
 
 func (c *ApiClient) GetClientList(ctx Context, teamId int) (ClientList, error) {

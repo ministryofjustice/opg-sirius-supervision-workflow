@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
@@ -9,8 +10,8 @@ import (
 )
 
 type ClientTasksClient interface {
-	GetTaskTypes(sirius.Context, []string) ([]sirius.TaskType, error)
-	GetTaskList(sirius.Context, int, int, sirius.Team, []string, []sirius.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskTypes(sirius.Context, []string) ([]model.TaskType, error)
+	GetTaskList(sirius.Context, int, int, model.Team, []string, []model.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
@@ -19,7 +20,7 @@ type ClientTasksVars struct {
 	App                 WorkflowVars
 	TaskList            sirius.TaskList
 	PageDetails         sirius.PageDetails
-	TaskTypes           []sirius.TaskType
+	TaskTypes           []model.TaskType
 	SelectedAssignees   []string
 	SelectedUnassigned  string
 	SelectedTaskTypes   []string
@@ -182,12 +183,12 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
-func calculateTaskCounts(taskTypes []sirius.TaskType, tasks sirius.TaskList) []sirius.TaskType {
-	var taskTypeList []sirius.TaskType
+func calculateTaskCounts(taskTypes []model.TaskType, tasks sirius.TaskList) []model.TaskType {
+	var taskTypeList []model.TaskType
 	ecmTasksCount := 0
 
 	for _, t := range taskTypes {
-		tasksWithCounts := sirius.TaskType{
+		tasksWithCounts := model.TaskType{
 			Handle:     t.Handle,
 			Incomplete: t.Incomplete,
 			Category:   t.Category,
@@ -241,7 +242,7 @@ func (ctv ClientTasksVars) buildUrl(team string, page int, tasksPerPage int, sel
 	return url
 }
 
-func (ctv ClientTasksVars) GetTeamUrl(team sirius.Team) string {
+func (ctv ClientTasksVars) GetTeamUrl(team model.Team) string {
 	perPage := ctv.PageDetails.StoredTaskLimit
 	if perPage == 0 {
 		perPage = 25

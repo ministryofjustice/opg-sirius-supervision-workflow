@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -12,11 +13,11 @@ type mockWorkflowVarsClient struct {
 	count             map[string]int
 	lastCtx           sirius.Context
 	err               error
-	userData          sirius.UserDetails
-	teamSelectionData []sirius.Team
+	userData          model.Assignee
+	teamSelectionData []model.Team
 }
 
-func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (sirius.UserDetails, error) {
+func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (model.Assignee, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -26,7 +27,7 @@ func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (siri
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]sirius.Team, error) {
+func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]model.Team, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -36,24 +37,24 @@ func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]sir
 	return m.teamSelectionData, m.err
 }
 
-var mockUserDetailsData = sirius.UserDetails{
-	ID:        123,
+var mockUserDetailsData = model.Assignee{
+	Id:        123,
 	Firstname: "John",
 	Surname:   "Doe",
-	Teams: []sirius.MyDetailsTeam{
+	Teams: []model.Team{
 		{
-			TeamId:      13,
-			DisplayName: "Lay Team 1 - (Supervision)",
+			Id:   13,
+			Name: "Lay Team 1 - (Supervision)",
 		},
 	},
 }
 
-var mockTeamSelectionData = []sirius.Team{
+var mockTeamSelectionData = []model.Team{
 	{
 		Id: 13,
-		Members: []sirius.TeamMember{
+		Members: []model.Assignee{
 			{
-				ID:   86,
+				Id:   86,
 				Name: "LayTeam1 User11",
 			},
 		},
@@ -85,15 +86,14 @@ func TestNewWorkflowVars(t *testing.T) {
 
 func TestGetLoggedInTeamId(t *testing.T) {
 	assert.Equal(t, 13, getLoggedInTeamId(mockUserDetailsData, 25))
-	assert.Equal(t, 25, getLoggedInTeamId(sirius.UserDetails{
-		ID:          65,
-		Name:        "case",
-		DisplayName: "case manager",
+	assert.Equal(t, 25, getLoggedInTeamId(model.Assignee{
+		Id:   65,
+		Name: "case manager",
 	}, 25))
 }
 
 func TestGetSelectedTeam(t *testing.T) {
-	teams := []sirius.Team{
+	teams := []model.Team{
 		{Selector: "1"},
 		{Selector: "13"},
 		{Selector: "2"},
@@ -104,7 +104,7 @@ func TestGetSelectedTeam(t *testing.T) {
 		url            string
 		loggedInTeamId int
 		defaultTeamId  int
-		expectedTeam   sirius.Team
+		expectedTeam   model.Team
 		expectedError  error
 	}{
 		{
@@ -136,7 +136,7 @@ func TestGetSelectedTeam(t *testing.T) {
 			url:            "?team=16",
 			loggedInTeamId: 3,
 			defaultTeamId:  5,
-			expectedTeam:   sirius.Team{},
+			expectedTeam:   model.Team{},
 			expectedError:  errors.New("invalid team selection"),
 		},
 	}
