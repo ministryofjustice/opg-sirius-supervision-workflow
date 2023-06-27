@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -69,7 +69,7 @@ func TestGetAppliedFiltersSingleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -122,7 +122,7 @@ func TestGetAppliedFiltersMultipleTaskFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -185,7 +185,7 @@ func TestGetAppliedFiltersSingleTaskSingleTeamMemberFilterSelectedReturned(t *te
 }
 
 func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",
@@ -250,7 +250,7 @@ func TestGetAppliedFiltersMultipleTasksSingleTeamMemberAndUnassignedFilterSelect
 }
 
 func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
-	var apiTaskTypes []ApiTaskTypes
+	var apiTaskTypes []TaskType
 	selectedTeam := Team{
 		Id:        12,
 		Name:      "Supervision Team 1",
@@ -275,7 +275,7 @@ func TestGetAppliedFiltersDueDateFilterSelectedReturned(t *testing.T) {
 }
 
 func TestGetAppliedFiltersNoFiltersSelectedReturned(t *testing.T) {
-	apiTaskTypes := []ApiTaskTypes{
+	apiTaskTypes := []TaskType{
 		{
 			Handle:     "CWGN",
 			Incomplete: "Casework - General",

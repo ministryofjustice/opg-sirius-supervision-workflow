@@ -26,7 +26,7 @@ type MyDetailsTeam struct {
 	TeamId      int    `json:"id"`
 }
 
-func (c *Client) GetCurrentUserDetails(ctx Context) (UserDetails, error) {
+func (c *ApiClient) GetCurrentUserDetails(ctx Context) (UserDetails, error) {
 	var v UserDetails
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)

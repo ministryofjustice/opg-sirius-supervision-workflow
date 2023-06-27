@@ -14,7 +14,7 @@ type mockClientTasksClient struct {
 	count           map[string]int
 	lastCtx         sirius.Context
 	err             error
-	taskTypeData    []sirius.ApiTaskTypes
+	taskTypeData    []sirius.TaskType
 	taskListData    sirius.TaskList
 	pageDetailsData sirius.PageDetails
 }
@@ -30,7 +30,7 @@ type clientTasksURLFields struct {
 	SelectedDueDateTo   string
 }
 
-func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
+func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.TaskType, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -40,7 +40,7 @@ func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelecte
 	return m.taskTypeData, m.err
 }
 
-func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.Team, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
+func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.Team, taskTypeSelected []string, LoadTasks []sirius.TaskType, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -68,7 +68,7 @@ func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, new
 	return "", m.err
 }
 
-var mockTaskTypeData = []sirius.ApiTaskTypes{
+var mockTaskTypeData = []sirius.TaskType{
 	{
 		Handle:     "CDFC",
 		Incomplete: "Correspondence - Review failed draft",
@@ -79,23 +79,23 @@ var mockTaskTypeData = []sirius.ApiTaskTypes{
 }
 
 var mockTaskListData = sirius.TaskList{
-	WholeTaskList: []sirius.ApiTask{
+	Tasks: []sirius.Task{
 		{
-			ApiTaskAssignee: sirius.CaseManagement{
-				CaseManagerName: "Assignee Duke Clive Henry Hetley Junior Jones",
+			Assignee: sirius.Assignee{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
-			ApiTaskType:    "Case work - General",
-			ApiTaskDueDate: "01/02/2021",
-			ApiTaskCaseItems: []sirius.CaseItemsDetails{
+			Name:    "Case work - General",
+			DueDate: "01/02/2021",
+			CaseItems: []sirius.CaseItem{
 				{
-					CaseItemClient: sirius.Clients{
-						ClientCaseRecNumber: "caseRecNumber",
-						ClientFirstName:     "Client Alexander Zacchaeus",
-						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.CaseManagement{
-							CaseManagerName: "Supervision - Team - Name",
+					Client: sirius.Client{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: sirius.Assignee{
+							Name: "Supervision - Team - Name",
 						},
-						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},
 				},
 			},
@@ -107,7 +107,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	assert := assert.New(t)
 
 	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
+		Tasks: []sirius.Task{{}},
 		Pages: sirius.PageInformation{
 			PageCurrent: 10,
 			PageTotal:   2,
@@ -260,7 +260,7 @@ func TestGetSelectedDateFilter(t *testing.T) {
 }
 
 func TestCalculateTaskCounts(t *testing.T) {
-	taskTypes := []sirius.ApiTaskTypes{
+	taskTypes := []sirius.TaskType{
 		{
 			Handle: "ECM_TASKS",
 		},
@@ -291,7 +291,7 @@ func TestCalculateTaskCounts(t *testing.T) {
 		},
 	}
 
-	expected := []sirius.ApiTaskTypes{
+	expected := []sirius.TaskType{
 		{
 			Handle:    "ECM_TASKS",
 			TaskCount: 77,

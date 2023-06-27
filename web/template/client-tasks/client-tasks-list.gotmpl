@@ -30,90 +30,75 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      {{if ne .TaskList.TotalTasks 0}}
-        {{ range .TaskList.WholeTaskList }}
-          <tr class="govuk-table__row {{ if .ApiPriorityTask }} priority {{ end }}">
+      {{ if ne .TaskList.TotalTasks 0 }}
+        {{ range .TaskList.Tasks }}
+          <tr class="govuk-table__row {{ if .IsPriority }} priority {{ end }}">
             <td class="govuk-table__cell">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
-                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .ApiTaskId }}" id="select-task-{{ .ApiTaskId }}" autocomplete="off" />
-                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .ApiTaskId }}">
+                  <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .Id }}" id="select-task-{{ .Id }}" autocomplete="off" />
+                  <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .Id }}">
                     <span class="govuk-visually-hidden">Select</span>
                   </label>
                 </div>
               </div>
             </td>
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="api-tasktype">{{ .TaskTypeName }}</label>
-                {{ if .ApiPriorityTask }}
+              <label class="govuk-label" for="api-tasktype">{{ .GetName $.TaskTypes }}</label>
+                {{ if .IsPriority }}
                     <span class="priority secondary">Priority</span>
                 {{ end }}
             </td>
             <td class="govuk-table__cell">
-              <a {{ if ne .ClientInformation.ClientId 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .ClientInformation.ClientId) }}"{{ end }} class="govuk-link">
-                {{ .ClientInformation.ClientFirstName }} {{ .ClientInformation.ClientSurname }}
+              <a {{ if ne .GetClient.Id 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .GetClient.Id) }}"{{ end }}class="govuk-link">
+                {{ .GetClient.FirstName }} {{ .GetClient.Surname }}
               </a>
               <label class="govuk-label" for="client-caserec-number">
-                <span class="secondary">{{ .ClientInformation.ClientCaseRecNumber }}</span>
+                <span class="secondary">{{ .GetClient.CaseRecNumber }}</span>
               </label>
             </td>
             {{ if eq $.App.SelectedTeam.Type "PA" }}
                 <td class="govuk-table__cell">
-                  <a {{ if ne .ClientInformation.FeePayer.Id 0 }}href="{{ sirius .ClientInformation.FeePayer.GetURL }}"{{ end }} class="govuk-link">
-                      {{ .ClientInformation.FeePayer.DisplayName }}
+                  <a {{ if ne .GetClient.FeePayer.Id 0 }}href="{{ sirius .GetClient.FeePayer.GetURL }}"{{ end }} class="govuk-link">
+                      {{ .GetClient.FeePayer.DisplayName }}
                   </a>
                 </td>
             {{ end }}
             <td class="govuk-table__cell">
-              <label class="govuk-label" for="assignee-display-name"> {{ .ClientInformation.ClientSupervisionCaseOwner.CaseManagerName }}
-                {{ if .ClientInformation.ClientSupervisionCaseOwner.Team }}
-                  {{ range .ClientInformation.ClientSupervisionCaseOwner.Team }}
+              <label class="govuk-label" for="assignee-display-name"> {{ .GetClient.SupervisionCaseOwner.Name }}
+                {{ range .GetClient.SupervisionCaseOwner.Teams }}
                   <span class="secondary">{{ .Name }}</span>
-                  {{ end }}
-                  </label>
-                {{ end }}
-            </td>
-            <td class="govuk-table__cell">
-              <label class="govuk-label" for="assignee-name-and-team">
-                {{ if $.App.SelectedTeam.HasTeam .ApiTaskAssignee.Id }}
-                  Not assigned
-                {{ else }}
-                  {{ .ApiTaskAssignee.CaseManagerName }}
-                {{ end }}
-                {{ if .ApiTaskAssignee.Team }}
-                      {{ range .ApiTaskAssignee.Team }}
-                        <span class="secondary">{{ .Name }} </span>
-                  {{ end }}
                 {{ end }}
               </label>
             </td>
             <td class="govuk-table__cell">
-                {{ if .CalculatedDueDateColour }}
-                    <label class="govuk-label" for="task-duedate"><strong>{{ .ApiTaskDueDate }}</strong></label>
+              <label class="govuk-label" for="assignee-name-and-team">
+                {{ if $.App.SelectedTeam.HasTeam .GetAssignee.Id }}
+                  Not assigned
                 {{ else }}
-                    <label class="govuk-label" for="task-duedate">{{ .ApiTaskDueDate }}</label>
+                  {{ .GetAssignee.Name }}
                 {{ end }}
-                {{ if eq .CalculatedDueDateColour "inThePast"}}
-                <span><strong class="govuk-tag govuk-tag--red">Overdue</strong></span>
-                {{ else if eq .CalculatedDueDateColour "dueToday"}}
-                <span><strong class="govuk-tag govuk-tag--red">Due Today</strong></span>
-                {{ else if eq .CalculatedDueDateColour "dueTomorrow"}}
-                <span><strong class="govuk-tag govuk-tag--orange">Due Tomorrow</strong></span>
-                {{ else if eq .CalculatedDueDateColour "dueThisWeek"}}
-                <span><strong class="govuk-tag govuk-tag--orange">Due This Week</strong></span>
-                {{ else if eq .CalculatedDueDateColour "dueNextWeek"}}
-                <span><strong class="govuk-tag govuk-tag--green">Due Next Week</strong></span>
+                {{ range .GetAssignee.Teams }}
+                  <span class="secondary">{{ .Name }} </span>
                 {{ end }}
+              </label>
+            </td>
+            <td class="govuk-table__cell">
+              {{ $status := .GetDueDateStatus }}
+              <label class="govuk-label {{ if $status.Name }}govuk-!-font-weight-bold{{ end }}" for="task-duedate">{{ .DueDate }}</label>
+              {{ if $status.Name }}
+                <span><strong class="govuk-tag govuk-tag--{{ $status.Colour }}">{{ $status.Name }}</strong></span>
+              {{ end }}
             </td>
           </tr>
         {{ end }}
-      {{else if eq .TaskList.TotalTasks 0}}
+      {{ else }}
         {{ $length := len .AppliedFilters }}
         {{ if eq $length 0 }}
           <tr class="govuk-table__row">
               <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
           </tr>
-        {{ else if ne $length 0}}
+        {{ else if ne $length 0 }}
           <tr class="govuk-table__row">
           <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
           </tr>
