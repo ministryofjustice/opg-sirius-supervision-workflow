@@ -12,7 +12,7 @@ import (
 
 func TestUpdateAssignTasksToCaseManager(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{	
 			"id":98,
@@ -87,7 +87,7 @@ func TestAssignTasksToCaseManagerReturnsNewStatusError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 
@@ -105,7 +105,7 @@ func TestAssignTasksToCaseManagerReturnsUnauthorisedClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 	assert.Equal(t, ErrUnauthorized, err)
 }
@@ -117,7 +117,7 @@ func TestAssignTasksToCaseManagerReturnsForbiddenClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 	assert.Equal(t, "Only managers can set priority on tasks", err.Error())
 }
@@ -130,7 +130,7 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.AssignTasksToCaseManager(getContext(nil), 53, []string{"76"}, "")
 
 	expectedResponse := StatusError{

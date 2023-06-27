@@ -12,7 +12,7 @@ import (
 
 func TestGetCaseloadListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 {
@@ -59,13 +59,13 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	}
 
 	expectedResponse := ClientList{
-		WholeClientList: []ApiClient{
+		Clients: []Client{
 			{
 				Id:            63,
 				CaseRecNumber: "42687883",
 				FirstName:     "Ro",
 				Surname:       "Bot",
-				Case: []Order{
+				Orders: []Order{
 					{
 						Id: 92,
 						Status: RefData{
@@ -89,50 +89,34 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 
 	selectedTeam := Team{Id: 13}
 
-	assigneeTeams, err := client.GetCaseloadList(getContext(nil), selectedTeam.Id)
+	clientList, err := client.GetClientList(getContext(nil), selectedTeam.Id)
 
-	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
+	assert.Equal(t, expectedResponse, clientList)
 }
 
 func TestGetCaseloadListCanThrow500Error(t *testing.T) {
-	tests := []struct {
-		name         string
-		selectedTeam Team
-		expectedURL  string
-	}{
-		{
-			name:         "Single Team ID requested",
-			selectedTeam: Team{Id: 13},
-			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=dueDate:asc",
-		},
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer svr.Close()
+
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+
+	clientList, err := client.GetClientList(getContext(nil), 13)
+
+	expectedResponse := ClientList{
+		Clients:      nil,
+		Pages:        PageInformation{},
+		TotalClients: 0,
 	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			logger, _ := SetUpTest()
-			svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusInternalServerError)
-			}))
-			defer svr.Close()
 
-			client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	assert.Equal(t, expectedResponse, clientList)
 
-			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []ApiTaskTypes{}, []string{}, nil, nil)
-
-			expectedResponse := TaskList{
-				WholeTaskList: nil,
-				Pages:         PageInformation{},
-				TotalTasks:    0,
-				ActiveFilters: nil,
-			}
-
-			assert.Equal(t, expectedResponse, assigneeTeams)
-
-			assert.Equal(t, StatusError{
-				Code:   http.StatusInternalServerError,
-				URL:    svr.URL + test.expectedURL,
-				Method: http.MethodGet,
-			}, err)
-		})
-	}
+	assert.Equal(t, StatusError{
+		Code:   http.StatusInternalServerError,
+		URL:    svr.URL + "/api/v1/assignees/13/clients",
+		Method: http.MethodGet,
+	}, err)
 }

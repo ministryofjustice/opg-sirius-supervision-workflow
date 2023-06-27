@@ -68,8 +68,8 @@ func (ctx Context) With(c context.Context) Context {
 	}
 }
 
-func NewClient(httpClient HTTPClient, baseURL string, logger *logging.Logger) (*Client, error) {
-	return &Client{
+func NewApiClient(httpClient HTTPClient, baseURL string, logger *logging.Logger) (*ApiClient, error) {
+	return &ApiClient{
 		http:    httpClient,
 		baseURL: baseURL,
 		logger:  logger,
@@ -80,13 +80,13 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type Client struct {
+type ApiClient struct {
 	http    HTTPClient
 	baseURL string
 	logger  *logging.Logger
 }
 
-func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
+func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx.Context, method, c.baseURL+path, body)
 	if err != nil {
 		return nil, err
@@ -102,14 +102,14 @@ func (c *Client) newRequest(ctx Context, method, path string, body io.Reader) (*
 	return req, err
 }
 
-func (c *Client) logErrorRequest(req *http.Request, err error) {
+func (c *ApiClient) logErrorRequest(req *http.Request, err error) {
 	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path)
 	if err != nil {
 		c.logger.Print(err)
 	}
 }
 
-func (c *Client) logResponse(req *http.Request, resp *http.Response, err error) {
+func (c *ApiClient) logResponse(req *http.Request, resp *http.Response, err error) {
 	response := "None"
 	if resp != nil {
 		response = strconv.Itoa(resp.StatusCode)

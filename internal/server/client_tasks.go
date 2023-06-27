@@ -9,8 +9,8 @@ import (
 )
 
 type ClientTasksClient interface {
-	GetTaskTypes(sirius.Context, []string) ([]sirius.ApiTaskTypes, error)
-	GetTaskList(sirius.Context, int, int, sirius.Team, []string, []sirius.ApiTaskTypes, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskTypes(sirius.Context, []string) ([]sirius.TaskType, error)
+	GetTaskList(sirius.Context, int, int, sirius.Team, []string, []sirius.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
 	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
@@ -19,7 +19,7 @@ type ClientTasksVars struct {
 	App                 WorkflowVars
 	TaskList            sirius.TaskList
 	PageDetails         sirius.PageDetails
-	LoadTasks           []sirius.ApiTaskTypes
+	TaskTypes           []sirius.TaskType
 	SelectedAssignees   []string
 	SelectedUnassigned  string
 	SelectedTaskTypes   []string
@@ -130,7 +130,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		vars.PageDetails = client.GetPageDetails(taskList, page, tasksPerPage)
 		vars.AppliedFilters = sirius.GetAppliedFilters(app.SelectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
-		vars.LoadTasks = calculateTaskCounts(taskTypes, taskList)
+		vars.TaskTypes = calculateTaskCounts(taskTypes, taskList)
 
 		return tmpl.Execute(w, vars)
 	}
@@ -182,12 +182,12 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
-func calculateTaskCounts(taskTypes []sirius.ApiTaskTypes, tasks sirius.TaskList) []sirius.ApiTaskTypes {
-	var taskTypeList []sirius.ApiTaskTypes
+func calculateTaskCounts(taskTypes []sirius.TaskType, tasks sirius.TaskList) []sirius.TaskType {
+	var taskTypeList []sirius.TaskType
 	ecmTasksCount := 0
 
 	for _, t := range taskTypes {
-		tasksWithCounts := sirius.ApiTaskTypes{
+		tasksWithCounts := sirius.TaskType{
 			Handle:     t.Handle,
 			Incomplete: t.Incomplete,
 			Category:   t.Category,

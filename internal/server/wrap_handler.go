@@ -38,7 +38,7 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client Client, logger *zap.SugaredLogger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
+func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
