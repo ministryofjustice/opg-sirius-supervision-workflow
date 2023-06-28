@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 )
@@ -45,6 +46,6 @@ func (cv CaseloadVars) buildUrl(team string) string {
 	return fmt.Sprintf("caseload?team=%s", team)
 }
 
-func (cv CaseloadVars) GetTeamUrl(team sirius.Team) string {
+func (cv CaseloadVars) GetTeamUrl(team model.Team) string {
 	return cv.buildUrl(team.Selector)
 }

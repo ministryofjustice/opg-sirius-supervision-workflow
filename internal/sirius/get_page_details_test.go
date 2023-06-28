@@ -3,6 +3,7 @@ package sirius
 import (
 	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -10,7 +11,7 @@ import (
 
 func CreateTaskList(pageCurrent int, pageTotal int, totalTasks int) TaskList {
 	taskList := TaskList{
-		Pages: PageInformation{
+		Pages: model.PageInformation{
 			PageCurrent: pageCurrent,
 			PageTotal:   pageTotal,
 		},
