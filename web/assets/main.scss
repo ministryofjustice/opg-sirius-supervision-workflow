@@ -36,3 +36,11 @@ $moj-assets-path: "/supervision/workflow/assets/";
   color: govuk-colour("blue");
   text-decoration: underline;
 }
+
+.moj-header__navigation-link {
+    &[aria-current="page"] {
+        color: govuk-colour("blue") !important;
+        font-weight: bold;
+        text-decoration: none !important;
+    }
+}
