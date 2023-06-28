@@ -607,7 +607,7 @@ cypress-failed-log@^2.9.2:
     debug "4.3.4"
     logdown "3.3.1"
 
-cypress@10.11.0:
+cypress@^10.11.0:
   version "10.11.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-10.11.0.tgz#e9fbdd7638bae3d8fb7619fd75a6330d11ebb4e8"
   integrity sha512-lsaE7dprw5DoXM00skni6W5ElVVLGAdRUUdZjX2dYsGjbY/QnpzWZ95Zom1mkGg0hAaO/QVTZoFVS7Jgr/GUPA==
@@ -1491,6 +1491,10 @@ onetime@^5.1.0:
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
   dependencies:
     mimic-fn "^2.1.0"
+
+opg-sirius-header@ministryofjustice/opg-sirius-header:
+  version "1.0.0"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/8d4dd1cdc54ea21b816bd260e20dc480e08f2f3b"
 
 optionator@^0.9.1:
   version "0.9.1"

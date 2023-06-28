@@ -17,10 +17,11 @@
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^1.0.0",
-    "govuk-frontend": "^4.3.1"
+    "govuk-frontend": "^4.3.1",
+    "opg-sirius-header": "ministryofjustice/opg-sirius-header"
   },
   "devDependencies": {
-    "cypress": "10.11.0",
+    "cypress": "^10.11.0",
     "cypress-failed-log": "^2.9.2",
     "esbuild": "^0.16.0",
     "eslint": "^8.30.0",
