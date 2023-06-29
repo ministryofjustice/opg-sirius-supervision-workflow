@@ -13,7 +13,7 @@ describe("Workflow", () => {
   });
 
   it("should load header template within banner", () => {
-    cy.get('.moj-header__logo > .moj-header__link').should('contain.text', 'OPG');
-    cy.contains(".moj-header__link", "Sirius");
+      cy.get('.govuk-header__link--homepage').should('contain.text', 'OPG');
+      cy.get('.govuk-header__service-name').should('contain.text', 'Sirius')
   });
 });
