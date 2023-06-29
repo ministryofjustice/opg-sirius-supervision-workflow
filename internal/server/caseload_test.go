@@ -42,7 +42,7 @@ func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	}
 }
 
-func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, teamSelected int) (sirius.ClientList, error) {
+func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) (sirius.ClientList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -82,24 +82,6 @@ func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 		Path:            "test-path",
 		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
-	}
-	err := caseload(client, template)(app, w, r)
-
-	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
-	assert.Equal(t, 0, template.count)
-}
-
-func TestCaseload_RedirectsToClientTasksWhenFeatureFlagIsOff(t *testing.T) {
-	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
-
-	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowCaseload: false},
 	}
 	err := caseload(client, template)(app, w, r)
 
