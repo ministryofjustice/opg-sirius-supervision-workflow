@@ -88,9 +88,7 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 		TotalClients: 1,
 	}
 
-	selectedTeam := model.Team{Id: 13}
-
-	clientList, err := client.GetClientList(getContext(nil), selectedTeam.Id)
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expectedResponse, clientList)
@@ -105,7 +103,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	clientList, err := client.GetClientList(getContext(nil), 13)
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
 
 	expectedResponse := ClientList{
 		Clients:      nil,
@@ -117,7 +115,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients",
+		URL:    svr.URL + "/api/v1/assignees/13/clients?sort=",
 		Method: http.MethodGet,
 	}, err)
 }
