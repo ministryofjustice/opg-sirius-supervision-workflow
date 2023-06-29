@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type Client struct {
 	Id                   int      `json:"id"`
 	CaseRecNumber        string   `json:"caseRecNumber"`
@@ -34,4 +36,18 @@ func (c Client) GetStatus() string {
 	}
 
 	return ""
+}
+
+func (c Client) GetURL() string {
+	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
+}
+
+func (c Client) GetMostRecentlyMadeActiveOrder() Order {
+	var mostRecent Order
+	for _, order := range c.Orders {
+		if mostRecent.MadeActiveDate.Before(order.MadeActiveDate) {
+			mostRecent = order
+		}
+	}
+	return mostRecent
 }
