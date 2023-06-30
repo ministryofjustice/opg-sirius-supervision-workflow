@@ -1,4 +1,4 @@
-.moj-manage-tasks {
+.moj-manage-list {
   .govuk-table {
     .govuk-table__row.selected {
       background: $govuk-moj-table-background-color;
@@ -23,15 +23,14 @@
           max-width: 15px;
         }
 
-        .govuk-label {
-          .secondary {
-            color: govuk-colour("black");
-            font-size: 16px;
-            font-size: 1rem;
-            line-height: 1.25;
-            display: block;
-          }
+        .secondary {
+          color: govuk-colour("black");
+          font-size: 16px;
+          font-size: 1rem;
+          line-height: 1.25;
+          display: block;
         }
+
         &--no-tasks {
           width: 100%;
           font-size: 150%;
@@ -40,14 +39,6 @@
 
         .govuk-checkboxes {
           margin-top: -8px;
-        }
-        &.due {
-          color: govuk-colour("orange");
-          font-weight: bold;
-        }
-        &.overdue {
-          color: govuk-colour("red");
-          font-weight: bold;
         }
       }
     }
