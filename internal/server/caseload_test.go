@@ -46,7 +46,7 @@ func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) 
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
-	m.count["GetTaskList"] += 1
+	m.count["GetClientList"] += 1
 	m.lastCtx = ctx
 
 	return m.clientList, m.err

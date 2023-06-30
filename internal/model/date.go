@@ -9,6 +9,14 @@ type Date struct {
 	Time time.Time
 }
 
+func NewDate(date string) Date {
+	t, err := time.Parse("02/01/2006", date)
+	if err != nil {
+		panic(err)
+	}
+	return Date{Time: t}
+}
+
 func (d Date) Before(d2 Date) bool {
 	return d.Time.Before(d2.Time)
 }
