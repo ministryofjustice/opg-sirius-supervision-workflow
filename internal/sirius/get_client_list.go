@@ -13,10 +13,15 @@ type ClientList struct {
 	TotalClients int                   `json:"total"`
 }
 
-func (c *ApiClient) GetClientList(ctx Context, teamId int) (ClientList, error) {
+func (c *ApiClient) GetClientList(ctx Context, team model.Team) (ClientList, error) {
 	var v ClientList
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients", teamId)
+	var sort string
+	if team.IsLayNewOrdersTeam() {
+		sort = "made_active_date:asc"
+	}
+
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?sort=%s", team.Id, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {

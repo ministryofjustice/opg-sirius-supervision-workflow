@@ -52,3 +52,7 @@ func (t Team) IsLay() bool {
 func (t Team) IsPro() bool {
 	return t.Type == "PRO" || t.Selector == "pro-team"
 }
+
+func (t Team) IsLayNewOrdersTeam() bool {
+	return t.Name == "Lay Team - New Deputy Orders"
+}

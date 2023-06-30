@@ -63,3 +63,8 @@ func TestTeam_IsPro(t *testing.T) {
 	assert.True(t, Team{Type: "", Selector: "pro-team"}.IsPro())
 	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
 }
+
+func TestTeam_IsLayNewOrdersTeam(t *testing.T) {
+	assert.False(t, Team{Name: "Random team"}.IsLayNewOrdersTeam())
+	assert.True(t, Team{Name: "Lay Team - New Deputy Orders"}.IsLayNewOrdersTeam())
+}
