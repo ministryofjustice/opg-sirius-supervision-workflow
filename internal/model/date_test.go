@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -80,8 +81,25 @@ func TestDate_String(t *testing.T) {
 }
 
 func TestDate_UnmarshalJSON(t *testing.T) {
-	var v *testJsonDateStruct
-	err := json.Unmarshal([]byte(`{"testDate":"01\/01\/2020"}`), &v)
-	assert.Nil(t, err)
-	assert.Equal(t, "01/01/2020", v.TestDate.String())
+	tests := []struct {
+		json string
+		want string
+	}{
+		{
+			json: `{"testDate":"01\/01\/2020"}`,
+			want: "01/01/2020",
+		},
+		{
+			json: `{"testDate":"01/01/2020"}`,
+			want: "01/01/2020",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var v *testJsonDateStruct
+			err := json.Unmarshal([]byte(test.json), &v)
+			assert.Nil(t, err)
+			assert.Equal(t, test.want, v.TestDate.String())
+		})
+	}
 }

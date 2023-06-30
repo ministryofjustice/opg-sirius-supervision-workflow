@@ -31,7 +31,8 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	t, err := time.Parse("02\\/01\\/2006", value)
+	value = strings.ReplaceAll(value, `\`, "")
+	t, err := time.Parse("02/01/2006", value)
 	if err != nil {
 		return err
 	}
