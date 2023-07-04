@@ -4,6 +4,7 @@ $moj-assets-path: "/supervision/workflow/assets/";
 
 @import "node_modules/govuk-frontend/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
+@import "node_modules/opg-sirius-header/sass/sirius-header";
 @import "./scss/app-c-option-select";
 @import "./scss/moj-filter";
 @import "./scss/moj-manage-list";
