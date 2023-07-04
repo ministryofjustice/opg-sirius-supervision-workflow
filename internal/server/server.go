@@ -11,16 +11,17 @@ import (
 	"net/url"
 )
 
-type Client interface {
+type ApiClient interface {
 	WorkflowVarsClient
 	ClientTasksClient
+	CaseloadClient
 }
 
 type Template interface {
 	Execute(wr io.Writer, data any) error
 }
 
-func New(logger *zap.SugaredLogger, client Client, templates map[string]*template.Template, envVars EnvironmentVars) http.Handler {
+func New(logger *zap.SugaredLogger, client ApiClient, templates map[string]*template.Template, envVars EnvironmentVars) http.Handler {
 	wrap := wrapHandler(client, logger, templates["error.gotmpl"], envVars)
 
 	mux := http.NewServeMux()

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -9,18 +10,46 @@ import (
 )
 
 type mockCaseloadClient struct {
+	count      map[string]int
+	lastCtx    sirius.Context
+	err        error
+	clientList sirius.ClientList
 }
 
 type caseloadURLFields struct {
 	SelectedTeam string
+	Status       string
+	DueDate      string
 }
 
 func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	return CaseloadVars{
 		App: WorkflowVars{
-			SelectedTeam: sirius.Team{Selector: fields.SelectedTeam},
+			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
+		},
+		ClientList: sirius.ClientList{
+			Clients: []model.Client{
+				{
+					Orders: []model.Order{
+						{
+							LatestAnnualReport: model.AnnualReport{DueDate: fields.DueDate},
+							Status:             model.RefData{Label: fields.Status},
+						},
+					},
+				},
+			},
 		},
 	}
+}
+
+func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) (sirius.ClientList, error) {
+	if m.count == nil {
+		m.count = make(map[string]int)
+	}
+	m.count["GetClientList"] += 1
+	m.lastCtx = ctx
+
+	return m.clientList, m.err
 }
 
 func TestCaseload(t *testing.T) {
@@ -32,7 +61,7 @@ func TestCaseload(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    sirius.Team{Type: "LAY"},
+		SelectedTeam:    model.Team{Type: "LAY"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -51,26 +80,8 @@ func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    sirius.Team{Type: "PRO", Selector: "19"},
+		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
-	}
-	err := caseload(client, template)(app, w, r)
-
-	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
-	assert.Equal(t, 0, template.count)
-}
-
-func TestCaseload_RedirectsToClientTasksWhenFeatureFlagIsOff(t *testing.T) {
-	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
-
-	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    sirius.Team{Type: "LAY", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowCaseload: false},
 	}
 	err := caseload(client, template)(app, w, r)
 
@@ -123,7 +134,7 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createCaseloadVars(tt.fields)
-			team := sirius.Team{Selector: tt.team}
+			team := model.Team{Selector: tt.team}
 			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}

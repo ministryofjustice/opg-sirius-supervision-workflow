@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -14,7 +15,7 @@ type mockClientTasksClient struct {
 	count           map[string]int
 	lastCtx         sirius.Context
 	err             error
-	taskTypeData    []sirius.ApiTaskTypes
+	taskTypeData    []model.TaskType
 	taskListData    sirius.TaskList
 	pageDetailsData sirius.PageDetails
 }
@@ -30,7 +31,7 @@ type clientTasksURLFields struct {
 	SelectedDueDateTo   string
 }
 
-func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]sirius.ApiTaskTypes, error) {
+func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]model.TaskType, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -40,7 +41,7 @@ func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelecte
 	return m.taskTypeData, m.err
 }
 
-func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId sirius.Team, taskTypeSelected []string, LoadTasks []sirius.ApiTaskTypes, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
+func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId model.Team, taskTypeSelected []string, LoadTasks []model.TaskType, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -68,7 +69,7 @@ func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, new
 	return "", m.err
 }
 
-var mockTaskTypeData = []sirius.ApiTaskTypes{
+var mockTaskTypeData = []model.TaskType{
 	{
 		Handle:     "CDFC",
 		Incomplete: "Correspondence - Review failed draft",
@@ -79,23 +80,23 @@ var mockTaskTypeData = []sirius.ApiTaskTypes{
 }
 
 var mockTaskListData = sirius.TaskList{
-	WholeTaskList: []sirius.ApiTask{
+	Tasks: []model.Task{
 		{
-			ApiTaskAssignee: sirius.CaseManagement{
-				CaseManagerName: "Assignee Duke Clive Henry Hetley Junior Jones",
+			Assignee: model.Assignee{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
 			},
-			ApiTaskType:    "Case work - General",
-			ApiTaskDueDate: "01/02/2021",
-			ApiTaskCaseItems: []sirius.CaseItemsDetails{
+			Name:    "Case work - General",
+			DueDate: "01/02/2021",
+			Orders: []model.Order{
 				{
-					CaseItemClient: sirius.Clients{
-						ClientCaseRecNumber: "caseRecNumber",
-						ClientFirstName:     "Client Alexander Zacchaeus",
-						ClientId:            3333,
-						ClientSupervisionCaseOwner: sirius.CaseManagement{
-							CaseManagerName: "Supervision - Team - Name",
+					Client: model.Client{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: model.Assignee{
+							Name: "Supervision - Team - Name",
 						},
-						ClientSurname: "Client Wolfeschlegelsteinhausenbergerdorff",
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
 					},
 				},
 			},
@@ -107,8 +108,8 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	assert := assert.New(t)
 
 	var mockTaskListData = sirius.TaskList{
-		WholeTaskList: []sirius.ApiTask{{}},
-		Pages: sirius.PageInformation{
+		Tasks: []model.Task{{}},
+		Pages: model.PageInformation{
 			PageCurrent: 10,
 			PageTotal:   2,
 		},
@@ -260,7 +261,7 @@ func TestGetSelectedDateFilter(t *testing.T) {
 }
 
 func TestCalculateTaskCounts(t *testing.T) {
-	taskTypes := []sirius.ApiTaskTypes{
+	taskTypes := []model.TaskType{
 		{
 			Handle: "ECM_TASKS",
 		},
@@ -291,7 +292,7 @@ func TestCalculateTaskCounts(t *testing.T) {
 		},
 	}
 
-	expected := []sirius.ApiTaskTypes{
+	expected := []model.TaskType{
 		{
 			Handle:    "ECM_TASKS",
 			TaskCount: 77,
@@ -327,7 +328,7 @@ func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
 func createClientTasksVars(fields clientTasksURLFields) ClientTasksVars {
 	return ClientTasksVars{
 		App: WorkflowVars{
-			SelectedTeam: sirius.Team{Selector: fields.SelectedTeam},
+			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
 		},
 		PageDetails: sirius.PageDetails{
 			CurrentPage:     fields.CurrentPage,
@@ -575,7 +576,7 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := createClientTasksVars(tt.fields)
-			team := sirius.Team{Selector: tt.team}
+			team := model.Team{Selector: tt.team}
 			assert.Equalf(t, "client-tasks"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
 	}

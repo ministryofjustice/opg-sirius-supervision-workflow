@@ -1,5 +1,7 @@
 package sirius
 
+import "github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+
 type PageDetails struct {
 	ListOfPages        []int
 	CurrentPage        int
@@ -15,7 +17,7 @@ type PageDetails struct {
 	UpperEllipsesLimit bool
 }
 
-func (c *Client) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
+func (c *ApiClient) GetPageDetails(tasklist TaskList, search int, displayTaskLimit int) PageDetails {
 	var k PageDetails
 
 	PageDetails := k
@@ -108,6 +110,6 @@ func GetPaginationLimits(taskList TaskList, PageDetails PageDetails) []int {
 	return PageDetails.ListOfPages[twoBeforeCurrentPage:twoAfterCurrentPage]
 }
 
-func GetUpperEllipsesLimit(pages PageInformation, search int) bool {
+func GetUpperEllipsesLimit(pages model.PageInformation, search int) bool {
 	return (pages.PageTotal - search) >= 3
 }

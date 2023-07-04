@@ -2,15 +2,11 @@ package sirius
 
 import (
 	"encoding/json"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
 	"strconv"
 )
-
-type TeamMember struct {
-	ID   int    `json:"id"`
-	Name string `json:"displayName"`
-}
 
 type TeamCollection struct {
 	ID          int    `json:"id"`
@@ -28,68 +24,9 @@ type TeamCollection struct {
 	} `json:"teamType"`
 }
 
-type Team struct {
-	Id        int
-	Members   []TeamMember
-	Name      string
-	Type      string
-	TypeLabel string
-	Selector  string
-	Teams     []Team
-}
-
-func (t Team) GetAssigneesForFilter() []TeamMember {
-	assignees := t.Members
-	for _, team := range t.Teams {
-		assignees = append(assignees, team.Members...)
-	}
-	ids := map[int]bool{}
-	var deduped []TeamMember
-	for _, assignee := range assignees {
-		if _, value := ids[assignee.ID]; !value {
-			ids[assignee.ID] = true
-			deduped = append(deduped, assignee)
-		}
-	}
-	sort.Slice(deduped, func(i, j int) bool {
-		return deduped[i].Name < deduped[j].Name
-	})
-	return deduped
-}
-
-func (t Team) HasTeam(id int) bool {
-	if t.Id == id {
-		return true
-	}
-	for _, t := range t.Teams {
-		if t.Id == id {
-			return true
-		}
-	}
-	return false
-}
-
-func (t Team) IsLay() bool {
-	return t.Type == "LAY" || t.Selector == "lay-team"
-}
-
-func (t Team) IsPro() bool {
-	return t.Type == "PRO" || t.Selector == "pro-team"
-}
-
-func (m TeamMember) IsSelected(selectedAssignees []string) bool {
-	for _, a := range selectedAssignees {
-		id, _ := strconv.Atoi(a)
-		if m.ID == id {
-			return true
-		}
-	}
-	return false
-}
-
-func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
+func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]model.Team, error) {
 	var v []TeamCollection
-	var q []Team
+	var q []model.Team
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
 	if err != nil {
@@ -118,18 +55,18 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
 		return q, err
 	}
 
-	layTeam := Team{
-		Members:  []TeamMember{},
+	layTeam := model.Team{
+		Members:  []model.Assignee{},
 		Name:     "Lay deputy team",
 		Selector: "lay-team",
-		Teams:    []Team{},
+		Teams:    []model.Team{},
 	}
 
-	proTeam := Team{
-		Members:  []TeamMember{},
+	proTeam := model.Team{
+		Members:  []model.Assignee{},
 		Name:     "Professional deputy team",
 		Selector: "pro-team",
-		Teams:    []Team{},
+		Teams:    []model.Team{},
 	}
 
 	for _, t := range v {
@@ -137,18 +74,18 @@ func (c *Client) GetTeamsForSelection(ctx Context) ([]Team, error) {
 			continue
 		}
 
-		team := Team{
+		team := model.Team{
 			Id:        t.ID,
 			Name:      t.DisplayName,
 			Type:      t.TeamType.Handle,
 			TypeLabel: t.TeamType.Label,
 			Selector:  strconv.Itoa(t.ID),
-			Teams:     []Team{},
+			Teams:     []model.Team{},
 		}
 
 		for _, m := range t.Members {
-			team.Members = append(team.Members, TeamMember{
-				ID:   m.ID,
+			team.Members = append(team.Members, model.Assignee{
+				Id:   m.ID,
 				Name: m.DisplayName,
 			})
 		}

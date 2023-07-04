@@ -3,6 +3,7 @@ package sirius
 import (
 	"bytes"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 
 func TestGetCurrentUserDetails(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 			   "id":65,
@@ -44,24 +45,23 @@ func TestGetCurrentUserDetails(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := UserDetails{
-		ID:          65,
-		Name:        "case",
+	expectedResponse := model.Assignee{
+		Id:          65,
 		PhoneNumber: "12345678",
-		Teams: []MyDetailsTeam{
+		Teams: []model.Team{
 			{
-				DisplayName: "Lay Team 1 - (Supervision)",
-				TeamId:      13,
+				Name: "Lay Team 1 - (Supervision)",
+				Id:   13,
 			},
 		},
-		DisplayName: "case manager",
-		Deleted:     false,
-		Email:       "case.manager@opgtest.com",
-		Firstname:   "case",
-		Surname:     "manager",
-		Roles:       []string{"Case Manager"},
-		Locked:      false,
-		Suspended:   false,
+		Name:      "case manager",
+		Deleted:   false,
+		Email:     "case.manager@opgtest.com",
+		Firstname: "case",
+		Surname:   "manager",
+		Roles:     []string{"Case Manager"},
+		Locked:    false,
+		Suspended: false,
 	}
 
 	teams, err := client.GetCurrentUserDetails(getContext(nil))
@@ -76,7 +76,7 @@ func TestGetCurrentUserDetailsReturnsUnauthorisedClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, ErrUnauthorized, err)
 }
@@ -88,7 +88,7 @@ func TestMyDetailsReturns500Error(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewClient(http.DefaultClient, svr.URL, logger)
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{
@@ -100,7 +100,7 @@ func TestMyDetailsReturns500Error(t *testing.T) {
 
 func TestMyDetailsReturns200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewClient(mockClient, "http://localhost:3000", logger)
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"id": 55,
@@ -129,12 +129,11 @@ func TestMyDetailsReturns200(t *testing.T) {
 		}, nil
 	}
 
-	expectedResponse := UserDetails{
-		ID:          55,
-		Name:        "case",
+	expectedResponse := model.Assignee{
+		Id:          55,
 		PhoneNumber: "12345678",
-		Teams:       []MyDetailsTeam{},
-		DisplayName: "case manager",
+		Teams:       []model.Team{},
+		Name:        "case manager",
 		Deleted:     false,
 		Email:       "case.manager@opgtest.com",
 		Firstname:   "case",

@@ -417,6 +417,17 @@ module.exports = function () {
           "label": "Pro",
           "deprecated": null
         }
+      },
+      {
+        "id": 28,
+        "name": "Lay Team - New Deputy Orders",
+        "displayName": "Lay Team - New Deputy Orders",
+        "deleted": false,
+        "teamType": {
+          "handle": "LAY",
+          "label": "Lay",
+          "deprecated": null
+        }
       }
     ],
     "tasktypes-supervision": {
@@ -635,6 +646,88 @@ module.exports = function () {
         },
         "tasks": generateTasks(10),
         "total": 10
+      }
+    ],
+    "caseload":  [
+      {
+        "id": 21,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "total": 1,
+        "clients": [
+          {
+            "id": 63,
+            "caseRecNumber": "42687883",
+            "firstname": "Ro",
+            "surname": "Bot",
+            "supervisionCaseOwner": {
+              "id": 21,
+              "teams": [],
+              "displayName": "Lay Team 1 - (Supervision)"
+            },
+            "cases": [
+              {
+                "id": 92,
+                "caseRecNumber": "33594483",
+                "latestAnnualReport": {
+                  "dueDate": "21/12/2023"
+                },
+                "orderStatus": {
+                  "handle": "CLOSED",
+                  "label": "Closed",
+                  "deprecated": false
+                },
+              }
+            ],
+            "supervisionLevel": "Minimal",
+          },
+        ]
+      },
+      {
+        "id": 28,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "total": 1,
+        "clients": [
+          {
+            "id": 63,
+            "caseRecNumber": "42687883",
+            "firstname": "Ro",
+            "surname": "Bot",
+            "supervisionCaseOwner": {
+              "id": 28,
+              "teams": [],
+              "displayName": "Lay Team - New Deputy Orders"
+            },
+            "cases": [
+              {
+                "id": 92,
+                "caseRecNumber": "33594483",
+                "latestAnnualReport": {
+                  "dueDate": "21/12/2023"
+                },
+                "orderStatus": {
+                  "handle": "CLOSED",
+                  "label": "Closed",
+                  "deprecated": false
+                },
+                "orderDate": "01/01/2020",
+                "madeActiveDate": "02/01/2020",
+                "howDeputyAppointed": {
+                  "handle": "SOLE",
+                  "label": "Sole",
+                  "deprecated": false
+                },
+                "introductoryTargetDate": "21/02/2020"
+              }
+            ],
+            "supervisionLevel": "Minimal",
+          },
+        ]
       }
     ]
   }

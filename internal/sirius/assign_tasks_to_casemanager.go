@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 )
 
@@ -13,8 +14,8 @@ type ReassignTaskDetails struct {
 	IsPriority string   `json:"isPriority"`
 }
 
-func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
-	var u ApiTask
+func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
+	var u model.Task
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
@@ -70,5 +71,5 @@ func (c *Client) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int,
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-	return u.ApiTaskAssignee.CaseManagerName, err
+	return u.Assignee.Name, err
 }
