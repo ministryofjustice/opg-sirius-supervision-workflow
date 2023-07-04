@@ -8,7 +8,7 @@ import (
 )
 
 type CaseloadClient interface {
-	GetClientList(sirius.Context, int) (sirius.ClientList, error)
+	GetClientList(sirius.Context, model.Team) (sirius.ClientList, error)
 }
 
 type CaseloadVars struct {
@@ -21,10 +21,13 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		if r.Method != http.MethodGet {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
-		ctx := getContext(r)
-		teamSelected := app.SelectedTeam.Id
 
-		clientList, err := client.GetClientList(ctx, teamSelected)
+		if !app.SelectedTeam.IsLay() {
+			return RedirectError(ClientTasksVars{}.GetTeamUrl(app.SelectedTeam))
+		}
+
+		ctx := getContext(r)
+		clientList, err := client.GetClientList(ctx, app.SelectedTeam)
 		if err != nil {
 			return err
 		}
@@ -32,10 +35,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars := CaseloadVars{
 			App:        app,
 			ClientList: clientList,
-		}
-
-		if !app.SelectedTeam.IsLay() || !app.EnvironmentVars.ShowCaseload {
-			return RedirectError(ClientTasksVars{}.GetTeamUrl(app.SelectedTeam))
 		}
 
 		return tmpl.Execute(w, vars)

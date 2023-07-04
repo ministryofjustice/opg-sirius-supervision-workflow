@@ -1,12 +1,11 @@
 describe("Caseload list", () => {
-    beforeEach(() => {
+    before(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
+        cy.visit("/caseload?team=21");
     });
 
     it("has column headers", () => {
-        cy.visit("/client-tasks?team=21");
-        cy.get(':nth-child(2) > .moj-sub-navigation__link').click()
         cy.get('[data-cy="Client"]').should("contain", "Client");
         cy.get('[data-cy="Report due date"]').should("contain", "Report due date");
         cy.get('[data-cy="Case owner"]').should("contain", "Case owner");

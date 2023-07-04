@@ -51,3 +51,20 @@ func TestClient_GetReportDueDate(t *testing.T) {
 	}
 	assert.Equal(t, "12/02/2020", client.GetReportDueDate())
 }
+
+func TestClient_GetURL(t *testing.T) {
+	assert.Equal(t, "/supervision/#/clients/0", Client{}.GetURL())
+	assert.Equal(t, "/supervision/#/clients/12", Client{Id: 12}.GetURL())
+}
+
+func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {
+	client := Client{
+		Orders: []Order{
+			{MadeActiveDate: NewDate("01/12/2022")},
+			{MadeActiveDate: NewDate("01/06/2023")},
+			{MadeActiveDate: NewDate("01/07/2021")},
+		},
+	}
+	assert.Equal(t, "01/06/2023", client.GetMostRecentlyMadeActiveOrder().MadeActiveDate.String())
+	assert.Equal(t, Order{}, Client{}.GetMostRecentlyMadeActiveOrder())
+}

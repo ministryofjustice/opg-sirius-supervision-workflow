@@ -42,7 +42,7 @@ describe("Reassign Tasks", () => {
         cy.setCookie("success-route", "999");
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
-        cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)')
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
@@ -57,7 +57,7 @@ describe("Reassign Tasks", () => {
         cy.get("#select-task-2").click()
         cy.get("#select-task-5").click()
         cy.get("#manage-task").should('be.visible').click()
-        cy.get('.moj-manage-tasks__edit-panel > :nth-child(2)').should('be.visible').click()
+        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
         cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
@@ -72,7 +72,7 @@ describe("Reassign Tasks", () => {
         cy.get("#select-task-1").check('1')
         cy.get("#manage-task").click()
         cy.get("#edit-cancel").click()
-        cy.get(".moj-manage-tasks__edit-panel").should('not.be.visible')
+        cy.get(".moj-manage-list__edit-panel").should('not.be.visible')
     });
 
     it("Only set the priority for a task", () => {
