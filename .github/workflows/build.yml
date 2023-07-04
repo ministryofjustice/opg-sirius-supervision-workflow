@@ -18,7 +18,7 @@ jobs:
     name: Test Workflow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
       - uses: actions/checkout@v3
         with:
           go-version: 1.19.2
@@ -48,7 +48,7 @@ jobs:
           gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
 
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ always() }}
         with:
           check_name: "Unit Test Results"
