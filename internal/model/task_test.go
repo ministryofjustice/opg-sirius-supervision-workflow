@@ -177,6 +177,36 @@ func TestTask_GetDueDateStatus(t *testing.T) {
 			dueDate:   "19/06/2023",
 			want:      DueDateStatus{},
 		},
+		{
+			name:      "Monday today due date this week",
+			mockToday: "12/06/2023",
+			dueDate:   "18/06/2023",
+			want:      DueDateStatus{Name: "Due This Week", Colour: "orange"},
+		},
+		{
+			name:      "Monday today due date is tomorrow",
+			mockToday: "12/06/2023",
+			dueDate:   "13/06/2023",
+			want:      DueDateStatus{Name: "Due Tomorrow", Colour: "orange"},
+		},
+		{
+			name:      "Monday today due date is next week",
+			mockToday: "12/06/2023",
+			dueDate:   "19/06/2023",
+			want:      DueDateStatus{Name: "Due Next Week", Colour: "green"},
+		},
+		{
+			name:      "Monday today due date today",
+			mockToday: "12/06/2023",
+			dueDate:   "12/06/2023",
+			want:      DueDateStatus{Name: "Due Today", Colour: "red"},
+		},
+		{
+			name:      "Monday today due date not next but week after",
+			mockToday: "12/06/2023",
+			dueDate:   "26/06/2023",
+			want:      DueDateStatus{},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
