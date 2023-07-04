@@ -35,12 +35,18 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
                     "id": 92,
                     "caseRecNumber": "33594483",
                     "latestAnnualReport": {
-                        "dueDate": "21/12/2023"
+                        "dueDate": "21\/12\/2023"
                     },
 					"orderStatus": {
 						"handle": "CLOSED",
 						"label": "Closed",
 						"deprecated": false
+					},
+					"madeActiveDate": "01\/06\/2023",
+					"introductoryTargetDate": "20\/06\/2023",
+					"howDeputyAppointed": {
+						"handle": "SOLE",
+						"label": "Sole"
 					}
                 }
             ],
@@ -76,6 +82,12 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 						LatestAnnualReport: model.AnnualReport{
 							DueDate: "21/12/2023",
 						},
+						MadeActiveDate:         model.NewDate("01/06/2023"),
+						IntroductoryTargetDate: model.NewDate("20/06/2023"),
+						HowDeputyAppointed: model.RefData{
+							Handle: "SOLE",
+							Label:  "Sole",
+						},
 					},
 				},
 				SupervisionLevel: "Minimal",
@@ -88,9 +100,7 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 		TotalClients: 1,
 	}
 
-	selectedTeam := model.Team{Id: 13}
-
-	clientList, err := client.GetClientList(getContext(nil), selectedTeam.Id)
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expectedResponse, clientList)
@@ -105,7 +115,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	clientList, err := client.GetClientList(getContext(nil), 13)
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
 
 	expectedResponse := ClientList{
 		Clients:      nil,
@@ -117,7 +127,24 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients",
+		URL:    svr.URL + "/api/v1/assignees/13/clients?sort=",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.T) {
+	logger, mockClient := SetUpTest()
+	client, _ := NewApiClient(mockClient, "", logger)
+
+	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
+		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
+		return &http.Response{
+			StatusCode: 200,
+			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
+		}, nil
+	}
+
+	team := model.Team{Id: 13, Name: "Lay Team - New Deputy Orders"}
+	_, err := client.GetClientList(getContext(nil), team)
+	assert.Nil(t, err)
 }

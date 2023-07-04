@@ -1,6 +1,6 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadVars*/ -}}
 {{ define "caseload-list" }}
-    <section data-module="manage-tasks" class="moj-manage-tasks">
+    <section data-module="manage-clients" class="moj-manage-list">
         <table id="caseload-list" class="govuk-table"  data-module="moj-sortable-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -28,7 +28,7 @@
                         <td class="govuk-table__cell">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" autocomplete="off" />
+                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-clients" autocomplete="off" />
                                     <label class="govuk-label govuk-checkboxes__label" >
                                         <span class="govuk-visually-hidden">Select</span>
                                     </label>
@@ -36,7 +36,7 @@
                             </div>
                         </td>
                         <td class="govuk-table__cell">
-                            <a {{ if ne .Id 0 }}href="{{ sirius (printf "/supervision/#/clients/%d" .Id) }}"{{ end }} class="govuk-link">
+                            <a {{ if ne .Id 0 }}href="{{ sirius .GetURL }}"{{ end }} class="govuk-link">
                                 {{ .FirstName }} {{ .Surname }}
                             </a>
                             <label class="govuk-label"><span class="secondary">{{ .CaseRecNumber }}</span></label>
