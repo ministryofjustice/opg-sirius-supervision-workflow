@@ -226,7 +226,7 @@ func TestCaseloadVars_GetPaginationUrl(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := createClientVars(tt.fields)
+			w := createCaseloadVars(tt.fields)
 			var result string
 			if tt.args.perPage == 0 {
 				result = w.GetPaginationUrl(tt.args.page)
