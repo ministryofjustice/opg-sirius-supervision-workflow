@@ -24,7 +24,7 @@ type DueDateStatus struct {
 func (t Task) GetDueDateStatus(now ...time.Time) DueDateStatus {
 	removeTime := func(t time.Time) time.Time {
 		y, m, d := t.Date()
-		return time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+		return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 	}
 
 	today := removeTime(time.Now())
@@ -36,6 +36,9 @@ func (t Task) GetDueDateStatus(now ...time.Time) DueDateStatus {
 	dueDate = removeTime(dueDate)
 
 	daysUntilNextWeek := int((7 + (time.Monday - today.Weekday())) % 7)
+	if daysUntilNextWeek == 0 {
+		daysUntilNextWeek = 7
+	}
 	startOfNextWeek := today.AddDate(0, 0, daysUntilNextWeek)
 	endOfNextWeek := startOfNextWeek.AddDate(0, 0, 6)
 
