@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
@@ -12,14 +13,12 @@ import (
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, []string) ([]model.TaskType, error)
 	GetTaskList(sirius.Context, int, int, model.Team, []string, []model.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
-	GetPageDetails(sirius.TaskList, int, int) sirius.PageDetails
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
 
 type ClientTasksVars struct {
 	App                 WorkflowVars
 	TaskList            sirius.TaskList
-	PageDetails         sirius.PageDetails
 	TaskTypes           []model.TaskType
 	SelectedAssignees   []string
 	SelectedUnassigned  string
@@ -27,6 +26,8 @@ type ClientTasksVars struct {
 	SelectedDueDateFrom string
 	SelectedDueDateTo   string
 	AppliedFilters      []string
+	TasksPerPage        int
+	Pagination          paginate.Pagination
 }
 
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
@@ -116,6 +117,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			SelectedAssignees:  userSelectedAssignees,
 			SelectedUnassigned: selectedUnassigned,
 			SelectedTaskTypes:  selectedTaskTypes,
+			TasksPerPage:       tasksPerPage,
 		}
 
 		if selectedDueDateFrom != nil {
@@ -129,7 +131,16 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			return RedirectError(vars.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
 		}
 
-		vars.PageDetails = client.GetPageDetails(taskList, page, tasksPerPage)
+		vars.Pagination = paginate.Pagination{
+			CurrentPage:     taskList.Pages.PageCurrent,
+			TotalPages:      taskList.Pages.PageTotal,
+			TotalElements:   taskList.TotalTasks,
+			ElementsPerPage: vars.TasksPerPage,
+			ElementName:     "tasks",
+			PerPageOptions:  []int{25, 50, 100},
+			UrlBuilder:      vars,
+		}
+
 		vars.AppliedFilters = sirius.GetAppliedFilters(app.SelectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
 		vars.TaskTypes = calculateTaskCounts(taskTypes, taskList)
 
@@ -243,7 +254,7 @@ func (ctv ClientTasksVars) buildUrl(team string, page int, tasksPerPage int, sel
 }
 
 func (ctv ClientTasksVars) GetTeamUrl(team model.Team) string {
-	perPage := ctv.PageDetails.StoredTaskLimit
+	perPage := ctv.TasksPerPage
 	if perPage == 0 {
 		perPage = 25
 	}
@@ -251,7 +262,7 @@ func (ctv ClientTasksVars) GetTeamUrl(team model.Team) string {
 }
 
 func (ctv ClientTasksVars) GetPaginationUrl(page int, tasksPerPage ...int) string {
-	perPage := ctv.PageDetails.StoredTaskLimit
+	perPage := ctv.TasksPerPage
 	if len(tasksPerPage) > 0 {
 		perPage = tasksPerPage[0]
 	}
@@ -259,7 +270,7 @@ func (ctv ClientTasksVars) GetPaginationUrl(page int, tasksPerPage ...int) strin
 }
 
 func (ctv ClientTasksVars) GetClearFiltersUrl() string {
-	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.PageDetails.StoredTaskLimit, []string{}, []string{}, "", "", "")
+	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.TasksPerPage, []string{}, []string{}, "", "", "")
 }
 
 func (ctv ClientTasksVars) GetRemoveFilterUrl(name string, value interface{}) string {
@@ -300,5 +311,5 @@ func (ctv ClientTasksVars) GetRemoveFilterUrl(name string, value interface{}) st
 		dueDateTo = ""
 	}
 
-	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.PageDetails.StoredTaskLimit, taskTypes, assignees, unassigned, dueDateFrom, dueDateTo)
+	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.TasksPerPage, taskTypes, assignees, unassigned, dueDateFrom, dueDateTo)
 }

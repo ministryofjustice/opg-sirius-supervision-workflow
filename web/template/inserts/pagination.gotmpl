@@ -8,7 +8,7 @@
     <div class="flex-container">
       {{ if .ShowPrevious }}
         <div class="govuk-pagination__prev previous-page-pagination-link">
-          <a href="{{ .UrlBuilder.GetPaginationUrl (.CurrentPage-1) }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="prev">
+          <a href="{{ .GetPreviousUrl }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="prev">
             <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
               <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
             </svg>
@@ -20,8 +20,7 @@
       <ul class="govuk-pagination__list">
         {{ $pageBefore := 0 }}
         {{ range .GetPageNumbers }}
-          {{ $pageIncrement := sub . $pageBefore }}
-          {{ if gt $pageIncrement 1 }}
+          {{ if $.ShowEllipsisBetween $pageBefore . }}
             <li class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
           {{ end }}
           <li class="govuk-pagination__item {{ if eq . $.CurrentPage }}govuk-pagination__item--current{{ end }}">
@@ -33,7 +32,7 @@
 
       {{ if .ShowNext }}
         <div class="govuk-pagination__next next-page-pagination-link">
-          <a href="{{ .UrlBuilder.GetPaginationUrl (.CurrentPage+1) }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="next">
+          <a href="{{ .GetNextUrl }}" class="govuk-link govuk-link--no-visited-state govuk-pagination__link moj-button" rel="next">
             <span class="govuk-pagination__link-title">Next</span>
             <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
               <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
@@ -47,7 +46,7 @@
       <label class="govuk-label">View</label>
       <select class="govuk-select display-rows" aria-label="View" data-module="jump-menu">
         {{ range .PerPageOptions }}
-          <option value="{{ .UrlBuilder.GetPaginationUrl 1 . }}" {{ if eq $.ElementsPerPage . }}selected{{ end }}>{{ . }}</option>
+          <option value="{{ $.UrlBuilder.GetPaginationUrl 1 . }}" {{ if eq $.ElementsPerPage . }}selected{{ end }}>{{ . }}</option>
         {{ end }}
       </select>
     </div>

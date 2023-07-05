@@ -12,17 +12,15 @@ import (
 )
 
 type mockClientTasksClient struct {
-	count           map[string]int
-	lastCtx         sirius.Context
-	err             error
-	taskTypeData    []model.TaskType
-	taskListData    sirius.TaskList
-	pageDetailsData sirius.PageDetails
+	count        map[string]int
+	lastCtx      sirius.Context
+	err          error
+	taskTypeData []model.TaskType
+	taskListData sirius.TaskList
 }
 
 type clientTasksURLFields struct {
 	SelectedTeam        string
-	CurrentPage         int
 	PerPageLimit        int
 	SelectedAssignees   []string
 	SelectedUnassigned  string
@@ -49,14 +47,6 @@ func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, disp
 	m.lastCtx = ctx
 
 	return m.taskListData, m.err
-}
-func (m *mockClientTasksClient) GetPageDetails(taskList sirius.TaskList, search int, displayTaskLimit int) sirius.PageDetails {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetPageDetails"] += 1
-
-	return m.pageDetailsData
 }
 
 func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string, prioritySelected string) (string, error) {
@@ -330,10 +320,7 @@ func createClientTasksVars(fields clientTasksURLFields) ClientTasksVars {
 		App: WorkflowVars{
 			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
 		},
-		PageDetails: sirius.PageDetails{
-			CurrentPage:     fields.CurrentPage,
-			StoredTaskLimit: fields.PerPageLimit,
-		},
+		TasksPerPage:        fields.PerPageLimit,
 		SelectedAssignees:   fields.SelectedAssignees,
 		SelectedUnassigned:  fields.SelectedUnassigned,
 		SelectedTaskTypes:   fields.SelectedTaskTypes,
@@ -350,32 +337,32 @@ func TestClientTasksVars_GetClearFiltersUrl(t *testing.T) {
 	}{
 		{
 			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 50},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 50},
 			want:   "?team=lay&page=1&per-page=50",
 		},
 		{
 			name:   "Assignees are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
 			name:   "Unassigned is removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedUnassigned: "1"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
 			name:   "Task types are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
 			name:   "Due date filters are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
 			name:   "Page is reset back to 1",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 2, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
 			want:   "?team=lay&page=1&per-page=25",
 		},
 	}
@@ -400,43 +387,43 @@ func TestClientTasksVars_GetPaginationUrl(t *testing.T) {
 	}{
 		{
 			name:   "Page number is updated",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25",
 		},
 		{
 			name:   "Per page limit is updated",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
 			args:   args{page: 1, perPage: 50},
 			want:   "?team=lay&page=1&per-page=50",
 		},
 		{
 			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 100},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 100},
 			args:   args{page: 2},
 			want:   "?team=lay&page=2&per-page=100",
 		},
 		{
 			name:   "Assignees are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25&assignee=1&assignee=2",
 		},
 		{
 			name:   "Unassigned is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedUnassigned: "1"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25&unassigned=1",
 		},
 		{
 			name:   "Task types are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25&task-type=1&task-type=2",
 		},
 		{
 			name:   "Due date filters are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{page: 2, perPage: 25},
 			want:   "?team=lay&page=2&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
@@ -468,43 +455,43 @@ func TestClientTasksVars_GetRemoveFilterUrl(t *testing.T) {
 	}{
 		{
 			name:   "Assignee filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "assignee", value: 2},
 			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Unassigned filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "unassigned", value: 1},
 			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Task type filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "task-type", value: 3},
 			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Due date from filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "due-date-from", value: "2022-12-17"},
 			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Due date to filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "due-date-to", value: "2022-12-18"},
 			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17",
 		},
 		{
 			name:   "Page is reset back to 1 on removing a filter",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 3, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
 			args:   args{name: "task-type", value: 3},
 			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1",
 		},
 		{
 			name:   "All filters retained if filter not found",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			args:   args{name: "non-existent", value: 3},
 			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
@@ -526,49 +513,49 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 	}{
 		{
 			name:   "Team is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
 			team:   "lay",
 			want:   "?team=lay&page=1&per-page=25",
 		},
 		{
 			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 50},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 50},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=50",
 		},
 		{
 			name:   "Per page limit defaults to 25",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 0},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 0},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25",
 		},
 		{
 			name:   "Assignees are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25",
 		},
 		{
 			name:   "Unassigned is removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedUnassigned: "1"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25",
 		},
 		{
 			name:   "Task types are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25&task-type=1&task-type=2",
 		},
 		{
 			name:   "Due date filters are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 1, PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
 		},
 		{
 			name:   "Page is reset back to 1",
-			fields: clientTasksURLFields{SelectedTeam: "lay", CurrentPage: 2, PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
+			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
 			team:   "pro",
 			want:   "?team=pro&page=1&per-page=25&task-type=task",
 		},

@@ -13,7 +13,7 @@ type Pagination struct {
 }
 
 type UrlBuilder interface {
-	GetPaginationUrl(int, ...int)
+	GetPaginationUrl(int, ...int) string
 }
 
 func (p Pagination) ShowPrevious() bool {
@@ -22,6 +22,22 @@ func (p Pagination) ShowPrevious() bool {
 
 func (p Pagination) ShowNext() bool {
 	return p.CurrentPage < p.TotalPages
+}
+
+func (p Pagination) GetPreviousUrl() string {
+	page := p.CurrentPage - 1
+	if page < 1 {
+		page = 1
+	}
+	return p.UrlBuilder.GetPaginationUrl(page)
+}
+
+func (p Pagination) GetNextUrl() string {
+	page := p.CurrentPage + 1
+	if page > p.TotalPages {
+		page = p.TotalPages
+	}
+	return p.UrlBuilder.GetPaginationUrl(page)
 }
 
 func (p Pagination) GetPageNumbers() []int {
@@ -43,6 +59,10 @@ func (p Pagination) GetPageNumbers() []int {
 	}
 	sort.Ints(pages)
 	return pages
+}
+
+func (p Pagination) ShowEllipsisBetween(page1 int, page2 int) bool {
+	return page2-page1 > 1
 }
 
 func (p Pagination) GetElementsFrom() int {
