@@ -64,13 +64,9 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 
 		params := r.URL.Query()
-
-		page, _ := strconv.Atoi(params.Get("page"))
-		if page < 1 {
-			page = 1
-		}
-
-		tasksPerPage := getTasksPerPage(params.Get("per-page"))
+		page := paginate.GetRequestedPage(params.Get("page"))
+		perPageOptions := []int{25, 50, 100}
+		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
 		var userSelectedAssignees []string
 		if params.Has("assignee") {
@@ -137,7 +133,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			TotalElements:   taskList.TotalTasks,
 			ElementsPerPage: vars.TasksPerPage,
 			ElementName:     "tasks",
-			PerPageOptions:  []int{25, 50, 100},
+			PerPageOptions:  perPageOptions,
 			UrlBuilder:      vars,
 		}
 
@@ -146,17 +142,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
-}
-
-func getTasksPerPage(valueFromUrl string) int {
-	validOptions := []int{25, 50, 100}
-	tasksPerPage, _ := strconv.Atoi(valueFromUrl)
-	for _, opt := range validOptions {
-		if opt == tasksPerPage {
-			return tasksPerPage
-		}
-	}
-	return validOptions[0]
 }
 
 func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {

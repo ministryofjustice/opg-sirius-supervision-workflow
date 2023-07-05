@@ -100,7 +100,7 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 		TotalClients: 1,
 	}
 
-	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13}, 25, 1)
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expectedResponse, clientList)
@@ -115,7 +115,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13})
+	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13}, 25, 1)
 
 	expectedResponse := ClientList{
 		Clients:      nil,
@@ -127,7 +127,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients?sort=",
+		URL:    svr.URL + "/api/v1/assignees/13/clients?limit=25&page=1&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
@@ -145,6 +145,6 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	}
 
 	team := model.Team{Id: 13, Name: "Lay Team - New Deputy Orders"}
-	_, err := client.GetClientList(getContext(nil), team)
+	_, err := client.GetClientList(getContext(nil), team, 25, 1)
 	assert.Nil(t, err)
 }

@@ -188,3 +188,13 @@ func TestPagination_GetElementsTo(t *testing.T) {
 		})
 	}
 }
+
+func TestGetRequestedElementsPerPage(t *testing.T) {
+	assert.Equal(t, 2, GetRequestedElementsPerPage("2", []int{1, 2, 3}))
+	assert.Equal(t, 25, GetRequestedElementsPerPage("2", []int{25, 50, 100}))
+}
+
+func TestGetRequestedPage(t *testing.T) {
+	assert.Equal(t, 2, GetRequestedPage("2"))
+	assert.Equal(t, 1, GetRequestedPage("0"))
+}
