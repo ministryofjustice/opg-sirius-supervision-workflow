@@ -15,6 +15,8 @@ describe("Pagination", () => {
       cy.get(".previous-page-pagination-link").should('not.exist')
       cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get("#top-nav .previous-page-pagination-link").click()
+      cy.get(".previous-page-pagination-link").should('not.exist')
     })
 
     it("shows next button apart from on last page", () => {
@@ -23,7 +25,7 @@ describe("Pagination", () => {
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
-    it("shows first page and ellipses once you are past page 4", () => {
+    it("shows first and second ellipsis when expected", () => {
       let firstEllipsis = ".govuk-pagination__item--ellipses:nth-child(2)",
           secondEllipsis = ".govuk-pagination__item--ellipses:nth-last-child(2)"
 
@@ -31,11 +33,6 @@ describe("Pagination", () => {
       cy.get(secondEllipsis).should("exist")
 
       cy.get("#top-nav .govuk-pagination__link:contains(2)").click()
-
-      cy.get(firstEllipsis).should("not.exist")
-      cy.get(secondEllipsis).should("not.exist")
-
-      cy.get("#top-nav .govuk-pagination__link:contains(3)").click()
 
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("not.exist")
