@@ -174,7 +174,7 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 	}
 }
 
-func createClientVars(fields caseloadURLFields) CaseloadVars {
+func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	return CaseloadVars{
 		App: WorkflowVars{
 			SelectedTeam: model.Team{Selector: "lay"},
