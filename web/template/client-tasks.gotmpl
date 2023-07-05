@@ -13,7 +13,7 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
-              {{ template "client-tasks-pagination" . }}
+              {{ template "pagination" .Pagination }}
           </nav>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
-              {{ template "client-tasks-pagination" . }}
+              {{ template "pagination" .Pagination }}
           </nav>
         </div>
       </div>

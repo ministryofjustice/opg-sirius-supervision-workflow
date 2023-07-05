@@ -140,31 +140,6 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 	}
 }
 
-func TestGetPaginationLimitsWillReturnARangeTwoBelowAndTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(3, 10)
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3, 4, 5})
-}
-
-func TestGetPaginationLimitsWillReturnARangeOnlyTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(1, 10)
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3})
-}
-
-func TestGetPaginationLimitsWillReturnARangeOneBelowAndTwoAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(2, 10)
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{1, 2, 3, 4})
-}
-
-func TestGetPaginationLimitsWillReturnARangeTwoBelowAndOneAboveCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(4, 5)
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{2, 3, 4, 5})
-}
-
-func TestGetPaginationLimitsWillReturnARangeTwoBelowAndCurrentPage(t *testing.T) {
-	taskList, pageDetails := setUpPagesTests(5, 5)
-	assert.Equal(t, GetPaginationLimits(taskList, pageDetails), []int{3, 4, 5})
-}
-
 func TestCreateFilter(t *testing.T) {
 	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
 	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
@@ -208,28 +183,4 @@ func SetUpTaskTypes() []model.TaskType {
 			EcmTask:    true,
 		},
 	}
-}
-
-func makeListOfPagesRange(min, max int) []int {
-	a := make([]int, max-min+1)
-	for i := range a {
-		a[i] = min + i
-	}
-	return a
-}
-
-func setUpPagesTests(pageCurrent int, lastPage int) (TaskList, PageDetails) {
-	ListOfPages := makeListOfPagesRange(1, lastPage)
-
-	taskList := TaskList{
-		Pages: model.PageInformation{
-			PageCurrent: pageCurrent,
-		},
-	}
-	pageDetails := PageDetails{
-		LastPage:    lastPage,
-		ListOfPages: ListOfPages,
-	}
-
-	return taskList, pageDetails
 }
