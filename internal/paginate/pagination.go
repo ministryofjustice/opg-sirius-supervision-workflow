@@ -1,6 +1,9 @@
 package paginate
 
-import "sort"
+import (
+	"sort"
+	"strconv"
+)
 
 type Pagination struct {
 	CurrentPage     int
@@ -78,4 +81,22 @@ func (p Pagination) GetElementsTo() int {
 		return p.TotalElements
 	}
 	return elementsTo
+}
+
+func GetRequestedElementsPerPage(valueFromUrl string, perPageOptions []int) int {
+	elementsPerPage, _ := strconv.Atoi(valueFromUrl)
+	for _, opt := range perPageOptions {
+		if opt == elementsPerPage {
+			return elementsPerPage
+		}
+	}
+	return perPageOptions[0]
+}
+
+func GetRequestedPage(valueFromUrl string) int {
+	page, _ := strconv.Atoi(valueFromUrl)
+	if page < 1 {
+		return 1
+	}
+	return page
 }

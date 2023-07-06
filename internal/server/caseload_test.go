@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -17,32 +18,22 @@ type mockCaseloadClient struct {
 }
 
 type caseloadURLFields struct {
-	SelectedTeam string
-	Status       string
-	DueDate      string
+	SelectedTeam   string
+	Status         string
+	DueDate        string
+	ClientsPerPage int
 }
 
 func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	return CaseloadVars{
 		App: WorkflowVars{
-			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
+			SelectedTeam: model.Team{Selector: "lay"},
 		},
-		ClientList: sirius.ClientList{
-			Clients: []model.Client{
-				{
-					Orders: []model.Order{
-						{
-							LatestAnnualReport: model.AnnualReport{DueDate: fields.DueDate},
-							Status:             model.RefData{Label: fields.Status},
-						},
-					},
-				},
-			},
-		},
+		ClientsPerPage: fields.ClientsPerPage,
 	}
 }
 
-func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) (sirius.ClientList, error) {
+func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team, clientsPerPage int, page int) (sirius.ClientList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -68,7 +59,20 @@ func TestCaseload(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
-	assert.Equal(t, CaseloadVars{App: app}, template.lastVars)
+
+	want := CaseloadVars{App: app, ClientsPerPage: 25}
+
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     0,
+		TotalPages:      0,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "clients",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want,
+	}
+
+	assert.Equal(t, want, template.lastVars)
 }
 
 func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
@@ -126,9 +130,27 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 	}{
 		{
 			name:   "Team is retained",
-			fields: caseloadURLFields{SelectedTeam: "lay"},
+			fields: caseloadURLFields{SelectedTeam: "lay", ClientsPerPage: 25},
 			team:   "lay",
-			want:   "?team=lay",
+			want:   "?team=lay&page=1&per-page=25",
+		},
+		{
+			name:   "Per page limit is retained",
+			fields: caseloadURLFields{SelectedTeam: "lay", ClientsPerPage: 50},
+			team:   "lay",
+			want:   "?team=lay&page=1&per-page=50",
+		},
+		{
+			name:   "Per page limit defaults to 25",
+			fields: caseloadURLFields{SelectedTeam: "lay", ClientsPerPage: 0},
+			team:   "lay",
+			want:   "?team=lay&page=1&per-page=25",
+		},
+		{
+			name:   "Page is reset back to 1",
+			fields: caseloadURLFields{SelectedTeam: "lay", ClientsPerPage: 25},
+			team:   "pro",
+			want:   "?team=pro&page=1&per-page=25",
 		},
 	}
 	for _, tt := range tests {
@@ -136,6 +158,59 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 			w := createCaseloadVars(tt.fields)
 			team := model.Team{Selector: tt.team}
 			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
+		})
+	}
+}
+
+func TestCaseloadVars_GetPaginationUrl(t *testing.T) {
+	type args struct {
+		page    int
+		perPage int
+	}
+	tests := []struct {
+		name   string
+		args   args
+		fields caseloadURLFields
+		want   string
+	}{
+		{
+			name: "Page number is updated",
+			args: args{page: 2, perPage: 25},
+			fields: caseloadURLFields{
+				SelectedTeam:   "lay",
+				ClientsPerPage: 25,
+			},
+			want: "?team=lay&page=2&per-page=25",
+		},
+		{
+			name: "Per page limit is updated",
+			args: args{page: 1, perPage: 50},
+			fields: caseloadURLFields{
+				SelectedTeam:   "lay",
+				ClientsPerPage: 25,
+			},
+			want: "?team=lay&page=1&per-page=50",
+		},
+		{
+			name: "Per page limit is retained",
+			args: args{page: 2},
+			fields: caseloadURLFields{
+				SelectedTeam:   "lay",
+				ClientsPerPage: 100,
+			},
+			want: "?team=lay&page=2&per-page=100",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := createCaseloadVars(tt.fields)
+			var result string
+			if tt.args.perPage == 0 {
+				result = w.GetPaginationUrl(tt.args.page)
+			} else {
+				result = w.GetPaginationUrl(tt.args.page, tt.args.perPage)
+			}
+			assert.Equalf(t, "caseload"+tt.want, result, "GetPaginationUrl(%v, %v)", tt.args.page, tt.args.perPage)
 		})
 	}
 }
