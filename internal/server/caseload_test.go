@@ -27,21 +27,9 @@ type caseloadURLFields struct {
 func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
 	return CaseloadVars{
 		App: WorkflowVars{
-			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
+			SelectedTeam: model.Team{Selector: "lay"},
 		},
 		ClientsPerPage: fields.ClientsPerPage,
-		ClientList: sirius.ClientList{
-			Clients: []model.Client{
-				{
-					Orders: []model.Order{
-						{
-							LatestAnnualReport: model.AnnualReport{DueDate: fields.DueDate},
-							Status:             model.RefData{Label: fields.Status},
-						},
-					},
-				},
-			},
-		},
 	}
 }
 
@@ -171,17 +159,6 @@ func TestCaseloadVars_GetTeamUrl(t *testing.T) {
 			team := model.Team{Selector: tt.team}
 			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
 		})
-	}
-}
-
-func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
-	return CaseloadVars{
-		App: WorkflowVars{
-			SelectedTeam: model.Team{Selector: "lay"},
-		},
-		ClientList:     sirius.ClientList{},
-		Pagination:     paginate.Pagination{},
-		ClientsPerPage: fields.ClientsPerPage,
 	}
 }
 
