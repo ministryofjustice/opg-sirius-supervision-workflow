@@ -235,9 +235,9 @@
     fastq "^1.6.0"
 
 "@types/node@*":
-  version "20.3.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.3.3.tgz#329842940042d2b280897150e023e604d11657d6"
-  integrity sha512-wheIYdr4NYML61AjC8MKj/2jrR/kDQri/CIpVoZwldwhnIrD/j9jIU5bJ8yBKuB2VhpFV7Ab6G2XkBjv9r9Zzw==
+  version "20.4.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.1.tgz#a6033a8718653c50ac4962977e14d0f984d9527d"
+  integrity sha512-JIzsAvJeA/5iY6Y/OxZbv1lUcc8dNSE77lb2gnBH+/PJ3lFR1Ccvgwl5JWnHAkNHcRsT0TbpVOsiMKZ1F/yyJg==
 
 "@types/node@^14.14.31":
   version "14.18.53"
@@ -267,9 +267,9 @@ acorn-jsx@^5.3.2:
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
 acorn@^8.9.0:
-  version "8.9.0"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.9.0.tgz#78a16e3b2bcc198c10822786fa6679e245db5b59"
-  integrity sha512-jaVNAFBHNLXspO543WnNNPZFRtavh3skAkITqD0/2aeMkKZTN+254PyhwxFYrk3vQ1xfY+2wbesJMs/JC8/PwQ==
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.10.0.tgz#8be5b3907a67221a81ab23c7889c4c5526b62ec5"
+  integrity sha512-F0SAmZ8iUtS//m8DmCTA0jlh6TDKkHQyK6xc6V4KDTyZKA9dnvX9/3sRTVQrWm79glUAZbnmmNcdYwUIHWVybw==
 
 aggregate-error@^3.0.0:
   version "3.1.0"
@@ -1094,9 +1094,9 @@ globals@^13.19.0:
     type-fest "^0.20.2"
 
 "govuk-frontend@^3.0.0 || ^4.0.0", govuk-frontend@^4.3.1:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/govuk-frontend/-/govuk-frontend-4.6.0.tgz#662b41f7c468bb5468441218c720f0b31c948cbd"
-  integrity sha512-pLJVHVvfsTmNDBH/YBCMyuqSMCQmOrNQXoThdcAzhXJVbuaWnGc1URvjOR7EJeZyOm101fHDjzTkTvpEy6zfiw==
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/govuk-frontend/-/govuk-frontend-4.7.0.tgz#69950b6c2e69f435ffe9aa60d8dee232dac977de"
+  integrity sha512-0OsdCusF5qvLWwKziU8zqxiC0nq6WP0ZQuw51ymZ/1V0tO71oIKMlSLN2S9bm8RcEGSoidPt2A34gKxePrLjvg==
 
 graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.11"
@@ -1160,9 +1160,9 @@ ignore@^5.2.0:
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
 
 immutable@^4.0.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.0.tgz#eb1738f14ffb39fd068b1dbe1296117484dd34be"
-  integrity sha512-0AOCmOip+xgJwEVTQj1EfiDDOkPmuyllDuTuEX+DDXUgapLAsBIfkg3sxCYyCEA8mQqZrrxPUGjcOQ2JS3WLkg==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.3.1.tgz#17988b356097ab0719e2f741d56f3ec6c317f9dc"
+  integrity sha512-lj9cnmB/kVS0QHsJnYKD1uo3o39nrbKxszjnqS9Fr6NB7bZzW45U6WSGBPKXDL/CvDKqDNPA4r3DoDQ8GTxo2A==
 
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
@@ -1498,6 +1498,7 @@ onetime@^5.1.0:
 
 "opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.9.0":
   version "1.0.0"
+  uid fafb779ec82c21c2fb22bf60985cc9de8a080940
   resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/fafb779ec82c21c2fb22bf60985cc9de8a080940"
   dependencies:
     scss "^0.2.4"
@@ -1717,9 +1718,9 @@ scss@^0.2.4:
     ometa "0.2.2"
 
 semver@^7.3.2:
-  version "7.5.3"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.3.tgz#161ce8c2c6b4b3bdca6caadc9fa3317a4c4fe88e"
-  integrity sha512-QBlUtyVk/5EeHbi7X0fw6liDZc7BBmEaSYn01fMU1OUYbf6GPsbTtd8WmnqbI20SeycoHSeiybkE/q1Q+qlThQ==
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.4.tgz#483986ec4ed38e1c6c48c34894a9182dbff68a6e"
+  integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
   dependencies:
     lru-cache "^6.0.0"
 
