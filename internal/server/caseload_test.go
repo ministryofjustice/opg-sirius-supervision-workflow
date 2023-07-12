@@ -45,7 +45,7 @@ func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team, 
 
 func TestCaseload(t *testing.T) {
 	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -77,7 +77,7 @@ func TestCaseload(t *testing.T) {
 
 func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -107,7 +107,7 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 	for _, method := range methods {
 		t.Run("Test "+method, func(t *testing.T) {
 			client := &mockCaseloadClient{}
-			template := &mockTemplates{}
+			template := &mockTemplate{}
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(method, "", nil)
