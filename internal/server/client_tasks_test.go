@@ -106,7 +106,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	}
 
 	client := &mockClientTasksClient{taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/client-tasks?team=&page=10&per-page=25", nil)
@@ -124,7 +124,7 @@ func TestClientTasks_Unauthorized(t *testing.T) {
 	assert := assert.New(t)
 
 	client := &mockClientTasksClient{err: sirius.ErrUnauthorized}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
@@ -140,7 +140,7 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 	assert := assert.New(t)
 
 	client := &mockClientTasksClient{err: errors.New("err")}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "", nil)
@@ -154,7 +154,7 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 
 func TestClientTasks_PostIsPermitted(t *testing.T) {
 	client := &mockClientTasksClient{taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("POST", "", nil)
