@@ -19,7 +19,8 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
-      "name": "Case work - Complaint review"
+      "name": "Case work - Complaint review",
+      "isPriority": true
     },
     {
       "assignee": {
@@ -729,6 +730,7 @@ module.exports = function () {
           },
         ]
       }
-    ]
+    ],
+    "reassign-tasks": []
   }
 }
