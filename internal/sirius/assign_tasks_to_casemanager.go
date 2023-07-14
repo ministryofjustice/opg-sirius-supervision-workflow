@@ -11,7 +11,19 @@ import (
 type ReassignTaskDetails struct {
 	AssigneeId int      `json:"assigneeId"`
 	TaskIds    []string `json:"taskIds"`
-	IsPriority string   `json:"isPriority"`
+	IsPriority *bool    `json:"isPriority"`
+}
+
+func toNullableBool(s string) *bool {
+	if s == "Yes" {
+		b := true
+		return &b
+	} else if s == "No" {
+		b := false
+		return &b
+	} else {
+		return nil
+	}
 }
 
 func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
@@ -21,7 +33,7 @@ func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask i
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
 		AssigneeId: newAssigneeIdForTask,
 		TaskIds:    taskIds,
-		IsPriority: prioritySelected,
+		IsPriority: toNullableBool(prioritySelected),
 	})
 
 	if err != nil {
