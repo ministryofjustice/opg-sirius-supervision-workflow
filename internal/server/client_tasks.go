@@ -204,15 +204,15 @@ func calculateTaskCounts(taskTypes []model.TaskType, tasks sirius.TaskList) []mo
 }
 
 func successMessageForReassignAndPrioritiseTasks(assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
-	if assignTeam != "0" && prioritySelected == "yes" {
+	if assignTeam != "0" && prioritySelected == "true" {
 		return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(selectedTasks), assigneeDisplayName)
-	} else if assignTeam != "0" && prioritySelected == "no" {
+	} else if assignTeam != "0" && prioritySelected == "false" {
 		return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
 	} else if assignTeam != "0" {
 		return fmt.Sprintf("%d task(s) have been reassigned", len(selectedTasks))
-	} else if assignTeam == "0" && prioritySelected == "yes" {
+	} else if assignTeam == "0" && prioritySelected == "true" {
 		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
-	} else if assignTeam == "0" && prioritySelected == "no" {
+	} else if assignTeam == "0" && prioritySelected == "false" {
 		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
 	}
 	return ""

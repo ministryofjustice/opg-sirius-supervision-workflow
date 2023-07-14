@@ -308,11 +308,11 @@ func TestCalculateTaskCounts(t *testing.T) {
 }
 
 func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
-	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiseTasks("2", "yes", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiseTasks("2", "no", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiseTasks("2", "true", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiseTasks("2", "false", []string{"1"}, "assignee name"))
 	assert.Equal(t, "1 task(s) have been reassigned", successMessageForReassignAndPrioritiseTasks("2", "", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "yes", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "no", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "true", []string{"1"}, "assignee name"))
+	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "false", []string{"1"}, "assignee name"))
 }
 
 func createClientTasksVars(fields clientTasksURLFields) ClientTasksVars {
