@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -140,4 +141,36 @@ func TestAssignTasksToCaseManagerReturnsInternalServerError(t *testing.T) {
 	}
 
 	assert.Equal(t, expectedResponse, err)
+}
+
+func TestAssignTasksToCaseManager_IsPriority(t *testing.T) {
+	cases := map[string]*bool{
+		"Yes": boolPointer(true),
+		"No":  boolPointer(false),
+		"":    nil,
+	}
+
+	logger, mockClient := SetUpTest()
+	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+
+	r := io.NopCloser(bytes.NewReader([]byte{}))
+
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 200,
+			Body:       r,
+		}, nil
+	}
+
+	for s, e := range cases {
+		_, _ = client.AssignTasksToCaseManager(getContext(nil), 1, []string{"1"}, s)
+
+		var r ReassignTaskDetails
+		_ = json.NewDecoder(mockClient.GetRequestBody()).Decode(&r)
+		assert.Equal(t, r.IsPriority, e)
+	}
+}
+
+func boolPointer(b bool) *bool {
+	return &b
 }
