@@ -1,6 +1,8 @@
 package urlbuilder
 
 import (
+	"errors"
+	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -257,16 +259,18 @@ func TestUrlBuilder_GetClearFiltersUrl(t *testing.T) {
 
 func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 	tests := []struct {
-		urlBuilder UrlBuilder
-		name       string
-		value      interface{}
-		want       string
+		urlBuilder    UrlBuilder
+		name          string
+		value         interface{}
+		want          string
+		expectedError error
 	}{
 		{
-			urlBuilder: UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50},
-			name:       "non-existent-filter",
-			value:      "non-existent-value",
-			want:       "page?team=lay&page=1&per-page=50",
+			urlBuilder:    UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50},
+			name:          "non-existent-filter",
+			value:         "non-existent-value",
+			want:          "page?team=lay&page=1&per-page=50",
+			expectedError: nil,
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -275,9 +279,10 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 					SelectedValues: []string{"val1"},
 				},
 			}},
-			name:  "filter1",
-			value: "non-existent-value",
-			want:  "?team=lay&page=1&per-page=0&filter1=val1",
+			name:          "filter1",
+			value:         "non-existent-value",
+			want:          "?team=lay&page=1&per-page=0&filter1=val1",
+			expectedError: nil,
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -286,9 +291,10 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 					SelectedValues: []string{"val1"},
 				},
 			}},
-			name:  "filter1",
-			value: "val1",
-			want:  "?team=lay&page=1&per-page=0",
+			name:          "filter1",
+			value:         "val1",
+			want:          "?team=lay&page=1&per-page=0",
+			expectedError: nil,
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -297,9 +303,10 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 					SelectedValues: []string{"val1", "val2"},
 				},
 			}},
-			name:  "filter1",
-			value: "val1",
-			want:  "?team=lay&page=1&per-page=0&filter1=val2",
+			name:          "filter1",
+			value:         "val1",
+			want:          "?team=lay&page=1&per-page=0&filter1=val2",
+			expectedError: nil,
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -312,9 +319,10 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 					SelectedValues: []string{"val3"},
 				},
 			}},
-			name:  "filter2",
-			value: "val3",
-			want:  "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
+			name:          "filter2",
+			value:         "val3",
+			want:          "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
+			expectedError: nil,
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -327,14 +335,45 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 					SelectedValues: []string{"23"},
 				},
 			}},
-			name:  "filter2",
-			value: 23,
-			want:  "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
+			name:          "filter2",
+			value:         23,
+			want:          "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
+			expectedError: nil,
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
+				{
+					Name:           "filter1",
+					SelectedValues: []string{"val1", "val2"},
+				},
+				{
+					Name:           "filter2",
+					SelectedValues: []string{"23", "45", "66"},
+				},
+			}},
+			name:          "filter2",
+			value:         []int{23, 45, 66},
+			want:          "",
+			expectedError: errors.New(fmt.Sprintf("type []int not accepted")),
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
+				{
+					Name:           "filter1",
+					SelectedValues: []string{"val1", "val2"},
+				},
+			}},
+			name:          "filter2",
+			value:         []string{"val1", "val2", "val3"},
+			want:          "",
+			expectedError: errors.New(fmt.Sprintf("type []string not accepted")),
 		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, test.urlBuilder.GetRemoveFilterUrl(test.name, test.value))
+			returnedValue, returnedError := test.urlBuilder.GetRemoveFilterUrl(test.name, test.value)
+			assert.Equal(t, test.want, returnedValue)
+			assert.Equal(t, test.expectedError, returnedError)
 		})
 	}
 }

@@ -1,6 +1,7 @@
 package urlbuilder
 
 import (
+	"errors"
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"strconv"
@@ -47,16 +48,23 @@ func (ub UrlBuilder) GetClearFiltersUrl() string {
 	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, []Filter{})
 }
 
-func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) string {
+func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) (string, error) {
 	var retainedFilters []Filter
 	var retainedValues []string
 	var stringValue string
 
 	switch val := value.(type) {
 	case string:
+		fmt.Println("string")
+		fmt.Println(val)
 		stringValue = val
 	case int:
+		fmt.Println("int")
+		fmt.Println(val)
 		stringValue = strconv.Itoa(val)
+	default:
+		err := errors.New(fmt.Sprintf("type %T not accepted", val))
+		return "", err
 	}
 
 	for _, filter := range ub.SelectedFilters {
@@ -72,5 +80,5 @@ func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) string {
 		}
 	}
 
-	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, retainedFilters)
+	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, retainedFilters), nil
 }
