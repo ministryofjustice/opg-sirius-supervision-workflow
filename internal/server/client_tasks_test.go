@@ -3,10 +3,13 @@ package server
 import (
 	"errors"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -17,16 +20,6 @@ type mockClientTasksClient struct {
 	err          error
 	taskTypeData []model.TaskType
 	taskListData sirius.TaskList
-}
-
-type clientTasksURLFields struct {
-	SelectedTeam        string
-	PerPageLimit        int
-	SelectedAssignees   []string
-	SelectedUnassigned  string
-	SelectedTaskTypes   []string
-	SelectedDueDateFrom string
-	SelectedDueDateTo   string
 }
 
 func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]model.TaskType, error) {
@@ -92,6 +85,65 @@ var mockTaskListData = sirius.TaskList{
 			},
 		},
 	},
+}
+
+func TestClientTasks(t *testing.T) {
+	client := &mockClientTasksClient{
+		taskTypeData: mockTaskTypeData,
+	}
+	template := &mockTemplate{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	app := WorkflowVars{
+		Path:            "test-path",
+		SelectedTeam:    model.Team{Type: "LAY", Selector: "test-team"},
+		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+	}
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, template.count)
+
+	want := ClientTasksVars{App: app, TasksPerPage: 25, TaskTypes: mockTaskTypeData}
+
+	want.UrlBuilder = urlbuilder.UrlBuilder{
+		Path:            "client-tasks",
+		SelectedTeam:    app.SelectedTeam.Selector,
+		SelectedPerPage: 25,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name: "task-type",
+			},
+			{
+				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name: "due-date-from",
+			},
+			{
+				Name: "due-date-to",
+			},
+		},
+	}
+
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     0,
+		TotalPages:      0,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "tasks",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want.UrlBuilder,
+	}
+
+	assert.Equal(t, want, template.lastVars)
 }
 
 func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
@@ -315,256 +367,88 @@ func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
 	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "no", []string{"1"}, "assignee name"))
 }
 
-func createClientTasksVars(fields clientTasksURLFields) ClientTasksVars {
-	return ClientTasksVars{
-		App: WorkflowVars{
-			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
+func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
+	wantFilters := []urlbuilder.Filter{
+		{
+			Name: "task-type",
 		},
-		TasksPerPage:        fields.PerPageLimit,
-		SelectedAssignees:   fields.SelectedAssignees,
-		SelectedUnassigned:  fields.SelectedUnassigned,
-		SelectedTaskTypes:   fields.SelectedTaskTypes,
-		SelectedDueDateFrom: fields.SelectedDueDateFrom,
-		SelectedDueDateTo:   fields.SelectedDueDateTo,
+		{
+			Name:                  "assignee",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name:                  "unassigned",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name: "due-date-from",
+		},
+		{
+			Name: "due-date-to",
+		},
 	}
-}
 
-func TestClientTasksVars_GetClearFiltersUrl(t *testing.T) {
 	tests := []struct {
-		name   string
-		fields clientTasksURLFields
-		want   string
+		clientTasksVars ClientTasksVars
+		wantBuilder     urlbuilder.UrlBuilder
+		wantFilters     []urlbuilder.Filter
 	}{
 		{
-			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 50},
-			want:   "?team=lay&page=1&per-page=50",
+			clientTasksVars: ClientTasksVars{},
+			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks"},
+			wantFilters:     wantFilters,
 		},
 		{
-			name:   "Assignees are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
-			want:   "?team=lay&page=1&per-page=25",
+			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}},
+			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedFilters: wantFilters},
+			wantFilters:     wantFilters,
 		},
 		{
-			name:   "Unassigned is removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
-			want:   "?team=lay&page=1&per-page=25",
+			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}, TasksPerPage: 55},
+			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
+			wantFilters:     wantFilters,
 		},
 		{
-			name:   "Task types are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
-			want:   "?team=lay&page=1&per-page=25",
-		},
-		{
-			name:   "Due date filters are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			want:   "?team=lay&page=1&per-page=25",
-		},
-		{
-			name:   "Page is reset back to 1",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
-			want:   "?team=lay&page=1&per-page=25",
+			clientTasksVars: ClientTasksVars{
+				App:                 WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+				TasksPerPage:        55,
+				SelectedTaskTypes:   []string{"type1", "type2"},
+				SelectedAssignees:   []string{"user1", "user2"},
+				SelectedUnassigned:  "test-unassigned",
+				SelectedDueDateFrom: "2010-10-10",
+				SelectedDueDateTo:   "2020-10-10",
+			},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
+			wantFilters: []urlbuilder.Filter{
+				{
+					Name:           "task-type",
+					SelectedValues: []string{"type1", "type2"},
+				},
+				{
+					Name:                  "assignee",
+					SelectedValues:        []string{"user1", "user2"},
+					ClearBetweenTeamViews: true,
+				},
+				{
+					Name:                  "unassigned",
+					SelectedValues:        []string{"test-unassigned"},
+					ClearBetweenTeamViews: true,
+				},
+				{
+					Name:           "due-date-from",
+					SelectedValues: []string{"2010-10-10"},
+				},
+				{
+					Name:           "due-date-to",
+					SelectedValues: []string{"2020-10-10"},
+				},
+			},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := createClientTasksVars(tt.fields)
-			assert.Equalf(t, "client-tasks"+tt.want, w.GetClearFiltersUrl(), "GetClearFiltersUrl()")
-		})
-	}
-}
-
-func TestClientTasksVars_GetPaginationUrl(t *testing.T) {
-	type args struct {
-		page    int
-		perPage int
-	}
-	tests := []struct {
-		name   string
-		fields clientTasksURLFields
-		args   args
-		want   string
-	}{
-		{
-			name:   "Page number is updated",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
-			args:   args{page: 2, perPage: 25},
-			want:   "?team=lay&page=2&per-page=25",
-		},
-		{
-			name:   "Per page limit is updated",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
-			args:   args{page: 1, perPage: 50},
-			want:   "?team=lay&page=1&per-page=50",
-		},
-		{
-			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 100},
-			args:   args{page: 2},
-			want:   "?team=lay&page=2&per-page=100",
-		},
-		{
-			name:   "Assignees are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
-			args:   args{page: 2, perPage: 25},
-			want:   "?team=lay&page=2&per-page=25&assignee=1&assignee=2",
-		},
-		{
-			name:   "Unassigned is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
-			args:   args{page: 2, perPage: 25},
-			want:   "?team=lay&page=2&per-page=25&unassigned=1",
-		},
-		{
-			name:   "Task types are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
-			args:   args{page: 2, perPage: 25},
-			want:   "?team=lay&page=2&per-page=25&task-type=1&task-type=2",
-		},
-		{
-			name:   "Due date filters are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{page: 2, perPage: 25},
-			want:   "?team=lay&page=2&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := createClientTasksVars(tt.fields)
-			var result string
-			if tt.args.perPage == 0 {
-				result = w.GetPaginationUrl(tt.args.page)
-			} else {
-				result = w.GetPaginationUrl(tt.args.page, tt.args.perPage)
-			}
-			assert.Equalf(t, "client-tasks"+tt.want, result, "GetPaginationUrl(%v, %v)", tt.args.page, tt.args.perPage)
-		})
-	}
-}
-
-func TestClientTasksVars_GetRemoveFilterUrl(t *testing.T) {
-	type args struct {
-		name  string
-		value interface{}
-	}
-	tests := []struct {
-		name   string
-		fields clientTasksURLFields
-		args   args
-		want   string
-	}{
-		{
-			name:   "Assignee filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "assignee", value: 2},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-		{
-			name:   "Unassigned filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "unassigned", value: 1},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-		{
-			name:   "Task type filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "task-type", value: 3},
-			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-		{
-			name:   "Due date from filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "due-date-from", value: "2022-12-17"},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-to=2022-12-18",
-		},
-		{
-			name:   "Due date to filter removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "due-date-to", value: "2022-12-18"},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17",
-		},
-		{
-			name:   "Page is reset back to 1 on removing a filter",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}},
-			args:   args{name: "task-type", value: 3},
-			want:   "?team=lay&page=1&per-page=25&task-type=4&assignee=1&assignee=2&unassigned=1",
-		},
-		{
-			name:   "All filters retained if filter not found",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"3", "4"}, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			args:   args{name: "non-existent", value: 3},
-			want:   "?team=lay&page=1&per-page=25&task-type=3&task-type=4&assignee=1&assignee=2&unassigned=1&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := createClientTasksVars(tt.fields)
-			assert.Equalf(t, "client-tasks"+tt.want, w.GetRemoveFilterUrl(tt.args.name, tt.args.value), "GetRemoveFilterUrl(%v, %v)", tt.args.name, tt.args.value)
-		})
-	}
-}
-
-func TestClientTasksVars_GetTeamUrl(t *testing.T) {
-	tests := []struct {
-		name   string
-		fields clientTasksURLFields
-		team   string
-		want   string
-	}{
-		{
-			name:   "Team is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25},
-			team:   "lay",
-			want:   "?team=lay&page=1&per-page=25",
-		},
-		{
-			name:   "Per page limit is retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 50},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=50",
-		},
-		{
-			name:   "Per page limit defaults to 25",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 0},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25",
-		},
-		{
-			name:   "Assignees are removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25",
-		},
-		{
-			name:   "Unassigned is removed",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedUnassigned: "1"},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25",
-		},
-		{
-			name:   "Task types are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedTaskTypes: []string{"1", "2"}},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25&task-type=1&task-type=2",
-		},
-		{
-			name:   "Due date filters are retained",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedDueDateFrom: "2022-12-17", SelectedDueDateTo: "2022-12-18"},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25&due-date-from=2022-12-17&due-date-to=2022-12-18",
-		},
-		{
-			name:   "Page is reset back to 1",
-			fields: clientTasksURLFields{SelectedTeam: "lay", PerPageLimit: 25, SelectedAssignees: []string{"1", "2"}, SelectedUnassigned: "1", SelectedTaskTypes: []string{"task"}},
-			team:   "pro",
-			want:   "?team=pro&page=1&per-page=25&task-type=task",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := createClientTasksVars(tt.fields)
-			team := model.Team{Selector: tt.team}
-			assert.Equalf(t, "client-tasks"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			test.wantBuilder.SelectedFilters = test.wantFilters
+			assert.Equal(t, test.wantBuilder, test.clientTasksVars.CreateUrlBuilder())
 		})
 	}
 }

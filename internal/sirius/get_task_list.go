@@ -69,7 +69,7 @@ func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, s
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
+	
 	return v, nil
 }
 
