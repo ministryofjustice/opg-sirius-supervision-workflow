@@ -5,7 +5,6 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,24 +28,6 @@ type ClientTasksVars struct {
 	AppliedFilters      []string
 	TasksPerPage        int
 	Pagination          paginate.Pagination
-	UrlBuilder          urlbuilder.UrlBuilder
-}
-
-func (ctv ClientTasksVars) CreateUrlBuilder() urlbuilder.UrlBuilder {
-	ub := urlbuilder.UrlBuilder{
-		Path:            "client-tasks",
-		SelectedTeam:    ctv.App.SelectedTeam.Selector,
-		SelectedPerPage: ctv.TasksPerPage,
-		SelectedFilters: []urlbuilder.Filter{
-			urlbuilder.CreateFilter("task-type", ctv.SelectedTaskTypes),
-			urlbuilder.CreateFilter("assignee", ctv.SelectedAssignees, true),
-			urlbuilder.CreateFilter("unassigned", ctv.SelectedUnassigned, true),
-			urlbuilder.CreateFilter("due-date-from", ctv.SelectedDueDateFrom),
-			urlbuilder.CreateFilter("due-date-to", ctv.SelectedDueDateTo),
-		},
-	}
-
-	return ub
 }
 
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
@@ -142,10 +123,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
 		}
 
-		vars.UrlBuilder = vars.CreateUrlBuilder()
-
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+			return RedirectError(vars.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
 		}
 
 		vars.Pagination = paginate.Pagination{
@@ -155,7 +134,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			ElementsPerPage: vars.TasksPerPage,
 			ElementName:     "tasks",
 			PerPageOptions:  perPageOptions,
-			UrlBuilder:      vars.UrlBuilder,
+			UrlBuilder:      vars,
 		}
 
 		vars.AppliedFilters = sirius.GetAppliedFilters(app.SelectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
@@ -237,4 +216,85 @@ func successMessageForReassignAndPrioritiseTasks(assignTeam string, prioritySele
 		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
 	}
 	return ""
+}
+
+func (ctv ClientTasksVars) buildUrl(team string, page int, tasksPerPage int, selectedTaskTypes []string, selectedAssignees []string, selectedUnassigned string, dueDateFrom string, dueDateTo string) string {
+	url := fmt.Sprintf("client-tasks?team=%s&page=%d&per-page=%d", team, page, tasksPerPage)
+	for _, taskType := range selectedTaskTypes {
+		url += "&task-type=" + taskType
+	}
+	for _, assignee := range selectedAssignees {
+		url += "&assignee=" + assignee
+	}
+	if selectedUnassigned != "" {
+		url += "&unassigned=" + selectedUnassigned
+	}
+	if dueDateFrom != "" {
+		url += "&due-date-from=" + dueDateFrom
+	}
+	if dueDateTo != "" {
+		url += "&due-date-to=" + dueDateTo
+	}
+	return url
+}
+
+func (ctv ClientTasksVars) GetTeamUrl(team model.Team) string {
+	perPage := ctv.TasksPerPage
+	if perPage == 0 {
+		perPage = 25
+	}
+	return ctv.buildUrl(team.Selector, 1, perPage, ctv.SelectedTaskTypes, []string{}, "", ctv.SelectedDueDateFrom, ctv.SelectedDueDateTo)
+}
+
+func (ctv ClientTasksVars) GetPaginationUrl(page int, tasksPerPage ...int) string {
+	perPage := ctv.TasksPerPage
+	if len(tasksPerPage) > 0 {
+		perPage = tasksPerPage[0]
+	}
+	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, page, perPage, ctv.SelectedTaskTypes, ctv.SelectedAssignees, ctv.SelectedUnassigned, ctv.SelectedDueDateFrom, ctv.SelectedDueDateTo)
+}
+
+func (ctv ClientTasksVars) GetClearFiltersUrl() string {
+	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.TasksPerPage, []string{}, []string{}, "", "", "")
+}
+
+func (ctv ClientTasksVars) GetRemoveFilterUrl(name string, value interface{}) string {
+	taskTypes := ctv.SelectedTaskTypes
+	assignees := ctv.SelectedAssignees
+	unassigned := ctv.SelectedUnassigned
+	dueDateFrom := ctv.SelectedDueDateFrom
+	dueDateTo := ctv.SelectedDueDateTo
+
+	removeFilter := func(filters []string, filter string) []string {
+		var newFilters []string
+		for _, v := range filters {
+			if v != filter {
+				newFilters = append(newFilters, v)
+			}
+		}
+		return newFilters
+	}
+
+	var stringValue string
+	switch v := value.(type) {
+	case int:
+		stringValue = strconv.Itoa(v)
+	case string:
+		stringValue = v
+	}
+
+	switch name {
+	case "task-type":
+		taskTypes = removeFilter(taskTypes, stringValue)
+	case "assignee":
+		assignees = removeFilter(assignees, stringValue)
+	case "unassigned":
+		unassigned = ""
+	case "due-date-from":
+		dueDateFrom = ""
+	case "due-date-to":
+		dueDateTo = ""
+	}
+
+	return ctv.buildUrl(ctv.App.SelectedTeam.Selector, 1, ctv.TasksPerPage, taskTypes, assignees, unassigned, dueDateFrom, dueDateTo)
 }
