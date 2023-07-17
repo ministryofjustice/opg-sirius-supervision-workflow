@@ -15,43 +15,37 @@ describe("Pagination", () => {
       cy.get(".previous-page-pagination-link").should('not.exist')
       cy.get("#top-nav .next-page-pagination-link").click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get("#top-nav .previous-page-pagination-link").click()
+      cy.get(".previous-page-pagination-link").should('not.exist')
     })
 
     it("shows next button apart from on last page", () => {
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get("#top-nav .final-page-pagination-link").click()
+      cy.get("#top-nav .govuk-pagination__item:nth-last-child(1) .govuk-pagination__link").click()
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
-    it("shows first page and ellipses once you are past page 3", () => {
-      cy.get(".first-ellipses").should('not.exist');
-      cy.get(".first-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".first-ellipses").should('not.exist');
-      cy.get(".first-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".first-ellipses").should('not.exist');
-      cy.get(".first-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".first-ellipses").should('exist');
-      cy.get(".first-page-pagination-link").should('exist');
-    })
+    it("shows first and second ellipsis when expected", () => {
+      let firstEllipsis = ".govuk-pagination__item--ellipses:nth-child(2)",
+          secondEllipsis = ".govuk-pagination__item--ellipses:nth-last-child(2)"
 
-    it("shows last page and final ellipses until you are past page 3", () => {
-      cy.get(".final-ellipses").should('exist');
-      cy.get("#top-nav .final-page-pagination-link").should('exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".final-ellipses").should('exist');
-      cy.get("#top-nav .final-page-pagination-link").should('exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".final-ellipses").should('not.exist');
-      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".final-ellipses").should('not.exist');
-      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".final-ellipses").should('not.exist');
-      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
+      cy.get(firstEllipsis).should("not.exist")
+      cy.get(secondEllipsis).should("exist")
+
+      cy.get("#top-nav .govuk-pagination__link:contains(2)").click()
+
+      cy.get(firstEllipsis).should("not.exist")
+      cy.get(secondEllipsis).should("not.exist")
+
+      cy.get("#top-nav .govuk-pagination__link:contains(4)").click()
+
+      cy.get(firstEllipsis).should("not.exist")
+      cy.get(secondEllipsis).should("not.exist")
+
+      cy.get("#top-nav .govuk-pagination__link:contains(5)").click()
+
+      cy.get(firstEllipsis).should("exist")
+      cy.get(secondEllipsis).should("not.exist")
     })
   });
 
@@ -114,13 +108,12 @@ describe("Pagination", () => {
       cy.get(".moj-pagination__results").should('contain', '10')
     })
 
-    it("will not show previous link, next link, first page, first ellipses, final page or final ellipses when only one page", () => {
-      cy.get(".first-ellipses").should('not.exist');
-      cy.get(".first-page-pagination-link").should('not.exist');
-      cy.get(".final-ellipses").should('not.exist');
-      cy.get("#top-nav .final-page-pagination-link").should('not.exist');
-      cy.get("#top-nav .next-page-pagination-link").should('not.exist');
+    it("will not show previous link, next link, first page, first ellipses or final ellipses when only one page", () => {
       cy.get(".previous-page-pagination-link").should('not.exist');
+      cy.get(".next-page-pagination-link").should('not.exist');
+      cy.get(".govuk-pagination__item--ellipses").should('not.exist');
+      cy.get(".govuk-pagination__item").should('have.length', 2)
+      cy.get(".govuk-pagination__item:contains(1)").should('have.length', 2)
     })
   });
 });

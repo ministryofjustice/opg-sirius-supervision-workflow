@@ -2,10 +2,13 @@ package server
 
 import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
 
@@ -16,33 +19,7 @@ type mockCaseloadClient struct {
 	clientList sirius.ClientList
 }
 
-type caseloadURLFields struct {
-	SelectedTeam string
-	Status       string
-	DueDate      string
-}
-
-func createCaseloadVars(fields caseloadURLFields) CaseloadVars {
-	return CaseloadVars{
-		App: WorkflowVars{
-			SelectedTeam: model.Team{Selector: fields.SelectedTeam},
-		},
-		ClientList: sirius.ClientList{
-			Clients: []model.Client{
-				{
-					Orders: []model.Order{
-						{
-							LatestAnnualReport: model.AnnualReport{DueDate: fields.DueDate},
-							Status:             model.RefData{Label: fields.Status},
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
-func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) (sirius.ClientList, error) {
+func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team, clientsPerPage int, page int) (sirius.ClientList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -54,7 +31,7 @@ func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team) 
 
 func TestCaseload(t *testing.T) {
 	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -68,12 +45,31 @@ func TestCaseload(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
-	assert.Equal(t, CaseloadVars{App: app}, template.lastVars)
+
+	want := CaseloadVars{App: app, ClientsPerPage: 25}
+
+	want.UrlBuilder = urlbuilder.UrlBuilder{
+		Path:            "caseload",
+		SelectedTeam:    app.SelectedTeam.Selector,
+		SelectedPerPage: 25,
+	}
+
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     0,
+		TotalPages:      0,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "clients",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want.UrlBuilder,
+	}
+
+	assert.Equal(t, want, template.lastVars)
 }
 
 func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 	client := &mockCaseloadClient{}
-	template := &mockTemplates{}
+	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -103,7 +99,7 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 	for _, method := range methods {
 		t.Run("Test "+method, func(t *testing.T) {
 			client := &mockCaseloadClient{}
-			template := &mockTemplates{}
+			template := &mockTemplate{}
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(method, "", nil)
@@ -117,25 +113,27 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 	}
 }
 
-func TestCaseloadVars_GetTeamUrl(t *testing.T) {
+func TestCaseloadVars_CreateUrlBuilder(t *testing.T) {
 	tests := []struct {
-		name   string
-		fields caseloadURLFields
-		team   string
-		want   string
+		caseloadVars CaseloadVars
+		want         urlbuilder.UrlBuilder
 	}{
 		{
-			name:   "Team is retained",
-			fields: caseloadURLFields{SelectedTeam: "lay"},
-			team:   "lay",
-			want:   "?team=lay",
+			caseloadVars: CaseloadVars{},
+			want:         urlbuilder.UrlBuilder{Path: "caseload"},
+		},
+		{
+			caseloadVars: CaseloadVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}},
+			want:         urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team"},
+		},
+		{
+			caseloadVars: CaseloadVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}, ClientsPerPage: 55},
+			want:         urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := createCaseloadVars(tt.fields)
-			team := model.Team{Selector: tt.team}
-			assert.Equalf(t, "caseload"+tt.want, w.GetTeamUrl(team), "GetTeamUrl(%v)", tt.team)
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, test.caseloadVars.CreateUrlBuilder())
 		})
 	}
 }

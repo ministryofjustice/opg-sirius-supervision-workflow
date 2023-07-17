@@ -13,7 +13,7 @@ type ClientList struct {
 	TotalClients int                   `json:"total"`
 }
 
-func (c *ApiClient) GetClientList(ctx Context, team model.Team) (ClientList, error) {
+func (c *ApiClient) GetClientList(ctx Context, team model.Team, displayClientLimit int, selectedPage int) (ClientList, error) {
 	var v ClientList
 
 	var sort string
@@ -21,7 +21,7 @@ func (c *ApiClient) GetClientList(ctx Context, team model.Team) (ClientList, err
 		sort = "made_active_date:asc"
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?sort=%s", team.Id, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&sort=%s", team.Id, displayClientLimit, selectedPage, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {

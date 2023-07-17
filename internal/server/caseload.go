@@ -1,19 +1,31 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
 )
 
 type CaseloadClient interface {
-	GetClientList(sirius.Context, model.Team) (sirius.ClientList, error)
+	GetClientList(sirius.Context, model.Team, int, int) (sirius.ClientList, error)
 }
 
 type CaseloadVars struct {
-	App        WorkflowVars
-	ClientList sirius.ClientList
+	App            WorkflowVars
+	ClientList     sirius.ClientList
+	Pagination     paginate.Pagination
+	ClientsPerPage int
+	UrlBuilder     urlbuilder.UrlBuilder
+}
+
+func (cv CaseloadVars) CreateUrlBuilder() urlbuilder.UrlBuilder {
+	return urlbuilder.UrlBuilder{
+		Path:            "caseload",
+		SelectedTeam:    cv.App.SelectedTeam.Selector,
+		SelectedPerPage: cv.ClientsPerPage,
+	}
 }
 
 func caseload(client CaseloadClient, tmpl Template) Handler {
@@ -23,28 +35,40 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		if !app.SelectedTeam.IsLay() {
-			return RedirectError(ClientTasksVars{}.GetTeamUrl(app.SelectedTeam))
+			urlBuilder := ClientTasksVars{TasksPerPage: 25}.CreateUrlBuilder()
+			return RedirectError(urlBuilder.GetTeamUrl(app.SelectedTeam))
 		}
 
+		params := r.URL.Query()
+		page := paginate.GetRequestedPage(params.Get("page"))
+
+		perPageOptions := []int{25, 50, 100}
+		clientsPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
 		ctx := getContext(r)
-		clientList, err := client.GetClientList(ctx, app.SelectedTeam)
+		clientList, err := client.GetClientList(ctx, app.SelectedTeam, clientsPerPage, page)
 		if err != nil {
 			return err
 		}
 
 		vars := CaseloadVars{
-			App:        app,
-			ClientList: clientList,
+			App:            app,
+			ClientList:     clientList,
+			ClientsPerPage: clientsPerPage,
+		}
+
+		vars.UrlBuilder = vars.CreateUrlBuilder()
+
+		vars.Pagination = paginate.Pagination{
+			CurrentPage:     clientList.Pages.PageCurrent,
+			TotalPages:      clientList.Pages.PageTotal,
+			TotalElements:   clientList.TotalClients,
+			ElementsPerPage: vars.ClientsPerPage,
+			ElementName:     "clients",
+			PerPageOptions:  perPageOptions,
+			UrlBuilder:      vars.UrlBuilder,
 		}
 
 		return tmpl.Execute(w, vars)
 	}
-}
-
-func (cv CaseloadVars) buildUrl(team string) string {
-	return fmt.Sprintf("caseload?team=%s", team)
-}
-
-func (cv CaseloadVars) GetTeamUrl(team model.Team) string {
-	return cv.buildUrl(team.Selector)
 }
