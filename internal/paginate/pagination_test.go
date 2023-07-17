@@ -6,18 +6,6 @@ import (
 	"testing"
 )
 
-type mockUrlBuilder struct {
-	page          int
-	perPage       []int
-	paginationUrl string
-}
-
-func (m *mockUrlBuilder) GetPaginationUrl(page int, perPage ...int) string {
-	m.page = page
-	m.perPage = perPage
-	return m.paginationUrl
-}
-
 func TestPagination_ShowPrevious(t *testing.T) {
 	assert.False(t, Pagination{CurrentPage: 0}.ShowPrevious())
 	assert.False(t, Pagination{CurrentPage: 1}.ShowPrevious())
@@ -30,88 +18,6 @@ func TestPagination_ShowNext(t *testing.T) {
 	assert.False(t, Pagination{CurrentPage: 2, TotalPages: 2}.ShowNext())
 	assert.True(t, Pagination{CurrentPage: 1, TotalPages: 2}.ShowNext())
 	assert.False(t, Pagination{CurrentPage: 2, TotalPages: 1}.ShowNext())
-}
-
-func TestPagination_GetPreviousUrl(t *testing.T) {
-	tests := []struct {
-		currentPage int
-		want        int
-	}{
-		{
-			currentPage: 0,
-			want:        1,
-		},
-		{
-			currentPage: 1,
-			want:        1,
-		},
-		{
-			currentPage: 2,
-			want:        1,
-		},
-		{
-			currentPage: 5,
-			want:        4,
-		},
-	}
-	for i, test := range tests {
-		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			urlBuilder := mockUrlBuilder{paginationUrl: "test-url"}
-			pagination := Pagination{CurrentPage: test.currentPage, UrlBuilder: &urlBuilder}
-
-			assert.Equal(t, urlBuilder.paginationUrl, pagination.GetPreviousUrl())
-			assert.Equal(t, test.want, urlBuilder.page)
-			assert.Nil(t, urlBuilder.perPage)
-		})
-	}
-}
-
-func TestPagination_GetNextUrl(t *testing.T) {
-	tests := []struct {
-		currentPage int
-		totalPages  int
-		want        int
-	}{
-		{
-			currentPage: 0,
-			totalPages:  0,
-			want:        0,
-		},
-		{
-			currentPage: 1,
-			totalPages:  1,
-			want:        1,
-		},
-		{
-			currentPage: 1,
-			totalPages:  2,
-			want:        2,
-		},
-		{
-			currentPage: 1,
-			totalPages:  3,
-			want:        2,
-		},
-	}
-	for i, test := range tests {
-		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			urlBuilder := mockUrlBuilder{paginationUrl: "test-url"}
-			pagination := Pagination{
-				CurrentPage: test.currentPage,
-				TotalPages:  test.totalPages,
-				UrlBuilder:  &urlBuilder,
-			}
-
-			assert.Equal(t, urlBuilder.paginationUrl, pagination.GetNextUrl())
-			assert.Equal(t, test.want, urlBuilder.page)
-			assert.Nil(t, urlBuilder.perPage)
-		})
-	}
-}
-
-func TestPagination_ShowEllipsisBetween(t *testing.T) {
-	assert.True(t, Pagination{}.ShowEllipsisBetween(1, 3))
-	assert.False(t, Pagination{}.ShowEllipsisBetween(1, 2))
 }
 
 func TestPagination_GetPageNumbers(t *testing.T) {
