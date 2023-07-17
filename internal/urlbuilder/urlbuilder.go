@@ -1,7 +1,6 @@
 package urlbuilder
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"strconv"
@@ -63,7 +62,7 @@ func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) (string,
 		fmt.Println(val)
 		stringValue = strconv.Itoa(val)
 	default:
-		err := errors.New(fmt.Sprintf("type %T not accepted", val))
+		err := fmt.Errorf("type %T not accepted", val)
 		return "", err
 	}
 

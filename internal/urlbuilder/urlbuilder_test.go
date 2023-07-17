@@ -1,7 +1,6 @@
 package urlbuilder
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/stretchr/testify/assert"
@@ -354,7 +353,7 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 			name:          "filter2",
 			value:         []int{23, 45, 66},
 			want:          "",
-			expectedError: errors.New(fmt.Sprintf("type []int not accepted")),
+			expectedError: fmt.Errorf("type []int not accepted"),
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -366,7 +365,7 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 			name:          "filter2",
 			value:         []string{"val1", "val2", "val3"},
 			want:          "",
-			expectedError: errors.New(fmt.Sprintf("type []string not accepted")),
+			expectedError: fmt.Errorf("type []string not accepted"),
 		},
 	}
 	for i, test := range tests {
