@@ -259,7 +259,7 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 	tests := []struct {
 		urlBuilder UrlBuilder
 		name       string
-		value      string
+		value      interface{}
 		want       string
 	}{
 		{
@@ -314,6 +314,21 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 			}},
 			name:  "filter2",
 			value: "val3",
+			want:  "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
+				{
+					Name:           "filter1",
+					SelectedValues: []string{"val1", "val2"},
+				},
+				{
+					Name:           "filter2",
+					SelectedValues: []string{"23"},
+				},
+			}},
+			name:  "filter2",
+			value: 23,
 			want:  "?team=lay&page=1&per-page=0&filter1=val1&filter1=val2",
 		},
 	}

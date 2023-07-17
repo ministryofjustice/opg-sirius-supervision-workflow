@@ -3,6 +3,7 @@ package urlbuilder
 import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"strconv"
 )
 
 type UrlBuilder struct {
@@ -46,14 +47,22 @@ func (ub UrlBuilder) GetClearFiltersUrl() string {
 	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, []Filter{})
 }
 
-func (ub UrlBuilder) GetRemoveFilterUrl(name string, value string) string {
+func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) string {
 	var retainedFilters []Filter
 	var retainedValues []string
+	var stringValue string
+
+	switch val := value.(type) {
+	case string:
+		stringValue = val
+	case int:
+		stringValue = strconv.Itoa(val)
+	}
 
 	for _, filter := range ub.SelectedFilters {
 		retainedValues = []string{}
 		for _, v := range filter.SelectedValues {
-			if name != filter.Name || value != v {
+			if name != filter.Name || stringValue != v {
 				retainedValues = append(retainedValues, v)
 			}
 		}
