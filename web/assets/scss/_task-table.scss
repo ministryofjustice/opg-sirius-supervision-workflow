@@ -1,41 +1,68 @@
 table {
-    tr {
-      td, th {
-          &:first-child {
-            border-left: 5px solid transparent;
-            padding-left: 15px;
-          }
-          &:last-child {
-            padding-right: 15px;
-          }
-          span {
-            display: block;
-          }
-          .govuk-checkboxes {margin-top: -8px;}
-          span.due {border-left: 5px solid #28a197; padding-left: 5px; font-weight: bold;}
-          span.overdue {border-left: 5px solid #d4351c; padding-left: 5px; font-weight: bold;}
-          span.secondary {font-weight: normal; color: black;}
-        }
-      &.priority {
-        background: #fffbe3;
-        td {
-          span.priority {
-            font-weight: bold;
-            color: #d4351c;
-          }
-          &:first-child {
-            border-left: 5px solid #d4351c!important;
-          }
-          &:last-child {
-          border-right: 5px solid #d4351c!important;
+  tr {
+    td, th {
+      &:first-child {
+        border-left: 5px solid transparent;
+        padding-left: 15px;
       }
+
+      &:last-child {
+        padding-right: 15px;
+      }
+
+      span {
+        display: block;
+      }
+
+      .govuk-checkboxes {
+        margin-top: -8px;
+      }
+
+      span.due {
+        border-left: 5px solid govuk-colour(turquoise);
+        padding-left: 5px;
+        font-weight: bold;
+      }
+
+      span.overdue {
+        border-left: 5px solid govuk-colour(red);
+        padding-left: 5px;
+        font-weight: bold;
+      }
+
+      span.secondary {
+        font-weight: normal;
       }
     }
+
+    &.priority {
+      background: #fffbe3;
+
+      td {
+        span.priority {
+          font-weight: bold;
+          color: govuk-colour(red) !important;
+          background: url("#{$moj-assets-path}images/flag.svg") no-repeat 3px 3px;
+          padding-left: 20px;
+          line-height: normal !important;
+        }
+
+        &:first-child {
+          border-left: 5px solid govuk-colour(red) !important;
+        }
+
+        &:last-child {
+          border-right: 5px solid govuk-colour(red) !important;
+        }
+      }
+    }
+
     &.selected {
       background: #E7F2FB;
+
       td {
         &:first-child {
-        border-left: 5px solid #1d70b8!important;
+          border-left: 5px solid govuk-colour(blue) !important;
         }
       }
     }
