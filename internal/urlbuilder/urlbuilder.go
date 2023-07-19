@@ -54,16 +54,11 @@ func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) (string,
 
 	switch val := value.(type) {
 	case string:
-		fmt.Println("string")
-		fmt.Println(val)
 		stringValue = val
 	case int:
-		fmt.Println("int")
-		fmt.Println(val)
 		stringValue = strconv.Itoa(val)
 	default:
-		err := fmt.Errorf("type %T not accepted", val)
-		return "", err
+		return "", fmt.Errorf("type %T not accepted", val)
 	}
 
 	for _, filter := range ub.SelectedFilters {

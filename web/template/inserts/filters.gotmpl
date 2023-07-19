@@ -1,0 +1,48 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ListPage*/ -}}
+{{ define "filters" }}
+
+<div class="moj-filter" data-module="moj-manage-filters">
+  <div class="moj-filter__header">
+    <div class="moj-filter__header-title">
+      <h2 class="govuk-heading-m">Filter the list</h2>
+    </div>
+    <div class="moj-filter__header-action">
+    </div>
+  </div>
+
+  <div class="moj-filter__content">
+    <div class="moj-filter__selected">
+
+      <div class="moj-filter__selected-group">
+        <div class="moj-filter__selected-heading">
+          <div class="moj-filter__heading-title">
+            <h2 class="govuk-heading-s">Selected filters</h2>
+          </div>
+        </div>
+        <div class="moj-filter__heading-action">
+          <a href="{{ .UrlBuilder.GetClearFiltersUrl }}" data-module="clear-filters" class="govuk-link govuk-link--no-visited-state">Clear filters</a>
+        </div>
+      </div>
+  
+      <div id="task-type-tags-section" class="moj-filter-tags-list">
+        {{ if not .AppliedFilters }}
+          <p class="govuk-heading-s govuk-!-margin-bottom-0">No filters selected</p>
+        {{ end }}
+
+        {{ if .HasFilterBy . "task-type" }}{{ template "task-type-filter-applied" . }}{{ end }}
+        {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter-applied" . }}{{ end }}
+        {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter-applied" . }}{{ end }}
+
+      </div>
+    </div>
+
+    {{ if .HasFilterBy . "task-type" }}{{ template "task-type-filter" . }}{{ end }}
+    {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter" . }}{{ end }}
+    {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter" . }}{{ end }}
+
+    <button class="govuk-button govuk-!-margin-top-4" data-module="apply-filters">Apply filters</button>
+ 
+  </div>
+</div> 
+
+{{ end }}
