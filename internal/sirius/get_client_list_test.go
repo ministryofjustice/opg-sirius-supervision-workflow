@@ -100,7 +100,11 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 		TotalClients: 1,
 	}
 
-	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13}, 25, 1)
+	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
+		Team:    model.Team{Id: 13},
+		Page:    1,
+		PerPage: 25,
+	})
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expectedResponse, clientList)
@@ -115,7 +119,11 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	clientList, err := client.GetClientList(getContext(nil), model.Team{Id: 13}, 25, 1)
+	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
+		Team:    model.Team{Id: 13},
+		Page:    1,
+		PerPage: 25,
+	})
 
 	expectedResponse := ClientList{
 		Clients:      nil,
@@ -145,6 +153,10 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	}
 
 	team := model.Team{Id: 13, Name: "Lay Team - New Deputy Orders"}
-	_, err := client.GetClientList(getContext(nil), team, 25, 1)
+	_, err := client.GetClientList(getContext(nil), ClientListParams{
+		Team:    team,
+		Page:    1,
+		PerPage: 25,
+	})
 	assert.Nil(t, err)
 }

@@ -106,7 +106,10 @@ func TestClientTasks(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
 
-	want := ClientTasksVars{App: app, TasksPerPage: 25, TaskTypes: mockTaskTypeData}
+	var want ClientTasksPage
+	want.App = app
+	want.PerPage = 25
+	want.TaskTypes = mockTaskTypeData
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
@@ -389,34 +392,51 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	}
 
 	tests := []struct {
-		clientTasksVars ClientTasksVars
-		wantBuilder     urlbuilder.UrlBuilder
-		wantFilters     []urlbuilder.Filter
+		page        ClientTasksPage
+		wantBuilder urlbuilder.UrlBuilder
+		wantFilters []urlbuilder.Filter
 	}{
 		{
-			clientTasksVars: ClientTasksVars{},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks"},
-			wantFilters:     wantFilters,
+			page:        ClientTasksPage{},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks"},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedFilters: wantFilters},
-			wantFilters:     wantFilters,
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+				},
+			},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedFilters: wantFilters},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}, TasksPerPage: 55},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
-			wantFilters:     wantFilters,
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{
-				App:                 WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
-				TasksPerPage:        55,
-				SelectedTaskTypes:   []string{"type1", "type2"},
-				SelectedAssignees:   []string{"user1", "user2"},
-				SelectedUnassigned:  "test-unassigned",
-				SelectedDueDateFrom: "2010-10-10",
-				SelectedDueDateTo:   "2020-10-10",
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+				FilterByTaskType: FilterByTaskType{
+					SelectedTaskTypes: []string{"type1", "type2"},
+				},
+				FilterByAssignee: FilterByAssignee{
+					SelectedAssignees:  []string{"user1", "user2"},
+					SelectedUnassigned: "test-unassigned",
+				},
+				FilterByDueDate: FilterByDueDate{
+					SelectedDueDateFrom: "2010-10-10",
+					SelectedDueDateTo:   "2020-10-10",
+				},
 			},
 			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
 			wantFilters: []urlbuilder.Filter{
@@ -448,7 +468,7 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			test.wantBuilder.SelectedFilters = test.wantFilters
-			assert.Equal(t, test.wantBuilder, test.clientTasksVars.CreateUrlBuilder())
+			assert.Equal(t, test.wantBuilder, test.page.CreateUrlBuilder())
 		})
 	}
 }

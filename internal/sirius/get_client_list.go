@@ -7,21 +7,27 @@ import (
 	"net/http"
 )
 
+type ClientListParams struct {
+	Team    model.Team
+	Page    int
+	PerPage int
+}
+
 type ClientList struct {
 	Clients      []model.Client        `json:"clients"`
 	Pages        model.PageInformation `json:"pages"`
 	TotalClients int                   `json:"total"`
 }
 
-func (c *ApiClient) GetClientList(ctx Context, team model.Team, displayClientLimit int, selectedPage int) (ClientList, error) {
+func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
 
 	var sort string
-	if team.IsLayNewOrdersTeam() {
+	if params.Team.IsLayNewOrdersTeam() {
 		sort = "made_active_date:asc"
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&sort=%s", team.Id, displayClientLimit, selectedPage, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&sort=%s", params.Team.Id, params.PerPage, params.Page, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {

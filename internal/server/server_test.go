@@ -47,6 +47,6 @@ func (m mockApiClient) AssignTasksToCaseManager(context sirius.Context, i int, s
 	panic("implement me")
 }
 
-func (m mockApiClient) GetClientList(context sirius.Context, team model.Team, perPage int, page int) (sirius.ClientList, error) {
+func (m mockApiClient) GetClientList(context sirius.Context, params sirius.ClientListParams) (sirius.ClientList, error) {
 	panic("implement me")
 }
