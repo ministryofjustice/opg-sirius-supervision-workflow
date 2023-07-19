@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksVars*/ -}}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksPage*/ -}}
 {{ template "tab" . }}
 
 {{ define "title" }}Client tasks{{ end }}
@@ -6,7 +6,7 @@
 {{ define "tab-content" }}
   <div class="govuk-grid-row">
     <div id="filters-column" class="govuk-grid-column-one-quarter">
-        {{ template "client-tasks-filters" . }}
+        {{ template "filters" . }}
     </div>
 
     <div class="govuk-grid-column-three-quarters">
