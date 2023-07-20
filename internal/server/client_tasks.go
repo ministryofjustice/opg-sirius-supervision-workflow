@@ -13,7 +13,7 @@ import (
 
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, []string) ([]model.TaskType, error)
-	GetTaskList(sirius.Context, int, int, model.Team, []string, []model.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, sirius.TaskListParams) (sirius.TaskList, error)
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
 
@@ -112,7 +112,16 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, app.SelectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
+		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
+			Team:              app.SelectedTeam,
+			Page:              page,
+			PerPage:           tasksPerPage,
+			TaskTypes:         taskTypes,
+			SelectedTaskTypes: selectedTaskTypes,
+			Assignees:         selectedAssignees,
+			DueDateFrom:       selectedDueDateFrom,
+			DueDateTo:         selectedDueDateTo,
+		})
 		if err != nil {
 			return err
 		}
