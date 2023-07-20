@@ -4,7 +4,6 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"io"
-	"time"
 )
 
 type mockTemplate struct {
@@ -39,7 +38,7 @@ func (m mockApiClient) GetTaskTypes(context sirius.Context, strings []string) ([
 	panic("implement me")
 }
 
-func (m mockApiClient) GetTaskList(context sirius.Context, i int, i2 int, team model.Team, strings []string, types []model.TaskType, strings2 []string, time *time.Time, time2 *time.Time) (sirius.TaskList, error) {
+func (m mockApiClient) GetTaskList(context sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
 	panic("implement me")
 }
 
