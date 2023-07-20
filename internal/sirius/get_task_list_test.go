@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -88,7 +89,11 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 
 	selectedTeam := model.Team{Id: 13}
 
-	assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, selectedTeam, []string{""}, []model.TaskType{}, []string{""}, nil, nil)
+	assigneeTeams, err := client.GetTaskList(getContext(nil), TaskListParams{
+		Team:    selectedTeam,
+		Page:    1,
+		PerPage: 25,
+	})
 
 	assert.Equal(t, expectedResponse, assigneeTeams)
 	assert.Equal(t, nil, err)
@@ -121,7 +126,11 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 
 			client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-			assigneeTeams, err := client.GetTaskList(getContext(nil), 1, 25, test.selectedTeam, []string{}, []model.TaskType{}, []string{}, nil, nil)
+			assigneeTeams, err := client.GetTaskList(getContext(nil), TaskListParams{
+				Team:    test.selectedTeam,
+				Page:    1,
+				PerPage: 25,
+			})
 
 			expectedResponse := TaskList{
 				Tasks:      nil,
@@ -140,17 +149,48 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 	}
 }
 
-func TestCreateFilter(t *testing.T) {
+func TestTaskListParams_CreateFilter(t *testing.T) {
 	selectedDueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
 	selectedDueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
 
-	assert.Equal(t, CreateFilter([]string{}, []string{}, nil, nil, SetUpTaskTypes()), "status:Not+started")
-	assert.Equal(t, CreateFilter([]string{"CWGN"}, []string{"LayTeam1"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL"}, []string{"LayTeam1 User2", "LayTeam1 User3"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{"CWGN", "ORAL", "FAKE", "TEST"}, []string{"LayTeam1 User3"}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, nil, nil, SetUpTaskTypes()), "status:Not+started,assigneeid_or_null:LayTeam1")
-	assert.Equal(t, CreateFilter([]string{}, []string{"LayTeam1"}, &selectedDueDateFrom, &selectedDueDateTo, SetUpTaskTypes()), "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18")
-	assert.Equal(t, CreateFilter([]string{"ECM_TASKS"}, []string{}, nil, nil, SetUpTaskTypes()), "status:Not+started,type:CWGN,type:RRRR")
+	tests := []struct {
+		params TaskListParams
+		want   string
+	}{
+		{
+			params: TaskListParams{},
+			want:   "status:Not+started",
+		},
+		{
+			params: TaskListParams{SelectedTaskTypes: []string{"CWGN"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1"}},
+			want:   "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1",
+		},
+		{
+			params: TaskListParams{SelectedTaskTypes: []string{"CWGN", "ORAL"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1 User2", "LayTeam1 User3"}},
+			want:   "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3",
+		},
+		{
+			params: TaskListParams{SelectedTaskTypes: []string{"CWGN", "ORAL", "FAKE", "TEST"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1 User3"}},
+			want:   "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3",
+		},
+		{
+			params: TaskListParams{Assignees: []string{"LayTeam1"}},
+			want:   "status:Not+started,assigneeid_or_null:LayTeam1",
+		},
+		{
+			params: TaskListParams{Assignees: []string{"LayTeam1"}, DueDateFrom: &selectedDueDateFrom, DueDateTo: &selectedDueDateTo},
+			want:   "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18",
+		},
+		{
+			params: TaskListParams{SelectedTaskTypes: []string{"ECM_TASKS"}, TaskTypes: SetUpTaskTypes()},
+			want:   "status:Not+started,type:CWGN,type:RRRR",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, test.params.CreateFilter())
+		})
+	}
 }
 
 func SetUpTaskTypes() []model.TaskType {

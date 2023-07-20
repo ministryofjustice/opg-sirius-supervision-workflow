@@ -26,20 +26,35 @@ type TaskList struct {
 	MetaData   MetaData              `json:"metadata"`
 }
 
-func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, selectedTeam model.Team, taskTypeSelected []string, taskTypes []model.TaskType, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time) (TaskList, error) {
+type TaskListParams struct {
+	Team              model.Team
+	Page              int
+	PerPage           int
+	TaskTypes         []model.TaskType
+	SelectedTaskTypes []string
+	Assignees         []string
+	DueDateFrom       *time.Time
+	DueDateTo         *time.Time
+}
+
+func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
 
-	filter := CreateFilter(taskTypeSelected, selectedAssignees, dueDateFrom, dueDateTo, taskTypes)
-
-	if selectedTeam.Id != 0 {
-		teamIds = []string{"teamIds[]=" + strconv.Itoa(selectedTeam.Id)}
+	if params.Team.Id != 0 {
+		teamIds = []string{"teamIds[]=" + strconv.Itoa(params.Team.Id)}
 	}
-	for _, team := range selectedTeam.Teams {
+	for _, team := range params.Team.Teams {
 		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=dueDate:asc", strings.Join(teamIds, "&"), filter, displayTaskLimit, search)
+	endpoint := fmt.Sprintf(
+		"/api/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=dueDate:asc",
+		strings.Join(teamIds, "&"),
+		params.CreateFilter(),
+		params.PerPage,
+		params.Page,
+	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
@@ -69,30 +84,30 @@ func (c *ApiClient) GetTaskList(ctx Context, search int, displayTaskLimit int, s
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	
+
 	return v, nil
 }
 
-func CreateFilter(taskTypeSelected []string, selectedAssignees []string, dueDateFrom *time.Time, dueDateTo *time.Time, taskTypes []model.TaskType) string {
+func (p TaskListParams) CreateFilter() string {
 	filter := "status:Not+started,"
 
-	for _, t := range taskTypeSelected {
+	for _, t := range p.SelectedTaskTypes {
 		if t == "ECM_TASKS" {
-			taskTypeSelected = getEcmTaskTypesString(taskTypes)
+			p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)
 			break
 		}
 	}
-	for _, t := range taskTypeSelected {
+	for _, t := range p.SelectedTaskTypes {
 		filter += "type:" + t + ","
 	}
-	for _, a := range selectedAssignees {
+	for _, a := range p.Assignees {
 		filter += "assigneeid_or_null:" + a + ","
 	}
-	if dueDateFrom != nil {
-		filter += "due_date_from:" + dueDateFrom.Format("2006-01-02") + ","
+	if p.DueDateFrom != nil {
+		filter += "due_date_from:" + p.DueDateFrom.Format("2006-01-02") + ","
 	}
-	if dueDateTo != nil {
-		filter += "due_date_to:" + dueDateTo.Format("2006-01-02") + ","
+	if p.DueDateTo != nil {
+		filter += "due_date_to:" + p.DueDateTo.Format("2006-01-02") + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
