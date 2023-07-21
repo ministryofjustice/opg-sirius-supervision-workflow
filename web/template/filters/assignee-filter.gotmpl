@@ -4,7 +4,7 @@
 
   <div class="app-c-option-select">
     <div class="app-c-option-select__heading js-container-heading filter-toggle-button">
-      <button class="js-container-button app-c-option-select__title app-c-option-select__button" type="button" aria-expanded="false" id="option-select-title-assignee" aria-controls="list_of_countries_to_filter">Assigned</button>
+      <button class="js-container-button app-c-option-select__title app-c-option-select__button" type="button" aria-expanded="false" id="option-select-title-assignee" aria-controls="list_of_countries_to_filter">{{ or .AssigneeFilterName "Assignee" }}</button>
       <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="app-c-option-select__icon app-c-option-select__icon--up filter-arrow-up hide" aria-hidden="true" focusable="false">
         <path d="m798.16 609.84l-256-256c-16.683-16.683-43.691-16.683-60.331 0l-256 256c-16.683 16.683-16.683 43.691 0 60.331s43.691 16.683 60.331 0l225.84-225.84 225.84 225.84c16.683 16.683 43.691 16.683 60.331 0s16.683-43.691 0-60.331z"></path>
       </svg>
