@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
 
@@ -58,7 +59,9 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
-	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
+		assert.NotContains(t, rq.URL.RawQuery, "sort=made_active_date:asc")
+		assert.Contains(t, rq.URL.RawQuery, "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -101,9 +104,10 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	}
 
 	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
-		Team:    model.Team{Id: 13},
-		Page:    1,
-		PerPage: 25,
+		Team:       model.Team{Id: 13},
+		Page:       1,
+		PerPage:    25,
+		CaseOwners: []string{"1"},
 	})
 
 	assert.Equal(t, nil, err)
@@ -135,7 +139,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients?limit=25&page=1&sort=",
+		URL:    svr.URL + "/api/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
@@ -146,6 +150,7 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
 		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
+		assert.NotContains(t, r.URL.RawQuery, "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
@@ -154,9 +159,35 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 
 	team := model.Team{Id: 13, Name: "Lay Team - New Deputy Orders"}
 	_, err := client.GetClientList(getContext(nil), ClientListParams{
-		Team:    team,
-		Page:    1,
-		PerPage: 25,
+		Team:       team,
+		Page:       1,
+		PerPage:    25,
+		CaseOwners: []string{"1"},
 	})
 	assert.Nil(t, err)
+}
+
+func TestClientListParams_CreateFilter(t *testing.T) {
+	tests := []struct {
+		params ClientListParams
+		want   string
+	}{
+		{
+			params: ClientListParams{},
+			want:   "",
+		},
+		{
+			params: ClientListParams{CaseOwners: []string{"1"}},
+			want:   "caseowner:1",
+		},
+		{
+			params: ClientListParams{CaseOwners: []string{"1", "2", "3"}},
+			want:   "caseowner:1,caseowner:2,caseowner:3",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, test.params.CreateFilter())
+		})
+	}
 }
