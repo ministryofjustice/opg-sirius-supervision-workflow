@@ -40,7 +40,7 @@ func TestCaseload(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY"},
+		SelectedTeam:    model.Team{Type: "LAY", Selector: "1"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -58,6 +58,7 @@ func TestCaseload(t *testing.T) {
 	var want CaseloadPage
 	want.App = app
 	want.PerPage = 25
+	want.AssigneeFilterName = "Case owner"
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "caseload",
