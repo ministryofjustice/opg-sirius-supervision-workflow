@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
+	"strings"
 )
 
 type ClientListParams struct {
-	Team    model.Team
-	Page    int
-	PerPage int
+	Team       model.Team
+	Page       int
+	PerPage    int
+	CaseOwners []string
 }
 
 type ClientList struct {
@@ -21,13 +23,16 @@ type ClientList struct {
 
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
-
 	var sort string
+	var filter string
+
 	if params.Team.IsLayNewOrdersTeam() {
 		sort = "made_active_date:asc"
+	} else {
+		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&sort=%s", params.Team.Id, params.PerPage, params.Page, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
@@ -59,4 +64,12 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 	}
 
 	return v, err
+}
+
+func (p ClientListParams) CreateFilter() string {
+	var filter string
+	for _, a := range p.CaseOwners {
+		filter += "caseowner:" + a + ","
+	}
+	return strings.TrimRight(filter, ",")
 }
