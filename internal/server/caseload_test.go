@@ -40,7 +40,7 @@ func TestCaseload(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY"},
+		SelectedTeam:    model.Team{Type: "LAY", Selector: "1"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -58,6 +58,7 @@ func TestCaseload(t *testing.T) {
 	var want CaseloadPage
 	want.App = app
 	want.PerPage = 25
+	want.AssigneeFilterName = "Case owner"
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "caseload",
@@ -134,7 +135,7 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 	}
 }
 
-func TestCaseloadVars_CreateUrlBuilder(t *testing.T) {
+func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 	expectedFilters := []urlbuilder.Filter{
 		{
 			Name:                  "assignee",
@@ -176,6 +177,54 @@ func TestCaseloadVars_CreateUrlBuilder(t *testing.T) {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			test.want.SelectedFilters = expectedFilters
 			assert.Equal(t, test.want, test.page.CreateUrlBuilder())
+		})
+	}
+}
+
+func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
+	tests := []struct {
+		selectedAssignees  []string
+		selectedUnassigned string
+		want               []string
+	}{
+		{
+			want: nil,
+		},
+		{
+			selectedAssignees: []string{"2"},
+			want:              []string{"User 2"},
+		},
+		{
+			selectedUnassigned: "lay-team",
+			want:               []string{"Lay team"},
+		},
+		{
+			selectedAssignees:  []string{"1", "2"},
+			selectedUnassigned: "lay-team",
+			want:               []string{"Lay team", "User 1", "User 2"},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var page CaseloadPage
+			page.App.SelectedTeam = model.Team{
+				Name:     "Lay team",
+				Selector: "lay-team",
+				Members: []model.Assignee{
+					{
+						Id:   1,
+						Name: "User 1",
+					},
+					{
+						Id:   2,
+						Name: "User 2",
+					},
+				},
+			}
+			page.SelectedAssignees = test.selectedAssignees
+			page.SelectedUnassigned = test.selectedUnassigned
+
+			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})
 	}
 }

@@ -472,3 +472,77 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 		})
 	}
 }
+
+func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
+	dueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+	dueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
+
+	tests := []struct {
+		taskTypes          []model.TaskType
+		selectedAssignees  []string
+		selectedUnassigned string
+		dueDateFrom        *time.Time
+		dueDateTo          *time.Time
+		want               []string
+	}{
+		{
+			want: nil,
+		},
+		{
+			taskTypes: []model.TaskType{
+				{Incomplete: "TaskType1", IsSelected: true},
+				{Incomplete: "TaskType2", IsSelected: false},
+				{Incomplete: "TaskType3", IsSelected: true},
+			},
+			want: []string{"TaskType1", "TaskType3"},
+		},
+		{
+			selectedAssignees: []string{"2"},
+			want:              []string{"User 2"},
+		},
+		{
+			selectedUnassigned: "lay-team",
+			want:               []string{"Lay team"},
+		},
+		{
+			dueDateFrom: &dueDateFrom,
+			want:        []string{"Due date from 17/12/2022 (inclusive)"},
+		},
+		{
+			dueDateTo: &dueDateTo,
+			want:      []string{"Due date to 18/12/2022 (inclusive)"},
+		},
+		{
+			taskTypes:          []model.TaskType{{Incomplete: "TaskType1", IsSelected: true}},
+			selectedAssignees:  []string{"1"},
+			selectedUnassigned: "lay-team",
+			dueDateFrom:        &dueDateFrom,
+			dueDateTo:          &dueDateTo,
+			want:               []string{"TaskType1", "Lay team", "User 1", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var page ClientTasksPage
+			page.App.SelectedTeam = model.Team{
+				Name:     "Lay team",
+				Selector: "lay-team",
+				Members: []model.Assignee{
+					{
+						Id:   1,
+						Name: "User 1",
+					},
+					{
+						Id:   2,
+						Name: "User 2",
+					},
+				},
+			}
+			page.TaskTypes = test.taskTypes
+			page.SelectedAssignees = test.selectedAssignees
+			page.SelectedUnassigned = test.selectedUnassigned
+
+			assert.Equal(t, test.want, page.GetAppliedFilters(test.dueDateFrom, test.dueDateTo))
+		})
+	}
+}

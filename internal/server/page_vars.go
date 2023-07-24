@@ -17,6 +17,7 @@ type ListPage struct {
 
 type FilterByAssignee struct {
 	ListPage
+	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
 }

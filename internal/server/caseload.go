@@ -30,6 +30,19 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 	}
 }
 
+func (cv CaseloadPage) GetAppliedFilters() []string {
+	var appliedFilters []string
+	if cv.App.SelectedTeam.Selector == cv.SelectedUnassigned {
+		appliedFilters = append(appliedFilters, cv.App.SelectedTeam.Name)
+	}
+	for _, u := range cv.App.SelectedTeam.GetAssigneesForFilter() {
+		if u.IsSelected(cv.SelectedAssignees) {
+			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	return appliedFilters
+}
+
 func caseload(client CaseloadClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		if r.Method != http.MethodGet {
@@ -63,9 +76,10 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		ctx := getContext(r)
 		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
-			Team:    app.SelectedTeam,
-			Page:    page,
-			PerPage: clientsPerPage,
+			Team:       app.SelectedTeam,
+			Page:       page,
+			PerPage:    clientsPerPage,
+			CaseOwners: selectedAssignees,
 		})
 		if err != nil {
 			return err
@@ -74,6 +88,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars := CaseloadPage{ClientList: clientList}
 
 		vars.PerPage = clientsPerPage
+		vars.AssigneeFilterName = "Case owner"
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 
@@ -88,6 +103,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			PerPageOptions:  perPageOptions,
 			UrlBuilder:      vars.UrlBuilder,
 		}
+		vars.AppliedFilters = vars.GetAppliedFilters()
 
 		return tmpl.Execute(w, vars)
 	}
