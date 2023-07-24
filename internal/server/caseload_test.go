@@ -59,6 +59,16 @@ func TestCaseload(t *testing.T) {
 	want.App = app
 	want.PerPage = 25
 	want.AssigneeFilterName = "Case owner"
+	want.StatusOptions = []model.RefData{
+		{
+			Handle: "active",
+			Label:  "Active",
+		},
+		{
+			Handle: "closed",
+			Label:  "Closed",
+		},
+	}
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "caseload",
@@ -71,6 +81,10 @@ func TestCaseload(t *testing.T) {
 			},
 			{
 				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "status",
 				ClearBetweenTeamViews: true,
 			},
 		},
@@ -145,6 +159,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			Name:                  "unassigned",
 			ClearBetweenTeamViews: true,
 		},
+		{
+			Name:                  "status",
+			ClearBetweenTeamViews: true,
+		},
 	}
 
 	tests := []struct {
@@ -185,6 +203,7 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 	tests := []struct {
 		selectedAssignees  []string
 		selectedUnassigned string
+		selectedStatuses   []string
 		want               []string
 	}{
 		{
@@ -199,9 +218,14 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 			want:               []string{"Lay team"},
 		},
 		{
+			selectedStatuses: []string{"active"},
+			want:             []string{"Active"},
+		},
+		{
 			selectedAssignees:  []string{"1", "2"},
 			selectedUnassigned: "lay-team",
-			want:               []string{"Lay team", "User 1", "User 2"},
+			selectedStatuses:   []string{"active", "closed"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
 		},
 	}
 	for i, test := range tests {
@@ -221,8 +245,19 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					},
 				},
 			}
+			page.StatusOptions = []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			}
 			page.SelectedAssignees = test.selectedAssignees
 			page.SelectedUnassigned = test.selectedUnassigned
+			page.SelectedStatuses = test.selectedStatuses
 
 			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})

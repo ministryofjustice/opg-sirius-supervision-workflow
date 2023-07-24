@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
@@ -15,6 +16,7 @@ type CaseloadClient interface {
 type CaseloadPage struct {
 	ListPage
 	FilterByAssignee
+	FilterByStatus
 	ClientList sirius.ClientList
 }
 
@@ -26,6 +28,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedFilters: []urlbuilder.Filter{
 			urlbuilder.CreateFilter("assignee", cv.SelectedAssignees, true),
 			urlbuilder.CreateFilter("unassigned", cv.SelectedUnassigned, true),
+			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 		},
 	}
 }
@@ -38,6 +41,11 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	for _, u := range cv.App.SelectedTeam.GetAssigneesForFilter() {
 		if u.IsSelected(cv.SelectedAssignees) {
 			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	for _, s := range cv.StatusOptions {
+		if s.IsIn(cv.SelectedStatuses) {
+			appliedFilters = append(appliedFilters, s.Label)
 		}
 	}
 	return appliedFilters
@@ -74,12 +82,18 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			}
 		}
 
+		var selectedStatuses []string
+		if params.Has("status") {
+			selectedStatuses = params["status"]
+		}
+
 		ctx := getContext(r)
 		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
-			Team:       app.SelectedTeam,
-			Page:       page,
-			PerPage:    clientsPerPage,
-			CaseOwners: selectedAssignees,
+			Team:          app.SelectedTeam,
+			Page:          page,
+			PerPage:       clientsPerPage,
+			CaseOwners:    selectedAssignees,
+			OrderStatuses: selectedStatuses,
 		})
 		if err != nil {
 			return err
@@ -91,6 +105,17 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.AssigneeFilterName = "Case owner"
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedStatuses = selectedStatuses
+		vars.StatusOptions = []model.RefData{
+			{
+				Handle: "active",
+				Label:  "Active",
+			},
+			{
+				Handle: "closed",
+				Label:  "Closed",
+			},
+		}
 
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()

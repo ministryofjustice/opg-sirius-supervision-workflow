@@ -18,6 +18,10 @@ type mockFilterByDueDate struct {
 	FilterByDueDate
 }
 
+type mockFilterByStatus struct {
+	FilterByStatus
+}
+
 func TestListPage_HasFilterBy(t *testing.T) {
 	tests := []struct {
 		page   interface{}
@@ -37,6 +41,11 @@ func TestListPage_HasFilterBy(t *testing.T) {
 		{
 			page:   mockFilterByTaskType{},
 			filter: "task-type",
+			want:   true,
+		},
+		{
+			page:   mockFilterByStatus{},
+			filter: "status",
 			want:   true,
 		},
 		{
