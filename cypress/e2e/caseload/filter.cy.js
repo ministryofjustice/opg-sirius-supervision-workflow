@@ -11,6 +11,9 @@ describe("Filters", () => {
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-assignee').click()
     cy.get('#list-of-assignees-to-filter label').should('contain', 'Not Assigned')
+    cy.get('#option-select-title-status').click()
+    cy.get('#list-of-statuses-to-filter label').should('contain', 'Active')
+    cy.get('#list-of-statuses-to-filter label').should('contain', 'Closed')
   })
 
   it("can hide the filters", () => {
@@ -18,6 +21,11 @@ describe("Filters", () => {
     cy.get('#list-of-assignees-to-filter label').should('be.visible')
     cy.get('#option-select-title-assignee').click()
     cy.get('#list-of-assignees-to-filter label').should('not.be.visible')
+
+    cy.get('#option-select-title-status').click()
+    cy.get('#list-of-statuses-to-filter label').should('be.visible')
+    cy.get('#option-select-title-status').click()
+    cy.get('#list-of-statuses-to-filter label').should('not.be.visible')
   })
 
   it("can apply a filter which adds assignee heading", () => {
@@ -30,15 +38,30 @@ describe("Filters", () => {
     cy.get('.moj-filter__selected').should('contain','Case owner')
   })
 
-  it("can apply two filters", () => {
+  it("can apply a filter which adds status heading", () => {
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Closed")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'status=closed')
+    cy.get('.moj-filter__selected').should('contain','Closed')
+  })
+
+  it("can apply all filters", () => {
     cy.get('#option-select-title-assignee').click()
     cy.get('[data-filter-name="moj-filter-name-assignee"]').within(() => {
       cy.get('label:contains("Not Assigned")').click()
       cy.get('label:contains("LayTeam1 User1")').click()
     })
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Active")').click()
+    })
     cy.get('[data-module=apply-filters]').click()
     cy.url().should('include', 'unassigned=21')
     cy.url().should('include', 'assignee=766')
+    cy.url().should('include', 'status=active')
   })
 
   it("shows button to remove individual assignee filter", () => {
@@ -52,11 +75,26 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').eq(1).should('contain', 'LayTeam1 User1')
   })
 
+  it("shows button to remove individual status filter", () => {
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Active")').click()
+      cy.get('label:contains("Closed")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.get('.moj-filter__tag').eq(0).should('contain', 'Active')
+    cy.get('.moj-filter__tag').eq(1).should('contain', 'Closed')
+  })
+
   it("can clear all filters with clear filter link", () => {
     cy.get('#option-select-title-assignee').click()
     cy.get('[data-filter-name="moj-filter-name-assignee"]').within(() => {
       cy.get('label:contains("Not Assigned")').click()
       cy.get('label:contains("LayTeam1 User1")').click()
+    })
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Active")').click()
     })
     cy.get('[data-module=apply-filters]').click()
     cy.get('[data-module=clear-filters]').click()

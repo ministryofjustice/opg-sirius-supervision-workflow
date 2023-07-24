@@ -34,7 +34,20 @@ type FilterByDueDate struct {
 	SelectedDueDateTo   string
 }
 
+type FilterByStatus struct {
+	ListPage
+	StatusOptions    []model.RefData
+	SelectedStatuses []string
+}
+
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
+	filters := map[string]interface{}{
+		"assignee":  FilterByAssignee{},
+		"due-date":  FilterByDueDate{},
+		"status":    FilterByStatus{},
+		"task-type": FilterByTaskType{},
+	}
+
 	extends := func(parent interface{}, child interface{}) bool {
 		p := reflect.TypeOf(parent)
 		c := reflect.TypeOf(child)
@@ -46,13 +59,8 @@ func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 		return false
 	}
 
-	switch filter {
-	case "assignee":
-		return extends(page, FilterByAssignee{})
-	case "due-date":
-		return extends(page, FilterByDueDate{})
-	case "task-type":
-		return extends(page, FilterByTaskType{})
+	if f, ok := filters[filter]; ok {
+		return extends(page, f)
 	}
 	return false
 }

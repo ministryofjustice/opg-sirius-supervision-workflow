@@ -1,0 +1,15 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByStatus*/ -}}
+{{ define "status-filter-applied" }}
+
+{{ if .SelectedStatuses }}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Status</h3>
+  <ul class="moj-filter-tags">
+      {{ range .StatusOptions }}
+          {{ if .IsIn $.SelectedStatuses }}
+            <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "status" .Handle }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Label }}</a></li>
+          {{ end }}
+      {{ end }}
+  </ul>
+{{ end }}
+
+{{ end }}
