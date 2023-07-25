@@ -1,0 +1,18 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByAssignee*/ -}}
+{{ define "assignee-filter-applied" }}
+
+{{ if or (.SelectedAssignees) (.SelectedUnassigned) }}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">{{ or .AssigneeFilterName "Assignee" }}</h3>
+  <ul class="moj-filter-tags">
+      {{ if .SelectedUnassigned }}
+        <li><a href="{{ .UrlBuilder.GetRemoveFilterUrl "unassigned" .SelectedUnassigned }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> Not Assigned</a></li>
+      {{ end }}
+      {{ range .App.SelectedTeam.GetAssigneesForFilter }}
+          {{ if .IsSelected $.SelectedAssignees }}
+            <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "assignee" .Id }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Name }}</a></li>
+          {{ end }}
+      {{ end }}
+  </ul>
+{{ end }}
+
+{{ end }}

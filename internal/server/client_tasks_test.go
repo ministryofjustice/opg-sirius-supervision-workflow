@@ -32,7 +32,7 @@ func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelecte
 	return m.taskTypeData, m.err
 }
 
-func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, search int, displayTaskLimit int, selectedTeamId model.Team, taskTypeSelected []string, LoadTasks []model.TaskType, assigneeSelected []string, dueDateFrom *time.Time, dueDateTo *time.Time) (sirius.TaskList, error) {
+func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -106,7 +106,10 @@ func TestClientTasks(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
 
-	want := ClientTasksVars{App: app, TasksPerPage: 25, TaskTypes: mockTaskTypeData}
+	var want ClientTasksPage
+	want.App = app
+	want.PerPage = 25
+	want.TaskTypes = mockTaskTypeData
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
@@ -389,34 +392,51 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	}
 
 	tests := []struct {
-		clientTasksVars ClientTasksVars
-		wantBuilder     urlbuilder.UrlBuilder
-		wantFilters     []urlbuilder.Filter
+		page        ClientTasksPage
+		wantBuilder urlbuilder.UrlBuilder
+		wantFilters []urlbuilder.Filter
 	}{
 		{
-			clientTasksVars: ClientTasksVars{},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks"},
-			wantFilters:     wantFilters,
+			page:        ClientTasksPage{},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks"},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedFilters: wantFilters},
-			wantFilters:     wantFilters,
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+				},
+			},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedFilters: wantFilters},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}, TasksPerPage: 55},
-			wantBuilder:     urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
-			wantFilters:     wantFilters,
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
+			wantFilters: wantFilters,
 		},
 		{
-			clientTasksVars: ClientTasksVars{
-				App:                 WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
-				TasksPerPage:        55,
-				SelectedTaskTypes:   []string{"type1", "type2"},
-				SelectedAssignees:   []string{"user1", "user2"},
-				SelectedUnassigned:  "test-unassigned",
-				SelectedDueDateFrom: "2010-10-10",
-				SelectedDueDateTo:   "2020-10-10",
+			page: ClientTasksPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+				FilterByTaskType: FilterByTaskType{
+					SelectedTaskTypes: []string{"type1", "type2"},
+				},
+				FilterByAssignee: FilterByAssignee{
+					SelectedAssignees:  []string{"user1", "user2"},
+					SelectedUnassigned: "test-unassigned",
+				},
+				FilterByDueDate: FilterByDueDate{
+					SelectedDueDateFrom: "2010-10-10",
+					SelectedDueDateTo:   "2020-10-10",
+				},
 			},
 			wantBuilder: urlbuilder.UrlBuilder{Path: "client-tasks", SelectedTeam: "test-team", SelectedPerPage: 55, SelectedFilters: wantFilters},
 			wantFilters: []urlbuilder.Filter{
@@ -448,7 +468,81 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			test.wantBuilder.SelectedFilters = test.wantFilters
-			assert.Equal(t, test.wantBuilder, test.clientTasksVars.CreateUrlBuilder())
+			assert.Equal(t, test.wantBuilder, test.page.CreateUrlBuilder())
+		})
+	}
+}
+
+func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
+	dueDateFrom := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)
+	dueDateTo := time.Date(2022, 12, 18, 0, 0, 0, 0, time.Local)
+
+	tests := []struct {
+		taskTypes          []model.TaskType
+		selectedAssignees  []string
+		selectedUnassigned string
+		dueDateFrom        *time.Time
+		dueDateTo          *time.Time
+		want               []string
+	}{
+		{
+			want: nil,
+		},
+		{
+			taskTypes: []model.TaskType{
+				{Incomplete: "TaskType1", IsSelected: true},
+				{Incomplete: "TaskType2", IsSelected: false},
+				{Incomplete: "TaskType3", IsSelected: true},
+			},
+			want: []string{"TaskType1", "TaskType3"},
+		},
+		{
+			selectedAssignees: []string{"2"},
+			want:              []string{"User 2"},
+		},
+		{
+			selectedUnassigned: "lay-team",
+			want:               []string{"Lay team"},
+		},
+		{
+			dueDateFrom: &dueDateFrom,
+			want:        []string{"Due date from 17/12/2022 (inclusive)"},
+		},
+		{
+			dueDateTo: &dueDateTo,
+			want:      []string{"Due date to 18/12/2022 (inclusive)"},
+		},
+		{
+			taskTypes:          []model.TaskType{{Incomplete: "TaskType1", IsSelected: true}},
+			selectedAssignees:  []string{"1"},
+			selectedUnassigned: "lay-team",
+			dueDateFrom:        &dueDateFrom,
+			dueDateTo:          &dueDateTo,
+			want:               []string{"TaskType1", "Lay team", "User 1", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var page ClientTasksPage
+			page.App.SelectedTeam = model.Team{
+				Name:     "Lay team",
+				Selector: "lay-team",
+				Members: []model.Assignee{
+					{
+						Id:   1,
+						Name: "User 1",
+					},
+					{
+						Id:   2,
+						Name: "User 2",
+					},
+				},
+			}
+			page.TaskTypes = test.taskTypes
+			page.SelectedAssignees = test.selectedAssignees
+			page.SelectedUnassigned = test.selectedUnassigned
+
+			assert.Equal(t, test.want, page.GetAppliedFilters(test.dueDateFrom, test.dueDateTo))
 		})
 	}
 }

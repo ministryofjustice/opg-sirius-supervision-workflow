@@ -6,26 +6,49 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
+	"strconv"
 )
 
 type CaseloadClient interface {
-	GetClientList(sirius.Context, model.Team, int, int) (sirius.ClientList, error)
+	GetClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
 }
 
-type CaseloadVars struct {
-	App            WorkflowVars
-	ClientList     sirius.ClientList
-	Pagination     paginate.Pagination
-	ClientsPerPage int
-	UrlBuilder     urlbuilder.UrlBuilder
+type CaseloadPage struct {
+	ListPage
+	FilterByAssignee
+	FilterByStatus
+	ClientList sirius.ClientList
 }
 
-func (cv CaseloadVars) CreateUrlBuilder() urlbuilder.UrlBuilder {
+func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 	return urlbuilder.UrlBuilder{
 		Path:            "caseload",
 		SelectedTeam:    cv.App.SelectedTeam.Selector,
-		SelectedPerPage: cv.ClientsPerPage,
+		SelectedPerPage: cv.PerPage,
+		SelectedFilters: []urlbuilder.Filter{
+			urlbuilder.CreateFilter("assignee", cv.SelectedAssignees, true),
+			urlbuilder.CreateFilter("unassigned", cv.SelectedUnassigned, true),
+			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
+		},
 	}
+}
+
+func (cv CaseloadPage) GetAppliedFilters() []string {
+	var appliedFilters []string
+	if cv.App.SelectedTeam.Selector == cv.SelectedUnassigned {
+		appliedFilters = append(appliedFilters, cv.App.SelectedTeam.Name)
+	}
+	for _, u := range cv.App.SelectedTeam.GetAssigneesForFilter() {
+		if u.IsSelected(cv.SelectedAssignees) {
+			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	for _, s := range cv.StatusOptions {
+		if s.IsIn(cv.SelectedStatuses) {
+			appliedFilters = append(appliedFilters, s.Label)
+		}
+	}
+	return appliedFilters
 }
 
 func caseload(client CaseloadClient, tmpl Template) Handler {
@@ -35,8 +58,8 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		if !app.SelectedTeam.IsLay() {
-			urlBuilder := ClientTasksVars{TasksPerPage: 25}.CreateUrlBuilder()
-			return RedirectError(urlBuilder.GetTeamUrl(app.SelectedTeam))
+			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
+			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
 		params := r.URL.Query()
@@ -45,29 +68,67 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		perPageOptions := []int{25, 50, 100}
 		clientsPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
+		var userSelectedAssignees []string
+		if params.Has("assignee") {
+			userSelectedAssignees = params["assignee"]
+		}
+		selectedAssignees := userSelectedAssignees
+		selectedUnassigned := params.Get("unassigned")
+
+		if selectedUnassigned == app.SelectedTeam.Selector {
+			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
+			for _, t := range app.SelectedTeam.Teams {
+				selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
+			}
+		}
+
+		var selectedStatuses []string
+		if params.Has("status") {
+			selectedStatuses = params["status"]
+		}
+
 		ctx := getContext(r)
-		clientList, err := client.GetClientList(ctx, app.SelectedTeam, clientsPerPage, page)
+		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
+			Team:          app.SelectedTeam,
+			Page:          page,
+			PerPage:       clientsPerPage,
+			CaseOwners:    selectedAssignees,
+			OrderStatuses: selectedStatuses,
+		})
 		if err != nil {
 			return err
 		}
 
-		vars := CaseloadVars{
-			App:            app,
-			ClientList:     clientList,
-			ClientsPerPage: clientsPerPage,
+		vars := CaseloadPage{ClientList: clientList}
+
+		vars.PerPage = clientsPerPage
+		vars.AssigneeFilterName = "Case owner"
+		vars.SelectedAssignees = userSelectedAssignees
+		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedStatuses = selectedStatuses
+		vars.StatusOptions = []model.RefData{
+			{
+				Handle: "active",
+				Label:  "Active",
+			},
+			{
+				Handle: "closed",
+				Label:  "Closed",
+			},
 		}
 
+		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
-
 		vars.Pagination = paginate.Pagination{
 			CurrentPage:     clientList.Pages.PageCurrent,
 			TotalPages:      clientList.Pages.PageTotal,
 			TotalElements:   clientList.TotalClients,
-			ElementsPerPage: vars.ClientsPerPage,
+			ElementsPerPage: vars.PerPage,
 			ElementName:     "clients",
 			PerPageOptions:  perPageOptions,
 			UrlBuilder:      vars.UrlBuilder,
 		}
+		vars.AppliedFilters = vars.GetAppliedFilters()
 
 		return tmpl.Execute(w, vars)
 	}

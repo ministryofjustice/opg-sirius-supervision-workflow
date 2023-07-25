@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadVars*/ -}}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadPage*/ -}}
 {{ define "caseload-list" }}
     <section data-module="manage-clients" class="moj-manage-list">
         <table id="caseload-list" class="govuk-table"  data-module="moj-sortable-table">
@@ -58,6 +58,17 @@
                             {{ .GetStatus }}
                         </td>
                     </tr>
+                    {{ end }}
+                {{ else }}
+                    {{ $length := len .AppliedFilters }}
+                    {{ if eq $length 0 }}
+                        <tr class="govuk-table__row">
+                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no cases</td>
+                        </tr>
+                    {{ else if ne $length 0 }}
+                        <tr class="govuk-table__row">
+                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no cases for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+                        </tr>
                     {{ end }}
                 {{ end }}
             </tbody>

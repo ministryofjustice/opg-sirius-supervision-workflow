@@ -13,40 +13,55 @@ import (
 
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, []string) ([]model.TaskType, error)
-	GetTaskList(sirius.Context, int, int, model.Team, []string, []model.TaskType, []string, *time.Time, *time.Time) (sirius.TaskList, error)
+	GetTaskList(sirius.Context, sirius.TaskListParams) (sirius.TaskList, error)
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
 
-type ClientTasksVars struct {
-	App                 WorkflowVars
-	TaskList            sirius.TaskList
-	TaskTypes           []model.TaskType
-	SelectedAssignees   []string
-	SelectedUnassigned  string
-	SelectedTaskTypes   []string
-	SelectedDueDateFrom string
-	SelectedDueDateTo   string
-	AppliedFilters      []string
-	TasksPerPage        int
-	Pagination          paginate.Pagination
-	UrlBuilder          urlbuilder.UrlBuilder
+type ClientTasksPage struct {
+	ListPage
+	FilterByAssignee
+	FilterByDueDate
+	FilterByTaskType
+	TaskList sirius.TaskList
 }
 
-func (ctv ClientTasksVars) CreateUrlBuilder() urlbuilder.UrlBuilder {
-	ub := urlbuilder.UrlBuilder{
+func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
+	return urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
-		SelectedTeam:    ctv.App.SelectedTeam.Selector,
-		SelectedPerPage: ctv.TasksPerPage,
+		SelectedTeam:    ctp.App.SelectedTeam.Selector,
+		SelectedPerPage: ctp.PerPage,
 		SelectedFilters: []urlbuilder.Filter{
-			urlbuilder.CreateFilter("task-type", ctv.SelectedTaskTypes),
-			urlbuilder.CreateFilter("assignee", ctv.SelectedAssignees, true),
-			urlbuilder.CreateFilter("unassigned", ctv.SelectedUnassigned, true),
-			urlbuilder.CreateFilter("due-date-from", ctv.SelectedDueDateFrom),
-			urlbuilder.CreateFilter("due-date-to", ctv.SelectedDueDateTo),
+			urlbuilder.CreateFilter("task-type", ctp.SelectedTaskTypes),
+			urlbuilder.CreateFilter("assignee", ctp.SelectedAssignees, true),
+			urlbuilder.CreateFilter("unassigned", ctp.SelectedUnassigned, true),
+			urlbuilder.CreateFilter("due-date-from", ctp.SelectedDueDateFrom),
+			urlbuilder.CreateFilter("due-date-to", ctp.SelectedDueDateTo),
 		},
 	}
+}
 
-	return ub
+func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *time.Time) []string {
+	var appliedFilters []string
+	for _, u := range ctp.TaskTypes {
+		if u.IsSelected {
+			appliedFilters = append(appliedFilters, u.Incomplete)
+		}
+	}
+	if ctp.App.SelectedTeam.Selector == ctp.SelectedUnassigned {
+		appliedFilters = append(appliedFilters, ctp.App.SelectedTeam.Name)
+	}
+	for _, u := range ctp.App.SelectedTeam.GetAssigneesForFilter() {
+		if u.IsSelected(ctp.SelectedAssignees) {
+			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	if dueDateFrom != nil {
+		appliedFilters = append(appliedFilters, "Due date from "+dueDateFrom.Format("02/01/2006")+" (inclusive)")
+	}
+	if dueDateTo != nil {
+		appliedFilters = append(appliedFilters, "Due date to "+dueDateTo.Format("02/01/2006")+" (inclusive)")
+	}
+	return appliedFilters
 }
 
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
@@ -121,19 +136,26 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			return err
 		}
 
-		taskList, err := client.GetTaskList(ctx, page, tasksPerPage, app.SelectedTeam, selectedTaskTypes, taskTypes, selectedAssignees, selectedDueDateFrom, selectedDueDateTo)
+		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
+			Team:              app.SelectedTeam,
+			Page:              page,
+			PerPage:           tasksPerPage,
+			TaskTypes:         taskTypes,
+			SelectedTaskTypes: selectedTaskTypes,
+			Assignees:         selectedAssignees,
+			DueDateFrom:       selectedDueDateFrom,
+			DueDateTo:         selectedDueDateTo,
+		})
 		if err != nil {
 			return err
 		}
 
-		vars := ClientTasksVars{
-			App:                app,
-			TaskList:           taskList,
-			SelectedAssignees:  userSelectedAssignees,
-			SelectedUnassigned: selectedUnassigned,
-			SelectedTaskTypes:  selectedTaskTypes,
-			TasksPerPage:       tasksPerPage,
-		}
+		vars := ClientTasksPage{TaskList: taskList}
+
+		vars.PerPage = tasksPerPage
+		vars.SelectedTaskTypes = selectedTaskTypes
+		vars.SelectedAssignees = userSelectedAssignees
+		vars.SelectedUnassigned = selectedUnassigned
 
 		if selectedDueDateFrom != nil {
 			vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
@@ -142,6 +164,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
 		}
 
+		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
@@ -152,13 +175,13 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			CurrentPage:     taskList.Pages.PageCurrent,
 			TotalPages:      taskList.Pages.PageTotal,
 			TotalElements:   taskList.TotalTasks,
-			ElementsPerPage: vars.TasksPerPage,
+			ElementsPerPage: vars.PerPage,
 			ElementName:     "tasks",
 			PerPageOptions:  perPageOptions,
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
-		vars.AppliedFilters = sirius.GetAppliedFilters(app.SelectedTeam, selectedAssignees, selectedUnassigned, taskTypes, selectedDueDateFrom, selectedDueDateTo)
+		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 		vars.TaskTypes = calculateTaskCounts(taskTypes, taskList)
 
 		return tmpl.Execute(w, vars)

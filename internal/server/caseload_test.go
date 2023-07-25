@@ -13,18 +13,20 @@ import (
 )
 
 type mockCaseloadClient struct {
-	count      map[string]int
-	lastCtx    sirius.Context
-	err        error
-	clientList sirius.ClientList
+	count                map[string]int
+	lastCtx              sirius.Context
+	lastClientListParams sirius.ClientListParams
+	err                  error
+	clientList           sirius.ClientList
 }
 
-func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, team model.Team, clientsPerPage int, page int) (sirius.ClientList, error) {
+func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, params sirius.ClientListParams) (sirius.ClientList, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
 	m.count["GetClientList"] += 1
 	m.lastCtx = ctx
+	m.lastClientListParams = params
 
 	return m.clientList, m.err
 }
@@ -38,7 +40,7 @@ func TestCaseload(t *testing.T) {
 
 	app := WorkflowVars{
 		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY"},
+		SelectedTeam:    model.Team{Type: "LAY", Selector: "1"},
 		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
 	}
 	err := caseload(client, template)(app, w, r)
@@ -46,12 +48,46 @@ func TestCaseload(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
 
-	want := CaseloadVars{App: app, ClientsPerPage: 25}
+	expectedClientListParams := sirius.ClientListParams{
+		Team:    app.SelectedTeam,
+		Page:    1,
+		PerPage: 25,
+	}
+	assert.Equal(t, expectedClientListParams, client.lastClientListParams)
+
+	var want CaseloadPage
+	want.App = app
+	want.PerPage = 25
+	want.AssigneeFilterName = "Case owner"
+	want.StatusOptions = []model.RefData{
+		{
+			Handle: "active",
+			Label:  "Active",
+		},
+		{
+			Handle: "closed",
+			Label:  "Closed",
+		},
+	}
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "caseload",
 		SelectedTeam:    app.SelectedTeam.Selector,
 		SelectedPerPage: 25,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "status",
+				ClearBetweenTeamViews: true,
+			},
+		},
 	}
 
 	want.Pagination = paginate.Pagination{
@@ -113,27 +149,117 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 	}
 }
 
-func TestCaseloadVars_CreateUrlBuilder(t *testing.T) {
+func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
+	expectedFilters := []urlbuilder.Filter{
+		{
+			Name:                  "assignee",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name:                  "unassigned",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name:                  "status",
+			ClearBetweenTeamViews: true,
+		},
+	}
+
 	tests := []struct {
-		caseloadVars CaseloadVars
-		want         urlbuilder.UrlBuilder
+		page CaseloadPage
+		want urlbuilder.UrlBuilder
 	}{
 		{
-			caseloadVars: CaseloadVars{},
-			want:         urlbuilder.UrlBuilder{Path: "caseload"},
+			page: CaseloadPage{},
+			want: urlbuilder.UrlBuilder{Path: "caseload"},
 		},
 		{
-			caseloadVars: CaseloadVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}},
-			want:         urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team"},
+			page: CaseloadPage{
+				ListPage: ListPage{
+					App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+				},
+			},
+			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team"},
 		},
 		{
-			caseloadVars: CaseloadVars{App: WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}}, ClientsPerPage: 55},
-			want:         urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
+			page: CaseloadPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
 		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, test.caseloadVars.CreateUrlBuilder())
+			test.want.SelectedFilters = expectedFilters
+			assert.Equal(t, test.want, test.page.CreateUrlBuilder())
+		})
+	}
+}
+
+func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
+	tests := []struct {
+		selectedAssignees  []string
+		selectedUnassigned string
+		selectedStatuses   []string
+		want               []string
+	}{
+		{
+			want: nil,
+		},
+		{
+			selectedAssignees: []string{"2"},
+			want:              []string{"User 2"},
+		},
+		{
+			selectedUnassigned: "lay-team",
+			want:               []string{"Lay team"},
+		},
+		{
+			selectedStatuses: []string{"active"},
+			want:             []string{"Active"},
+		},
+		{
+			selectedAssignees:  []string{"1", "2"},
+			selectedUnassigned: "lay-team",
+			selectedStatuses:   []string{"active", "closed"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var page CaseloadPage
+			page.App.SelectedTeam = model.Team{
+				Name:     "Lay team",
+				Selector: "lay-team",
+				Members: []model.Assignee{
+					{
+						Id:   1,
+						Name: "User 1",
+					},
+					{
+						Id:   2,
+						Name: "User 2",
+					},
+				},
+			}
+			page.StatusOptions = []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			}
+			page.SelectedAssignees = test.selectedAssignees
+			page.SelectedUnassigned = test.selectedUnassigned
+			page.SelectedStatuses = test.selectedStatuses
+
+			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})
 	}
 }

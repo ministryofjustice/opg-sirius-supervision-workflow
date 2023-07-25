@@ -5,7 +5,16 @@ import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
+	"strings"
 )
+
+type ClientListParams struct {
+	Team          model.Team
+	Page          int
+	PerPage       int
+	CaseOwners    []string
+	OrderStatuses []string
+}
 
 type ClientList struct {
 	Clients      []model.Client        `json:"clients"`
@@ -13,15 +22,18 @@ type ClientList struct {
 	TotalClients int                   `json:"total"`
 }
 
-func (c *ApiClient) GetClientList(ctx Context, team model.Team, displayClientLimit int, selectedPage int) (ClientList, error) {
+func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
-
 	var sort string
-	if team.IsLayNewOrdersTeam() {
+	var filter string
+
+	if params.Team.IsLayNewOrdersTeam() {
 		sort = "made_active_date:asc"
+	} else {
+		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&sort=%s", team.Id, displayClientLimit, selectedPage, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
@@ -53,4 +65,15 @@ func (c *ApiClient) GetClientList(ctx Context, team model.Team, displayClientLim
 	}
 
 	return v, err
+}
+
+func (p ClientListParams) CreateFilter() string {
+	var filter string
+	for _, a := range p.CaseOwners {
+		filter += "caseowner:" + a + ","
+	}
+	for _, s := range p.OrderStatuses {
+		filter += "order-status:" + s + ","
+	}
+	return strings.TrimRight(filter, ",")
 }
