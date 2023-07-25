@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -11,6 +12,7 @@ import (
 
 type CaseloadClient interface {
 	GetClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
+	ReassignClientToCaseManager(sirius.Context, int, []string) (string, error)
 }
 
 type CaseloadPage struct {
@@ -53,13 +55,39 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 
 func caseload(client CaseloadClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
-		if r.Method != http.MethodGet {
+		ctx := getContext(r)
+
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
 		if !app.SelectedTeam.IsLay() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+		}
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			assignTeam := r.FormValue("assignTeam")
+			//this is where it picks up the new user to assign task to
+			newAssigneeIdForTask, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			if err != nil {
+				return err
+			}
+
+			selectedTasks := r.Form["selected-tasks"]
+
+			// Attempt to save
+			assigneeDisplayName, err := client.ReassignClientToCaseManager(ctx, newAssigneeIdForTask, selectedTasks)
+			if err != nil {
+				return err
+			}
+			fmt.Println(newAssigneeIdForTask)
+			app.SuccessMessage = successMessageForReassignClient(assignTeam, selectedTasks, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -87,7 +115,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedStatuses = params["status"]
 		}
 
-		ctx := getContext(r)
 		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
@@ -132,4 +159,20 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
+}
+
+func successMessageForReassignClient(assignTeam string, selectedTasks []string, assigneeDisplayName string) string {
+	//if assignTeam != "0" {
+	return fmt.Sprintf("You have reassigned %d clients(s) to %s", len(selectedTasks), assigneeDisplayName)
+	//}
+	//else if assignTeam != "0" && prioritySelected == "no" {
+	//	return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
+	//} else if assignTeam != "0" {
+	//	return fmt.Sprintf("You have reassigned %d clients(s) to %s", len(selectedTasks), assigneeDisplayName)
+	//} else if assignTeam == "0" && prioritySelected == "yes" {
+	//	return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
+	//} else if assignTeam == "0" && prioritySelected == "no" {
+	//	return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
+	//}
+	//return ""
 }

@@ -1,6 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadPage*/ -}}
 {{ define "caseload-list" }}
-    <section data-module="manage-clients" class="moj-manage-list">
+    <section data-module="manage-tasks" class="moj-manage-list">
+        {{ template "client-clients-edit-panel" . }}
         <table id="caseload-list" class="govuk-table"  data-module="moj-sortable-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -28,8 +29,8 @@
                         <td class="govuk-table__cell">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-clients" autocomplete="off" />
-                                    <label class="govuk-label govuk-checkboxes__label" >
+                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .Id }}" id="select-task-{{ .Id }}" autocomplete="off" />
+                                    <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .Id }}">
                                         <span class="govuk-visually-hidden">Select</span>
                                     </label>
                                 </div>
@@ -63,11 +64,11 @@
                     {{ $length := len .AppliedFilters }}
                     {{ if eq $length 0 }}
                         <tr class="govuk-table__row">
-                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no cases</td>
+                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no cases</td>
                         </tr>
                     {{ else if ne $length 0 }}
                         <tr class="govuk-table__row">
-                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no cases for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+                            <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no cases for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
                         </tr>
                     {{ end }}
                 {{ end }}
