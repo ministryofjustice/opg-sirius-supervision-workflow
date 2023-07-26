@@ -22,7 +22,7 @@ Ensure that after logging in, you redirect back to the correct port (`8888`)**
 
 To enable debugging and hot-reloading of Go files:
 
-`docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
+`docker-compose -f docker/docker-compose.yml -f docker/docker-compose.yml up --build`
 
 If you are using VSCode, you can then attach a remote debugger on port `2345`. The same is also possible in Goland.
 You will then be able to use breakpoints to stop and inspect the application.
@@ -56,7 +56,7 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 ## Run Cypress tests for M1 chips
 
 `make down - in sirius repo`
-`docker-compose -f docker/docker-compose.ci.yml up app json-server --build`
+`docker compose -f docker/docker-compose.ci.yml up app json-server --build`
 `yarn cypress-ci`
 
 -------------------------------------------------------------------

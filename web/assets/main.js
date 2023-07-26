@@ -1,8 +1,8 @@
 import GOVUKFrontend from "govuk-frontend/govuk/all.js";
-import ManageTasks from "./javascript/manage-tasks";
 import ManageFilters from "./javascript/manage-filters";
 import ManageJumpMenus from "./javascript/manage-jump-menus";
 import "opg-sirius-header/sirius-header.js";
+import ManageReassign from "./javascript/manage-reassign";
 
 document.body.className = document.body.className
   ? document.body.className + " js-enabled"
@@ -20,9 +20,9 @@ jumpMenus.forEach(function (jumpMenu) {
   new ManageJumpMenus(jumpMenu);
 });
 
-const manageTasks = document.querySelectorAll('[data-module="manage-tasks"]');
-manageTasks.forEach(function (manageTask) {
-  new ManageTasks(manageTask);
+const manageReassign = document.querySelectorAll('[data-module="manage-reassign"]');
+manageReassign.forEach(function (manageReassign) {
+  new ManageReassign(manageReassign);
 });
 
 const manageFilters = document.querySelectorAll('[data-module="moj-manage-filters"]');
