@@ -80,7 +80,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 			assignTeam := r.FormValue("assignTeam")
 			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			newAssigneeId, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
 			if err != nil {
 				return err
 			}
@@ -89,7 +89,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			prioritySelected := r.FormValue("priority")
 
 			// Attempt to save
-			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeIdForTask, selectedTasks, prioritySelected)
+			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeId, selectedTasks, prioritySelected)
 			if err != nil {
 				return err
 			}

@@ -277,6 +277,12 @@ module.exports = function () {
         ],
         "caseOwnerTask":false,
         "isPriority":true
+      },
+      {
+        "id": 998,
+        "successful": [63],
+        "error": [],
+        "reAssigneeName": "LayTeam1 User4",
       }
     ],
     "assign-tasks-to-casemanager": {},

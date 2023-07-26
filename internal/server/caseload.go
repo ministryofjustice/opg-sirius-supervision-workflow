@@ -73,21 +73,19 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			}
 
 			assignTeam := r.FormValue("assignTeam")
-			//this is where it picks up the new user to assign task to
-			newAssigneeIdForTask, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			newAssigneeId, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
 			if err != nil {
 				return err
 			}
 
-			selectedTasks := r.Form["selected-tasks"]
+			selectedClients := r.Form["selected-clients"]
 
-			// Attempt to save
-			assigneeDisplayName, err := client.ReassignClientToCaseManager(ctx, newAssigneeIdForTask, selectedTasks)
+			assigneeDisplayName, err := client.ReassignClientToCaseManager(ctx, newAssigneeId, selectedClients)
 			if err != nil {
 				return err
 			}
-			fmt.Println(newAssigneeIdForTask)
-			app.SuccessMessage = successMessageForReassignClient(assignTeam, selectedTasks, assigneeDisplayName)
+
+			app.SuccessMessage = successMessageForReassignClient(selectedClients, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -161,18 +159,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 	}
 }
 
-func successMessageForReassignClient(assignTeam string, selectedTasks []string, assigneeDisplayName string) string {
-	//if assignTeam != "0" {
-	return fmt.Sprintf("You have reassigned %d clients(s) to %s", len(selectedTasks), assigneeDisplayName)
-	//}
-	//else if assignTeam != "0" && prioritySelected == "no" {
-	//	return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
-	//} else if assignTeam != "0" {
-	//	return fmt.Sprintf("You have reassigned %d clients(s) to %s", len(selectedTasks), assigneeDisplayName)
-	//} else if assignTeam == "0" && prioritySelected == "yes" {
-	//	return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
-	//} else if assignTeam == "0" && prioritySelected == "no" {
-	//	return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
-	//}
-	//return ""
+func successMessageForReassignClient(selectedTasks []string, assigneeDisplayName string) string {
+	return fmt.Sprintf("You have reassigned %d client(s) to %s", len(selectedTasks), assigneeDisplayName)
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
@@ -52,7 +51,7 @@ func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForCli
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		return "", errors.New("Only managers can set priority on tasks")
+		return "", errors.New("Only managers can reassign client cases")
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -75,6 +74,6 @@ func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForCli
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-	fmt.Println(u)
+
 	return u.ReAssigneeName, err
 }

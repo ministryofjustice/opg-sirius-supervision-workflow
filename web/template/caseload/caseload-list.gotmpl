@@ -1,7 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadPage*/ -}}
 {{ define "caseload-list" }}
-    <section data-module="manage-tasks" class="moj-manage-list">
-        {{ template "client-clients-edit-panel" . }}
+    <section data-module="manage-reassign" class="moj-manage-list">
+        {{ template "client-edit-panel" . }}
         <table id="caseload-list" class="govuk-table"  data-module="moj-sortable-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -29,8 +29,8 @@
                         <td class="govuk-table__cell">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .Id }}" id="select-task-{{ .Id }}" autocomplete="off" />
-                                    <label class="govuk-label govuk-checkboxes__label" for="select-task-{{ .Id }}">
+                                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-clients" value="{{ .Id }}" id="select-client-{{ .Id }}" autocomplete="off" />
+                                    <label class="govuk-label govuk-checkboxes__label" for="select-client-{{ .Id }}">
                                         <span class="govuk-visually-hidden">Select</span>
                                     </label>
                                 </div>

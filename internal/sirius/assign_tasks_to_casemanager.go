@@ -14,12 +14,12 @@ type ReassignTaskDetails struct {
 	IsPriority string   `json:"isPriority"`
 }
 
-func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeIdForTask int, taskIds []string, prioritySelected string) (string, error) {
+func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, taskIds []string, prioritySelected string) (string, error) {
 	var u model.Task
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
-		AssigneeId: newAssigneeIdForTask,
+		AssigneeId: newAssigneeId,
 		TaskIds:    taskIds,
 		IsPriority: prioritySelected,
 	})

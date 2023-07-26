@@ -42,7 +42,7 @@ func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.Ta
 	return m.taskListData, m.err
 }
 
-func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeIdForTask int, selectedTask []string, prioritySelected string) (string, error) {
+func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeId int, selectedTask []string, prioritySelected string) (string, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
