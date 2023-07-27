@@ -4,30 +4,33 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 )
 
-type ReassignTaskDetails struct {
+type ReassignClientDetails struct {
 	AssigneeId int      `json:"assigneeId"`
-	TaskIds    []string `json:"taskIds"`
-	IsPriority string   `json:"isPriority"`
+	ClientIds  []string `json:"clientIds"`
+	IsWorkflow bool     `json:"isWorkflow"`
 }
 
-func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, taskIds []string, prioritySelected string) (string, error) {
-	var u model.Task
+type ReassignResponse struct {
+	ReassignName string `json:"reassignName"`
+}
+
+func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForClient int, clientIds []string) (string, error) {
+	var u ReassignResponse
 	var body bytes.Buffer
 
-	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
-		AssigneeId: newAssigneeId,
-		TaskIds:    taskIds,
-		IsPriority: prioritySelected,
+	err := json.NewEncoder(&body).Encode(ReassignClientDetails{
+		AssigneeId: newAssigneeIdForClient,
+		ClientIds:  clientIds,
+		IsWorkflow: true,
 	})
 
 	if err != nil {
 		return "", err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/reassign-tasks", &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/clients/edit/reassign", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
@@ -48,7 +51,7 @@ func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, tas
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		return "", errors.New("Only managers can set priority on tasks")
+		return "", errors.New("Only managers can reassign client cases")
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -71,5 +74,6 @@ func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, tas
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-	return u.Assignee.Name, err
+
+	return u.ReassignName, err
 }

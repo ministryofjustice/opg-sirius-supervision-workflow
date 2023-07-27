@@ -31,6 +31,16 @@ func (m *mockCaseloadClient) GetClientList(ctx sirius.Context, params sirius.Cli
 	return m.clientList, m.err
 }
 
+func (m *mockCaseloadClient) ReassignClientToCaseManager(ctx sirius.Context, newAssigneeId int, selectedTask []string) (string, error) {
+	if m.count == nil {
+		m.count = make(map[string]int)
+	}
+	m.count["AssignTasksToCaseManager"] += 1
+	m.lastCtx = ctx
+
+	return "", m.err
+}
+
 func TestCaseload(t *testing.T) {
 	client := &mockCaseloadClient{}
 	template := &mockTemplate{}
@@ -123,7 +133,6 @@ func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 
 func TestCaseload_MethodNotAllowed(t *testing.T) {
 	methods := []string{
-		http.MethodPost,
 		http.MethodConnect,
 		http.MethodDelete,
 		http.MethodHead,
@@ -262,4 +271,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})
 	}
+}
+
+func TestSuccessMessageForReassignClient(t *testing.T) {
+	assert.Equal(t, "You have reassigned 1 client(s) to Lay1-User1", successMessageForReassignClient([]string{"1"}, "Lay1-User1"))
 }

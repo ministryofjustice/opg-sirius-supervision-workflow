@@ -1,4 +1,4 @@
-export default class ManageTasks {
+export default class ManageReassign {
   constructor(element) {
     this.data = {
       selectedTasks: 0,
@@ -8,11 +8,11 @@ export default class ManageTasks {
     this.allcheckBoxElements = element.querySelectorAll(
       ".js-mt-checkbox-select-all"
     );
-    this.manageTasksButton = element.querySelectorAll(".js-mt-edit-tasks-btn");
+    this.manageReassignButton = element.querySelectorAll(".js-mt-edit-btn");
     this.cancelEditTasksButton = element.querySelectorAll(".js-mt-cancel");
     this.assignTeamSelect = element.querySelectorAll(".js-assign-team-select");
     this.xsrfToken = element.querySelector(".js-xsrfToken");
-    this.selectedCountElement = element.querySelectorAll(".js-mt-task-count");
+    this.selectedCountElement = element.querySelectorAll(".js-mt-count");
     this.editPanelDiv = element.querySelectorAll(".js-mt-edit-panel");
     this.baseUrl = document
       .querySelector("[name=api-base-uri]")
@@ -33,7 +33,7 @@ export default class ManageTasks {
       element.addEventListener("click", this._updateAllSelectedState);
     });
 
-    this.manageTasksButton.forEach((element) => {
+    this.manageReassignButton.forEach((element) => {
       this._showEditTasksPanel = this._showEditTasksPanel.bind(this);
       element.addEventListener("click", this._showEditTasksPanel);
     });
@@ -58,7 +58,7 @@ export default class ManageTasks {
     this.selectedCountElement.forEach((element) => {
       element.innerText = this.data.selectedTasks.toString();
     });
-    this.manageTasksButton[0].classList.toggle(
+    this.manageReassignButton[0].classList.toggle(
       "hide",
       this.data.selectedTasks === 0
     );
@@ -125,7 +125,7 @@ export default class ManageTasks {
       })
       .then((data) => {
         let str = "<option value=''selected>Select a case manager</option>";
-        let sortedAlphbetically = data.members.sort(function (a, b) {
+        let sortedAlphabetically = data.members.sort(function (a, b) {
           if (a.name < b.name) {
             return -1;
           }
@@ -135,7 +135,7 @@ export default class ManageTasks {
           return 0;
         });
 
-        sortedAlphbetically.forEach((caseManager) => {
+        sortedAlphabetically.forEach((caseManager) => {
           if (caseManager.suspended) {
             return;
           }

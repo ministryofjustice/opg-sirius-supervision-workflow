@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -11,6 +12,7 @@ import (
 
 type CaseloadClient interface {
 	GetClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
+	ReassignClientToCaseManager(sirius.Context, int, []string) (string, error)
 }
 
 type CaseloadPage struct {
@@ -53,13 +55,37 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 
 func caseload(client CaseloadClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
-		if r.Method != http.MethodGet {
+		ctx := getContext(r)
+
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
 		if !app.SelectedTeam.IsLay() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+		}
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			assignTeam := r.FormValue("assignTeam")
+			newAssigneeId, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			if err != nil {
+				return err
+			}
+
+			selectedClients := r.Form["selected-clients"]
+
+			assigneeDisplayName, err := client.ReassignClientToCaseManager(ctx, newAssigneeId, selectedClients)
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage = successMessageForReassignClient(selectedClients, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -87,7 +113,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedStatuses = params["status"]
 		}
 
-		ctx := getContext(r)
 		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
@@ -132,4 +157,8 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
+}
+
+func successMessageForReassignClient(selectedTasks []string, assigneeDisplayName string) string {
+	return fmt.Sprintf("You have reassigned %d client(s) to %s", len(selectedTasks), assigneeDisplayName)
 }
