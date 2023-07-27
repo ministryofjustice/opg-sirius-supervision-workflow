@@ -1,7 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.ClientTasksPage*/ -}}
 {{ define "client-tasks-list" }}
 
-<section data-module="manage-tasks" class="moj-manage-list">
+<section data-module="manage-reassign" class="moj-manage-list">
 
   {{ template "client-tasks-edit-panel" . }}
 
@@ -96,11 +96,11 @@
         {{ $length := len .AppliedFilters }}
         {{ if eq $length 0 }}
           <tr class="govuk-table__row">
-              <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks</td>
+              <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no tasks</td>
           </tr>
         {{ else if ne $length 0 }}
           <tr class="govuk-table__row">
-          <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-tasks">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+          <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no tasks for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
           </tr>
         {{ end }}
       {{ end }}

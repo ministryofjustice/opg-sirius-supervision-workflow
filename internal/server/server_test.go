@@ -26,6 +26,10 @@ type mockApiClient struct {
 	TeamsForSelection  []model.Team
 }
 
+func (m mockApiClient) ReassignClientToCaseManager(context sirius.Context, i int, strings []string) (string, error) {
+	return "", nil
+}
+
 func (m mockApiClient) GetCurrentUserDetails(context sirius.Context) (model.Assignee, error) {
 	return m.CurrentUserDetails, m.error
 }
