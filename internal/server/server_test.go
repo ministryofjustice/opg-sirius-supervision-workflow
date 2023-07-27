@@ -27,7 +27,7 @@ type mockApiClient struct {
 }
 
 func (m mockApiClient) ReassignClientToCaseManager(context sirius.Context, i int, strings []string) (string, error) {
-	panic("implement me")
+	return "", nil
 }
 
 func (m mockApiClient) GetCurrentUserDetails(context sirius.Context) (model.Assignee, error) {

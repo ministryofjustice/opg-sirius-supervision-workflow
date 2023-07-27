@@ -13,12 +13,12 @@ type ReassignClientDetails struct {
 	IsWorkflow bool     `json:"isWorkflow"`
 }
 
-type ReAssigneeResponse struct {
-	ReAssigneeName string `json:"reAssigneeName"`
+type ReassignResponse struct {
+	ReassignName string `json:"reassignName"`
 }
 
 func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForClient int, clientIds []string) (string, error) {
-	var u ReAssigneeResponse
+	var u ReassignResponse
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(ReassignClientDetails{
@@ -75,5 +75,5 @@ func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForCli
 		return "", err
 	}
 
-	return u.ReAssigneeName, err
+	return u.ReassignName, err
 }
