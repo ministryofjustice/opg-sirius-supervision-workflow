@@ -14,7 +14,7 @@ func TestUpdateReassignClientToCaseManager(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
-	json := `{"successful":[63],"error":[],"reAssigneeName":"LayTeam1 User2"}`
+	json := `{"successful":[63],"error":[],"reassignName":"LayTeam1 User2"}`
 
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
