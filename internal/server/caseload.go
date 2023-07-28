@@ -19,6 +19,7 @@ type CaseloadPage struct {
 	ListPage
 	FilterByAssignee
 	FilterByStatus
+	WorkflowVars
 	ClientList sirius.ClientList
 }
 
