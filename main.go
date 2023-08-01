@@ -118,16 +118,6 @@ func main() {
 func createTemplates(envVars server.EnvironmentVars) map[string]*template.Template {
 	templates := map[string]*template.Template{}
 	templateFunctions := map[string]interface{}{
-		"showFinance": func(roles []string) bool {
-			for _, r1 := range []string{"Finance Reporting", "Corporate Finance", "Finance Manager"} {
-				for _, r2 := range roles {
-					if r1 == r2 {
-						return true
-					}
-				}
-			}
-			return false
-		},
 		"contains": func(xs []string, needle string) bool {
 			for _, x := range xs {
 				if x == needle {

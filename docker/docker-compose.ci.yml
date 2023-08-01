@@ -1,7 +1,7 @@
 version: "3.6"
 
 services:
-  app:
+  workflow:
     build:
       context: ..
       dockerfile: ./docker/sirius-workflow/Dockerfile
@@ -15,7 +15,7 @@ services:
   puppeteer:
     build: ./puppeteer
     depends_on:
-      - app
+      - workflow
       - json-server
     environment:
       - LHCI_BUILD_CONTEXT__CURRENT_HASH=$CIRCLE_SHA1
@@ -31,7 +31,7 @@ services:
       - ../cypress/screenshots:/root/cypress/screenshots:rw,delegated
       - ../cypress/logs:/root/cypress/logs:rw,delegated
     depends_on:
-      - app
+      - workflow
       - json-server
 
   json-server:

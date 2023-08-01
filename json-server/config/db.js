@@ -468,7 +468,8 @@ module.exports = function () {
       "phoneNumber": "12345678",
       "roles": [
         "Case Manager",
-        "Manager"
+        "Manager",
+        "Finance Reporting"
       ],
       "surname": "manager",
       "suspended": false,
