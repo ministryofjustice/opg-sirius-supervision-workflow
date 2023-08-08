@@ -19,6 +19,6 @@
       ]
   },
   "urls": [
-      "http://app:8888/"
+      "http://workflow:8888/"
   ]
 }
