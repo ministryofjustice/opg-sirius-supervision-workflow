@@ -9,9 +9,9 @@ import (
 )
 
 type ErrorVars struct {
-	App   WorkflowVars
 	Code  int
 	Error string
+	EnvironmentVars
 }
 
 type RedirectError string
@@ -43,11 +43,8 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 
-			var errVars ErrorVars
-
 			vars, err := NewWorkflowVars(client, r, envVars)
 			if err == nil {
-				errVars.App = *vars
 				err = next(*vars, w, r)
 			}
 
@@ -79,8 +76,11 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 				}
 
 				w.WriteHeader(code)
-				errVars.Code = code
-				errVars.Error = err.Error()
+				errVars := ErrorVars{
+					Code:            code,
+					Error:           err.Error(),
+					EnvironmentVars: envVars,
+				}
 				err = tmplError.Execute(w, errVars)
 
 				if err != nil {
