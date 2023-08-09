@@ -64,6 +64,12 @@ func TestTeam_IsPro(t *testing.T) {
 	assert.False(t, Team{Type: "NOT PRO"}.IsPro())
 }
 
+func TestTeam_IsPA(t *testing.T) {
+	assert.True(t, Team{Type: "PA"}.IsPA())
+	assert.False(t, Team{Type: "", Selector: "pa-team"}.IsPA())
+	assert.False(t, Team{Type: "NOT PA"}.IsPA())
+}
+
 func TestTeam_IsLayNewOrdersTeam(t *testing.T) {
 	assert.False(t, Team{Name: "Random team"}.IsLayNewOrdersTeam())
 	assert.True(t, Team{Name: "Lay Team - New Deputy Orders"}.IsLayNewOrdersTeam())

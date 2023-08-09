@@ -17,5 +17,6 @@ func TestNewEnvironmentVars(t *testing.T) {
 		Prefix:          "",
 		DefaultTeamId:   21,
 		ShowCaseload:    false,
+		ShowDeputyTasks: false,
 	}, vars)
 }
