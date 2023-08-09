@@ -11,3 +11,4 @@ services:
       SIRIUS_PUBLIC_URL: http://localhost:8080
       PREFIX: /supervision/workflow
       SHOW_CASELOAD: 1
+      SHOW_DEPUTY_TASKS: 1
