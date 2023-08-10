@@ -64,24 +64,57 @@ var mockTeamSelectionData = []model.Team{
 }
 
 func TestNewWorkflowVars(t *testing.T) {
-	client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: mockTeamSelectionData}
-	r, _ := http.NewRequest("GET", "/path", nil)
+	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
+	caseloadTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
+	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks"}
 
-	envVars := EnvironmentVars{DefaultTeamId: 19}
-	vars, err := NewWorkflowVars(client, r, envVars)
+	tests := []struct {
+		teamType string
+		wantTabs []Tab
+	}{
+		{
+			teamType: "LAY",
+			wantTabs: []Tab{clientTasksTab, caseloadTab},
+		},
+		{
+			teamType: "PRO",
+			wantTabs: []Tab{clientTasksTab, deputyTasksTab},
+		},
+		{
+			teamType: "PA",
+			wantTabs: []Tab{clientTasksTab, deputyTasksTab},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.teamType+" team", func(t *testing.T) {
+			team := mockTeamSelectionData[0]
+			team.Type = test.teamType
+			teams := []model.Team{team}
 
-	assert.Nil(t, err)
-	assert.Equal(t, WorkflowVars{
-		Path:            "/path",
-		XSRFToken:       "",
-		MyDetails:       mockUserDetailsData,
-		TeamSelection:   mockTeamSelectionData,
-		SelectedTeam:    mockTeamSelectionData[0],
-		SuccessMessage:  "",
-		Errors:          nil,
-		Tabs:            vars.Tabs,
-		EnvironmentVars: envVars,
-	}, *vars)
+			client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: teams}
+			r, _ := http.NewRequest("GET", "/path", nil)
+
+			envVars := EnvironmentVars{
+				DefaultTeamId:   19,
+				ShowCaseload:    true,
+				ShowDeputyTasks: true,
+			}
+			vars, err := NewWorkflowVars(client, r, envVars)
+
+			assert.Nil(t, err)
+			assert.Equal(t, WorkflowVars{
+				Path:            "/path",
+				XSRFToken:       "",
+				MyDetails:       mockUserDetailsData,
+				TeamSelection:   teams,
+				SelectedTeam:    team,
+				SuccessMessage:  "",
+				Errors:          nil,
+				Tabs:            vars.Tabs,
+				EnvironmentVars: envVars,
+			}, *vars)
+		})
+	}
 }
 
 func TestGetLoggedInTeamId(t *testing.T) {
