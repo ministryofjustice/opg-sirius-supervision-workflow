@@ -17,7 +17,6 @@ type WorkflowVars struct {
 	SelectedTeam    model.Team
 	Tabs            []Tab
 	SuccessMessage  string
-	Error           string
 	Errors          sirius.ValidationErrors
 	EnvironmentVars EnvironmentVars
 }

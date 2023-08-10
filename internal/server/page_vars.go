@@ -9,6 +9,7 @@ import (
 
 type ListPage struct {
 	App            WorkflowVars
+	Error          string
 	AppliedFilters []string
 	Pagination     paginate.Pagination
 	PerPage        int
