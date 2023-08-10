@@ -36,6 +36,10 @@ func New(logger *zap.SugaredLogger, client ApiClient, templates map[string]*temp
 		wrap(
 			caseload(client, templates["caseload.gotmpl"])))
 
+	mux.Handle("/deputy-tasks",
+		wrap(
+			deputyTasks(client, templates["deputy-tasks.gotmpl"])))
+
 	mux.Handle("/health-check", healthCheck())
 
 	static := http.FileServer(http.Dir(envVars.WebDir + "/static"))
