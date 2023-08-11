@@ -17,7 +17,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 
@@ -119,9 +118,6 @@ func main() {
 func createTemplates(envVars server.EnvironmentVars) map[string]*template.Template {
 	templates := map[string]*template.Template{}
 	templateFunctions := map[string]interface{}{
-		"join": func(sep string, items []string) string {
-			return strings.Join(items, sep)
-		},
 		"contains": func(xs []string, needle string) bool {
 			for _, x := range xs {
 				if x == needle {

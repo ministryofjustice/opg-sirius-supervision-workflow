@@ -2,6 +2,7 @@ package model
 
 import (
 	"strconv"
+	"strings"
 )
 
 type Assignee struct {
@@ -26,4 +27,8 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 		}
 	}
 	return false
+}
+
+func (m Assignee) GetRoles() string {
+	return strings.Join(m.Roles, ",")
 }
