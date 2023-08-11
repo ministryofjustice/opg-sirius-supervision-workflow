@@ -568,6 +568,15 @@ module.exports = function () {
           }
         ],
         "total": 1
+      },
+      {
+        "id": 27,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [],
+        "total": 0
       }
     ],
     "tasks-view-25": [
