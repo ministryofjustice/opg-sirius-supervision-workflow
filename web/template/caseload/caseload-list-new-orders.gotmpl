@@ -46,9 +46,7 @@
                                 {{ $order.Date }}
                             </td>
                             <td class="govuk-table__cell">
-                            {{ if ne $order.IntroductoryTargetDate $.NullDate}}
-                                {{ $order.IntroductoryTargetDate }}
-                            {{ end }}
+                                {{ $order.GetIntroductoryTargetDate }}
                             </td>
                             <td class="govuk-table__cell">
                                 {{ $order.HowDeputyAppointed.Label }}
