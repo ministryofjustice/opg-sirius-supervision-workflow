@@ -8,6 +8,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type CaseloadClient interface {
@@ -20,6 +21,7 @@ type CaseloadPage struct {
 	FilterByAssignee
 	FilterByStatus
 	ClientList sirius.ClientList
+	NullDate   time.Time
 }
 
 func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
@@ -154,6 +156,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 		vars.AppliedFilters = vars.GetAppliedFilters()
+		vars.NullDate, _ = time.Parse("2006-01-02", "")
 
 		return tmpl.Execute(w, vars)
 	}
