@@ -49,5 +49,12 @@ func (c Client) GetMostRecentlyMadeActiveOrder() Order {
 			mostRecent = order
 		}
 	}
+	if mostRecent.MadeActiveDate == NewDate("01/01/0001") {
+		for _, order := range c.Orders {
+			if mostRecent.Date.Before(order.Date) {
+				mostRecent = order
+			}
+		}
+	}
 	return mostRecent
 }
