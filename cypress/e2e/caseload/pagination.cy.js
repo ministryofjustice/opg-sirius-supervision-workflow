@@ -16,9 +16,9 @@ describe("Pagination", () => {
         cy.visit("/caseload?team=21");
         assertPaginationHasLoaded();
     })
-    //
-    // it("is visible on the New Deputy Orders list page", () => {
-    //     cy.visit("/caseload?team=28");
-    //     assertPaginationHasLoaded();
-    // })
+
+    it("is visible on the New Deputy Orders list page", () => {
+        cy.visit("/caseload?team=28");
+        assertPaginationHasLoaded();
+    })
 });

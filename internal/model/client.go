@@ -42,19 +42,41 @@ func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
 }
 
-func (c Client) GetMostRecentlyMadeActiveOrder() Order {
-	var mostRecent Order
+func (c Client) GetActiveOrders() []Order {
+	var activeOrders []Order
 	for _, order := range c.Orders {
+		if order.Status.Handle == "ACTIVE" {
+			activeOrders = append(activeOrders, order)
+		}
+	}
+	return activeOrders
+}
+
+func (c Client) ReturnMostRecentOrder(orders []Order) Order {
+	var mostRecent Order
+	for _, order := range orders {
 		if mostRecent.MadeActiveDate.Before(order.MadeActiveDate) {
 			mostRecent = order
 		}
 	}
 	if mostRecent.MadeActiveDate == NewDate("01/01/0001") {
-		for _, order := range c.Orders {
+		for _, order := range orders {
+			//if no active orders just grab most recent
 			if mostRecent.Date.Before(order.Date) {
 				mostRecent = order
 			}
 		}
 	}
 	return mostRecent
+}
+
+func (c Client) GetMostRecentlyMadeActiveOrder() Order {
+	var mostRecentOrder Order
+	activeOrders := c.GetActiveOrders()
+	if len(activeOrders) > 0 {
+		mostRecentOrder = c.ReturnMostRecentOrder(activeOrders)
+	} else {
+		mostRecentOrder = c.ReturnMostRecentOrder(c.Orders)
+	}
+	return mostRecentOrder
 }
