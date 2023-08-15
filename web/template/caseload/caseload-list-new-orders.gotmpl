@@ -46,7 +46,9 @@
                                 {{ $order.Date }}
                             </td>
                             <td class="govuk-table__cell">
+                            {{ if ne $order.IntroductoryTargetDate "01/01/0001"}}
                                 {{ $order.IntroductoryTargetDate }}
+                            {{ end }}
                             </td>
                             <td class="govuk-table__cell">
                                 {{ $order.HowDeputyAppointed.Label }}
