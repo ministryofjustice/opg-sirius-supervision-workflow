@@ -21,8 +21,20 @@ func (d Date) Before(d2 Date) bool {
 	return d.Time.Before(d2.Time)
 }
 
+func (d Date) After(d2 Date) bool {
+	return d.Time.After(d2.Time)
+}
+
 func (d Date) String() string {
+	if d.IsNull() {
+		return ""
+	}
 	return d.Time.Format("02/01/2006")
+}
+
+func (d Date) IsNull() bool {
+	nullDate := NewDate("01/01/0001")
+	return d.Time.Equal(nullDate.Time)
 }
 
 func (d *Date) UnmarshalJSON(b []byte) error {
