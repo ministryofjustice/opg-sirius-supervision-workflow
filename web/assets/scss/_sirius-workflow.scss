@@ -14,4 +14,11 @@
     display: flex;
     justify-content: space-between;
   }
+
+  th.govuk-table__select,
+  td.govuk-table__select
+  {
+      max-width: 15px;
+      width: 15px;
+  }
 }
