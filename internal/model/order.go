@@ -10,11 +10,3 @@ type Order struct {
 	HowDeputyAppointed     RefData      `json:"howDeputyAppointed"`
 	IntroductoryTargetDate Date         `json:"introductoryTargetDate"`
 }
-
-func (o Order) GetIntroductoryTargetDate() string {
-	nullDate := NewDate("01/01/0001")
-	if nullDate.Before(o.IntroductoryTargetDate) {
-		return o.IntroductoryTargetDate.String()
-	}
-	return ""
-}
