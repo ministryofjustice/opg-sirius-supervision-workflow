@@ -22,7 +22,11 @@ func (d Date) Before(d2 Date) bool {
 }
 
 func (d Date) String() string {
-	return d.Time.Format("02/01/2006")
+	nullDate := NewDate("01/01/0001")
+	if nullDate.Before(d) {
+		return d.Time.Format("02/01/2006")
+	}
+	return ""
 }
 
 func (d *Date) UnmarshalJSON(b []byte) error {
