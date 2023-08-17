@@ -33,7 +33,7 @@
       {{ if ne .TaskList.TotalTasks 0 }}
         {{ range .TaskList.Tasks }}
           <tr class="govuk-table__row {{ if .IsPriority }} priority {{ end }}">
-            <td class="govuk-table__cell">
+            <td class="govuk-table__cell govuk-table__select">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">
                   <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-tasks" value="{{ .Id }}" id="select-task-{{ .Id }}" autocomplete="off" />
