@@ -53,30 +53,27 @@ func (c Client) GetActiveOrders() []Order {
 }
 
 func (c Client) GetMostRecentOrder(orders []Order) Order {
-	var mostRecent Order
+	var mostRecentlyMadeActiveOrder Order
+	var mostRecentlyMadeOrder Order
+
 	for _, order := range orders {
-		if mostRecent.MadeActiveDate.Before(order.MadeActiveDate) {
-			mostRecent = order
+		if order.MadeActiveDate.After(mostRecentlyMadeActiveOrder.MadeActiveDate) {
+			mostRecentlyMadeActiveOrder = order
+		}
+		if order.Date.After(mostRecentlyMadeOrder.Date) {
+			mostRecentlyMadeOrder = order
 		}
 	}
-	if mostRecent.MadeActiveDate == NewDate("01/01/0001") {
-		for _, order := range orders {
-			//if no active orders just grab most recent
-			if mostRecent.Date.Before(order.Date) {
-				mostRecent = order
-			}
-		}
+	if mostRecentlyMadeActiveOrder.MadeActiveDate.IsNull() {
+		return mostRecentlyMadeOrder
 	}
-	return mostRecent
+	return mostRecentlyMadeActiveOrder
 }
 
 func (c Client) GetMostRecentlyMadeActiveOrder() Order {
-	var mostRecentOrder Order
 	activeOrders := c.GetActiveOrders()
 	if len(activeOrders) > 0 {
-		mostRecentOrder = c.GetMostRecentOrder(activeOrders)
-	} else {
-		mostRecentOrder = c.GetMostRecentOrder(c.Orders)
+		return c.GetMostRecentOrder(activeOrders)
 	}
-	return mostRecentOrder
+	return c.GetMostRecentOrder(c.Orders)
 }
