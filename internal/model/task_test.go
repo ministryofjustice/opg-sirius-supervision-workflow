@@ -110,6 +110,11 @@ func TestTask_GetClient(t *testing.T) {
 	}
 }
 
+func TestTask_GetDeputy(t *testing.T) {
+	task := Task{Deputies: []Deputy{{DisplayName: "Johnny"}}}
+	assert.Equal(t, Deputy{DisplayName: "Johnny"}, task.GetDeputy())
+}
+
 func TestTask_GetDueDateStatus(t *testing.T) {
 	tests := []struct {
 		name      string
