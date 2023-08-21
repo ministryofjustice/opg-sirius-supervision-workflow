@@ -3,14 +3,12 @@
 ### Major dependencies
 
 - [Go](https://golang.org/) (>= 1.19)
-- [Pact](https://github.com/pact-foundation/pact-ruby-standalone) (>= 1.88.3)
 - [docker-compose](https://docs.docker.com/compose/install/) (>= 1.27.4)
 
 #### Installing dependencies locally: 
 
 - `yarn install`
 - `go mod download`
-- 
 ---
 
 ## Local development
@@ -72,6 +70,3 @@ test server files: `yarn test-server`
 
 Run all Go tests:  `go test ./...`
 
--------------------------------------------------------------------
-## Noted issues:
-- Can't run locally if the pact stub is still running
