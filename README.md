@@ -3,14 +3,12 @@
 ### Major dependencies
 
 - [Go](https://golang.org/) (>= 1.19)
-- [Pact](https://github.com/pact-foundation/pact-ruby-standalone) (>= 1.88.3)
 - [docker-compose](https://docs.docker.com/compose/install/) (>= 1.27.4)
 
 #### Installing dependencies locally: 
 
 - `yarn install`
 - `go mod download`
-- 
 ---
 
 ## Local development
@@ -58,6 +56,10 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 `make down - in sirius repo`
 `docker compose -f docker/docker-compose.ci.yml up app json-server --build`
 `yarn cypress-ci`
+<br><br>
+NB: I can't get the above tests to run on my machine, i've found the following work though:<br>
+`docker compose -f docker/docker-compose.ci.yml up -d --build`<br>
+`yarn cypress-ci-2`
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests
@@ -68,6 +70,3 @@ test server files: `yarn test-server`
 
 Run all Go tests:  `go test ./...`
 
--------------------------------------------------------------------
-## Noted issues:
-- Can't run locally if the pact stub is still running

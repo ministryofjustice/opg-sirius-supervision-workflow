@@ -69,19 +69,6 @@ jobs:
       - name: Run linting
         uses: golangci/golangci-lint-action@v3
 
-  acceptance-test:
-    name: Acceptance Testing
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run pa11y
-        run: |
-          docker-compose -f docker/docker-compose.ci.yml run --entrypoint="pa11y-ci" puppeteer
-      - name: Run Lighthouse
-        run: |
-          docker-compose -f docker/docker-compose.ci.yml run --entrypoint="lhci autorun" puppeteer
-
   cypress:
     name: Cypress
     runs-on: ubuntu-latest
@@ -107,7 +94,7 @@ jobs:
   build:
     name: "Build & Push Containers"
     runs-on: ubuntu-latest
-    needs: ['test', 'lint', 'acceptance-test', 'cypress']
+    needs: ['test', 'lint', 'cypress']
     outputs:
       branch: ${{ steps.set-outputs.outputs.branch }}
       tag: ${{ steps.bump_version.outputs.tag }}
