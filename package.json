@@ -12,6 +12,7 @@
     "test-server": "cd internal/server && go test",
     "cypress": "cypress open",
     "cypress-ci": "cypress  open -c baseUrl=http://localhost:8080",
+    "cypress-ci-2": "export CYPRESS_BASE_URL=http://localhost:8080; cypress open",
     "prettier": "prettier --write ./web",
     "lint": "eslint ./web/assets/javascript"
   },
