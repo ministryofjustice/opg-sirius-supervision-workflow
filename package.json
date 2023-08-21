@@ -21,7 +21,7 @@
     "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.16.0"
   },
   "devDependencies": {
-    "cypress": "^10.11.0",
+    "cypress": "^12.0.0",
     "cypress-failed-log": "^2.9.2",
     "esbuild": "^0.18.0",
     "eslint": "^8.30.0",
