@@ -8,6 +8,7 @@ type Task struct {
 	Assignee      Assignee `json:"assignee"`
 	Orders        []Order  `json:"caseItems"`
 	Clients       []Client `json:"clients"`
+	Deputies      []Deputy `json:"deputies"`
 	DueDate       string   `json:"dueDate"`
 	Id            int      `json:"id"`
 	Type          string   `json:"type"`
@@ -62,6 +63,10 @@ func (t Task) GetClient() Client {
 		return t.Orders[0].Client
 	}
 	return t.Clients[0]
+}
+
+func (t Task) GetDeputy() Deputy {
+	return t.Deputies[0]
 }
 
 func (t Task) GetName(taskTypes []TaskType) string {

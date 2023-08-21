@@ -12,7 +12,7 @@ import (
 )
 
 type ClientTasksClient interface {
-	GetTaskTypes(sirius.Context, []string) ([]model.TaskType, error)
+	GetTaskTypes(sirius.Context, sirius.TaskTypesParams) ([]model.TaskType, error)
 	GetTaskList(sirius.Context, sirius.TaskListParams) (sirius.TaskList, error)
 	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
 }
@@ -43,7 +43,7 @@ func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *time.Time) []string {
 	var appliedFilters []string
 	for _, u := range ctp.TaskTypes {
-		if u.IsSelected {
+		if u.IsSelected(ctp.SelectedTaskTypes) {
 			appliedFilters = append(appliedFilters, u.Incomplete)
 		}
 	}
@@ -121,7 +121,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			selectedTaskTypes = params["task-type"]
 		}
 
-		taskTypes, err := client.GetTaskTypes(ctx, selectedTaskTypes)
+		taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
 		if err != nil {
 			return err
 		}
@@ -135,6 +135,10 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
+
+		var vars ClientTasksPage
+
+		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
 
 		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 			Team:              app.SelectedTeam,
@@ -150,8 +154,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			return err
 		}
 
-		vars := ClientTasksPage{TaskList: taskList}
-
+		vars.TaskList = taskList
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.SelectedAssignees = userSelectedAssignees
@@ -181,8 +184,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.TaskTypes = calculateTaskCounts(taskTypes, taskList)
 
 		return tmpl.Execute(w, vars)
 	}
@@ -203,15 +206,6 @@ func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
 	return assigneeIdForTask, nil
 }
 
-func setTaskCount(handle string, metaData sirius.TaskList) int {
-	for _, q := range metaData.MetaData.TaskTypeCount {
-		if handle == q.Type {
-			return q.Count
-		}
-	}
-	return 0
-}
-
 func getSelectedDateFilter(value string) (*time.Time, error) {
 	if value == "" {
 		return nil, nil
@@ -221,30 +215,6 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 		return nil, err
 	}
 	return &parsed, nil
-}
-
-func calculateTaskCounts(taskTypes []model.TaskType, tasks sirius.TaskList) []model.TaskType {
-	var taskTypeList []model.TaskType
-	ecmTasksCount := 0
-
-	for _, t := range taskTypes {
-		tasksWithCounts := model.TaskType{
-			Handle:     t.Handle,
-			Incomplete: t.Incomplete,
-			Category:   t.Category,
-			Complete:   t.Complete,
-			User:       t.User,
-			IsSelected: t.IsSelected,
-			TaskCount:  setTaskCount(t.Handle, tasks),
-		}
-		if t.EcmTask {
-			ecmTasksCount += tasksWithCounts.TaskCount
-		}
-		taskTypeList = append(taskTypeList, tasksWithCounts)
-	}
-
-	taskTypeList[0].TaskCount = ecmTasksCount
-	return taskTypeList
 }
 
 func successMessageForReassignAndPrioritiseTasks(assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {

@@ -6,6 +6,8 @@ type Deputy struct {
 	Id          int     `json:"id"`
 	DisplayName string  `json:"displayName"`
 	Type        RefData `json:"deputyType"`
+	Number      int     `json:"deputyNumber"`
+	Address     Address `json:"deputyAddress"`
 }
 
 func (d Deputy) GetURL() string {
@@ -14,4 +16,8 @@ func (d Deputy) GetURL() string {
 		url = "/supervision/#/deputy-hub/%d"
 	}
 	return fmt.Sprintf(url, d.Id)
+}
+
+func (d Deputy) IsPro() bool {
+	return d.Type.Handle == "PRO"
 }

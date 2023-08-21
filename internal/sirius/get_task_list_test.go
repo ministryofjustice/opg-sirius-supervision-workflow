@@ -182,7 +182,7 @@ func TestTaskListParams_CreateFilter(t *testing.T) {
 			want:   "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18",
 		},
 		{
-			params: TaskListParams{SelectedTaskTypes: []string{"ECM_TASKS"}, TaskTypes: SetUpTaskTypes()},
+			params: TaskListParams{SelectedTaskTypes: []string{TaskTypeEcmHandle}, TaskTypes: SetUpTaskTypes()},
 			want:   "status:Not+started,type:CWGN,type:RRRR",
 		},
 	}
@@ -201,7 +201,6 @@ func SetUpTaskTypes() []model.TaskType {
 			Complete:   "Casework - General",
 			User:       true,
 			Category:   "supervision",
-			IsSelected: true,
 			EcmTask:    true,
 		},
 		{
@@ -210,7 +209,6 @@ func SetUpTaskTypes() []model.TaskType {
 			Complete:   "Order - Allocate to team",
 			User:       true,
 			Category:   "supervision",
-			IsSelected: false,
 			EcmTask:    false,
 		},
 		{
@@ -219,8 +217,66 @@ func SetUpTaskTypes() []model.TaskType {
 			Complete:   "Visit - Review red report",
 			User:       true,
 			Category:   "supervision",
-			IsSelected: false,
 			EcmTask:    true,
 		},
 	}
+}
+
+func TestTaskList_CalculateTaskTypeCounts(t *testing.T) {
+	taskTypes := []model.TaskType{
+		{
+			Handle: TaskTypeEcmHandle,
+		},
+		{
+			Handle:  "CDFC",
+			EcmTask: false,
+		},
+		{
+			Handle:  "NONO",
+			EcmTask: false,
+		},
+		{
+			Handle:  "ECM_1",
+			EcmTask: true,
+		},
+		{
+			Handle:  "ECM_2",
+			EcmTask: true,
+		},
+	}
+	tasks := TaskList{
+		MetaData: MetaData{
+			TaskTypeCount: []TypeAndCount{
+				{Type: "CDFC", Count: 25},
+				{Type: "ECM_1", Count: 33},
+				{Type: "ECM_2", Count: 44},
+			},
+		},
+	}
+
+	expected := []model.TaskType{
+		{
+			Handle:    TaskTypeEcmHandle,
+			TaskCount: 77,
+		}, {
+			Handle:    "CDFC",
+			TaskCount: 25,
+		},
+		{
+			Handle:    "NONO",
+			TaskCount: 0,
+		},
+		{
+			Handle:    "ECM_1",
+			EcmTask:   true,
+			TaskCount: 33,
+		},
+		{
+			Handle:    "ECM_2",
+			EcmTask:   true,
+			TaskCount: 44,
+		},
+	}
+
+	assert.Equal(t, expected, tasks.CalculateTaskTypeCounts(taskTypes))
 }
