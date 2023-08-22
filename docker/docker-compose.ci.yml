@@ -13,16 +13,6 @@ services:
       SHOW_CASELOAD: 1
       SHOW_DEPUTY_TASKS: 1
 
-  puppeteer:
-    build: ./puppeteer
-    depends_on:
-      - workflow
-      - json-server
-    environment:
-      - LHCI_BUILD_CONTEXT__CURRENT_HASH=$CIRCLE_SHA1
-      - LHCI_BUILD_CONTEXT__GITHUB_REPO_SLUG=ministryofjustice/opg-sirius-workflow
-      - LHCI_GITHUB_APP_TOKEN
-
   cypress:
     build:
       context: ..
