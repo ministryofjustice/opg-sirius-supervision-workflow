@@ -599,6 +599,71 @@ module.exports = function () {
         "total": 0
       }
     ],
+    "deputy-tasks": [
+      {
+        "id": 24,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [],
+        "total": 0
+      },
+      {
+        "id": 27,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [
+          {
+            "assignee": {
+              "displayName": "PROTeam1 User1",
+              "id": 96
+            },
+            "deputies": [
+              {
+                "id": 13,
+                "deputyNumber": 123456,
+                "displayName": "Mr Fee-paying Deputy",
+                "deputyType": {
+                  "handle": "PRO",
+                  "label": "Professional"
+                },
+                "deputyAddress": {
+                  "town": "Derby"
+                }
+              }
+            ],
+            "dueDate": "01/02/2021",
+            "name": "PDR follow up"
+          },
+          {
+            "assignee": {
+              "displayName": "PROTeam1 User1",
+              "id": 96
+            },
+            "deputies": [
+              {
+                "id": 14,
+                "deputyNumber": 654321,
+                "displayName": "Mr PA Deputy",
+                "deputyType": {
+                  "handle": "PA",
+                  "label": "Public authority"
+                },
+                "deputyAddress": {
+                  "town": "Derby"
+                }
+              }
+            ],
+            "dueDate": "01/02/2021",
+            "name": "Quarterly catch up call"
+          }
+        ],
+        "total": 2
+      },
+    ],
     "tasks-view-25": [
       {
         "id": 1,

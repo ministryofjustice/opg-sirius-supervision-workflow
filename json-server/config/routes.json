@@ -11,6 +11,7 @@
     "/assignees/teams/tasks\\?teamIds[]=13&filter=status\\:Not+started&limit=50&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-50/:pageNumber",
     "/assignees/teams/tasks\\?teamIds[]=13&filter=status\\:Not+started&limit=100&page=:pageNumber&sort=dueDate\\:asc*": "/tasks-view-100/:pageNumber",
 
+    "/assignees/teams/tasks\\?teamIds[]=:teamId&*task_type_category:deputy": "/deputy-tasks/:teamId",
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*": "/tasks/:teamId",
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager"
 }
