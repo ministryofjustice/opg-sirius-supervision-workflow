@@ -22,7 +22,7 @@ type mockClientTasksClient struct {
 	taskListData sirius.TaskList
 }
 
-func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, taskTypeSelected []string) ([]model.TaskType, error) {
+func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
@@ -52,17 +52,17 @@ func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, new
 	return "", m.err
 }
 
-var mockTaskTypeData = []model.TaskType{
+var testTaskType = []model.TaskType{
 	{
 		Handle:     "CDFC",
 		Incomplete: "Correspondence - Review failed draft",
-		Category:   "supervision",
+		Category:   sirius.TaskTypeCategorySupervision,
 		Complete:   "Correspondence - Reviewed draft failure",
 		User:       true,
 	},
 }
 
-var mockTaskListData = sirius.TaskList{
+var testTaskList = sirius.TaskList{
 	Tasks: []model.Task{
 		{
 			Assignee: model.Assignee{
@@ -89,7 +89,8 @@ var mockTaskListData = sirius.TaskList{
 
 func TestClientTasks(t *testing.T) {
 	client := &mockClientTasksClient{
-		taskTypeData: mockTaskTypeData,
+		taskTypeData: testTaskType,
+		taskListData: testTaskList,
 	}
 	template := &mockTemplate{}
 
@@ -109,7 +110,8 @@ func TestClientTasks(t *testing.T) {
 	var want ClientTasksPage
 	want.App = app
 	want.PerPage = 25
-	want.TaskTypes = mockTaskTypeData
+	want.TaskTypes = testTaskType
+	want.TaskList = testTaskList
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
@@ -160,7 +162,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 		},
 	}
 
-	client := &mockClientTasksClient{taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
+	client := &mockClientTasksClient{taskTypeData: testTaskType, taskListData: mockTaskListData}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
@@ -208,7 +210,7 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 }
 
 func TestClientTasks_PostIsPermitted(t *testing.T) {
-	client := &mockClientTasksClient{taskTypeData: mockTaskTypeData, taskListData: mockTaskListData}
+	client := &mockClientTasksClient{taskTypeData: testTaskType, taskListData: testTaskList}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
@@ -232,30 +234,6 @@ func TestGetAssigneeIdForTask(t *testing.T) {
 	expectedAssigneeId, expectedError = getAssigneeIdForTask("", "")
 	assert.Equal(t, expectedAssigneeId, 0)
 	assert.Nil(t, expectedError)
-}
-
-func TestSetTaskCount_WithMatchingTaskType(t *testing.T) {
-	var mockTaskListData = sirius.TaskList{
-		MetaData: sirius.MetaData{
-			TaskTypeCount: []sirius.TypeAndCount{
-				{Type: "ORAL", Count: 25},
-			},
-		},
-	}
-
-	assert.Equal(t, 25, setTaskCount("ORAL", mockTaskListData))
-}
-
-func TestSetTaskCount_NoMatchingTaskTypeWillReturnZero(t *testing.T) {
-	var mockTaskListData = sirius.TaskList{
-		MetaData: sirius.MetaData{
-			TaskTypeCount: []sirius.TypeAndCount{
-				{Type: "ORAL", Count: 25},
-			},
-		},
-	}
-
-	assert.Equal(t, 0, setTaskCount("FREA", mockTaskListData))
 }
 
 func TestGetSelectedDateFilter(t *testing.T) {
@@ -305,63 +283,6 @@ func TestGetSelectedDateFilter(t *testing.T) {
 	}
 }
 
-func TestCalculateTaskCounts(t *testing.T) {
-	taskTypes := []model.TaskType{
-		{
-			Handle: "ECM_TASKS",
-		},
-		{
-			Handle:  "CDFC",
-			EcmTask: false,
-		},
-		{
-			Handle:  "NONO",
-			EcmTask: false,
-		},
-		{
-			Handle:  "ECM_1",
-			EcmTask: true,
-		},
-		{
-			Handle:  "ECM_2",
-			EcmTask: true,
-		},
-	}
-	tasks := sirius.TaskList{
-		MetaData: sirius.MetaData{
-			TaskTypeCount: []sirius.TypeAndCount{
-				{Type: "CDFC", Count: 25},
-				{Type: "ECM_1", Count: 33},
-				{Type: "ECM_2", Count: 44},
-			},
-		},
-	}
-
-	expected := []model.TaskType{
-		{
-			Handle:    "ECM_TASKS",
-			TaskCount: 77,
-		}, {
-			Handle:    "CDFC",
-			TaskCount: 25,
-		},
-		{
-			Handle:    "NONO",
-			TaskCount: 0,
-		},
-		{
-			Handle:    "ECM_1",
-			TaskCount: 33,
-		},
-		{
-			Handle:    "ECM_2",
-			TaskCount: 44,
-		},
-	}
-
-	assert.Equal(t, expected, calculateTaskCounts(taskTypes, tasks))
-}
-
 func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
 	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiseTasks("2", "true", []string{"1"}, "assignee name"))
 	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiseTasks("2", "false", []string{"1"}, "assignee name"))
@@ -372,23 +293,11 @@ func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
 
 func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	wantFilters := []urlbuilder.Filter{
-		{
-			Name: "task-type",
-		},
-		{
-			Name:                  "assignee",
-			ClearBetweenTeamViews: true,
-		},
-		{
-			Name:                  "unassigned",
-			ClearBetweenTeamViews: true,
-		},
-		{
-			Name: "due-date-from",
-		},
-		{
-			Name: "due-date-to",
-		},
+		{Name: "task-type"},
+		{Name: "assignee", ClearBetweenTeamViews: true},
+		{Name: "unassigned", ClearBetweenTeamViews: true},
+		{Name: "due-date-from"},
+		{Name: "due-date-to"},
 	}
 
 	tests := []struct {
@@ -479,6 +388,7 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 
 	tests := []struct {
 		taskTypes          []model.TaskType
+		selectedTaskTypes  []string
 		selectedAssignees  []string
 		selectedUnassigned string
 		dueDateFrom        *time.Time
@@ -490,11 +400,12 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 		},
 		{
 			taskTypes: []model.TaskType{
-				{Incomplete: "TaskType1", IsSelected: true},
-				{Incomplete: "TaskType2", IsSelected: false},
-				{Incomplete: "TaskType3", IsSelected: true},
+				{Incomplete: "TaskType1", Handle: "TT1"},
+				{Incomplete: "TaskType2", Handle: "TT2"},
+				{Incomplete: "TaskType3", Handle: "TT3"},
 			},
-			want: []string{"TaskType1", "TaskType3"},
+			selectedTaskTypes: []string{"TT1", "TT3"},
+			want:              []string{"TaskType1", "TaskType3"},
 		},
 		{
 			selectedAssignees: []string{"2"},
@@ -513,7 +424,8 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			want:      []string{"Due date to 18/12/2022 (inclusive)"},
 		},
 		{
-			taskTypes:          []model.TaskType{{Incomplete: "TaskType1", IsSelected: true}},
+			taskTypes:          []model.TaskType{{Incomplete: "TaskType1", Handle: "TT1"}},
+			selectedTaskTypes:  []string{"TT1"},
 			selectedAssignees:  []string{"1"},
 			selectedUnassigned: "lay-team",
 			dueDateFrom:        &dueDateFrom,
@@ -539,6 +451,7 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 				},
 			}
 			page.TaskTypes = test.taskTypes
+			page.SelectedTaskTypes = test.selectedTaskTypes
 			page.SelectedAssignees = test.selectedAssignees
 			page.SelectedUnassigned = test.selectedUnassigned
 
