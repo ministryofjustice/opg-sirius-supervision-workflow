@@ -53,11 +53,6 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 -------------------------------------------------------------------
 ## Run Cypress tests for M1 chips
 
-`make down - in sirius repo`
-`docker compose -f docker/docker-compose.ci.yml up app json-server --build`
-`yarn cypress-ci`
-<br><br>
-NB: I can't get the above tests to run on my machine, i've found the following work though:<br>
 `docker compose -f docker/docker-compose.ci.yml up -d --build`<br>
 `yarn cypress-ci-2`
 
