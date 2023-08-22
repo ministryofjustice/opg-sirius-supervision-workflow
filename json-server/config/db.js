@@ -457,6 +457,26 @@ module.exports = function () {
         }
       }
     },
+    "tasktypes-deputy": {
+      "task_types": {
+        "PFU": {
+          "category": "deputy",
+          "complete": "PDR follow up",
+          "handle": "PFU",
+          "incomplete": "PDR follow up",
+          "user": true,
+          "proDeputyTask": true
+        },
+        "QCUC": {
+          "category": "deputy",
+          "complete": "Quarterly catch up call",
+          "handle": "QCUC",
+          "incomplete": "Quarterly catch up call",
+          "user": true,
+          "paDeputyTask": true
+        }
+      }
+    },
     "users-current": {
       "deleted": false,
       "displayName": "case manager",
