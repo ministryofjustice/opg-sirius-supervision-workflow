@@ -783,7 +783,10 @@ module.exports = function () {
                 },
               }
             ],
-            "supervisionLevel": "Minimal",
+            "supervisionLevel": {
+              "handle": "MINIMAL",
+              "label": "Minimal"
+            }
           },
         ]
       },
@@ -827,7 +830,10 @@ module.exports = function () {
                 "introductoryTargetDate": "21/02/2020"
               }
             ],
-            "supervisionLevel": "Minimal",
+            "supervisionLevel": {
+              "handle": "MINIMAL",
+              "label": "Minimal"
+            }
           },
         ]
       }
