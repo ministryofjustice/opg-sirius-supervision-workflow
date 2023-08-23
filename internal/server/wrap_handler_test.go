@@ -222,7 +222,7 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	logger := zap.New(observedZapCore).Sugar()
 
 	errorTemplate := &mockTemplate{}
-	envVars := EnvironmentVars{Prefix: "workflow-prefix/"}
+	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
 	next := mockNext{Err: RedirectError("redirect-to-here")}
 	httpHandler := nextHandlerFunc(next.GetHandler())
@@ -242,5 +242,5 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	assert.Equal(t, 302, w.Result().StatusCode)
 	location, err := w.Result().Location()
 	assert.Nil(t, err)
-	assert.Equal(t, "workflow-prefix/redirect-to-here", location.String())
+	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
 }
