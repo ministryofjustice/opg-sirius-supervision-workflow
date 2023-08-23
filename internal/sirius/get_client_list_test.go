@@ -51,7 +51,10 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 					}
                 }
             ],
-            "supervisionLevel": "Minimal"
+            "supervisionLevel": {
+				"handle": "MINIMAL",
+				"label": "Minimal"
+			}
         }
     ]
 }
@@ -93,7 +96,10 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 						},
 					},
 				},
-				SupervisionLevel: "Minimal",
+				SupervisionLevel: model.RefData{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
+				},
 			},
 		},
 		Pages: model.PageInformation{
