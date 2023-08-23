@@ -62,17 +62,18 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 				}
 
 				if redirect, ok := err.(RedirectError); ok {
-					http.Redirect(w, r, envVars.Prefix+redirect.To(), http.StatusFound)
+					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}
 
 				logger.Errorw("Error handler", err)
 
 				code := http.StatusInternalServerError
-				if status, ok := err.(StatusError); ok {
-					if status.Code() == http.StatusForbidden || status.Code() == http.StatusNotFound {
-						code = status.Code()
-					}
+				if serverStatusError, ok := err.(StatusError); ok {
+					code = serverStatusError.Code()
+				}
+				if siriusStatusError, ok := err.(sirius.StatusError); ok {
+					code = siriusStatusError.Code
 				}
 
 				w.WriteHeader(code)
