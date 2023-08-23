@@ -16,6 +16,7 @@ tmp/
 docker/tmp
 web/static
 test-results
+.cache
 
 # Cypress cli run artifact folders
 cypress/logs
