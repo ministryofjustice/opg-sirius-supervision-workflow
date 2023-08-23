@@ -9,7 +9,7 @@
     },
     "author": "",
     "dependencies": {
-        "concurrently": "^7.4.0",
+        "concurrently": "^8.0.0",
         "json-server": "0.17.3",
         "onchange": "^7.1.0"
     }
