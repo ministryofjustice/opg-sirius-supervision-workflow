@@ -5,7 +5,7 @@
   <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Task type</h3>
   <ul class="moj-filter-tags">
       {{ range .TaskTypes }}
-          {{ if .IsSelected }}
+          {{ if .IsSelected $.SelectedTaskTypes }}
             <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "task-type" .Handle }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Incomplete }}</a></li>
           {{ end }}
       {{ end }}
