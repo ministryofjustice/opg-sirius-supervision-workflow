@@ -31,6 +31,7 @@ type TaskListParams struct {
 	Page              int
 	PerPage           int
 	TaskTypes         []model.TaskType
+	TaskTypeCategory  string
 	SelectedTaskTypes []string
 	Assignees         []string
 	DueDateFrom       *time.Time
@@ -92,7 +93,7 @@ func (p TaskListParams) CreateFilter() string {
 	filter := "status:Not+started,"
 
 	for _, t := range p.SelectedTaskTypes {
-		if t == "ECM_TASKS" {
+		if t == TaskTypeEcmHandle {
 			p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)
 			break
 		}
@@ -109,6 +110,9 @@ func (p TaskListParams) CreateFilter() string {
 	if p.DueDateTo != nil {
 		filter += "due_date_to:" + p.DueDateTo.Format("2006-01-02") + ","
 	}
+	if p.TaskTypeCategory != "" {
+		filter += "task_type_category:" + p.TaskTypeCategory
+	}
 	return strings.TrimRight(filter, ",")
 }
 
@@ -120,4 +124,33 @@ func getEcmTaskTypesString(taskTypes []model.TaskType) []string {
 		}
 	}
 	return ecmTasks
+}
+
+func (tl TaskList) CalculateTaskTypeCounts(taskTypes []model.TaskType) []model.TaskType {
+	ecmTasksCount := 0
+	getTaskTypeCount := func(taskType string) int {
+		for _, q := range tl.MetaData.TaskTypeCount {
+			if taskType == q.Type {
+				return q.Count
+			}
+		}
+		return 0
+	}
+
+	for i, t := range taskTypes {
+		taskTypes[i].TaskCount = getTaskTypeCount(t.Handle)
+		if t.EcmTask {
+			ecmTasksCount += taskTypes[i].TaskCount
+		}
+	}
+
+	if ecmTasksCount > 0 {
+		for i, t := range taskTypes {
+			if t.Handle == TaskTypeEcmHandle {
+				taskTypes[i].TaskCount = ecmTasksCount
+			}
+		}
+	}
+
+	return taskTypes
 }

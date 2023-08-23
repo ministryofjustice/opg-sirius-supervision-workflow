@@ -65,3 +65,16 @@ func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 	}
 	return false
 }
+
+func (ftp FilterByTaskType) ValidateSelectedTaskTypes(selectedTaskTypes []string, taskTypes []model.TaskType) []string {
+	var validSelectedTaskTypes []string
+	for _, selectedTaskType := range selectedTaskTypes {
+		for _, taskType := range taskTypes {
+			if selectedTaskType == taskType.Handle {
+				validSelectedTaskTypes = append(validSelectedTaskTypes, selectedTaskType)
+				break
+			}
+		}
+	}
+	return validSelectedTaskTypes
+}
