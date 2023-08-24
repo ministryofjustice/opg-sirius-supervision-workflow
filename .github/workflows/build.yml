@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: debug path
+        run: |
+          pwd
+          ls -la
       - name: Run Tests
         run: make unit-test
 
