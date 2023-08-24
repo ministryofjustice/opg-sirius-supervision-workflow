@@ -2,6 +2,7 @@ version: "3.6"
 
 services:
   workflow:
+    image: sirius/sirius-workflow:latest
     build:
       context: ..
       dockerfile: ./docker/sirius-workflow/Dockerfile
@@ -12,6 +13,20 @@ services:
       SIRIUS_PUBLIC_URL: http://localhost:8080
       SHOW_CASELOAD: 1
       SHOW_DEPUTY_TASKS: 1
+
+  json-server:
+    build:
+      context: ..
+      dockerfile: ./docker/json-server/Dockerfile
+    ports:
+      - '3000:3000'
+
+  test-runner:
+    build:
+      context: ./test-runner/
+    working_dir: /go/src/app
+    volumes:
+      - ../:/go/src/app
 
   cypress:
     build:
@@ -24,10 +39,11 @@ services:
     depends_on:
       - workflow
       - json-server
-
-  json-server:
-    build:
-      context: ..
-      dockerfile: ./docker/json-server/Dockerfile
-    ports:
-      - '3000:3000'
+  
+  go-lint:
+    image: golangci/golangci-lint:v1.53.3
+    working_dir: /go/src/app
+    volumes:
+      - ../:/go/src/app
+      - ../.cache/golangci-lint/v1.53.3:/root/.cache
+    command: golangci-lint run -v --timeout 5m
