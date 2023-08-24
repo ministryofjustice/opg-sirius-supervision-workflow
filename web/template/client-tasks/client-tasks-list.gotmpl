@@ -3,7 +3,7 @@
 
 <section data-module="manage-reassign" class="moj-manage-list">
 
-  {{ template "client-tasks-edit-panel" . }}
+  {{ template "tasks-edit-panel" . }}
 
   <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
     <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
@@ -32,7 +32,7 @@
     <tbody class="govuk-table__body">
       {{ if ne .TaskList.TotalTasks 0 }}
         {{ range .TaskList.Tasks }}
-          <tr class="govuk-table__row {{ if .IsPriority }} priority {{ end }}">
+          <tr class="govuk-table__row{{ if .IsPriority }} priority{{ end }}">
             <td class="govuk-table__cell govuk-table__select">
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item">

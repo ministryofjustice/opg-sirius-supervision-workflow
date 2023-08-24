@@ -26,7 +26,7 @@ type mockApiClient struct {
 	TeamsForSelection  []model.Team
 }
 
-func (m mockApiClient) ReassignClientToCaseManager(context sirius.Context, i int, strings []string) (string, error) {
+func (m mockApiClient) ReassignClients(context sirius.Context, params sirius.ReassignClientsParams) (string, error) {
 	return "", nil
 }
 
@@ -46,7 +46,7 @@ func (m mockApiClient) GetTaskList(context sirius.Context, params sirius.TaskLis
 	panic("implement me")
 }
 
-func (m mockApiClient) AssignTasksToCaseManager(context sirius.Context, i int, strings []string, s string) (string, error) {
+func (m mockApiClient) ReassignTasks(context sirius.Context, params sirius.ReassignTasksParams) (string, error) {
 	panic("implement me")
 }
 

@@ -8,16 +8,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"testing"
 )
 
 type mockDeputyTasksClient struct {
-	count        map[string]int
-	lastCtx      sirius.Context
-	err          error
-	taskTypeData []model.TaskType
-	taskListData sirius.TaskList
+	count                   map[string]int
+	lastCtx                 sirius.Context
+	lastReassignTasksParams sirius.ReassignTasksParams
+	err                     error
+	taskTypeData            []model.TaskType
+	taskListData            sirius.TaskList
 }
 
 func (m *mockDeputyTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
@@ -38,6 +40,17 @@ func (m *mockDeputyTasksClient) GetTaskList(ctx sirius.Context, params sirius.Ta
 	m.lastCtx = ctx
 
 	return m.taskListData, m.err
+}
+
+func (m *mockDeputyTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
+	if m.count == nil {
+		m.count = make(map[string]int)
+	}
+	m.count["ReassignTasks"] += 1
+	m.lastReassignTasksParams = params
+	m.lastCtx = ctx
+
+	return "reassign success", m.err
 }
 
 var testDeputyTaskType = []model.TaskType{
@@ -173,6 +186,37 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	assert.Equal(t, 1, client.count["GetTaskList"])
 }
 
+func TestDeputyTasks_ReassignTasks(t *testing.T) {
+	client := &mockDeputyTasksClient{taskTypeData: testDeputyTaskType, taskListData: testDeputyTaskList}
+	template := &mockTemplate{}
+
+	expectedParams := sirius.ReassignTasksParams{
+		AssignTeam: "10",
+		AssignCM:   "20",
+		TaskIds:    []string{"1", "2"},
+		IsPriority: "true",
+	}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "", nil)
+	r.PostForm = url.Values{
+		"assignTeam":     {expectedParams.AssignTeam},
+		"assignCM":       {expectedParams.AssignCM},
+		"selected-tasks": expectedParams.TaskIds,
+		"priority":       {expectedParams.IsPriority},
+	}
+
+	app := WorkflowVars{
+		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
+	}
+	err := deputyTasks(client, template)(app, w, r)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, client.count["ReassignTasks"])
+	assert.Equal(t, expectedParams, client.lastReassignTasksParams)
+	assert.Equal(t, "reassign success", template.lastVars.(DeputyTasksPage).App.SuccessMessage)
+}
+
 func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
 	methods := []string{
 		http.MethodConnect,
@@ -181,7 +225,6 @@ func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
 		http.MethodOptions,
 		http.MethodPatch,
 		http.MethodPut,
-		http.MethodPost,
 		http.MethodTrace,
 	}
 	for _, method := range methods {

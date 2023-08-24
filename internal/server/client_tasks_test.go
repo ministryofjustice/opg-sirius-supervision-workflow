@@ -9,17 +9,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"testing"
 	"time"
 )
 
 type mockClientTasksClient struct {
-	count        map[string]int
-	lastCtx      sirius.Context
-	err          error
-	taskTypeData []model.TaskType
-	taskListData sirius.TaskList
+	count                   map[string]int
+	lastCtx                 sirius.Context
+	lastReassignTasksParams sirius.ReassignTasksParams
+	err                     error
+	taskTypeData            []model.TaskType
+	taskListData            sirius.TaskList
 }
 
 func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
@@ -42,14 +44,15 @@ func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.Ta
 	return m.taskListData, m.err
 }
 
-func (m *mockClientTasksClient) AssignTasksToCaseManager(ctx sirius.Context, newAssigneeId int, selectedTask []string, prioritySelected string) (string, error) {
+func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
-	m.count["AssignTasksToCaseManager"] += 1
+	m.count["ReassignTasks"] += 1
+	m.lastReassignTasksParams = params
 	m.lastCtx = ctx
 
-	return "", m.err
+	return "reassign success", m.err
 }
 
 var testTaskType = []model.TaskType{
@@ -209,31 +212,33 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 	assert.Equal(0, template.count)
 }
 
-func TestClientTasks_PostIsPermitted(t *testing.T) {
+func TestClientTasks_ReassignTasks(t *testing.T) {
 	client := &mockClientTasksClient{taskTypeData: testTaskType, taskListData: testTaskList}
 	template := &mockTemplate{}
 
+	expectedParams := sirius.ReassignTasksParams{
+		AssignTeam: "10",
+		AssignCM:   "20",
+		TaskIds:    []string{"1", "2"},
+		IsPriority: "true",
+	}
+
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("POST", "", nil)
+	r.PostForm = url.Values{
+		"assignTeam":     {expectedParams.AssignTeam},
+		"assignCM":       {expectedParams.AssignCM},
+		"selected-tasks": expectedParams.TaskIds,
+		"priority":       {expectedParams.IsPriority},
+	}
 
 	app := WorkflowVars{}
 	err := clientTasks(client, template)(app, w, r)
 
 	assert.Nil(t, err)
-}
-
-func TestGetAssigneeIdForTask(t *testing.T) {
-	expectedAssigneeId, expectedError := getAssigneeIdForTask("13", "67")
-	assert.Equal(t, expectedAssigneeId, 67)
-	assert.Nil(t, expectedError)
-
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("13", "")
-	assert.Equal(t, expectedAssigneeId, 13)
-	assert.Nil(t, expectedError)
-
-	expectedAssigneeId, expectedError = getAssigneeIdForTask("", "")
-	assert.Equal(t, expectedAssigneeId, 0)
-	assert.Nil(t, expectedError)
+	assert.Equal(t, 1, client.count["ReassignTasks"])
+	assert.Equal(t, expectedParams, client.lastReassignTasksParams)
+	assert.Equal(t, "reassign success", template.lastVars.(ClientTasksPage).App.SuccessMessage)
 }
 
 func TestGetSelectedDateFilter(t *testing.T) {
@@ -281,14 +286,6 @@ func TestGetSelectedDateFilter(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestSuccessMessageForReassignAndPrioritiseTasks(t *testing.T) {
-	assert.Equal(t, "You have assigned 1 task(s) to assignee name as a priority", successMessageForReassignAndPrioritiseTasks("2", "true", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have assigned 1 task(s) to assignee name and removed priority", successMessageForReassignAndPrioritiseTasks("2", "false", []string{"1"}, "assignee name"))
-	assert.Equal(t, "1 task(s) have been reassigned", successMessageForReassignAndPrioritiseTasks("2", "", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have assigned 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "true", []string{"1"}, "assignee name"))
-	assert.Equal(t, "You have removed 1 task(s) as a priority", successMessageForReassignAndPrioritiseTasks("0", "false", []string{"1"}, "assignee name"))
 }
 
 func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
