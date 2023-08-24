@@ -19,8 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: debug path
+      - name: debug
         run: |
+          docker -v
           pwd
           ls -la
       - name: Run Tests
