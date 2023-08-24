@@ -38,7 +38,7 @@ func (m mockApiClient) GetTeamsForSelection(context sirius.Context) ([]model.Tea
 	return m.TeamsForSelection, m.error
 }
 
-func (m mockApiClient) GetTaskTypes(context sirius.Context, strings []string) ([]model.TaskType, error) {
+func (m mockApiClient) GetTaskTypes(context sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
 	panic("implement me")
 }
 

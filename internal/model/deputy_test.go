@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strconv"
 	"testing"
 )
 
@@ -31,6 +32,31 @@ func TestDeputy_GetURL(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			deputy := Deputy{Id: 13, Type: RefData{Handle: test.deputyType}}
 			assert.Equal(t, test.expectedUrl, deputy.GetURL())
+		})
+	}
+}
+
+func TestDeputy_IsPro(t *testing.T) {
+	tests := []struct {
+		deputy    Deputy
+		wantIsPro bool
+	}{
+		{
+			deputy:    Deputy{},
+			wantIsPro: false,
+		},
+		{
+			deputy:    Deputy{Type: RefData{Handle: "PRO"}},
+			wantIsPro: true,
+		},
+		{
+			deputy:    Deputy{Type: RefData{Handle: "PA"}},
+			wantIsPro: false,
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i), func(t *testing.T) {
+			assert.Equal(t, test.wantIsPro, test.deputy.IsPro())
 		})
 	}
 }
