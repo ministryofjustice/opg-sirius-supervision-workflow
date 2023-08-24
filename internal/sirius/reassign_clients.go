@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
-type ReassignClientDetails struct {
+type ReassignClientsParams struct {
+	AssignTeam string
+	AssignCM   string
 	AssigneeId int      `json:"assigneeId"`
 	ClientIds  []string `json:"clientIds"`
 	IsWorkflow bool     `json:"isWorkflow"`
@@ -17,15 +21,23 @@ type ReassignResponse struct {
 	ReassignName string `json:"reassignName"`
 }
 
-func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForClient int, clientIds []string) (string, error) {
+func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (string, error) {
 	var u ReassignResponse
 	var body bytes.Buffer
+	var err error
 
-	err := json.NewEncoder(&body).Encode(ReassignClientDetails{
-		AssigneeId: newAssigneeIdForClient,
-		ClientIds:  clientIds,
-		IsWorkflow: true,
-	})
+	assignee := params.AssignTeam
+	if params.AssignCM != "" {
+		assignee = params.AssignCM
+	}
+
+	params.AssigneeId, err = strconv.Atoi(assignee)
+	if err != nil {
+		return "", err
+	}
+
+	params.IsWorkflow = true
+	err = json.NewEncoder(&body).Encode(params)
 
 	if err != nil {
 		return "", err
@@ -75,5 +87,5 @@ func (c *ApiClient) ReassignClientToCaseManager(ctx Context, newAssigneeIdForCli
 		return "", err
 	}
 
-	return u.ReassignName, err
+	return fmt.Sprintf("You have reassigned %d client(s) to %s", len(params.ClientIds), u.ReassignName), nil
 }

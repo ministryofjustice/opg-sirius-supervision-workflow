@@ -4,25 +4,36 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
+	"strconv"
 )
 
-type ReassignTaskDetails struct {
+type ReassignTasksParams struct {
+	AssignTeam string
+	AssignCM   string
 	AssigneeId int      `json:"assigneeId"`
 	TaskIds    []string `json:"taskIds"`
 	IsPriority string   `json:"isPriority"`
 }
 
-func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, taskIds []string, prioritySelected string) (string, error) {
+func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {
 	var u model.Task
 	var body bytes.Buffer
+	var err error
 
-	err := json.NewEncoder(&body).Encode(ReassignTaskDetails{
-		AssigneeId: newAssigneeId,
-		TaskIds:    taskIds,
-		IsPriority: prioritySelected,
-	})
+	assignee := params.AssignTeam
+	if params.AssignCM != "" {
+		assignee = params.AssignCM
+	}
+
+	params.AssigneeId, err = strconv.Atoi(assignee)
+	if err != nil {
+		return "", err
+	}
+
+	err = json.NewEncoder(&body).Encode(params)
 
 	if err != nil {
 		return "", err
@@ -71,5 +82,23 @@ func (c *ApiClient) AssignTasksToCaseManager(ctx Context, newAssigneeId int, tas
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-	return u.Assignee.Name, err
+
+	if params.AssignTeam != "0" {
+		switch params.IsPriority {
+		case "true":
+			return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(params.TaskIds), u.Assignee.Name), nil
+		case "false":
+			return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(params.TaskIds), u.Assignee.Name), nil
+		default:
+			return fmt.Sprintf("You have assigned %d task(s) to %s", len(params.TaskIds), u.Assignee.Name), nil
+		}
+	}
+	switch params.IsPriority {
+	case "true":
+		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(params.TaskIds)), nil
+	case "false":
+		return fmt.Sprintf("You have removed %d task(s) as a priority", len(params.TaskIds)), nil
+	}
+
+	return "", nil
 }

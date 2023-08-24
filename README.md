@@ -48,7 +48,7 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
 `docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build`
 
-`yarn && yarn cypress`   
+`yarn && yarn cypress`
 
 -------------------------------------------------------------------
 ## Run Cypress tests for M1 chips

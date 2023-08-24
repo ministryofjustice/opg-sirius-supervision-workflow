@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -12,7 +11,7 @@ import (
 
 type CaseloadClient interface {
 	GetClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
-	ReassignClientToCaseManager(sirius.Context, int, []string) (string, error)
+	ReassignClients(sirius.Context, sirius.ReassignClientsParams) (string, error)
 }
 
 type CaseloadPage struct {
@@ -72,20 +71,14 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 				return err
 			}
 
-			assignTeam := r.FormValue("assignTeam")
-			newAssigneeId, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			app.SuccessMessage, err = client.ReassignClients(ctx, sirius.ReassignClientsParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				ClientIds:  r.Form["selected-clients"],
+			})
 			if err != nil {
 				return err
 			}
-
-			selectedClients := r.Form["selected-clients"]
-
-			assigneeDisplayName, err := client.ReassignClientToCaseManager(ctx, newAssigneeId, selectedClients)
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage = successMessageForReassignClient(selectedClients, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -157,8 +150,4 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
-}
-
-func successMessageForReassignClient(selectedTasks []string, assigneeDisplayName string) string {
-	return fmt.Sprintf("You have reassigned %d client(s) to %s", len(selectedTasks), assigneeDisplayName)
 }

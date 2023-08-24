@@ -2,6 +2,8 @@
 {{ define "deputy-tasks-list" }}
   <section data-module="manage-reassign" class="moj-manage-list">
 
+    {{ template "tasks-edit-panel" . }}
+
     <table id="workflow-tasks" class="govuk-table"  data-module="moj-sortable-table">
       <!--<caption class="govuk-table__caption govuk-!-margin-bottom-5 govuk-!-margin-top-5">All open tasks</caption>-->
       <thead class="govuk-table__head">
@@ -25,7 +27,7 @@
       <tbody class="govuk-table__body">
       {{ if ne .TaskList.TotalTasks 0 }}
           {{ range .TaskList.Tasks }}
-            <tr class="govuk-table__row">
+            <tr class="govuk-table__row{{ if .IsPriority }} priority{{ end }}">
               <td class="govuk-table__cell govuk-table__select">
                 <div class="govuk-checkboxes govuk-checkboxes--small">
                   <div class="govuk-checkboxes__item">
@@ -38,6 +40,9 @@
               </td>
               <td class="govuk-table__cell">
                 <label class="govuk-label" for="api-tasktype">{{ .GetName $.TaskTypes }}</label>
+                  {{ if .IsPriority }}
+                    <span class="priority secondary">Priority</span>
+                  {{ end }}
               </td>
               <td class="govuk-table__cell">
                 <a href="{{ sirius .GetDeputy.GetURL }}/tasks" class="govuk-link">
