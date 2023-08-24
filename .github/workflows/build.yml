@@ -24,6 +24,7 @@ jobs:
           docker -v
           pwd
           ls -la
+          chmod -Rf 0755 ./docker
       - name: Run Tests
         run: make unit-test
 
