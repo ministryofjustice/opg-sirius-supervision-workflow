@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -14,7 +13,7 @@ import (
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, sirius.TaskTypesParams) ([]model.TaskType, error)
 	GetTaskList(sirius.Context, sirius.TaskListParams) (sirius.TaskList, error)
-	AssignTasksToCaseManager(sirius.Context, int, []string, string) (string, error)
+	ReassignTasks(sirius.Context, sirius.ReassignTasksParams) (string, error)
 }
 
 type ClientTasksPage struct {
@@ -78,23 +77,15 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				return err
 			}
 
-			assignTeam := r.FormValue("assignTeam")
-			//this is where it picks up the new user to assign task to
-			newAssigneeId, err := getAssigneeIdForTask(assignTeam, r.FormValue("assignCM"))
+			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				TaskIds:    r.Form["selected-tasks"],
+				IsPriority: r.FormValue("priority"),
+			})
 			if err != nil {
 				return err
 			}
-
-			selectedTasks := r.Form["selected-tasks"]
-			prioritySelected := r.FormValue("priority")
-
-			// Attempt to save
-			assigneeDisplayName, err := client.AssignTasksToCaseManager(ctx, newAssigneeId, selectedTasks, prioritySelected)
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage = successMessageForReassignAndPrioritiseTasks(assignTeam, prioritySelected, selectedTasks, assigneeDisplayName)
 		}
 
 		params := r.URL.Query()
@@ -191,21 +182,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 	}
 }
 
-func getAssigneeIdForTask(teamId, assigneeId string) (int, error) {
-	var assigneeIdForTask int
-	var err error
-
-	if assigneeId != "" {
-		assigneeIdForTask, err = strconv.Atoi(assigneeId)
-	} else if teamId != "" {
-		assigneeIdForTask, err = strconv.Atoi(teamId)
-	}
-	if err != nil {
-		return 0, err
-	}
-	return assigneeIdForTask, nil
-}
-
 func getSelectedDateFilter(value string) (*time.Time, error) {
 	if value == "" {
 		return nil, nil
@@ -215,19 +191,4 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 		return nil, err
 	}
 	return &parsed, nil
-}
-
-func successMessageForReassignAndPrioritiseTasks(assignTeam string, prioritySelected string, selectedTasks []string, assigneeDisplayName string) string {
-	if assignTeam != "0" && prioritySelected == "true" {
-		return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(selectedTasks), assigneeDisplayName)
-	} else if assignTeam != "0" && prioritySelected == "false" {
-		return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(selectedTasks), assigneeDisplayName)
-	} else if assignTeam != "0" {
-		return fmt.Sprintf("%d task(s) have been reassigned", len(selectedTasks))
-	} else if assignTeam == "0" && prioritySelected == "true" {
-		return fmt.Sprintf("You have assigned %d task(s) as a priority", len(selectedTasks))
-	} else if assignTeam == "0" && prioritySelected == "false" {
-		return fmt.Sprintf("You have removed %d task(s) as a priority", len(selectedTasks))
-	}
-	return ""
 }

@@ -50,11 +50,12 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 	}
 
 	endpoint := fmt.Sprintf(
-		"/api/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=dueDate:asc",
+		"/api/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=%s",
 		strings.Join(teamIds, "&"),
 		params.CreateFilter(),
 		params.PerPage,
 		params.Page,
+		"ispriority:desc,duedate:asc,id:asc",
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
