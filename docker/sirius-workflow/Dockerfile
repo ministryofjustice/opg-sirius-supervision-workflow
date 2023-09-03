@@ -1,4 +1,4 @@
-FROM golang:1.20.5-alpine as base
+FROM golang:1.21.0-alpine@sha256:445f34008a77b0b98bf1821bf7ef5e37bb63cc42d22ee7c21cc17041070d134f as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0
