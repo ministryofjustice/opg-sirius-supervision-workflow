@@ -49,9 +49,8 @@ func TestCaseload(t *testing.T) {
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY", Selector: "1"},
-		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "1"},
 	}
 	err := caseload(client, template)(app, w, r)
 
@@ -121,9 +120,8 @@ func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "PRO", Selector: "19"},
 	}
 	err := caseload(client, template)(app, w, r)
 
