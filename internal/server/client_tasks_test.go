@@ -101,9 +101,8 @@ func TestClientTasks(t *testing.T) {
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY", Selector: "test-team"},
-		EnvironmentVars: EnvironmentVars{ShowCaseload: true},
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "test-team"},
 	}
 	err := clientTasks(client, template)(app, w, r)
 
