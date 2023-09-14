@@ -60,7 +60,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		if !app.SelectedTeam.IsLay() {
+		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}

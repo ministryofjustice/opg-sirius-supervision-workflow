@@ -26,6 +26,19 @@ describe("Caseload visibility", () => {
         cy.get("@tab2").should("not.have.attr", "href")
     })
 
+    it("Caseload tab is visible for Health & Welfare teams", () => {
+        cy.visit("/client-tasks?team=29");
+
+        cy.get(".moj-sub-navigation__item:nth-child(1) a:contains('Client tasks')").as("tab1")
+        cy.get(".moj-sub-navigation__item:nth-child(2) a:contains('Caseload')").as("tab2")
+
+        cy.get("@tab2").should("not.have.attr", "aria-current")
+        cy.get("@tab2").should("have.attr", "href", "caseload?team=29")
+        cy.get("@tab2").click()
+
+        cy.url().should('contain', '/caseload?team=29')
+    })
+
     it("Caseload tab is not visible for non-Lay teams", () => {
         cy.visit("/client-tasks?team=13");
 

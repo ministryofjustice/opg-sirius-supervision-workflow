@@ -7,34 +7,67 @@ import (
 )
 
 func TestClient_GetStatus(t *testing.T) {
+	status := func(s string) RefData { return RefData{Label: s} }
+
 	tests := []struct {
-		orderStatuses []string
-		wantStatus    string
+		orders     []Order
+		orderType  string
+		wantStatus string
 	}{
 		{
-			orderStatuses: []string{"Closed", "Open", "Duplicate", "Active", "Closed", "Open", "Duplicate"},
-			wantStatus:    "Active",
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Active",
 		},
 		{
-			orderStatuses: []string{"Open", "Duplicate", "Closed", "Open", "Duplicate"},
-			wantStatus:    "Open",
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			orderType:  "hw",
+			wantStatus: "Open",
 		},
 		{
-			orderStatuses: []string{"Duplicate", "Closed", "Duplicate"},
-			wantStatus:    "Closed",
+			orders: []Order{
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Open",
 		},
 		{
-			orderStatuses: []string{"Duplicate"},
-			wantStatus:    "Duplicate",
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Closed",
+		},
+		{
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Duplicate",
 		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			var client Client
-			for _, status := range test.orderStatuses {
-				client.Orders = append(client.Orders, Order{Status: RefData{Label: status}})
-			}
-			assert.Equal(t, test.wantStatus, client.GetStatus())
+			client := Client{Orders: test.orders}
+			assert.Equal(t, test.wantStatus, client.GetStatus(test.orderType))
 		})
 	}
 }
@@ -59,9 +92,10 @@ func TestClient_GetURL(t *testing.T) {
 
 func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {
 	tests := []struct {
-		name   string
-		orders []Order
-		want   Order
+		name      string
+		orders    []Order
+		orderType string
+		want      Order
 	}{
 		{
 			name: "It prioritises orders with made active date over date",
@@ -108,6 +142,32 @@ func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {
 			},
 		},
 		{
+			name: "It filters by order type if supplied",
+			orders: []Order{
+				{
+					MadeActiveDate: NewDate("01/05/2020"),
+					Date:           NewDate("01/08/2020"),
+					Status:         RefData{Handle: "CLOSED", Label: "Closed"},
+				},
+				{
+					MadeActiveDate: NewDate("01/01/2019"),
+					Status:         RefData{Handle: "ACTIVE", Label: "Active"},
+					Type:           "hw",
+				},
+				{
+					MadeActiveDate: NewDate("01/02/2020"),
+					Date:           NewDate("01/02/2020"),
+					Status:         RefData{Handle: "ACTIVE", Label: "Active"},
+				},
+			},
+			orderType: "hw",
+			want: Order{
+				MadeActiveDate: NewDate("01/01/2019"),
+				Status:         RefData{Handle: "ACTIVE", Label: "Active"},
+				Type:           "hw",
+			},
+		},
+		{
 			name: "It prioritises active orders with made active date over closed orders with a made active date",
 			orders: []Order{
 				{
@@ -140,15 +200,16 @@ func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {
 		client := Client{}
 		client.Orders = test.orders
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, client.GetMostRecentlyMadeActiveOrder())
+			assert.Equal(t, test.want, client.GetMostRecentlyMadeActiveOrder(test.orderType))
 		})
 	}
 }
 
 func TestClient_GetActiveOrders(t *testing.T) {
 	tests := []struct {
-		orders []Order
-		want   []Order
+		orders    []Order
+		orderType string
+		want      []Order
 	}{
 		{
 			orders: []Order{
@@ -195,6 +256,31 @@ func TestClient_GetActiveOrders(t *testing.T) {
 				{
 					Id:     2,
 					Status: RefData{Handle: "ACTIVE", Label: "Active"},
+				},
+			},
+		},
+		{
+			orders: []Order{
+				{
+					Id:     1,
+					Status: RefData{Handle: "ACTIVE", Label: "Active"},
+				},
+				{
+					Id:     2,
+					Status: RefData{Handle: "ACTIVE", Label: "Active"},
+					Type:   "hw",
+				},
+				{
+					Id:     3,
+					Status: RefData{Handle: "DUPLICATE", Label: "Duplicate"},
+				},
+			},
+			orderType: "hw",
+			want: []Order{
+				{
+					Id:     2,
+					Status: RefData{Handle: "ACTIVE", Label: "Active"},
+					Type:   "hw",
 				},
 			},
 		},
@@ -213,19 +299,19 @@ func TestClient_GetActiveOrders(t *testing.T) {
 		},
 	}
 	for i, test := range tests {
-		client := Client{}
-		client.Orders = test.orders
+		client := Client{Orders: test.orders}
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, client.GetActiveOrders())
+			assert.Equal(t, test.want, client.GetActiveOrders(test.orderType))
 		})
 	}
 }
 
 func TestClient_GetMostRecentOrder(t *testing.T) {
 	tests := []struct {
-		name   string
-		orders []Order
-		want   Order
+		name      string
+		orders    []Order
+		orderType string
+		want      Order
 	}{
 		{
 			name: "It prioritises orders with made active date over date",
@@ -243,8 +329,30 @@ func TestClient_GetMostRecentOrder(t *testing.T) {
 				},
 			},
 			want: Order{
-				Date:           NewDate("01/08/2020"),
 				MadeActiveDate: NewDate("01/05/2020"),
+				Date:           NewDate("01/08/2020"),
+			},
+		},
+		{
+			name: "It filters by order type if supplied",
+			orders: []Order{
+				{
+					MadeActiveDate: NewDate("01/05/2020"),
+					Date:           NewDate("01/08/2020"),
+				},
+				{
+					MadeActiveDate: NewDate("01/01/2019"),
+					Type:           "pfa",
+				},
+				{
+					MadeActiveDate: NewDate("01/02/2020"),
+					Date:           NewDate("01/02/2020"),
+				},
+			},
+			orderType: "pfa",
+			want: Order{
+				MadeActiveDate: NewDate("01/01/2019"),
+				Type:           "pfa",
 			},
 		},
 		{
@@ -267,7 +375,7 @@ func TestClient_GetMostRecentOrder(t *testing.T) {
 	for i, test := range tests {
 		client := Client{}
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, client.GetMostRecentOrder(test.orders))
+			assert.Equal(t, test.want, client.GetMostRecentOrder(test.orders, test.orderType))
 		})
 	}
 }
