@@ -66,7 +66,7 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		EnvironmentVars: envVars,
 	}
 
-	if selectedTeam.IsLay() {
+	if selectedTeam.IsLay() || (selectedTeam.IsHW() && envVars.ShowHWCaseload) {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
 				Title:    "Caseload",

@@ -42,77 +42,94 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 }
 
 func TestCaseload(t *testing.T) {
-	client := &mockCaseloadClient{}
-	template := &mockTemplate{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
-
-	app := WorkflowVars{
-		Path:         "test-path",
-		SelectedTeam: model.Team{Type: "LAY", Selector: "1"},
-	}
-	err := caseload(client, template)(app, w, r)
-
-	assert.Nil(t, err)
-	assert.Equal(t, 1, template.count)
-
-	expectedClientListParams := sirius.ClientListParams{
-		Team:    app.SelectedTeam,
-		Page:    1,
-		PerPage: 25,
-	}
-	assert.Equal(t, expectedClientListParams, client.lastClientListParams)
-
-	var want CaseloadPage
-	want.App = app
-	want.PerPage = 25
-	want.AssigneeFilterName = "Case owner"
-	want.StatusOptions = []model.RefData{
+	tests := []struct {
+		name     string
+		teamType string
+	}{
 		{
-			Handle: "active",
-			Label:  "Active",
+			name:     "Caseload page is viewable for Lay teams",
+			teamType: "LAY",
 		},
 		{
-			Handle: "closed",
-			Label:  "Closed",
+			name:     "Caseload page is viewable for Health & Welfare teams",
+			teamType: "HW",
 		},
 	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			client := &mockCaseloadClient{}
+			template := &mockTemplate{}
 
-	want.UrlBuilder = urlbuilder.UrlBuilder{
-		Path:            "caseload",
-		SelectedTeam:    app.SelectedTeam.Selector,
-		SelectedPerPage: 25,
-		SelectedFilters: []urlbuilder.Filter{
-			{
-				Name:                  "assignee",
-				ClearBetweenTeamViews: true,
-			},
-			{
-				Name:                  "unassigned",
-				ClearBetweenTeamViews: true,
-			},
-			{
-				Name:                  "status",
-				ClearBetweenTeamViews: true,
-			},
-		},
+			w := httptest.NewRecorder()
+			r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+			app := WorkflowVars{
+				Path:         "test-path",
+				SelectedTeam: model.Team{Type: test.teamType, Selector: "1"},
+			}
+			err := caseload(client, template)(app, w, r)
+
+			assert.Nil(t, err)
+			assert.Equal(t, 1, template.count)
+
+			expectedClientListParams := sirius.ClientListParams{
+				Team:    app.SelectedTeam,
+				Page:    1,
+				PerPage: 25,
+			}
+			assert.Equal(t, expectedClientListParams, client.lastClientListParams)
+
+			var want CaseloadPage
+			want.App = app
+			want.PerPage = 25
+			want.AssigneeFilterName = "Case owner"
+			want.StatusOptions = []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			}
+
+			want.UrlBuilder = urlbuilder.UrlBuilder{
+				Path:            "caseload",
+				SelectedTeam:    app.SelectedTeam.Selector,
+				SelectedPerPage: 25,
+				SelectedFilters: []urlbuilder.Filter{
+					{
+						Name:                  "assignee",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "unassigned",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "status",
+						ClearBetweenTeamViews: true,
+					},
+				},
+			}
+
+			want.Pagination = paginate.Pagination{
+				CurrentPage:     0,
+				TotalPages:      0,
+				TotalElements:   0,
+				ElementsPerPage: 25,
+				ElementName:     "clients",
+				PerPageOptions:  []int{25, 50, 100},
+				UrlBuilder:      want.UrlBuilder,
+			}
+
+			assert.Equal(t, want, template.lastVars)
+		})
 	}
-
-	want.Pagination = paginate.Pagination{
-		CurrentPage:     0,
-		TotalPages:      0,
-		TotalElements:   0,
-		ElementsPerPage: 25,
-		ElementName:     "clients",
-		PerPageOptions:  []int{25, 50, 100},
-		UrlBuilder:      want.UrlBuilder,
-	}
-
-	assert.Equal(t, want, template.lastVars)
 }
 
-func TestCaseload_RedirectsToClientTasksForNonLayDeputies(t *testing.T) {
+func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 	client := &mockCaseloadClient{}
 	template := &mockTemplate{}
 
