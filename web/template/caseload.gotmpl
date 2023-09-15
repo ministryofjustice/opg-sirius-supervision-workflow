@@ -25,6 +25,8 @@
           <form method="post">
             {{ if .App.SelectedTeam.IsLayNewOrdersTeam }}
               {{ template "caseload-list-new-orders" . }}
+            {{ else if .App.SelectedTeam.IsHW }}
+              {{ template "caseload-list-hw" . }}
             {{ else }}
               {{ template "caseload-list" . }}
             {{ end }}

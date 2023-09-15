@@ -1,8 +1,8 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadPage*/ -}}
-{{ define "caseload-list-new-orders" }}
+{{ define "caseload-list-hw" }}
     <section data-module="manage-reassign" class="moj-manage-list">
         {{ template "client-edit-panel" . }}
-        <table id="caseload-list" class="govuk-table"  data-module="moj-sortable-table">
+        <table id="caseload-list" class="govuk-table" data-module="moj-sortable-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-table__select">
@@ -16,15 +16,16 @@
                     </div>
                 </th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Client">Client</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Order made date">Order made date</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Introductory target date">Introductory target date</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Appointment type">Appointment type</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Deputy type">Deputy type</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Case type">Case type</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Case owner">Case owner</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Status">Status</th>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
-                {{if ne .ClientList.TotalClients 0}}
+                {{if ne .ClientList.TotalClients 0 }}
                     {{ range .ClientList.Clients }}
-                        {{ $order := .GetMostRecentlyMadeActiveOrder "" }}
+                        {{ $order := .GetMostRecentlyMadeActiveOrder "hw" }}
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell govuk-table__select">
                                 <div class="govuk-checkboxes govuk-checkboxes--small">
@@ -43,13 +44,23 @@
                                 <span class="secondary">{{ .CaseRecNumber }}</span>
                             </td>
                             <td class="govuk-table__cell">
-                                {{ $order.Date.String }}
+                                {{ .FeePayer.Type.Label }}
                             </td>
                             <td class="govuk-table__cell">
-                                {{ $order.IntroductoryTargetDate.String }}
+                                {{ .ActiveCaseType.Label }}
                             </td>
                             <td class="govuk-table__cell">
-                                {{ $order.HowDeputyAppointed.Label }}
+                                {{ if eq .SupervisionCaseOwner.Id $.App.SelectedTeam.Id }}
+                                    Not assigned
+                                {{ else }}
+                                    {{ .SupervisionCaseOwner.Name }}
+                                    {{ range .SupervisionCaseOwner.Teams }}
+                                        <span class="secondary">{{ .Name }}</span>
+                                    {{ end }}
+                                {{ end }}
+                            </td>
+                            <td class="govuk-table__cell">
+                                {{ .GetStatus "hw" }}
                             </td>
                         </tr>
                     {{ end }}

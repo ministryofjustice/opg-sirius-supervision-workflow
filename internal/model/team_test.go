@@ -74,3 +74,8 @@ func TestTeam_IsLayNewOrdersTeam(t *testing.T) {
 	assert.False(t, Team{Name: "Random team"}.IsLayNewOrdersTeam())
 	assert.True(t, Team{Name: "Lay Team - New Deputy Orders"}.IsLayNewOrdersTeam())
 }
+
+func TestTeam_IsHW(t *testing.T) {
+	assert.True(t, Team{Type: "HW"}.IsHW())
+	assert.False(t, Team{Type: "NOT HW"}.IsHW())
+}

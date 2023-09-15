@@ -376,6 +376,17 @@ module.exports = function () {
           "label": "Lay",
           "deprecated": null
         }
+      },
+      {
+        "id": 29,
+        "name": "Health and Welfare Team",
+        "displayName": "Health and Welfare Team",
+        "deleted": false,
+        "teamType": {
+          "handle": "HW",
+          "label": "HW",
+          "deprecated": null
+        }
       }
     ],
     "tasktypes-supervision": {
@@ -532,6 +543,15 @@ module.exports = function () {
       },
       {
         "id": 27,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "tasks": [],
+        "total": 0
+      },
+      {
+        "id": 29,
         "pages": {
           "current": 1,
           "total": 1
@@ -778,6 +798,66 @@ module.exports = function () {
               "handle": "MINIMAL",
               "label": "Minimal"
             }
+          },
+        ]
+      },
+      {
+        "id": 29,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "total": 1,
+        "clients": [
+          {
+            "id": 63,
+            "caseRecNumber": "42687883",
+            "firstname": "Ro",
+            "surname": "Bot",
+            "supervisionCaseOwner": {
+              "id": 29,
+              "teams": [],
+              "displayName": "Health & Welfare Team"
+            },
+            "activeCaseType": {
+              "handle": "HYBRID",
+              "label": "Hybrid",
+            },
+            "cases": [
+              {
+                "id": 92,
+                "caseRecNumber": "33594483",
+                "latestAnnualReport": {
+                  "dueDate": "21/12/2023"
+                },
+                "caseSubtype": "hw",
+                "orderStatus": {
+                  "handle": "ACTIVE",
+                  "label": "Active",
+                  "deprecated": false
+                },
+                "orderDate": "01/01/2020",
+                "madeActiveDate": "02/01/2020",
+                "howDeputyAppointed": {
+                  "handle": "SOLE",
+                  "label": "Sole",
+                  "deprecated": false
+                },
+                "introductoryTargetDate": "21/02/2020"
+              }
+            ],
+            "supervisionLevel": {
+              "handle": "MINIMAL",
+              "label": "Minimal"
+            },
+            "feePayer": {
+              "id": 12,
+              "displayName": "Mr Fee-paying Deputy",
+              "deputyType": {
+                "handle": "PA",
+                "label": "PA"
+              }
+            },
           },
         ]
       }

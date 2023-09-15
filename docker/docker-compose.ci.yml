@@ -12,6 +12,7 @@ services:
       SIRIUS_URL: http://json-server:3000
       SIRIUS_PUBLIC_URL: http://localhost:8080
       SHOW_DEPUTY_TASKS: 1
+      SHOW_HW_CASELOAD: 1
 
   json-server:
     build:

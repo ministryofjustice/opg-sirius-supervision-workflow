@@ -11,6 +11,7 @@ type Client struct {
 	FeePayer             Deputy   `json:"feePayer"`
 	Orders               []Order  `json:"cases"`
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
+	ActiveCaseType       RefData  `json:"activeCaseType"`
 }
 
 func (c Client) GetReportDueDate() string {
@@ -20,12 +21,14 @@ func (c Client) GetReportDueDate() string {
 	return ""
 }
 
-func (c Client) GetStatus() string {
+func (c Client) GetStatus(orderType string) string {
 	orderStatuses := make(map[string]string)
 
 	for _, order := range c.Orders {
-		label := order.Status.Label
-		orderStatuses[label] = label
+		if orderType == "" || orderType == order.Type {
+			label := order.Status.Label
+			orderStatuses[label] = label
+		}
 	}
 
 	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
@@ -42,21 +45,24 @@ func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
 }
 
-func (c Client) GetActiveOrders() []Order {
+func (c Client) GetActiveOrders(orderType string) []Order {
 	var activeOrders []Order
 	for _, order := range c.Orders {
-		if order.Status.Handle == "ACTIVE" {
+		if order.Status.Handle == "ACTIVE" && (orderType == "" || order.Type == orderType) {
 			activeOrders = append(activeOrders, order)
 		}
 	}
 	return activeOrders
 }
 
-func (c Client) GetMostRecentOrder(orders []Order) Order {
+func (c Client) GetMostRecentOrder(orders []Order, orderType string) Order {
 	var mostRecentlyMadeActiveOrder Order
 	var mostRecentlyMadeOrder Order
 
 	for _, order := range orders {
+		if orderType != "" && order.Type != orderType {
+			continue
+		}
 		if order.MadeActiveDate.After(mostRecentlyMadeActiveOrder.MadeActiveDate) {
 			mostRecentlyMadeActiveOrder = order
 		}
@@ -70,10 +76,10 @@ func (c Client) GetMostRecentOrder(orders []Order) Order {
 	return mostRecentlyMadeActiveOrder
 }
 
-func (c Client) GetMostRecentlyMadeActiveOrder() Order {
-	activeOrders := c.GetActiveOrders()
+func (c Client) GetMostRecentlyMadeActiveOrder(orderType string) Order {
+	activeOrders := c.GetActiveOrders(orderType)
 	if len(activeOrders) > 0 {
-		return c.GetMostRecentOrder(activeOrders)
+		return c.GetMostRecentOrder(activeOrders, orderType)
 	}
-	return c.GetMostRecentOrder(c.Orders)
+	return c.GetMostRecentOrder(c.Orders, orderType)
 }
