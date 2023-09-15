@@ -60,11 +60,13 @@ func (c Client) GetMostRecentOrder(orders []Order, orderType string) Order {
 	var mostRecentlyMadeOrder Order
 
 	for _, order := range orders {
-		ofType := orderType == "" || order.Type == orderType
-		if order.MadeActiveDate.After(mostRecentlyMadeActiveOrder.MadeActiveDate) && ofType {
+		if orderType != "" && order.Type != orderType {
+			continue
+		}
+		if order.MadeActiveDate.After(mostRecentlyMadeActiveOrder.MadeActiveDate) {
 			mostRecentlyMadeActiveOrder = order
 		}
-		if order.Date.After(mostRecentlyMadeOrder.Date) && ofType {
+		if order.Date.After(mostRecentlyMadeOrder.Date) {
 			mostRecentlyMadeOrder = order
 		}
 	}
