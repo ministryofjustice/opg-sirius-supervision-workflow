@@ -41,7 +41,7 @@ services:
       - json-server
   
   go-lint:
-    image: golangci/golangci-lint:v1.53.3
+    image: golangci/golangci-lint:v1.54.2
     working_dir: /go/src/app
     volumes:
       - ../:/go/src/app
