@@ -84,6 +84,10 @@ func TestNewWorkflowVars(t *testing.T) {
 			teamType: "PA",
 			wantTabs: []Tab{clientTasksTab, deputyTasksTab},
 		},
+		{
+			teamType: "HW",
+			wantTabs: []Tab{clientTasksTab, caseloadTab},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.teamType+" team", func(t *testing.T) {
@@ -97,6 +101,7 @@ func TestNewWorkflowVars(t *testing.T) {
 			envVars := EnvironmentVars{
 				DefaultTeamId:   19,
 				ShowDeputyTasks: true,
+				ShowHWCaseload:  true,
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)
 

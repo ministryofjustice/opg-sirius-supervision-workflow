@@ -57,6 +57,10 @@ func (t Team) IsPA() bool {
 	return t.Type == "PA"
 }
 
+func (t Team) IsHW() bool {
+	return t.Type == "HW"
+}
+
 func (t Team) IsLayNewOrdersTeam() bool {
 	return t.Name == "Lay Team - New Deputy Orders"
 }
