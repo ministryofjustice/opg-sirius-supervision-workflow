@@ -65,16 +65,22 @@ var mockTeamSelectionData = []model.Team{
 
 func TestNewWorkflowVars(t *testing.T) {
 	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
-	caseloadTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
+	caseloadTab := Tab{Title: "Caseload", basePath: "caseload"}
 	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks"}
 
 	tests := []struct {
 		teamType string
+		teamName string
 		wantTabs []Tab
 	}{
 		{
 			teamType: "LAY",
 			wantTabs: []Tab{clientTasksTab, caseloadTab},
+		},
+		{
+			teamType: "LAY",
+			teamName: "Lay Deputy Team",
+			wantTabs: []Tab{clientTasksTab},
 		},
 		{
 			teamType: "PRO",
@@ -93,6 +99,7 @@ func TestNewWorkflowVars(t *testing.T) {
 		t.Run(test.teamType+" team", func(t *testing.T) {
 			team := mockTeamSelectionData[0]
 			team.Type = test.teamType
+			team.Name = test.teamName
 			teams := []model.Team{team}
 
 			client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: teams}
@@ -114,7 +121,7 @@ func TestNewWorkflowVars(t *testing.T) {
 				SelectedTeam:    team,
 				SuccessMessage:  "",
 				Errors:          nil,
-				Tabs:            vars.Tabs,
+				Tabs:            test.wantTabs,
 				EnvironmentVars: envVars,
 			}, *vars)
 		})
