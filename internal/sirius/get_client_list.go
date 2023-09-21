@@ -14,6 +14,7 @@ type ClientListParams struct {
 	PerPage       int
 	CaseOwners    []string
 	OrderStatuses []string
+	SubType       string
 }
 
 type ClientList struct {
