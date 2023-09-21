@@ -96,15 +96,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Teams: []model.Team{},
 		},
 		{
-			Id:        22,
-			Name:      "Lay Team 1",
-			Type:      "LAY",
-			TypeLabel: "Lay Team",
-			Selector:  "22",
-			Teams:     []model.Team{},
-		},
-		{
-			Name:     "Lay deputy team",
+			Name:     "Lay Deputy Team",
 			Selector: "lay-team",
 			Members:  []model.Assignee{},
 			Teams: []model.Team{
@@ -119,6 +111,14 @@ func TestGetTeamsForSelection(t *testing.T) {
 			},
 		},
 		{
+			Id:        22,
+			Name:      "Lay Team 1",
+			Type:      "LAY",
+			TypeLabel: "Lay Team",
+			Selector:  "22",
+			Teams:     []model.Team{},
+		},
+		{
 			Id:        23,
 			Name:      "Pro Team 1",
 			Type:      "PRO",
@@ -127,7 +127,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 			Teams:     []model.Team{},
 		},
 		{
-			Name:     "Professional deputy team",
+			Name:     "Professional Deputy Team",
 			Selector: "pro-team",
 			Members:  []model.Assignee{},
 			Teams: []model.Team{
