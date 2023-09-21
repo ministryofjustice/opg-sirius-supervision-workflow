@@ -106,12 +106,18 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedStatuses = params["status"]
 		}
 
+		var subType string
+		if app.SelectedTeam.IsHW() {
+			subType = "hw"
+		}
+
 		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
 			PerPage:       clientsPerPage,
 			CaseOwners:    selectedAssignees,
 			OrderStatuses: selectedStatuses,
+			SubType:       subType,
 		})
 		if err != nil {
 			return err
