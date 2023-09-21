@@ -14,7 +14,7 @@ describe("Team Selection", () => {
     })
 
     it("contains options for combined Lay and Pro teams", () => {
-        cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").should('contain', "Lay deputy team")
-        cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").should('contain', "Professional deputy team")
+        cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").should('contain', "Lay Deputy Team")
+        cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").should('contain', "Professional Deputy Team")
     })
 });
