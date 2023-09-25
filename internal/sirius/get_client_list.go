@@ -14,6 +14,7 @@ type ClientListParams struct {
 	PerPage       int
 	CaseOwners    []string
 	OrderStatuses []string
+	SubType       string
 }
 
 type ClientList struct {
@@ -74,6 +75,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, s := range p.OrderStatuses {
 		filter += "order-status:" + s + ","
+	}
+	if p.SubType != "" {
+		filter += "subtype:" + p.SubType + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
