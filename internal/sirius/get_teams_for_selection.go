@@ -57,14 +57,14 @@ func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]model.Team, error) {
 
 	layTeam := model.Team{
 		Members:  []model.Assignee{},
-		Name:     "Lay deputy team",
+		Name:     "Lay Deputy Team",
 		Selector: "lay-team",
 		Teams:    []model.Team{},
 	}
 
 	proTeam := model.Team{
 		Members:  []model.Assignee{},
-		Name:     "Professional deputy team",
+		Name:     "Professional Deputy Team",
 		Selector: "pro-team",
 		Teams:    []model.Team{},
 	}
