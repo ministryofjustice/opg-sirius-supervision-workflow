@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/ministryofjustice/opg-go-common/env"
 	"github.com/ministryofjustice/opg-go-common/logging"
+	"github.com/ministryofjustice/opg-go-common/paginate"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/contrib/propagators/aws/xray"
@@ -151,6 +152,8 @@ func createTemplates(envVars server.EnvironmentVars) map[string]*template.Templa
 		}
 		templates[tmpl.Name()] = template.Must(tmpl.ParseFiles(file))
 	}
+
+	templates["pagination"] = template.Must(template.New("pagination").Parse(paginate.Template))
 
 	return templates
 }

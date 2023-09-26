@@ -2,8 +2,8 @@ package server
 
 import (
 	"errors"
+	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
