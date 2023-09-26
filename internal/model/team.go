@@ -45,8 +45,12 @@ func (t Team) HasTeam(id int) bool {
 	return false
 }
 
+func (t Team) IsFullLayTeam() bool {
+	return t.Selector == "lay-team"
+}
+
 func (t Team) IsLay() bool {
-	return t.Type == "LAY" || t.Selector == "lay-team"
+	return t.Type == "LAY" || t.IsFullLayTeam()
 }
 
 func (t Team) IsPro() bool {
