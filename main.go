@@ -150,10 +150,9 @@ func createTemplates(envVars server.EnvironmentVars) map[string]*template.Templa
 				tmpl, _ = tmpl.ParseGlob(templateDirPath + "/" + dir.Name() + "/*.gotmpl")
 			}
 		}
+		tmpl, _ = tmpl.Parse(paginate.Template)
 		templates[tmpl.Name()] = template.Must(tmpl.ParseFiles(file))
 	}
-
-	templates["pagination"] = template.Must(template.New("pagination").Parse(paginate.Template))
 
 	return templates
 }
