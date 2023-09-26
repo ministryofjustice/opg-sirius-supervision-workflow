@@ -455,12 +455,13 @@ module.exports = function () {
     "tasks": [
       {
         "id": 13,
+        "page": 1,
         "pages": {
           "current": 1,
           "total": 1
         },
-        "tasks": generateTasks(10),
-        "total": 10
+        "tasks": generateTasks(25),
+        "total": 13
       },
       {
         "id": 21,
@@ -676,7 +677,7 @@ module.exports = function () {
           "current": 5,
           "total": 5
         },
-        "tasks": generateTasks(1),
+        "tasks": generateTasks(25),
         "total": 101
       }
     ],
