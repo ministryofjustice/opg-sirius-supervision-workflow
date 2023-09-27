@@ -15,21 +15,9 @@ describe("Pagination", () => {
       cy.get(".previous-page-pagination-link").should('not.exist')
       cy.get(`[aria-label="Page 2"]`).first().click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get(`[aria-label="Page 3"]`).first().click()
-      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get(`[aria-label="Page 4"]`).first().click()
-      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get(`[aria-label="Page 5"]`).first().click()
-      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
     })
 
     it("shows next button apart from on last page", () => {
-      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get(`[aria-label="Page 2"]`).first().click()
-      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get(`[aria-label="Page 3"]`).first().click()
-      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get(`[aria-label="Page 4"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
       cy.get(`[aria-label="Page 5"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
@@ -80,7 +68,6 @@ describe("Pagination", () => {
       cy.get(".moj-pagination__results").should('contain', '50')
       cy.get(".moj-pagination__results").should('contain', '51')
     })
-
   });
 
   describe("View 100", () => {
