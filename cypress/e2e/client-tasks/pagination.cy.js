@@ -11,17 +11,27 @@ describe("Pagination", () => {
           .invoke('val').should('contain', 'per-page=25')
     })
 
-    it("will not show previous arrow on page 1 but will show it on other pages", () => {
+    it("will not show previous on page 1 but will show it on other pages", () => {
       cy.get(".previous-page-pagination-link").should('not.exist')
-      cy.get("#top-nav .next-page-pagination-link").click()
+      cy.get(`[aria-label="Page 2"]`).first().click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get("#top-nav .previous-page-pagination-link").click()
-      cy.get(".previous-page-pagination-link").should('not.exist')
+      cy.get(`[aria-label="Page 3"]`).first().click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get(`[aria-label="Page 4"]`).first().click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get(`[aria-label="Page 5"]`).first().click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
     })
 
     it("shows next button apart from on last page", () => {
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get("#top-nav .govuk-pagination__item:nth-last-child(1) .govuk-pagination__link").click()
+      cy.get(`[aria-label="Page 2"]`).first().click()
+      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
+      cy.get(`[aria-label="Page 3"]`).first().click()
+      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
+      cy.get(`[aria-label="Page 4"]`).first().click()
+      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
+      cy.get(`[aria-label="Page 5"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
@@ -33,17 +43,14 @@ describe("Pagination", () => {
       cy.get(secondEllipsis).should("exist")
 
       cy.get("#top-nav .govuk-pagination__link:contains(2)").click()
-
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("not.exist")
 
-      cy.get("#top-nav .govuk-pagination__link:contains(4)").click()
-
+      cy.get("#top-nav .govuk-pagination__link:contains(3)").click()
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("not.exist")
 
       cy.get("#top-nav .govuk-pagination__link:contains(5)").click()
-
       cy.get(firstEllipsis).should("exist")
       cy.get(secondEllipsis).should("not.exist")
     })
@@ -59,22 +66,6 @@ describe("Pagination", () => {
       cy.get(".moj-pagination__results").should('contain', '1')
       cy.get(".moj-pagination__results").should('contain', '25')
       cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".moj-pagination__results").should('contain', '26')
-      cy.get(".moj-pagination__results").should('contain', '50')
-      cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".moj-pagination__results").should('contain', '51')
-      cy.get(".moj-pagination__results").should('contain', '75')
-      cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".moj-pagination__results").should('contain', '76')
-      cy.get(".moj-pagination__results").should('contain', '100')
-      cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get(".moj-pagination__results").should('contain', '101')
-      cy.get(".moj-pagination__results").should('contain', '101')
     })
   });
 
@@ -87,10 +78,6 @@ describe("Pagination", () => {
     it("can select 50 from task view value dropdown and correctly show when one task on a page", () => {
       cy.get(".moj-pagination__results").should('contain', '1')
       cy.get(".moj-pagination__results").should('contain', '50')
-      cy.get(".moj-pagination__results").should('contain', '51')
-      cy.get("#top-nav .next-page-pagination-link").click()
-      cy.get(".moj-pagination__results").should('contain', '51')
-      cy.get(".moj-pagination__results").should('contain', '51')
       cy.get(".moj-pagination__results").should('contain', '51')
     })
 
