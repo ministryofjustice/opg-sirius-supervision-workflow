@@ -12,13 +12,7 @@
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*task_type_category:deputy": "/deputy-tasks/:teamId",
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager",
 
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=1*": "/tasks-view-25/1",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=2*": "/tasks-view-25/2",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=3*": "/tasks-view-25/3",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=4*": "/tasks-view-25/4",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=5*": "/tasks-view-25/5",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=50&page=1*": "/tasks-view-50/1",
-    "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=100&page=1*": "/tasks-view-100/1",
+    "/assignees/teams/tasks\\?teamIds[]=13&filter=status\\:Not+started&limit=:limit&page=:pageNumber&*": "/tasks-view-:limit/:pageNumber",
 
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*": "/tasks/:teamId"
 }

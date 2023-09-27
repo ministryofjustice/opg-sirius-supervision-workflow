@@ -45,7 +45,7 @@ module.exports = function () {
     },
     {
       "assignee": {
-        "displayName": "Margaret Bavaria-Straubing",
+        "displayName": "Allocations - (Supervision)",
         "id": 99
       },
       "caseItems": [

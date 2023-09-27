@@ -9,28 +9,28 @@ describe("Pagination", () => {
     beforeEach(() => {
       cy.get("#top-nav .display-rows").select('25')
           .invoke('val').should('contain', 'per-page=25')
-      cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Team 2 - (Supervision)")
     })
 
-    it("will not show previous arrow on page 1 but will show it on other pages", () => {
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click({force: true})
-      cy.get(".previous-page-pagination-link").should('exist')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click({force: true})
+    it("will not show previous on page 1 but will show it on other pages", () => {
+      cy.get(".previous-page-pagination-link").should('not.exist')
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click()
     })
 
     it("shows next button apart from on last page", () => {
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click({force: true})
+      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click()
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
@@ -62,7 +62,6 @@ describe("Pagination", () => {
     })
 
     it("allows me to select view 25 and updates task numbers", () => {
-      cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Team 2 - (Supervision)")
       cy.get(".moj-pagination__results").should('contain', '1')
       cy.get(".moj-pagination__results").should('contain', '25')
       cy.get(".moj-pagination__results").should('contain', '101')
@@ -73,7 +72,6 @@ describe("Pagination", () => {
     beforeEach(() => {
       cy.get("#top-nav .display-rows").select('50')
           .invoke('val').should('contain', 'per-page=50')
-      cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Team 2 - (Supervision)")
     })
 
     it("can select 50 from task view value dropdown and correctly show when one task on a page", () => {
@@ -88,7 +86,6 @@ describe("Pagination", () => {
     beforeEach(() => {
       cy.get("#top-nav .display-rows").select('100')
           .invoke('val').should('contain', 'per-page=100')
-      cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Team 2 - (Supervision)")
     })
 
     it("can select 100 from task view value dropdown and shows limited task count", () => {
