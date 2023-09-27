@@ -13,24 +13,25 @@ describe("Pagination", () => {
 
     it("will not show previous on page 1 but will show it on other pages", () => {
       cy.get(".previous-page-pagination-link").should('not.exist')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click()
+      cy.get(`[aria-label="Page 2"]`).first().click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click()
+      cy.get(`[aria-label="Page 3"]`).first().click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click()
+      cy.get(`[aria-label="Page 4"]`).first().click()
       cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click()
+      cy.get(`[aria-label="Page 5"]`).first().click()
+      cy.get(".previous-page-pagination-link").should('be.visible', 'Previous')
     })
 
     it("shows next button apart from on last page", () => {
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(2) > .govuk-link').click()
+      cy.get(`[aria-label="Page 2"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(3) > .govuk-link').click()
+      cy.get(`[aria-label="Page 3"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(4) > .govuk-link').click()
+      cy.get(`[aria-label="Page 4"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
-      cy.get('#top-nav > :nth-child(1) > .flex-container > .govuk-pagination__list > :nth-child(5) > .govuk-link').click()
+      cy.get(`[aria-label="Page 5"]`).first().click()
       cy.get("#top-nav .next-page-pagination-link").should('not.exist')
     })
 
