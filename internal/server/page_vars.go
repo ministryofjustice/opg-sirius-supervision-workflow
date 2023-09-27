@@ -41,12 +41,19 @@ type FilterByStatus struct {
 	SelectedStatuses []string
 }
 
+type FilterByDeputyType struct {
+	ListPage
+	DeputyTypes         []model.RefData
+	SelectedDeputyTypes []string
+}
+
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 	filters := map[string]interface{}{
-		"assignee":  FilterByAssignee{},
-		"due-date":  FilterByDueDate{},
-		"status":    FilterByStatus{},
-		"task-type": FilterByTaskType{},
+		"assignee":    FilterByAssignee{},
+		"due-date":    FilterByDueDate{},
+		"status":      FilterByStatus{},
+		"task-type":   FilterByTaskType{},
+		"deputy-type": FilterByDeputyType{},
 	}
 
 	extends := func(parent interface{}, child interface{}) bool {

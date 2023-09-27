@@ -18,6 +18,7 @@ type CaseloadPage struct {
 	ListPage
 	FilterByAssignee
 	FilterByStatus
+	FilterByDeputyType
 	ClientList sirius.ClientList
 }
 
@@ -30,6 +31,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("assignee", cv.SelectedAssignees, true),
 			urlbuilder.CreateFilter("unassigned", cv.SelectedUnassigned, true),
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
+			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
 		},
 	}
 }
@@ -47,6 +49,11 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	for _, s := range cv.StatusOptions {
 		if s.IsIn(cv.SelectedStatuses) {
 			appliedFilters = append(appliedFilters, s.Label)
+		}
+	}
+	for _, dt := range cv.DeputyTypes {
+		if dt.IsIn(cv.SelectedDeputyTypes) {
+			appliedFilters = append(appliedFilters, dt.Label)
 		}
 	}
 	return appliedFilters
@@ -106,13 +113,24 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedStatuses = params["status"]
 		}
 
-		clientList, err := client.GetClientList(ctx, sirius.ClientListParams{
+		var selectedDeputyTypes []string
+		if params.Has("deputy-type") {
+			selectedDeputyTypes = params["deputy-type"]
+		}
+
+		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
 			PerPage:       clientsPerPage,
 			CaseOwners:    selectedAssignees,
 			OrderStatuses: selectedStatuses,
-		})
+		}
+
+		if app.SelectedTeam.IsHW() {
+			clientListParams.DeputyTypes = selectedDeputyTypes
+		}
+
+		clientList, err := client.GetClientList(ctx, clientListParams)
 		if err != nil {
 			return err
 		}
@@ -133,6 +151,24 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 				Handle: "closed",
 				Label:  "Closed",
 			},
+		}
+
+		if app.SelectedTeam.IsHW() {
+			vars.SelectedDeputyTypes = selectedDeputyTypes
+			vars.DeputyTypes = []model.RefData{
+				{
+					Handle: "LAY",
+					Label:  "Lay",
+				},
+				{
+					Handle: "PRO",
+					Label:  "Professional",
+				},
+				{
+					Handle: "PA",
+					Label:  "Public Authority",
+				},
+			}
 		}
 
 		vars.App = app

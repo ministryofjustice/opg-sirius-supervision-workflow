@@ -101,4 +101,25 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').should('not.exist');
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
+
+  it("can filter by Deputy Type on the HW Caseload page", () => {
+    cy.get('#option-select-title-deputy-type').should("not.exist")
+    cy.visit("/caseload?team=29")
+    cy.get('#option-select-title-deputy-type').click()
+    cy.get('#list-of-deputy-types-to-filter label').should('contain', 'Lay')
+    cy.get('#list-of-deputy-types-to-filter label').should('contain', 'Professional')
+    cy.get('#list-of-deputy-types-to-filter label').should('contain', 'Public Authority')
+    cy.get('[data-filter-name="moj-filter-name-deputy-type"]').within(() => {
+      cy.get('label:contains("Lay")').click()
+      cy.get('label:contains("Public Authority")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'deputy-type=LAY').and('include', 'deputy-type=PA')
+    cy.get('.moj-filter__selected').should('contain','Deputy type')
+    cy.get('.moj-filter__tag').should('contain', 'Lay')
+    cy.get('.moj-filter__tag').should('contain', 'Public Authority')
+    cy.get('[data-module=clear-filters]').click()
+    cy.get('.moj-filter__tag').should('not.exist')
+    cy.get('[type="checkbox"]').should('not.be.checked')
+  })
 })

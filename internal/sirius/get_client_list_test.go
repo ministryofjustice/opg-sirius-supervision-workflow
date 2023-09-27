@@ -190,8 +190,9 @@ func TestClientListParams_CreateFilter(t *testing.T) {
 			params: ClientListParams{
 				CaseOwners:    []string{"1", "2", "3"},
 				OrderStatuses: []string{"active", "closed"},
+				DeputyTypes:   []string{"LAY", "PA"},
 			},
-			want: "caseowner:1,caseowner:2,caseowner:3,order-status:active,order-status:closed",
+			want: "caseowner:1,caseowner:2,caseowner:3,order-status:active,order-status:closed,deputy-type:LAY,deputy-type:PA",
 		},
 	}
 	for i, test := range tests {
