@@ -43,8 +43,9 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 
 func TestCaseload(t *testing.T) {
 	tests := []struct {
-		name     string
-		teamType string
+		name            string
+		teamType        string
+		wantDeputyTypes []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
@@ -53,6 +54,20 @@ func TestCaseload(t *testing.T) {
 		{
 			name:     "Caseload page is viewable for Health & Welfare teams",
 			teamType: "HW",
+			wantDeputyTypes: []model.RefData{
+				{
+					Handle: "LAY",
+					Label:  "Lay",
+				},
+				{
+					Handle: "PRO",
+					Label:  "Professional",
+				},
+				{
+					Handle: "PA",
+					Label:  "Public Authority",
+				},
+			},
 		},
 	}
 	for _, test := range tests {
@@ -93,6 +108,7 @@ func TestCaseload(t *testing.T) {
 					Label:  "Closed",
 				},
 			}
+			want.DeputyTypes = test.wantDeputyTypes
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -109,6 +125,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "status",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "deputy-type",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -187,6 +207,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			Name:                  "status",
 			ClearBetweenTeamViews: true,
 		},
+		{
+			Name:                  "deputy-type",
+			ClearBetweenTeamViews: true,
+		},
 	}
 
 	tests := []struct {
@@ -225,10 +249,11 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 
 func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 	tests := []struct {
-		selectedAssignees  []string
-		selectedUnassigned string
-		selectedStatuses   []string
-		want               []string
+		selectedAssignees   []string
+		selectedUnassigned  string
+		selectedStatuses    []string
+		selectedDeputyTypes []string
+		want                []string
 	}{
 		{
 			want: nil,
@@ -250,6 +275,10 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 			selectedUnassigned: "lay-team",
 			selectedStatuses:   []string{"active", "closed"},
 			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
+		},
+		{
+			selectedDeputyTypes: []string{"LAY", "PA"},
+			want:                []string{"Lay", "Public Authority"},
 		},
 	}
 	for i, test := range tests {
@@ -279,9 +308,24 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Closed",
 				},
 			}
+			page.DeputyTypes = []model.RefData{
+				{
+					Handle: "LAY",
+					Label:  "Lay",
+				},
+				{
+					Handle: "PRO",
+					Label:  "Professional",
+				},
+				{
+					Handle: "PA",
+					Label:  "Public Authority",
+				},
+			}
 			page.SelectedAssignees = test.selectedAssignees
 			page.SelectedUnassigned = test.selectedUnassigned
 			page.SelectedStatuses = test.selectedStatuses
+			page.SelectedDeputyTypes = test.selectedDeputyTypes
 
 			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})

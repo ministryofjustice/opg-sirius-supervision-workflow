@@ -14,6 +14,7 @@ type ClientListParams struct {
 	PerPage       int
 	CaseOwners    []string
 	OrderStatuses []string
+	DeputyTypes   []string
 }
 
 type ClientList struct {
@@ -74,6 +75,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, s := range p.OrderStatuses {
 		filter += "order-status:" + s + ","
+	}
+	for _, dt := range p.DeputyTypes {
+		filter += "deputy-type:" + dt + ","
 	}
 	return strings.TrimRight(filter, ",")
 }

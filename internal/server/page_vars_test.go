@@ -23,6 +23,10 @@ type mockFilterByStatus struct {
 	FilterByStatus
 }
 
+type mockFilterByDeputyType struct {
+	FilterByDeputyType
+}
+
 func TestListPage_HasFilterBy(t *testing.T) {
 	tests := []struct {
 		page   interface{}
@@ -47,6 +51,11 @@ func TestListPage_HasFilterBy(t *testing.T) {
 		{
 			page:   mockFilterByStatus{},
 			filter: "status",
+			want:   true,
+		},
+		{
+			page:   mockFilterByDeputyType{},
+			filter: "deputy-type",
 			want:   true,
 		},
 		{

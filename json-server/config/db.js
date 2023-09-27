@@ -850,13 +850,9 @@ module.exports = function () {
               "handle": "MINIMAL",
               "label": "Minimal"
             },
-            "feePayer": {
-              "id": 12,
-              "displayName": "Mr Fee-paying Deputy",
-              "deputyType": {
-                "handle": "PA",
-                "label": "PA"
-              }
+            "hwDeputyType": {
+              "handle": "PA",
+              "label": "PA"
             },
           },
         ]

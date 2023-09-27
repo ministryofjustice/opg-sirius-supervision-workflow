@@ -1,0 +1,15 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByDeputyType*/ -}}
+{{ define "deputy-type-filter-applied" }}
+
+{{ if .SelectedDeputyTypes }}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Deputy type</h3>
+  <ul class="moj-filter-tags">
+      {{ range .DeputyTypes }}
+          {{ if .IsIn $.SelectedDeputyTypes }}
+            <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "deputy-type" .Handle }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Label }}</a></li>
+          {{ end }}
+      {{ end }}
+  </ul>
+{{ end }}
+
+{{ end }}
