@@ -77,6 +77,10 @@ func TestCaseload(t *testing.T) {
 				Page:    1,
 				PerPage: 25,
 			}
+			if test.teamType == "HW" {
+				expectedClientListParams.SubType = "hw"
+			}
+
 			assert.Equal(t, expectedClientListParams, client.lastClientListParams)
 
 			var want CaseloadPage
