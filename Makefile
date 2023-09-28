@@ -1,29 +1,37 @@
+all: go-lint unit-test build scan cypress down
+
 .PHONY: cypress
 
-all: go-lint build-all unit-test scan cypress down
-
-build:
-	docker compose -f docker/docker-compose.ci.yml build --parallel workflow
-
-build-all:
-	docker compose -f docker/docker-compose.ci.yml build --parallel workflow json-server test-runner cypress
-
-go-lint:
-	docker compose -f docker/docker-compose.ci.yml run --rm go-lint
-
 test-results:
-	mkdir -p -m 0777 test-results
+	mkdir -p -m 0777 test-results cypress/screenshots .trivy-cache
 
 setup-directories: test-results
 
-unit-test: setup-directories
-	docker compose -f docker/docker-compose.ci.yml run --rm test-runner gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
+go-lint:
+	docker compose run --rm go-lint
 
-scan:
-	trivy image sirius/sirius-workflow:latest
+build:
+	docker compose build --parallel workflow
+
+build-all:
+	docker compose build --parallel workflow json-server test-runner cypress
+
+unit-test: setup-directories
+	docker compose run --rm test-runner gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
+
+scan: setup-directories
+	docker compose run --rm trivy image --format table --exit-code 0 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
+	docker compose run --rm trivy image --format sarif --output /test-results/trivy.sarif --exit-code 1 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
+
+cypress: setup-directories
+	docker compose up -d --wait workflow
+	docker compose run --rm cypress run --env grepUntagged=true
 
 up:
-	docker compose -f docker/docker-compose.ci.yml up --build -d deputy-hub
+	docker compose up --build -d workflow
+
+dev-up:
+	docker compose -f docker/docker-compose.dev.yml up --build workflow json-server
 
 down:
-	docker compose -f docker/docker-compose.ci.yml down
+	docker compose down
