@@ -15,6 +15,7 @@ type ClientListParams struct {
 	CaseOwners    []string
 	OrderStatuses []string
 	SubType       string
+	DeputyTypes   []string
 }
 
 type ClientList struct {
@@ -78,6 +79,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	if p.SubType != "" {
 		filter += "subtype:" + p.SubType + ","
+	}
+	for _, dt := range p.DeputyTypes {
+		filter += "deputy-type:" + dt + ","
 	}
 	return strings.TrimRight(filter, ",")
 }

@@ -12,6 +12,7 @@ type Client struct {
 	Orders               []Order  `json:"cases"`
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
 	ActiveCaseType       RefData  `json:"activeCaseType"`
+	HWDeputyType         RefData  `json:"hwDeputyType"`
 }
 
 func (c Client) GetReportDueDate() string {
