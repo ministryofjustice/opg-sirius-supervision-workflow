@@ -24,7 +24,7 @@
     "axe-core": "^4.3.5",
     "cypress": "^10.11.0",
     "cypress-failed-log": "^2.9.2",
-    "cypress-axe": "^0.13.0",
+    "cypress-axe": "^1.0.0",
     "esbuild": "^0.18.0",
     "eslint": "^8.30.0",
     "prettier": "^2.7.1",
