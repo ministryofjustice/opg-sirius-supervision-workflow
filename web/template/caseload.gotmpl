@@ -13,7 +13,7 @@
 
     <div class="govuk-grid-column-{{ if .App.SelectedTeam.IsLayNewOrdersTeam }}full{{ else }}three-quarters{{ end }}">
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full" id="top-nav" aria-label="Top navigation">
+        <div class="govuk-grid-column-full" id="top-pagination" aria-label="Top pagination">
           {{ template "pagination" .Pagination }}
         </div>
       </div>
@@ -33,7 +33,7 @@
       </div>
 
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full" id="bottom-nav" aria-label="Bottom navigation">
+        <div class="govuk-grid-column-full" id="bottom-pagination" aria-label="Bottom pagination">
           {{ template "pagination" .Pagination }}
         </div>
       </div>

@@ -59,7 +59,7 @@ describe("Filters", () => {
       cy.get('label:contains("Casework - General")').click()
     })
     cy.get('[data-module=apply-filters]').click()
-    cy.get("#top-nav .display-rows").select('100')
+    cy.get("#top-pagination .display-rows").select('100')
     cy.url().should('include', 'task-type=CWGN')
   })
 
