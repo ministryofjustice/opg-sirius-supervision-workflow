@@ -31,7 +31,9 @@ up:
 	docker compose up --build -d workflow
 
 dev-up:
-	docker compose -f docker/docker-compose.dev.yml up --build workflow json-server
+	docker compose run --rm yarn
+	docker compose run --rm yarn build
+	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml up --build workflow json-server
 
 down:
 	docker compose down
