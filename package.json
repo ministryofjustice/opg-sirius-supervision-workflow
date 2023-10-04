@@ -27,7 +27,7 @@
     "cypress-axe": "^1.0.0",
     "esbuild": "^0.18.0",
     "eslint": "^8.30.0",
-    "prettier": "^2.7.1",
+    "prettier": "^3.0.0",
     "sass": "^1.38.1"
   },
   "resolutions": {
