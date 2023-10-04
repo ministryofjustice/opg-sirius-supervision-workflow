@@ -54,3 +54,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.trivy-cache:/root/.cache
       - ./test-results:/test-results
+
+  yarn:
+    image: node:20.2.0-alpine3.16
+    working_dir: /home/node/app
+    entrypoint: yarn
+    volumes:
+      - ./:/home/node/app

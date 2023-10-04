@@ -13,7 +13,8 @@
     "cypress": "cypress open",
     "cypress-ci": "cypress open -c baseUrl=http://localhost:8080",
     "prettier": "prettier --write ./web",
-    "lint": "eslint ./web/assets/javascript"
+    "lint": "eslint ./web/assets/javascript",
+    "watch": "yarn build:js --watch=forever"
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^1.0.0",
