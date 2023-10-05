@@ -46,6 +46,7 @@ func TestCaseload(t *testing.T) {
 		name            string
 		teamType        string
 		wantDeputyTypes []model.RefData
+		wantCaseTypes   []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
@@ -66,6 +67,24 @@ func TestCaseload(t *testing.T) {
 				{
 					Handle: "PA",
 					Label:  "Public Authority",
+				},
+			},
+			wantCaseTypes: []model.RefData{
+				{
+					Handle: "HYBRID",
+					Label:  "Hybrid",
+				},
+				{
+					Handle: "DUAL",
+					Label:  "Dual",
+				},
+				{
+					Handle: "HW",
+					Label:  "Health and welfare",
+				},
+				{
+					Handle: "PFA",
+					Label:  "Property and financial affairs",
 				},
 			},
 		},
@@ -113,6 +132,7 @@ func TestCaseload(t *testing.T) {
 				},
 			}
 			want.DeputyTypes = test.wantDeputyTypes
+			want.CaseTypes = test.wantCaseTypes
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -133,6 +153,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "deputy-type",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "case-type",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -215,6 +239,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			Name:                  "deputy-type",
 			ClearBetweenTeamViews: true,
 		},
+		{
+			Name:                  "case-type",
+			ClearBetweenTeamViews: true,
+		},
 	}
 
 	tests := []struct {
@@ -257,6 +285,7 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		selectedUnassigned  string
 		selectedStatuses    []string
 		selectedDeputyTypes []string
+		selectedCaseTypes   []string
 		want                []string
 	}{
 		{
@@ -283,6 +312,10 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		{
 			selectedDeputyTypes: []string{"LAY", "PA"},
 			want:                []string{"Lay", "Public Authority"},
+		},
+		{
+			selectedCaseTypes: []string{"HYBRID", "DUAL"},
+			want:              []string{"Hybrid", "Dual"},
 		},
 	}
 	for i, test := range tests {
@@ -326,10 +359,29 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Public Authority",
 				},
 			}
+			page.CaseTypes = []model.RefData{
+				{
+					Handle: "HYBRID",
+					Label:  "Hybrid",
+				},
+				{
+					Handle: "DUAL",
+					Label:  "Dual",
+				},
+				{
+					Handle: "HW",
+					Label:  "Health and welfare",
+				},
+				{
+					Handle: "PFA",
+					Label:  "Property and financial affairs",
+				},
+			}
 			page.SelectedAssignees = test.selectedAssignees
 			page.SelectedUnassigned = test.selectedUnassigned
 			page.SelectedStatuses = test.selectedStatuses
 			page.SelectedDeputyTypes = test.selectedDeputyTypes
+			page.SelectedCaseTypes = test.selectedCaseTypes
 
 			assert.Equal(t, test.want, page.GetAppliedFilters())
 		})

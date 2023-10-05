@@ -1,0 +1,15 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByCaseType*/ -}}
+{{ define "case-type-filter-applied" }}
+
+{{ if .SelectedCaseTypes }}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Case type</h3>
+  <ul class="moj-filter-tags">
+      {{ range .CaseTypes }}
+          {{ if .IsIn $.SelectedCaseTypes }}
+            <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "case-type" .Handle }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Label }}</a></li>
+          {{ end }}
+      {{ end }}
+  </ul>
+{{ end }}
+
+{{ end }}
