@@ -31,6 +31,7 @@
 
         {{ if .HasFilterBy . "task-type" }}{{ template "task-type-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "deputy-type" }}{{ template "deputy-type-filter-applied" . }}{{ end }}
+        {{ if .HasFilterBy . "case-type" }}{{ template "case-type-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "status" }}{{ template "status-filter-applied" . }}{{ end }}
@@ -40,6 +41,7 @@
 
     {{ if .HasFilterBy . "task-type" }}{{ template "task-type-filter" . }}{{ end }}
     {{ if .HasFilterBy . "deputy-type" }}{{ template "deputy-type-filter" . }}{{ end }}
+    {{ if .HasFilterBy . "case-type" }}{{ template "case-type-filter" . }}{{ end }}
     {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter" . }}{{ end }}
     {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter" . }}{{ end }}
     {{ if .HasFilterBy . "status" }}{{ template "status-filter" . }}{{ end }}
