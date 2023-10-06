@@ -31,14 +31,14 @@ services:
   cypress:
     build:
       dockerfile: docker/cypress/Dockerfile
-    command: ["--headless", "-b", "chrome"]
+    command: ["--headless", "-b", "electron", "--env", "grepUntagged=true"]
     volumes:
       - ./cypress/screenshots:/root/cypress/screenshots:rw,delegated
       - ./cypress/logs:/root/cypress/logs:rw,delegated
     depends_on:
       - workflow
       - json-server
-  
+
   go-lint:
     image: golangci/golangci-lint:v1.54.2
     working_dir: /go/src/app
