@@ -5,7 +5,6 @@ tmp_dir = "tmp"
 
 [build]
 exclude_dir = ["cypress", "docker", "tmp", "web/assets", "web/static", "node_modules", "json-server"]
-cmd = "go build -gcflags='all=-N -l' -o ./tmp/main ."
-bin = "tmp/main"
-full_bin = "dlv exec --accept-multiclient --log --headless --continue --listen :2345 --api-version 2 ./tmp/main"
+cmd = "cd /app && go build -gcflags='all=-N -l' -o /tmp/main ."
+full_bin = "dlv exec --accept-multiclient --log --headless --continue --listen :2345 --api-version 2 /tmp/main"
 include_ext = ["go", "gotmpl"]
