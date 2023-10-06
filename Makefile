@@ -25,16 +25,15 @@ scan: setup-directories
 
 cypress: setup-directories
 	docker compose up -d --wait workflow
-	docker compose run --rm cypress run --env grepUntagged=true
+	docker compose run --rm cypress
 
 up:
 	docker compose up --build -d workflow
 
 dev-up:
 	docker compose run --rm yarn
-	docker compose run --rm yarn build
-	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml build --no-cache workflow
-	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml up workflow json-server
+	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml build workflow
+	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml up workflow yarn json-server
 
 down:
 	docker compose down
