@@ -552,6 +552,15 @@ module.exports = function () {
         "total": 0
       },
       {
+        "id": 66,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "deputies": [],
+        "total": 0
+      },
+      {
         "id": 29,
         "pages": {
           "current": 1,
