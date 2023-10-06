@@ -4,8 +4,8 @@ describe("Deputies visibility", () => {
         cy.setCookie("XSRF-TOKEN", "abcde");
     })
 
-    let teams = [24, 27] // PA and Pro
-    teams.forEach((team) => {
+    let PaProTeams = [24, 27]
+    PaProTeams.forEach((team) => {
         it("Deputy tasks tab is visible and clickable for Pro/PA teams", () => {
             cy.visit("/client-tasks?team="+team);
 
