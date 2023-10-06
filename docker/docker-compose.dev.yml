@@ -9,6 +9,12 @@ services:
       - .:/app:rw,delegated
       - ./json-server/config:/app/config
       - /app/web/static
+    environment:
+      SIRIUS_URL: http://docker.for.mac.localhost:8080
+      SIRIUS_PUBLIC_URL: http://localhost:8080
+      SHOW_DEPUTY_TASKS: 1
+      SHOW_DEPUTIES: 1
+      SHOW_HW_CASELOAD: 1
 
   yarn:
     command: watch
