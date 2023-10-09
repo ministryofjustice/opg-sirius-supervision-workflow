@@ -6,15 +6,22 @@ services:
     ports:
       - '2345:2345'
     volumes:
-      - .:/app:rw,delegated
-      - ./json-server/config:/app/config
-      - /app/web/static
+      - ./.air.toml:/app/.air.toml
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+      - ./internal:/app/internal
+      - ./main_test.go:/app/main_test.go
+      - ./main.go:/app/main.go
+      - ./web/static/javascript:/app/web/static/javascript
+      - ./web/template:/app/web/template
 
   yarn:
     command: watch
-  
+
   json-server:
     build:
       dockerfile: docker/json-server/Dockerfile
+    volumes:
+      - ./json-server/config:/app/config
     ports:
       - '3000:3000'
