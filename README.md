@@ -49,6 +49,10 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
 `make cypress`
 
+To see the UI output you can still run 
+
+`yarn && yarn cypress`
+
 -------------------------------------------------------------------
 ## Run the unit/functional tests
 
