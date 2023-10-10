@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/paginate"
+	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
 )

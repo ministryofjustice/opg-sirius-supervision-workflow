@@ -11,11 +11,9 @@
 
     <div class="govuk-grid-column-three-quarters">
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <nav class="moj-pagination" id="top-nav" aria-label="Top navigation">
-              {{ template "pagination" .Pagination }}
-          </nav>
-        </div>
+        <nav id="top-pagination" aria-label="Top pagination">
+          {{ template "pagination" .Pagination }}
+        </nav>
       </div>
 
       <div class="govuk-grid-row">
@@ -27,12 +25,11 @@
       </div>
 
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <nav class="moj-pagination" id="bottom-nav" aria-label="Bottom navigation">
-              {{ template "pagination" .Pagination }}
+        <div class="govuk-grid-row">
+          <nav id="bottom-pagination" aria-label="Bottom pagination">
+            {{ template "pagination" .Pagination }}
           </nav>
         </div>
-      </div>
     </div>
   </div>
 {{ end }}
