@@ -21,7 +21,7 @@ Ensure that after logging in, you redirect back to the correct port (`8888`)**
 
 To enable debugging and hot-reloading of Go files:
 
-`docker compose up --build workflow` or `make up`
+`make dev-up`
 
 If you are using VSCode, you can then attach a remote debugger on port `2345`. The same is also possible in Goland.
 You will then be able to use breakpoints to stop and inspect the application.
@@ -48,6 +48,10 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 ## Run Cypress tests
 
 `make cypress`
+
+To see the UI output you can still run 
+
+`yarn && yarn cypress`
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests
