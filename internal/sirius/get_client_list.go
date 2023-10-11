@@ -16,6 +16,7 @@ type ClientListParams struct {
 	OrderStatuses []string
 	SubType       string
 	DeputyTypes   []string
+	CaseTypes     []string
 }
 
 type ClientList struct {
@@ -48,7 +49,6 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -82,6 +82,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, dt := range p.DeputyTypes {
 		filter += "deputy-type:" + dt + ","
+	}
+	for _, ct := range p.CaseTypes {
+		filter += "case-type:" + ct + ","
 	}
 	return strings.TrimRight(filter, ",")
 }

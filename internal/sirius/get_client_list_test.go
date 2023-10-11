@@ -191,13 +191,18 @@ func TestClientListParams_CreateFilter(t *testing.T) {
 			want:   "subtype:hw",
 		},
 		{
+			params: ClientListParams{CaseTypes: []string{"HYBRID"}},
+			want:   "case-type:HYBRID",
+		},
+		{
 			params: ClientListParams{
 				CaseOwners:    []string{"1", "2", "3"},
 				OrderStatuses: []string{"active", "closed"},
 				SubType:       "hw",
 				DeputyTypes:   []string{"LAY", "PA"},
+				CaseTypes:     []string{"HYBRID", "DUAL", "HW", "PFA"},
 			},
-			want: "caseowner:1,caseowner:2,caseowner:3,order-status:active,order-status:closed,subtype:hw,deputy-type:LAY,deputy-type:PA",
+			want: "caseowner:1,caseowner:2,caseowner:3,order-status:active,order-status:closed,subtype:hw,deputy-type:LAY,deputy-type:PA,case-type:HYBRID,case-type:DUAL,case-type:HW,case-type:PFA",
 		},
 	}
 	for i, test := range tests {
