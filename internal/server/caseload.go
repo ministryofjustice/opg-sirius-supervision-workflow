@@ -19,6 +19,7 @@ type CaseloadPage struct {
 	FilterByAssignee
 	FilterByStatus
 	FilterByDeputyType
+	FilterByCaseType
 	ClientList sirius.ClientList
 }
 
@@ -32,6 +33,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("unassigned", cv.SelectedUnassigned, true),
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
+			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
 		},
 	}
 }
@@ -54,6 +56,11 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	for _, dt := range cv.DeputyTypes {
 		if dt.IsIn(cv.SelectedDeputyTypes) {
 			appliedFilters = append(appliedFilters, dt.Label)
+		}
+	}
+	for _, ct := range cv.CaseTypes {
+		if ct.IsIn(cv.SelectedCaseTypes) {
+			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
 	return appliedFilters
@@ -118,6 +125,11 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedDeputyTypes = params["deputy-type"]
 		}
 
+		var selectedCaseTypes []string
+		if params.Has("case-type") {
+			selectedCaseTypes = params["case-type"]
+		}
+
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
@@ -129,6 +141,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		if app.SelectedTeam.IsHW() {
 			clientListParams.SubType = "hw"
 			clientListParams.DeputyTypes = selectedDeputyTypes
+			clientListParams.CaseTypes = selectedCaseTypes
 		}
 
 		clientList, err := client.GetClientList(ctx, clientListParams)
@@ -168,6 +181,25 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 				{
 					Handle: "PA",
 					Label:  "Public Authority",
+				},
+			}
+			vars.SelectedCaseTypes = selectedCaseTypes
+			vars.CaseTypes = []model.RefData{
+				{
+					Handle: "HYBRID",
+					Label:  "Hybrid",
+				},
+				{
+					Handle: "DUAL",
+					Label:  "Dual",
+				},
+				{
+					Handle: "HW",
+					Label:  "Health and welfare",
+				},
+				{
+					Handle: "PFA",
+					Label:  "Property and financial affairs",
 				},
 			}
 		}
