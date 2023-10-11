@@ -82,6 +82,14 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 			})
 	}
 
+	if (selectedTeam.IsPro() || selectedTeam.IsPA()) && envVars.ShowDeputies {
+		vars.Tabs = append(vars.Tabs,
+			Tab{
+				Title:    "Deputies",
+				basePath: "deputies",
+			})
+	}
+
 	return &vars, nil
 }
 

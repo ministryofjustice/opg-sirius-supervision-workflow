@@ -67,6 +67,7 @@ func TestNewWorkflowVars(t *testing.T) {
 	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
 	caseloadTab := Tab{Title: "Caseload", basePath: "caseload"}
 	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks"}
+	deputiesTab := Tab{Title: "Deputies", basePath: "deputies"}
 
 	tests := []struct {
 		teamType string
@@ -84,11 +85,11 @@ func TestNewWorkflowVars(t *testing.T) {
 		},
 		{
 			teamType: "PRO",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab},
+			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
 		},
 		{
 			teamType: "PA",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab},
+			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
 		},
 		{
 			teamType: "HW",
@@ -108,6 +109,7 @@ func TestNewWorkflowVars(t *testing.T) {
 			envVars := EnvironmentVars{
 				DefaultTeamId:   19,
 				ShowDeputyTasks: true,
+				ShowDeputies:    true,
 				ShowHWCaseload:  true,
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)

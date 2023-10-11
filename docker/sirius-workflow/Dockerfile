@@ -1,15 +1,9 @@
-FROM golang:1.21.0-alpine as base
+FROM golang:1.21 as base
 WORKDIR /app
 
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
+ENV CGO_ENABLED=0 GOOS=linux
 
-RUN apk update \
-    && apk add --no-cache \
-    ca-certificates \
-    git \
-    && update-ca-certificates
+RUN update-ca-certificates
 
 FROM node:20.2.0-alpine3.16 as asset-env
 

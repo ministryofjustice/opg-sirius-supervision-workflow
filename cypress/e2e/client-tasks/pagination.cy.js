@@ -7,7 +7,7 @@ describe("Pagination", () => {
 
   describe("First page, ellipses and final page", () => {
     beforeEach(() => {
-      cy.get("#top-nav .display-rows").select('25')
+      cy.get("#top-pagination .display-rows").select('25')
           .invoke('val').should('contain', 'per-page=25')
     })
 
@@ -18,9 +18,9 @@ describe("Pagination", () => {
     })
 
     it("shows next button apart from on last page", () => {
-      cy.get("#top-nav .next-page-pagination-link").should('be.visible', 'Next')
+      cy.get("#top-pagination .next-page-pagination-link").should('be.visible', 'Next')
       cy.get(`[aria-label="Page 5"]`).first().click()
-      cy.get("#top-nav .next-page-pagination-link").should('not.exist')
+      cy.get("#top-pagination .next-page-pagination-link").should('not.exist')
     })
 
     it("shows first and second ellipsis when expected", () => {
@@ -30,15 +30,15 @@ describe("Pagination", () => {
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("exist")
 
-      cy.get("#top-nav .govuk-pagination__link:contains(2)").click()
+      cy.get("#top-pagination .govuk-pagination__link:contains(2)").click()
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("not.exist")
 
-      cy.get("#top-nav .govuk-pagination__link:contains(3)").click()
+      cy.get("#top-pagination .govuk-pagination__link:contains(3)").click()
       cy.get(firstEllipsis).should("not.exist")
       cy.get(secondEllipsis).should("not.exist")
 
-      cy.get("#top-nav .govuk-pagination__link:contains(5)").click()
+      cy.get("#top-pagination .govuk-pagination__link:contains(5)").click()
       cy.get(firstEllipsis).should("exist")
       cy.get(secondEllipsis).should("not.exist")
     })
@@ -46,7 +46,7 @@ describe("Pagination", () => {
 
   describe("View 25", () => {
     beforeEach(() => {
-      cy.get("#top-nav .display-rows").select('25')
+      cy.get("#top-pagination .display-rows").select('25')
           .invoke('val').should('contain', 'per-page=25')
     })
 
@@ -59,7 +59,7 @@ describe("Pagination", () => {
 
   describe("View 50", () => {
     beforeEach(() => {
-      cy.get("#top-nav .display-rows").select('50')
+      cy.get("#top-pagination .display-rows").select('50')
           .invoke('val').should('contain', 'per-page=50')
     })
 
@@ -72,7 +72,7 @@ describe("Pagination", () => {
 
   describe("View 100", () => {
     beforeEach(() => {
-      cy.get("#top-nav .display-rows").select('100')
+      cy.get("#top-pagination .display-rows").select('100')
           .invoke('val').should('contain', 'per-page=100')
     })
 
