@@ -97,7 +97,7 @@ func TestDeputyTasks(t *testing.T) {
 	app := WorkflowVars{
 		Path:            "test-path",
 		SelectedTeam:    model.Team{Type: "PRO", Selector: "1"},
-		EnvironmentVars: EnvironmentVars{ShowDeputyTasks: true},
+		EnvironmentVars: EnvironmentVars{},
 	}
 	err := deputyTasks(client, template)(app, w, r)
 
@@ -152,7 +152,7 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	app := WorkflowVars{
 		Path:            "test-path",
 		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowDeputyTasks: true},
+		EnvironmentVars: EnvironmentVars{},
 	}
 	err := deputyTasks(client, template)(app, w, r)
 

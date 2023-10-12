@@ -16,8 +16,6 @@ func TestNewEnvironmentVars(t *testing.T) {
 		SiriusPublicURL: "",
 		Prefix:          "",
 		DefaultTeamId:   21,
-		ShowDeputyTasks: false,
 		ShowHWCaseload:  false,
-		ShowDeputies:    false,
 	}, vars)
 }
