@@ -95,9 +95,8 @@ func TestDeputyTasks(t *testing.T) {
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "PRO", Selector: "1"},
-		EnvironmentVars: EnvironmentVars{ShowDeputyTasks: true},
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
 	}
 	err := deputyTasks(client, template)(app, w, r)
 
@@ -150,9 +149,8 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:            "test-path",
-		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowDeputyTasks: true},
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "19"},
 	}
 	err := deputyTasks(client, template)(app, w, r)
 
