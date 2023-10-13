@@ -24,7 +24,7 @@ func TestDeputies(t *testing.T) {
 	app := WorkflowVars{
 		Path:            "test-path",
 		SelectedTeam:    model.Team{Type: "PRO", Selector: "1"},
-		EnvironmentVars: EnvironmentVars{ShowDeputies: true, ShowDeputyTasks: false},
+		EnvironmentVars: EnvironmentVars{ShowDeputies: true},
 	}
 	err := deputies(client, template)(app, w, r)
 
