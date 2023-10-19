@@ -38,6 +38,11 @@ func TestCreateSortFromURL(t *testing.T) {
 			validSortOptions: []string{"test", "field"},
 			want:             Sort{OrderBy: "field", Descending: true},
 		},
+		{
+			urlValues:        url.Values{"order-by": {"field"}, "sort": {"desc"}},
+			validSortOptions: []string{"test"},
+			want:             Sort{OrderBy: "test"},
+		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
