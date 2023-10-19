@@ -1,11 +1,11 @@
-describe("Caseload page redirect", () => {
+describe("Deputies page redirect", () => {
     before(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
     })
 
     it("Lay teams are redirected to the Client tasks list", () => {
-        cy.visit("/deputy-tasks?team=21");
+        cy.visit("/deputies?team=21");
         cy.url().should('contain', '/client-tasks?team=21')
     })
 

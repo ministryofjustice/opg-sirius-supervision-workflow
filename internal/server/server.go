@@ -15,6 +15,7 @@ type ApiClient interface {
 	WorkflowVarsClient
 	ClientTasksClient
 	CaseloadClient
+	DeputiesClient
 }
 
 type Template interface {
