@@ -13,6 +13,7 @@ type ListPage struct {
 	AppliedFilters []string
 	Pagination     paginate.Pagination
 	PerPage        int
+	Sort           urlbuilder.Sort
 	UrlBuilder     urlbuilder.UrlBuilder
 }
 
