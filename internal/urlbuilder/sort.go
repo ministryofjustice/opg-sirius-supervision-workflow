@@ -11,6 +11,9 @@ type Sort struct {
 }
 
 func CreateSortFromURL(values url.Values, validOptions []string) Sort {
+	if len(validOptions) == 0 {
+		return Sort{}
+	}
 	sort := Sort{
 		OrderBy:    values.Get("order-by"),
 		Descending: values.Get("sort") == "desc",
