@@ -1,13 +1,20 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Deputy struct {
-	Id          int     `json:"id"`
-	DisplayName string  `json:"displayName"`
-	Type        RefData `json:"deputyType"`
-	Number      int     `json:"deputyNumber"`
-	Address     Address `json:"deputyAddress"`
+	Id                            int       `json:"id"`
+	DisplayName                   string    `json:"displayName"`
+	Type                          RefData   `json:"deputyType"`
+	Number                        int       `json:"deputyNumber"`
+	Address                       Address   `json:"deputyAddress"`
+	ExecutiveCaseManager          Assignee  `json:"executiveCaseManager"`
+	Assurance                     Assurance `json:"mostRecentlyCompletedAssurance"`
+	ActiveClientCount             int       `json:"activeClientCount"`
+	ActiveNonCompliantClientCount int       `json:"activeNonCompliantClientCount"`
 }
 
 func (d Deputy) GetURL() string {
@@ -20,4 +27,12 @@ func (d Deputy) GetURL() string {
 
 func (d Deputy) IsPro() bool {
 	return d.Type.Handle == "PRO"
+}
+
+func (d Deputy) CalculateNonCompliance() string {
+	if d.ActiveClientCount == 0 {
+		return "0%"
+	}
+	percentage := (float64(d.ActiveNonCompliantClientCount) / float64(d.ActiveClientCount)) * 100
+	return fmt.Sprintf("%.f%%", math.Round(percentage))
 }
