@@ -13,7 +13,6 @@ type DeputyList struct {
 	Deputies      []model.Deputy        `json:"persons"`
 	Pages         model.PageInformation `json:"pages"`
 	TotalDeputies int                   `json:"total"`
-	MetaData      MetaData              `json:"metadata"`
 }
 
 type DeputyListParams struct {

@@ -2,8 +2,49 @@ package urlbuilder
 
 import (
 	"github.com/stretchr/testify/assert"
+	"net/url"
+	"strconv"
 	"testing"
 )
+
+func TestCreateSortFromURL(t *testing.T) {
+	tests := []struct {
+		urlValues        url.Values
+		validSortOptions []string
+		want             Sort
+	}{
+		{
+			urlValues:        url.Values{},
+			validSortOptions: nil,
+			want:             Sort{},
+		},
+		{
+			urlValues:        url.Values{"order-by": {"field"}},
+			validSortOptions: nil,
+			want:             Sort{},
+		},
+		{
+			urlValues:        url.Values{"order-by": {"field"}},
+			validSortOptions: []string{"field"},
+			want:             Sort{OrderBy: "field"},
+		},
+		{
+			urlValues:        url.Values{"order-by": {"field"}, "sort": {"invalid"}},
+			validSortOptions: []string{"field"},
+			want:             Sort{OrderBy: "field"},
+		},
+		{
+			urlValues:        url.Values{"order-by": {"field"}, "sort": {"desc"}},
+			validSortOptions: []string{"test", "field"},
+			want:             Sort{OrderBy: "field", Descending: true},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, CreateSortFromURL(test.urlValues, test.validSortOptions))
+		})
+	}
+}
 
 func TestSort_GetAriaSort(t *testing.T) {
 	assert.Equal(t, "none", Sort{}.GetAriaSort("test"))
