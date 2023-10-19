@@ -92,6 +92,16 @@ func TestDeputy_CalculateNonCompliance(t *testing.T) {
 			nonCompliantCount: 1,
 			want:              "33%",
 		},
+		{
+			activeClientCount: 200,
+			nonCompliantCount: 1,
+			want:              "1%",
+		},
+		{
+			activeClientCount: 2000,
+			nonCompliantCount: 1,
+			want:              "0%",
+		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
