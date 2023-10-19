@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Deputy struct {
 	Id                            int       `json:"id"`
@@ -30,5 +33,6 @@ func (d Deputy) CalculateNonCompliance() string {
 	if d.ActiveClientCount == 0 {
 		return "0%"
 	}
-	return fmt.Sprintf("%.f%%", (float64(d.ActiveNonCompliantClientCount)/float64(d.ActiveClientCount))*100)
+	percentage := (float64(d.ActiveNonCompliantClientCount) / float64(d.ActiveClientCount)) * 100
+	return fmt.Sprintf("%.f%%", math.Round(percentage))
 }
