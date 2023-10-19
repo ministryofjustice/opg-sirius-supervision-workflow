@@ -15,6 +15,7 @@ func TestUrlBuilder_buildUrl(t *testing.T) {
 		page    int
 		perPage int
 		filters []Filter
+		sort    Sort
 		want    string
 	}{
 		{
@@ -102,17 +103,26 @@ func TestUrlBuilder_buildUrl(t *testing.T) {
 			},
 			want: "slug?team=team12&page=11&per-page=25&test=val1&test=val2&test2=val3",
 		},
+		{
+			path:    "",
+			team:    "1",
+			page:    2,
+			perPage: 15,
+			filters: []Filter{},
+			sort:    Sort{OrderBy: "name"},
+			want:    "?team=1&page=2&per-page=15&order-by=name&sort=asc",
+		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			builder := UrlBuilder{Path: test.path}
-			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters)
+			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort)
 			assert.Equal(t, test.want, url)
 		})
 	}
 }
 
-func TestClientTasksVars_GetTeamUrl(t *testing.T) {
+func TestUrlBuilder_GetTeamUrl(t *testing.T) {
 	tests := []struct {
 		urlBuilder UrlBuilder
 		team       string
@@ -132,6 +142,11 @@ func TestClientTasksVars_GetTeamUrl(t *testing.T) {
 			urlBuilder: UrlBuilder{},
 			team:       "pro",
 			want:       "?team=pro&page=1&per-page=0",
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "name", Descending: true}},
+			team:       "pro",
+			want:       "?team=pro&page=1&per-page=0&order-by=name&sort=desc",
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedFilters: []Filter{
@@ -194,6 +209,12 @@ func TestUrlBuilder_GetPaginationUrl(t *testing.T) {
 			want:       "?team=lay&page=2&per-page=100",
 		},
 		{
+			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedPerPage: 100, SelectedSort: Sort{OrderBy: "name"}},
+			page:       2,
+			perPage:    nil,
+			want:       "?team=lay&page=2&per-page=100&order-by=name&sort=asc",
+		},
+		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
 				{
 					Name:                  "retained1",
@@ -230,8 +251,8 @@ func TestUrlBuilder_GetClearFiltersUrl(t *testing.T) {
 		want       string
 	}{
 		{
-			urlBuilder: UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50},
-			want:       "page?team=lay&page=1&per-page=50",
+			urlBuilder: UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50, SelectedSort: Sort{OrderBy: "name"}},
+			want:       "page?team=lay&page=1&per-page=50&order-by=name&sort=asc",
 		},
 		{
 			urlBuilder: UrlBuilder{SelectedTeam: "lay", SelectedFilters: []Filter{
@@ -265,10 +286,10 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 		expectedError error
 	}{
 		{
-			urlBuilder:    UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50},
+			urlBuilder:    UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 50, SelectedSort: Sort{OrderBy: "name"}},
 			name:          "non-existent-filter",
 			value:         "non-existent-value",
-			want:          "page?team=lay&page=1&per-page=50",
+			want:          "page?team=lay&page=1&per-page=50&order-by=name&sort=asc",
 			expectedError: nil,
 		},
 		{
@@ -373,6 +394,40 @@ func TestUrlBuilder_GetRemoveFilterUrl(t *testing.T) {
 			returnedValue, returnedError := test.urlBuilder.GetRemoveFilterUrl(test.name, test.value)
 			assert.Equal(t, test.want, returnedValue)
 			assert.Equal(t, test.expectedError, returnedError)
+		})
+	}
+}
+
+func TestUrlBuilder_GetSortUrl(t *testing.T) {
+	tests := []struct {
+		urlBuilder UrlBuilder
+		orderBy    string
+		want       string
+	}{
+		{
+			urlBuilder: UrlBuilder{},
+			orderBy:    "test",
+			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test2", Descending: true}},
+			orderBy:    "test",
+			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test"}},
+			orderBy:    "test",
+			want:       "?team=&page=1&per-page=0&order-by=test&sort=desc",
+		},
+		{
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test", Descending: true}},
+			orderBy:    "test",
+			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, test.urlBuilder.GetSortUrl(test.orderBy))
 		})
 	}
 }
