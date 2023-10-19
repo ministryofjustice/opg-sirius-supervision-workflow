@@ -6,7 +6,7 @@ describe("Deputies visibility", () => {
 
     let PaProTeams = [24, 27]
     PaProTeams.forEach((team) => {
-        it("Deputy tasks tab is visible and clickable for Pro/PA teams", () => {
+        it("Deputies tab is visible and clickable for Pro/PA teams", () => {
             cy.visit("/client-tasks?team="+team);
 
             cy.get(".moj-sub-navigation__item:nth-child(1) a:contains('Client tasks')").as("tab1")

@@ -60,3 +60,46 @@ func TestDeputy_IsPro(t *testing.T) {
 		})
 	}
 }
+
+func TestDeputy_CalculateNonCompliance(t *testing.T) {
+	tests := []struct {
+		activeClientCount int
+		nonCompliantCount int
+		want              string
+	}{
+		{
+			activeClientCount: 0,
+			nonCompliantCount: 0,
+			want:              "0%",
+		},
+		{
+			activeClientCount: 10,
+			nonCompliantCount: 0,
+			want:              "0%",
+		},
+		{
+			activeClientCount: 0,
+			nonCompliantCount: 10,
+			want:              "0%",
+		},
+		{
+			activeClientCount: 1,
+			nonCompliantCount: 1,
+			want:              "100%",
+		},
+		{
+			activeClientCount: 3,
+			nonCompliantCount: 1,
+			want:              "33%",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			deputy := Deputy{
+				ActiveClientCount:             test.activeClientCount,
+				ActiveNonCompliantClientCount: test.nonCompliantCount,
+			}
+			assert.Equal(t, test.want, deputy.CalculateNonCompliance())
+		})
+	}
+}
