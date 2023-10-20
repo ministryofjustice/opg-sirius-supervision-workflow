@@ -127,6 +127,10 @@ func TestDate_UnmarshalJSON(t *testing.T) {
 			json: `{"testDate":"01/01/2020"}`,
 			want: "01/01/2020",
 		},
+		{
+			json: `{"testDate":"2020-01-01T20:01:02+00:00"}`,
+			want: "01/01/2020",
+		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
