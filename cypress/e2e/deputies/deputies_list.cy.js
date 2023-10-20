@@ -7,7 +7,7 @@ describe("Deputies list", () => {
 
     it("has column headers", () => {
         cy.get("th:nth-child(2)").should("contain", "Deputy");
-        cy.get("th:nth-child(3)").should("contain", "ECM");
+        cy.get("th:nth-child(3)").should("contain", "Executive case manager");
         cy.get("th:nth-child(4)").should("contain", "Active clients");
         cy.get("th:nth-child(5)").should("contain", "Non-compliance");
         cy.get("th:nth-child(6)").should("contain", "Assurance visits");
