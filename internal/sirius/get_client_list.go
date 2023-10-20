@@ -71,9 +71,6 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 
 func (p ClientListParams) CreateFilter() string {
 	var filter string
-	for _, a := range p.CaseOwners {
-		filter += "caseowner:" + a + ","
-	}
 	for _, s := range p.OrderStatuses {
 		filter += "order-status:" + s + ","
 	}
@@ -85,6 +82,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, ct := range p.CaseTypes {
 		filter += "case-type:" + ct + ","
+	}
+	for _, a := range p.CaseOwners {
+		filter += "caseowner:" + a + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
