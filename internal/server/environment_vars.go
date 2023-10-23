@@ -14,7 +14,6 @@ type EnvironmentVars struct {
 	Prefix          string
 	DefaultTeamId   int
 	ShowDeputies    bool
-	ShowHWCaseload  bool
 }
 
 func NewEnvironmentVars() (EnvironmentVars, error) {
@@ -31,7 +30,6 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		Prefix:          getEnv("PREFIX", ""),
 		DefaultTeamId:   defaultTeamId,
 		ShowDeputies:    getEnv("SHOW_DEPUTIES", "0") == "1",
-		ShowHWCaseload:  getEnv("SHOW_HW_CASELOAD", "0") == "1",
 	}, nil
 }
 
