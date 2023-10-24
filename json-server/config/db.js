@@ -552,15 +552,6 @@ module.exports = function () {
         "total": 0
       },
       {
-        "id": 66,
-        "pages": {
-          "current": 1,
-          "total": 1
-        },
-        "deputies": [],
-        "total": 0
-      },
-      {
         "id": 29,
         "pages": {
           "current": 1,
@@ -637,6 +628,75 @@ module.exports = function () {
         ],
         "total": 2
       },
+    ],
+    "deputies": [
+      {
+        "id": 27,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "persons": [
+          {
+            "id": 13,
+            "deputyNumber": 123456,
+            "displayName": "Mr Fee-paying Deputy",
+            "deputyType": {
+              "handle": "PRO",
+              "label": "Professional"
+            },
+            "deputyAddress": {
+              "town": "Derby"
+            },
+            "executiveCaseManager": {
+              "displayName": "PROTeam1 User1",
+              "id": 96
+            },
+            "mostRecentlyCompletedAssurance": {
+              "reportReviewDate" : "2023-05-26T00:00:00+00:00",
+              "reportMarkedAs": {
+                "handle": "GREEN",
+                "label": "Green"
+              },
+              "assuranceType": {
+                "handle": "VISIT",
+                "label": "Visit"
+              }
+            },
+            "activeClientCount": 100,
+            "activeNonCompliantClientCount": 10
+          },
+          {
+            "id": 14,
+            "deputyNumber": 654321,
+            "displayName": "Mr PA Deputy",
+            "deputyType": {
+              "handle": "PA",
+              "label": "Public authority"
+            },
+            "deputyAddress": {
+              "town": "Derby"
+            },
+            "executiveCaseManager": {
+              "id": 27,
+              "displayName": "Pro Team 1 - (Supervision)",
+            },
+            "mostRecentlyCompletedAssurance": {},
+            "activeClientCount": 81,
+            "activeNonCompliantClientCount": 34
+          }
+        ],
+        "total": 2
+      },
+      {
+        "id": 24,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "deputies": [],
+        "total": 0
+      }
     ],
     "tasks-view-25": [
       {
