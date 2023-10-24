@@ -1,4 +1,92 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.DeputiesPage*/ -}}
 {{ define "deputies-list" }}
-<p>deputies list goes here...</p>
+  <section data-module="manage-reassign" class="moj-manage-list">
+
+    {{ template "deputy-reassign-panel" . }}
+
+    <table id="workflow-deputies" class="govuk-table"  data-module="moj-sortable-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header govuk-table__select">
+            <div class="govuk-checkboxes govuk-checkboxes--small">
+              <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" autocomplete="off" />
+                <label class="govuk-label govuk-checkboxes__label" for="selectAll">
+                  <span class="govuk-visually-hidden">Select</span>
+                </label>
+              </div>
+            </div>
+          </th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "deputy" }}"><a href="{{ .UrlBuilder.GetSortUrl "deputy" }}"><button type="button">Deputy</button></a></th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Executive case manager</th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Active clients</th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "noncompliance" }}"><a href="{{ .UrlBuilder.GetSortUrl "noncompliance" }}"><button type="button">Non-compliance</button></a></th>
+          <th scope="col" class="govuk-table__header" aria-sort="none">Assurance visits</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+      {{ if ne .DeputyList.TotalDeputies 0 }}
+          {{ range .DeputyList.Deputies }}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell govuk-table__select">
+                <div class="govuk-checkboxes govuk-checkboxes--small">
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-deputies" value="{{ .Id }}" id="select-deputy-{{ .Id }}" autocomplete="off" />
+                    <label class="govuk-label govuk-checkboxes__label" for="select-deputy-{{ .Id }}">
+                      <span class="govuk-visually-hidden">Select</span>
+                    </label>
+                  </div>
+                </div>
+              </td>
+              <td class="govuk-table__cell">
+                <a href="{{ sirius .GetURL }}" class="govuk-link">
+                    {{ .DisplayName }}
+                </a>
+                <span class="secondary">{{ if .IsPro }}{{ .Address.Town }} - {{ end }}{{ .Number }}</span>
+              </td>
+              <td class="govuk-table__cell">
+                <label class="govuk-label" for="assignee-name-and-team">
+                    {{ if or (eq .ExecutiveCaseManager.Id 0) ($.App.SelectedTeam.HasTeam .ExecutiveCaseManager.Id) }}
+                      Not assigned
+                    {{ else }}
+                      {{ .ExecutiveCaseManager.Name }}
+                    {{ end }}
+                    {{ range .ExecutiveCaseManager.Teams }}
+                      <span class="secondary">{{ .Name }} </span>
+                    {{ end }}
+                </label>
+              </td>
+              <td class="govuk-table__cell">
+                {{ .ActiveClientCount }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .ActiveNonCompliantClientCount }} ({{ .CalculateNonCompliance }})
+              </td>
+              <td class="govuk-table__cell">
+                {{ $rag := .Assurance.GetRAGRating }}
+                <label class="govuk-label" for="assuranceReviewDate">{{ .Assurance.ReportReviewDate }}</label>
+                {{ if $rag.Name }}
+                  <span><strong class="govuk-tag govuk-tag--{{ $rag.Colour }}">{{ $rag.Name }}</strong></span>
+                {{ end }}
+                {{ if .Assurance.IsPDR }}
+                  <span class="secondary">Professional deputy review</span>
+                {{ end }}
+              </td>
+            </tr>
+          {{ end }}
+      {{ else }}
+          {{ $length := len .AppliedFilters }}
+          {{ if eq $length 0 }}
+            <tr class="govuk-table__row">
+              <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no deputies</td>
+            </tr>
+          {{ else if ne $length 0 }}
+            <tr class="govuk-table__row">
+              <td colspan="100%" class="govuk-table__cell govuk-table__cell--no-data">The team has no deputies for these filters:<br> {{ range .AppliedFilters }}{{ . }}<br>{{ end }}</td>
+            </tr>
+          {{ end }}
+      {{ end }}
+      </tbody>
+    </table>
+  </section>
 {{ end }}
