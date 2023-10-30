@@ -143,7 +143,7 @@ func TestGetTeamsForSelection(t *testing.T) {
 		},
 	}
 
-	teams, err := client.GetTeamsForSelection(getContext(nil))
+	teams, err := client.GetTeamsForSelection(getContext(nil), []string{})
 	assert.Equal(t, expectedResponse, teams)
 	assert.Equal(t, nil, err)
 }
@@ -157,7 +157,7 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	_, err := client.GetTeamsForSelection(getContext(nil))
+	_, err := client.GetTeamsForSelection(getContext(nil), []string{})
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
