@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
@@ -108,13 +109,13 @@ func (c *ApiClient) GetTeamsForSelection(ctx Context, teamTypes []string) ([]mod
 	})
 
 	if len(teamTypes) > 0 {
-		q = returnSelectedTeams(q, teamTypes)
+		q = returnSelectedTeamTypes(q, teamTypes)
 	}
 
 	return q, err
 }
 
-func returnSelectedTeams(allTeams []model.Team, teamTypes []string) []model.Team {
+func returnSelectedTeamTypes(allTeams []model.Team, teamTypes []string) []model.Team {
 	var teamsToReturn []model.Team
 
 	for _, tt := range teamTypes {
@@ -124,5 +125,7 @@ func returnSelectedTeams(allTeams []model.Team, teamTypes []string) []model.Team
 			}
 		}
 	}
+	fmt.Println("returnable teams")
+	fmt.Println(teamsToReturn)
 	return teamsToReturn
 }
