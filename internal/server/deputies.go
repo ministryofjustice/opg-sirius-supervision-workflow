@@ -10,6 +10,7 @@ import (
 
 type DeputiesClient interface {
 	GetDeputyList(sirius.Context, sirius.DeputyListParams) (sirius.DeputyList, error)
+	ReassignDeputies(ctx sirius.Context, params sirius.ReassignDeputiesParams) (string, error)
 }
 
 type DeputiesPage struct {
@@ -30,13 +31,45 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
-		if r.Method != http.MethodGet {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
+		//if r.Method != http.MethodGet && r.Method != http.MethodPost {
+		//	return StatusError(http.StatusMethodNotAllowed)
+		//}
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+		}
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignECM:  r.FormValue("assignECM"),
+				DeputyIds:  r.Form["selected-deputies"],
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		if r.Method == http.MethodPut {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignECM:  r.FormValue("assignECM"),
+				DeputyIds:  r.Form["selected-deputies"],
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		params := r.URL.Query()
