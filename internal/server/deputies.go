@@ -48,7 +48,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
 				AssignTeam: r.FormValue("assignTeam"),
-				AssignECM:  r.FormValue("assignECM"),
+				AssignCM:   r.FormValue("assignCM"),
 				DeputyIds:  r.Form["selected-deputies"],
 			})
 			if err != nil {
@@ -64,7 +64,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
 				AssignTeam: r.FormValue("assignTeam"),
-				AssignECM:  r.FormValue("assignECM"),
+				AssignCM:   r.FormValue("assignCM"),
 				DeputyIds:  r.Form["selected-deputies"],
 			})
 			if err != nil {

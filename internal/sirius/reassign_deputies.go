@@ -11,7 +11,7 @@ import (
 
 type ReassignDeputiesParams struct {
 	AssignTeam string
-	AssignECM  string
+	AssignCM   string
 	AssigneeId int      `json:"assigneeId"`
 	DeputyIds  []string `json:"deputyIds"`
 	IsWorkflow bool     `json:"isWorkflow"`
@@ -23,8 +23,8 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 	var err error
 
 	assignee := params.AssignTeam
-	if params.AssignECM != "" {
-		assignee = params.AssignECM
+	if params.AssignCM != "" {
+		assignee = params.AssignCM
 	}
 
 	params.AssigneeId, err = strconv.Atoi(assignee)
