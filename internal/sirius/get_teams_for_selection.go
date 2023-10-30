@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
@@ -125,7 +124,6 @@ func returnSelectedTeamTypes(allTeams []model.Team, teamTypes []string) []model.
 			}
 		}
 	}
-	fmt.Println("returnable teams")
-	fmt.Println(teamsToReturn)
+
 	return teamsToReturn
 }

@@ -23,7 +23,7 @@
           <input type="hidden" name="xsrfToken" value="{{ .App.XSRFToken }}"  class="js-xsrfToken"/>
           <label class="govuk-label" for="assignTeam">Assign to a team</label>
           <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
-            <option value={{ .App.SelectedTeam.Id }} selected>{{ .App.SelectedTeam.Name }}</option>
+            <option value="0" selected>Select a team</option>
               {{ range .App.PaProTeamSelection }}
                 <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
@@ -34,7 +34,7 @@
           <label class="govuk-label" for="assignECM">
             Assign to a case manager
           </label>
-          <select class="govuk-select" id="assignECM" name="assignECM">
+          <select class="govuk-select" id="assignECM" name="assignCM">
             <option value="" label="Select a case manager" selected>Select a case manager</option>
           </select>
         </div>
