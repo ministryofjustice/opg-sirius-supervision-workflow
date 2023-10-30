@@ -31,9 +31,9 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
-		//if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		//	return StatusError(http.StatusMethodNotAllowed)
-		//}
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+			return StatusError(http.StatusMethodNotAllowed)
+		}
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
