@@ -34,7 +34,7 @@ func (m mockApiClient) GetCurrentUserDetails(context sirius.Context) (model.Assi
 	return m.CurrentUserDetails, m.error
 }
 
-func (m mockApiClient) GetTeamsForSelection(context sirius.Context) ([]model.Team, error) {
+func (m mockApiClient) GetTeamsForSelection(context sirius.Context, teamType []string) ([]model.Team, error) {
 	return m.TeamsForSelection, m.error
 }
 
@@ -56,4 +56,8 @@ func (m mockApiClient) GetClientList(context sirius.Context, params sirius.Clien
 
 func (m mockApiClient) GetDeputyList(context sirius.Context, params sirius.DeputyListParams) (sirius.DeputyList, error) {
 	panic("implement me")
+}
+
+func (m mockApiClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
+	return "", nil
 }

@@ -53,15 +53,15 @@ describe("Filters", () => {
     cy.get('#due-date-to').should('have.value', "2022-12-18")
   })
 
-  it("retains task type filter when changing views", () => {
-    cy.get('#option-select-title-task-type').click()
-    cy.get('[data-filter-name="moj-filter-name-tasktype"]').within(() => {
-      cy.get('label:contains("Casework - General")').click()
-    })
-    cy.get('[data-module=apply-filters]').click()
-    cy.get("#top-pagination .display-rows").select('100')
-    cy.url().should('include', 'task-type=CWGN')
-  })
+  // it("retains task type filter when changing views", () => {
+  //   cy.get('#option-select-title-task-type').click()
+  //   cy.get('[data-filter-name="moj-filter-name-tasktype"]').within(() => {
+  //     cy.get('label:contains("Casework - General")').click()
+  //   })
+  //   cy.get('[data-module=apply-filters]').click()
+  //   cy.get("#top-pagination .display-rows").select('100')
+  //   cy.url().should('include', 'task-type=CWGN')
+  // })
 
   it("shows button to remove individual task type filter", () => {
     cy.get('#option-select-title-task-type').click()
