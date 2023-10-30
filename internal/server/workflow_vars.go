@@ -10,15 +10,16 @@ import (
 )
 
 type WorkflowVars struct {
-	Path            string
-	XSRFToken       string
-	MyDetails       model.Assignee
-	TeamSelection   []model.Team
-	SelectedTeam    model.Team
-	Tabs            []Tab
-	SuccessMessage  string
-	Errors          sirius.ValidationErrors
-	EnvironmentVars EnvironmentVars
+	Path               string
+	XSRFToken          string
+	MyDetails          model.Assignee
+	TeamSelection      []model.Team
+	PaProTeamSelection []model.Team
+	SelectedTeam       model.Team
+	Tabs               []Tab
+	SuccessMessage     string
+	Errors             sirius.ValidationErrors
+	EnvironmentVars    EnvironmentVars
 }
 
 type Tab struct {
@@ -28,7 +29,7 @@ type Tab struct {
 
 type WorkflowVarsClient interface {
 	GetCurrentUserDetails(sirius.Context) (model.Assignee, error)
-	GetTeamsForSelection(sirius.Context) ([]model.Team, error)
+	GetTeamsForSelection(sirius.Context, []string) ([]model.Team, error)
 }
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
@@ -39,7 +40,12 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		return nil, err
 	}
 
-	teamSelection, err := client.GetTeamsForSelection(ctx)
+	teamSelection, err := client.GetTeamsForSelection(ctx, []string{})
+	if err != nil {
+		return nil, err
+	}
+
+	paProTeamSelection, err := client.GetTeamsForSelection(ctx, []string{"PA", "PRO"})
 	if err != nil {
 		return nil, err
 	}
@@ -52,11 +58,12 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 	}
 
 	vars := WorkflowVars{
-		Path:          r.URL.Path,
-		XSRFToken:     ctx.XSRFToken,
-		MyDetails:     myDetails,
-		TeamSelection: teamSelection,
-		SelectedTeam:  selectedTeam,
+		Path:               r.URL.Path,
+		XSRFToken:          ctx.XSRFToken,
+		MyDetails:          myDetails,
+		TeamSelection:      teamSelection,
+		PaProTeamSelection: paProTeamSelection,
+		SelectedTeam:       selectedTeam,
 		Tabs: []Tab{
 			{
 				Title:    "Client tasks",

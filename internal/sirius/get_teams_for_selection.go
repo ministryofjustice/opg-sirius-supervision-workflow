@@ -24,7 +24,7 @@ type TeamCollection struct {
 	} `json:"teamType"`
 }
 
-func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]model.Team, error) {
+func (c *ApiClient) GetTeamsForSelection(ctx Context, teamTypes []string) ([]model.Team, error) {
 	var v []TeamCollection
 	var q []model.Team
 
@@ -107,5 +107,23 @@ func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]model.Team, error) {
 		return q[i].Name < q[j].Name
 	})
 
+	if len(teamTypes) > 0 {
+		q = returnSelectedTeamTypes(q, teamTypes)
+	}
+
 	return q, err
+}
+
+func returnSelectedTeamTypes(allTeams []model.Team, teamTypes []string) []model.Team {
+	var teamsToReturn []model.Team
+
+	for _, tt := range teamTypes {
+		for i, m := range allTeams {
+			if m.Type == tt {
+				teamsToReturn = append(teamsToReturn, allTeams[i])
+			}
+		}
+	}
+
+	return teamsToReturn
 }
