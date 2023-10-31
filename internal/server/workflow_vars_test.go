@@ -114,15 +114,16 @@ func TestNewWorkflowVars(t *testing.T) {
 
 			assert.Nil(t, err)
 			assert.Equal(t, WorkflowVars{
-				Path:            "/path",
-				XSRFToken:       "",
-				MyDetails:       mockUserDetailsData,
-				TeamSelection:   teams,
-				SelectedTeam:    team,
-				SuccessMessage:  "",
-				Errors:          nil,
-				Tabs:            test.wantTabs,
-				EnvironmentVars: envVars,
+				Path:               "/path",
+				XSRFToken:          "",
+				MyDetails:          mockUserDetailsData,
+				TeamSelection:      teams,
+				SelectedTeam:       team,
+				SuccessMessage:     "",
+				Errors:             nil,
+				Tabs:               test.wantTabs,
+				EnvironmentVars:    envVars,
+				PaProTeamSelection: []model.Team{team},
 			}, *vars)
 		})
 	}
