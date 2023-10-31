@@ -25,6 +25,10 @@ func (m *mockDeputiesClient) GetDeputyList(ctx sirius.Context, params sirius.Dep
 	return m.deputyList, m.getDeputyListError
 }
 
+func (m *mockDeputiesClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
+	return "", nil
+}
+
 var testDeputyList = sirius.DeputyList{
 	Deputies: []model.Deputy{
 		{
@@ -109,8 +113,8 @@ func TestDeputies_MethodNotAllowed(t *testing.T) {
 		http.MethodHead,
 		http.MethodOptions,
 		http.MethodPatch,
-		http.MethodPut,
-		http.MethodPost,
+		//http.MethodPut,
+		//http.MethodPost,
 		http.MethodTrace,
 	}
 	for _, method := range methods {
