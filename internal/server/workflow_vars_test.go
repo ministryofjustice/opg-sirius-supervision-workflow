@@ -70,30 +70,36 @@ func TestNewWorkflowVars(t *testing.T) {
 	deputiesTab := Tab{Title: "Deputies", basePath: "deputies"}
 
 	tests := []struct {
-		teamType string
-		selector string
-		wantTabs []Tab
+		teamType      string
+		selector      string
+		wantTabs      []Tab
+		showProPaTeam bool
 	}{
 		{
-			teamType: "LAY",
-			wantTabs: []Tab{clientTasksTab, caseloadTab},
+			teamType:      "LAY",
+			wantTabs:      []Tab{clientTasksTab, caseloadTab},
+			showProPaTeam: false,
 		},
 		{
-			teamType: "LAY",
-			selector: "lay-team",
-			wantTabs: []Tab{clientTasksTab},
+			teamType:      "LAY",
+			selector:      "lay-team",
+			wantTabs:      []Tab{clientTasksTab},
+			showProPaTeam: false,
 		},
 		{
-			teamType: "PRO",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			teamType:      "PRO",
+			wantTabs:      []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			showProPaTeam: true,
 		},
 		{
-			teamType: "PA",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			teamType:      "PA",
+			wantTabs:      []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			showProPaTeam: true,
 		},
 		{
-			teamType: "HW",
-			wantTabs: []Tab{clientTasksTab, caseloadTab},
+			teamType:      "HW",
+			wantTabs:      []Tab{clientTasksTab, caseloadTab},
+			showProPaTeam: false,
 		},
 	}
 	for _, test := range tests {
@@ -112,6 +118,11 @@ func TestNewWorkflowVars(t *testing.T) {
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)
 
+			var paProTeam []model.Team
+			if test.showProPaTeam == true {
+				paProTeam = []model.Team{team}
+			}
+
 			assert.Nil(t, err)
 			assert.Equal(t, WorkflowVars{
 				Path:               "/path",
@@ -123,7 +134,7 @@ func TestNewWorkflowVars(t *testing.T) {
 				Errors:             nil,
 				Tabs:               test.wantTabs,
 				EnvironmentVars:    envVars,
-				PaProTeamSelection: []model.Team{team},
+				PaProTeamSelection: paProTeam,
 			}, *vars)
 		})
 	}
@@ -191,6 +202,66 @@ func TestGetSelectedTeam(t *testing.T) {
 			selectedTeam, err := getSelectedTeam(r, test.loggedInTeamId, test.defaultTeamId, teams)
 			assert.Equal(t, test.expectedTeam, selectedTeam)
 			assert.Equal(t, test.expectedError, err)
+		})
+	}
+}
+
+func TestCreateReassignDeputyDropDownList(t *testing.T) {
+	allTeams := []model.Team{
+		{Id: 29, Type: "PA"},
+		{Id: 13, Type: "PRO"},
+		{Id: 30, Type: "PA"},
+		{Id: 5, Type: "PA"},
+	}
+
+	tests := []struct {
+		name                string
+		requiredTeamTypes   []string
+		currentSelectedTeam model.Team
+		expectedResponse    []model.Team
+	}{
+		{
+			name:                "Can filter on multiple team types",
+			requiredTeamTypes:   []string{"PA", "PRO"},
+			currentSelectedTeam: model.Team{Type: "PRO", Id: 55},
+			expectedResponse: []model.Team{
+				{Type: "PRO", Id: 55},
+				{Type: "PA", Id: 29},
+				{Type: "PA", Id: 30},
+				{Type: "PA", Id: 5},
+				{Type: "PRO", Id: 13},
+			},
+		},
+		{
+			name:                "Can filter on multiple team types",
+			requiredTeamTypes:   []string{"PRO"},
+			currentSelectedTeam: model.Team{Type: "PRO", Id: 55},
+			expectedResponse: []model.Team{
+				{Type: "PRO", Id: 55},
+				{Type: "PRO", Id: 13},
+			},
+		},
+		{
+			name:                "Can filter on single team types",
+			requiredTeamTypes:   []string{"PA"},
+			currentSelectedTeam: model.Team{Type: "PRO", Id: 55},
+			expectedResponse: []model.Team{
+				{Type: "PA", Id: 29},
+				{Type: "PA", Id: 30},
+				{Type: "PA", Id: 5},
+			},
+		},
+		{
+			name:                "Will not return current selected team if doesnt match type",
+			requiredTeamTypes:   []string{""},
+			currentSelectedTeam: model.Team{Type: "PRO", Id: 55},
+			expectedResponse:    []model.Team{},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			response := createReassignDeputyDropDownList(allTeams, test.requiredTeamTypes, test.currentSelectedTeam)
+			assert.Equal(t, test.expectedResponse, response)
 		})
 	}
 }

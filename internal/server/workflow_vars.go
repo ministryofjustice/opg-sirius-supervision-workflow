@@ -128,8 +128,11 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 
 func createReassignDeputyDropDownList(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
 	//show current team page as first in list
-	teamsToReturn := []model.Team{
-		currentSelectedTeam,
+	teamsToReturn := []model.Team{}
+	for _, m := range requiredTeamTypes {
+		if m == currentSelectedTeam.Type {
+			teamsToReturn = append(teamsToReturn, currentSelectedTeam)
+		}
 	}
 
 	for _, tt := range requiredTeamTypes {
