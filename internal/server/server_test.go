@@ -34,7 +34,7 @@ func (m mockApiClient) GetCurrentUserDetails(context sirius.Context) (model.Assi
 	return m.CurrentUserDetails, m.error
 }
 
-func (m mockApiClient) GetTeamsForSelection(context sirius.Context, teamType []string) ([]model.Team, error) {
+func (m mockApiClient) GetTeamsForSelection(context sirius.Context) ([]model.Team, error) {
 	return m.TeamsForSelection, m.error
 }
 

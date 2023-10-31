@@ -29,7 +29,7 @@ type Tab struct {
 
 type WorkflowVarsClient interface {
 	GetCurrentUserDetails(sirius.Context) (model.Assignee, error)
-	GetTeamsForSelection(sirius.Context, []string) ([]model.Team, error)
+	GetTeamsForSelection(sirius.Context) ([]model.Team, error)
 }
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
@@ -40,12 +40,7 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		return nil, err
 	}
 
-	teamSelection, err := client.GetTeamsForSelection(ctx, []string{})
-	if err != nil {
-		return nil, err
-	}
-
-	paProTeamSelection, err := client.GetTeamsForSelection(ctx, []string{"PA", "PRO"})
+	teamSelection, err := client.GetTeamsForSelection(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -53,6 +48,11 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultTeamId)
 
 	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultTeamId, teamSelection)
+	if err != nil {
+		return nil, err
+	}
+
+	paProTeamSelection := createReassignDeputyDropDownList(teamSelection, []string{"PA", "PRO"}, selectedTeam)
 	if err != nil {
 		return nil, err
 	}
@@ -124,6 +124,22 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	}
 
 	return model.Team{}, errors.New("invalid team selection")
+}
+
+func createReassignDeputyDropDownList(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
+	//show current team page as first in list
+	teamsToReturn := []model.Team{
+		currentSelectedTeam,
+	}
+
+	for _, tt := range requiredTeamTypes {
+		for i, m := range allTeams {
+			if m.Type == tt && m.Id != currentSelectedTeam.Id {
+				teamsToReturn = append(teamsToReturn, allTeams[i])
+			}
+		}
+	}
+	return teamsToReturn
 }
 
 func (t Tab) GetURL(team model.Team) string {

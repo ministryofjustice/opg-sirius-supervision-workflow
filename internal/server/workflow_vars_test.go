@@ -27,7 +27,7 @@ func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (mode
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context, teamTypes []string) ([]model.Team, error) {
+func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]model.Team, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
