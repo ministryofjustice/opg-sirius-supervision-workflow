@@ -36,9 +36,26 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedPerPage: dp.PerPage,
 		SelectedSort:    dp.Sort,
 		SelectedFilters: []urlbuilder.Filter{
-			urlbuilder.CreateFilter("ecm", dp.SelectedECMs),
+			urlbuilder.CreateFilter("ecm", dp.SelectedECMs, true),
 		},
 	}
+}
+
+func (dp DeputiesPage) getECMs(teams []model.Team, deputyType string) []model.Assignee {
+	var members []model.Assignee
+
+	for _, t := range teams {
+		if t.Type == deputyType {
+			for _, m := range t.Members {
+				members = append(members, model.Assignee{
+					Id:   m.Id,
+					Name: m.Name,
+				})
+			}
+		}
+	}
+
+	return members
 }
 
 func deputies(client DeputiesClient, tmpl Template) Handler {
@@ -80,8 +97,15 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars := DeputiesPage{
 			DeputyList: deputyList,
 		}
-		vars.ECMs = getECMs(app.Teams, app.SelectedTeam.Type)
+
+		vars.ECMs = vars.getECMs(app.Teams, app.SelectedTeam.Type)
 		vars.SelectedECMs = selectedECMs
+		if app.SelectedTeam.IsPro() {
+			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
+		} else {
+			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultPaTeamID
+		}
+
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
@@ -105,21 +129,4 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
-}
-
-func getECMs(teams []model.Team, deputyType string) []model.Assignee {
-	var members []model.Assignee
-
-	for _, t := range teams {
-		if t.Type == deputyType {
-			for _, m := range t.Members {
-				members = append(members, model.Assignee{
-					Id:   m.Id,
-					Name: m.Name,
-				})
-			}
-		}
-	}
-
-	return members
 }

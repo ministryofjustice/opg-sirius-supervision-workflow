@@ -56,8 +56,9 @@ type FilterByCaseType struct {
 
 type FilterByECM struct {
 	ListPage
-	ECMs         []model.Assignee
-	SelectedECMs []string
+	ECMs              []model.Assignee
+	SelectedECMs      []string
+	NotAssignedTeamID string
 }
 
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {

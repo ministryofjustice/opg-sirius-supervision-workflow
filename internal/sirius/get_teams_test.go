@@ -23,7 +23,7 @@ func TestGetTeams(t *testing.T) {
 			"members":[
 				{
 					"id":71,
-					"displayName":"Allocations User1",
+					"displayName":"Allocations User1"
 				}
 			],
 			"teamType":{
@@ -55,7 +55,7 @@ func TestGetTeams(t *testing.T) {
 			"members":[
 				{
 					"id":72,
-					"displayName":"LPA User1",
+					"displayName":"LPA User1"
 				}
 			]
 		}

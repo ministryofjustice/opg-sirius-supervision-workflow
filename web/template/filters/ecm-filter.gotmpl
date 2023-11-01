@@ -18,6 +18,14 @@
     <div class="app-c-option-select__container-inner js-auto-height-inner">
       <fieldset class="govuk-fieldset" aria-label="Assigned">
         <legend class="hide">ECMs</legend>
+
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+          <div class="govuk-checkboxes__item filter__checkbox">
+            <input class="govuk-checkboxes__input" id="not_assigned" name="ecm" type="checkbox" value="{{ .NotAssignedTeamID }}" data-module="filter" {{ if (contains .SelectedECMs .NotAssignedTeamID) }}checked{{ end }}>
+            <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned</label>
+          </div>
+        </div>
+
         {{ range .ECMs }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">

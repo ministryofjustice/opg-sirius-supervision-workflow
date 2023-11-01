@@ -107,8 +107,8 @@ func TestNewWorkflowVars(t *testing.T) {
 			r, _ := http.NewRequest("GET", "/path?team="+team.Selector, nil)
 
 			envVars := EnvironmentVars{
-				DefaultTeamId: 19,
-				ShowDeputies:  true,
+				DefaultWorkflowTeamID: 19,
+				ShowDeputies:          true,
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)
 

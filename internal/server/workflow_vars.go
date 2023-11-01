@@ -44,9 +44,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		return nil, err
 	}
 
-	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultTeamId)
+	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultWorkflowTeamID)
 
-	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultTeamId, teams)
+	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultWorkflowTeamID, teams)
 	if err != nil {
 		return nil, err
 	}

@@ -10,12 +10,12 @@ func TestNewEnvironmentVars(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, EnvironmentVars{
-		Port:            "1234",
-		WebDir:          "web",
-		SiriusURL:       "http://localhost:8080",
-		SiriusPublicURL: "",
-		Prefix:          "",
-		DefaultTeamId:   21,
-		ShowDeputies:    false,
+		Port:                  "1234",
+		WebDir:                "web",
+		SiriusURL:             "http://localhost:8080",
+		SiriusPublicURL:       "",
+		Prefix:                "",
+		DefaultWorkflowTeamID: 21,
+		ShowDeputies:          false,
 	}, vars)
 }
