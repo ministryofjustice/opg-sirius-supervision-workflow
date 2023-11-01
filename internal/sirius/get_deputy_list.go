@@ -16,10 +16,11 @@ type DeputyList struct {
 }
 
 type DeputyListParams struct {
-	Team    model.Team
-	Page    int
-	PerPage int
-	Sort    string
+	Team         model.Team
+	Page         int
+	PerPage      int
+	Sort         string
+	SelectedECMs []string
 }
 
 func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyList, error) {

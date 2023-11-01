@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetTeamsForSelection(t *testing.T) {
+func TestGetTeams(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
@@ -20,13 +20,10 @@ func TestGetTeamsForSelection(t *testing.T) {
 		{
 			"id":21,
 			"displayName":"Allocations - (Supervision)",
-			"email":"allocations.team@opgtest.com",
-			"phoneNumber":"0123456789",
 			"members":[
 				{
 					"id":71,
 					"displayName":"Allocations User1",
-					"email":"allocations@opgtest.com"
 				}
 			],
 			"teamType":{
@@ -37,8 +34,6 @@ func TestGetTeamsForSelection(t *testing.T) {
 		{
 			"id":22,
 			"displayName":"Lay Team 1",
-			"email":"lay.team.1@opgtest.com",
-			"phoneNumber":"0123456789",
 			"members":[],
 			"teamType":{
 				"handle":"LAY",
@@ -48,8 +43,6 @@ func TestGetTeamsForSelection(t *testing.T) {
 		{
 			"id":23,
 			"displayName":"Pro Team 1",
-			"email":"pro.team.1@opgtest.com",
-			"phoneNumber":"0123456789",
 			"members":[],
 			"teamType":{
 				"handle":"PRO",
@@ -59,13 +52,10 @@ func TestGetTeamsForSelection(t *testing.T) {
 		{
 			"id":24,
 			"displayName":"LPA Team",
-			"email":"lpa.team@opgtest.com",
-			"phoneNumber":"0987654321",
 			"members":[
 				{
 					"id":72,
 					"displayName":"LPA User1",
-					"email":"lpa.user@opgtest.com"
 				}
 			]
 		}
@@ -143,12 +133,12 @@ func TestGetTeamsForSelection(t *testing.T) {
 		},
 	}
 
-	teams, err := client.GetTeamsForSelection(getContext(nil))
+	teams, err := client.GetTeams(getContext(nil))
 	assert.Equal(t, expectedResponse, teams)
 	assert.Equal(t, nil, err)
 }
 
-func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
+func TestGetTeamsCanReturn500(t *testing.T) {
 	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -157,7 +147,7 @@ func TestGetTeamsForSelectionCanReturn500(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	_, err := client.GetTeamsForSelection(getContext(nil))
+	_, err := client.GetTeams(getContext(nil))
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,

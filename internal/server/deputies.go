@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
@@ -15,6 +16,17 @@ type DeputiesClient interface {
 type DeputiesPage struct {
 	DeputyList sirius.DeputyList
 	ListPage
+	FilterByECM
+}
+
+func (dp DeputiesPage) GetAppliedFilters() []string {
+	var appliedFilters []string
+	for _, u := range dp.ECMs {
+		if u.IsSelected(dp.SelectedECMs) {
+			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	return appliedFilters
 }
 
 func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
@@ -23,6 +35,9 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedTeam:    dp.App.SelectedTeam.Selector,
 		SelectedPerPage: dp.PerPage,
 		SelectedSort:    dp.Sort,
+		SelectedFilters: []urlbuilder.Filter{
+			urlbuilder.CreateFilter("ecm", dp.SelectedECMs),
+		},
 	}
 }
 
@@ -46,18 +61,27 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "noncompliance"})
 
+		var selectedECMs []string
+		if params.Has("ecm") {
+			selectedECMs = params["ecm"]
+		}
+
 		deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
-			Team:    app.SelectedTeam,
-			Page:    page,
-			PerPage: deputiesPerPage,
-			Sort:    fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
+			Team:         app.SelectedTeam,
+			Page:         page,
+			PerPage:      deputiesPerPage,
+			Sort:         fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
+			SelectedECMs: selectedECMs,
 		})
 		if err != nil {
 			return err
 		}
 
-		var vars DeputiesPage
-		vars.DeputyList = deputyList
+		vars := DeputiesPage{
+			DeputyList: deputyList,
+		}
+		vars.ECMs = getECMs(app.Teams, app.SelectedTeam.Type)
+		vars.SelectedECMs = selectedECMs
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
@@ -77,6 +101,25 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		vars.AppliedFilters = vars.GetAppliedFilters()
+
 		return tmpl.Execute(w, vars)
 	}
+}
+
+func getECMs(teams []model.Team, deputyType string) []model.Assignee {
+	var members []model.Assignee
+
+	for _, t := range teams {
+		if t.Type == deputyType {
+			for _, m := range t.Members {
+				members = append(members, model.Assignee{
+					Id:   m.Id,
+					Name: m.Name,
+				})
+			}
+		}
+	}
+
+	return members
 }

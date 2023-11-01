@@ -8,7 +8,7 @@ services:
     ports: ["8888:8888"]
     environment:
       PORT: 8888
-      SIRIUS_URL: http://json-server:3000
+      SIRIUS_URL: http://docker.for.mac.localhost:8080
       SIRIUS_PUBLIC_URL: http://localhost:8080
       SHOW_DEPUTIES: 1
     depends_on:

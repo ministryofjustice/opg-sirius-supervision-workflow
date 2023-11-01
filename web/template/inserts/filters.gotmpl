@@ -35,6 +35,7 @@
         {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter-applied" . }}{{ end }}
         {{ if .HasFilterBy . "status" }}{{ template "status-filter-applied" . }}{{ end }}
+        {{ if .HasFilterBy . "ecm" }}{{ template "ecm-filter-applied" . }}{{ end }}
 
       </div>
     </div>
@@ -45,6 +46,7 @@
     {{ if .HasFilterBy . "assignee" }}{{ template "assignee-filter" . }}{{ end }}
     {{ if .HasFilterBy . "due-date" }}{{ template "due-date-filter" . }}{{ end }}
     {{ if .HasFilterBy . "status" }}{{ template "status-filter" . }}{{ end }}
+    {{ if .HasFilterBy . "ecm" }}{{ template "ecm-filter" . }}{{ end }}
 
     <button class="govuk-button govuk-!-margin-top-4" data-module="apply-filters">Apply filters</button>
  

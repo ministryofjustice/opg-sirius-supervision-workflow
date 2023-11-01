@@ -10,11 +10,11 @@ import (
 )
 
 type mockWorkflowVarsClient struct {
-	count             map[string]int
-	lastCtx           sirius.Context
-	err               error
-	userData          model.Assignee
-	teamSelectionData []model.Team
+	count     map[string]int
+	lastCtx   sirius.Context
+	err       error
+	userData  model.Assignee
+	teamsData []model.Team
 }
 
 func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (model.Assignee, error) {
@@ -27,14 +27,14 @@ func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (mode
 	return m.userData, m.err
 }
 
-func (m *mockWorkflowVarsClient) GetTeamsForSelection(ctx sirius.Context) ([]model.Team, error) {
+func (m *mockWorkflowVarsClient) GetTeams(ctx sirius.Context) ([]model.Team, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
 	}
-	m.count["GetTeamsForSelection"] += 1
+	m.count["GetTeams"] += 1
 	m.lastCtx = ctx
 
-	return m.teamSelectionData, m.err
+	return m.teamsData, m.err
 }
 
 var mockUserDetailsData = model.Assignee{
@@ -49,7 +49,7 @@ var mockUserDetailsData = model.Assignee{
 	},
 }
 
-var mockTeamSelectionData = []model.Team{
+var mockTeamsData = []model.Team{
 	{
 		Id: 13,
 		Members: []model.Assignee{
@@ -98,12 +98,12 @@ func TestNewWorkflowVars(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.teamType+" team", func(t *testing.T) {
-			team := mockTeamSelectionData[0]
+			team := mockTeamsData[0]
 			team.Type = test.teamType
 			team.Selector = test.selector
 			teams := []model.Team{team}
 
-			client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamSelectionData: teams}
+			client := &mockWorkflowVarsClient{userData: mockUserDetailsData, teamsData: teams}
 			r, _ := http.NewRequest("GET", "/path?team="+team.Selector, nil)
 
 			envVars := EnvironmentVars{
@@ -117,7 +117,7 @@ func TestNewWorkflowVars(t *testing.T) {
 				Path:            "/path",
 				XSRFToken:       "",
 				MyDetails:       mockUserDetailsData,
-				TeamSelection:   teams,
+				Teams:           teams,
 				SelectedTeam:    team,
 				SuccessMessage:  "",
 				Errors:          nil,
@@ -196,7 +196,7 @@ func TestGetSelectedTeam(t *testing.T) {
 
 func TestTab_GetURL(t *testing.T) {
 	tab := Tab{basePath: "test-path"}
-	team := mockTeamSelectionData[0]
+	team := mockTeamsData[0]
 
 	assert.Equal(t, "test-path?team=13", tab.GetURL(team))
 }
