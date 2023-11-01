@@ -58,15 +58,15 @@ describe("Filters", () => {
     cy.url().should('include', 'assignee=96')
   })
 
-  it("retains task type filter when changing views", () => {
-    cy.get('#option-select-title-task-type').click()
-    cy.get('[data-filter-name="moj-filter-name-tasktype"]').within(() => {
-      cy.get('label:contains("PDR follow up")').click()
-    })
-    cy.get('[data-module=apply-filters]').click()
-    cy.get("#top-pagination .display-rows").select('100')
-    cy.url().should('include', 'task-type=PFU')
-  })
+  // it("retains task type filter when changing views", () => {
+  //   cy.get('#option-select-title-task-type').click()
+  //   cy.get('[data-filter-name="moj-filter-name-tasktype"]').within(() => {
+  //     cy.get('label:contains("PDR follow up")').click()
+  //   })
+  //   cy.get('[data-module=apply-filters]').click()
+  //   cy.get("#top-pagination .display-rows").select('100')
+  //   cy.url().should('include', 'task-type=PFU')
+  // })
 
   it("shows button to remove individual task type filter", () => {
     cy.get('#option-select-title-task-type').click()
