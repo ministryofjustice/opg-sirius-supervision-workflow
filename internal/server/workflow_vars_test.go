@@ -118,7 +118,7 @@ func TestNewWorkflowVars(t *testing.T) {
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)
 
-			var paProTeam []model.Team
+			paProTeam := []model.Team{}
 			if test.showProPaTeam == true {
 				paProTeam = []model.Team{team}
 			}
