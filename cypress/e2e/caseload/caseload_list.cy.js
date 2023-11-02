@@ -2,9 +2,6 @@ describe("Caseload list", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.window().then((win) => {
-            win.sessionStorage.clear()
-        })
         cy.visit("/caseload?team=21");
     });
 
