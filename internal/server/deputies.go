@@ -56,22 +56,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			}
 		}
 
-		if r.Method == http.MethodPut {
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				DeputyIds:  r.Form["selected-deputies"],
-			})
-			if err != nil {
-				return err
-			}
-		}
-
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
 		perPageOptions := []int{25, 50, 100}
