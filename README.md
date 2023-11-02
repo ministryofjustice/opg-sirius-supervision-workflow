@@ -51,7 +51,7 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
 To see the UI output you can still run 
 
-`yarn && yarn cypress`
+`make up && yarn cypress`
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests
