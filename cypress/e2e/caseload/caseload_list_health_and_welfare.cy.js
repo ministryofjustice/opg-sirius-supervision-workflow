@@ -1,5 +1,5 @@
 describe("Caseload list", () => {
-    before(() => {
+    beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
         cy.visit("/caseload?team=29");

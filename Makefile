@@ -25,7 +25,7 @@ scan: setup-directories
 
 cypress: setup-directories
 	docker compose up -d --wait workflow
-	docker compose run --rm cypress
+	docker compose run --build --rm cypress
 
 up:
 	docker compose up --build -d workflow
