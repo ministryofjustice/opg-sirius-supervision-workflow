@@ -16,6 +16,8 @@ func TestNewEnvironmentVars(t *testing.T) {
 		SiriusPublicURL:       "",
 		Prefix:                "",
 		DefaultWorkflowTeamID: 21,
+		DefaultPaTeamID:       "28",
+		DefaultProTeamID:      "31",
 		ShowDeputies:          false,
 	}, vars)
 }

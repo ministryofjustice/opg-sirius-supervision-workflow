@@ -31,8 +31,8 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		SiriusPublicURL:       getEnv("SIRIUS_PUBLIC_URL", ""),
 		Prefix:                getEnv("PREFIX", ""),
 		DefaultWorkflowTeamID: defaultTeamId,
-		DefaultPaTeamID:       getEnv("DEFAULT_PA_TEAM", "23"),
-		DefaultProTeamID:      getEnv("DEFAULT_PRO_TEAM", "28"),
+		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
+		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
 		ShowDeputies:          getEnv("SHOW_DEPUTIES", "0") == "1",
 	}, nil
 }
