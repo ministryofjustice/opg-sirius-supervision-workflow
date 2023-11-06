@@ -69,6 +69,12 @@ func TestDeputies(t *testing.T) {
 		SelectedTeam:    app.SelectedTeam.Selector,
 		SelectedPerPage: 25,
 		SelectedSort:    want.Sort,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name:                  "ecm",
+				ClearBetweenTeamViews: true,
+			},
+		},
 	}
 
 	want.Pagination = paginate.Pagination{
@@ -156,13 +162,17 @@ func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumbe
 }
 
 func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
+	filters := []urlbuilder.Filter{
+		{Name: "ecm", ClearBetweenTeamViews: true},
+	}
+
 	tests := []struct {
 		page DeputiesPage
 		want urlbuilder.UrlBuilder
 	}{
 		{
 			page: DeputiesPage{},
-			want: urlbuilder.UrlBuilder{Path: "deputies"},
+			want: urlbuilder.UrlBuilder{Path: "deputies", SelectedFilters: filters},
 		},
 		{
 			page: DeputiesPage{
@@ -170,7 +180,7 @@ func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
 					App: WorkflowVars{SelectedTeam: model.Team{Type: "PRO", Selector: "test-team"}},
 				},
 			},
-			want: urlbuilder.UrlBuilder{Path: "deputies", SelectedTeam: "test-team"},
+			want: urlbuilder.UrlBuilder{Path: "deputies", SelectedTeam: "test-team", SelectedFilters: filters},
 		},
 		{
 			page: DeputiesPage{
@@ -179,12 +189,14 @@ func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
 					PerPage: 55,
 					Sort:    urlbuilder.Sort{OrderBy: "test", Descending: true},
 				},
+				FilterByECM: FilterByECM{SelectedECMs: []string{"1", "2"}},
 			},
 			want: urlbuilder.UrlBuilder{
 				Path:            "deputies",
 				SelectedTeam:    "test-team",
 				SelectedPerPage: 55,
 				SelectedSort:    urlbuilder.Sort{OrderBy: "test", Descending: true},
+				SelectedFilters: []urlbuilder.Filter{{Name: "ecm", SelectedValues: []string{"1", "2"}, ClearBetweenTeamViews: true}},
 			},
 		},
 	}
