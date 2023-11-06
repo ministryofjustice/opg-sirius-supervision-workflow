@@ -46,9 +46,16 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 	}
 }
 
-func (dp DeputiesPage) getECMs(teams []model.Team, deputyType string) []model.Assignee {
+func (dp DeputiesPage) getECMs(teams []model.Team, selectedTeam model.Team) []model.Assignee {
 	var members []model.Assignee
+	var deputyType string
 
+	if selectedTeam.IsPro() {
+		deputyType = "PRO"
+	} else {
+		deputyType = "PA"
+	}
+	
 	for _, t := range teams {
 		if t.Type == deputyType {
 			for _, m := range t.Members {
@@ -103,7 +110,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			DeputyList: deputyList,
 		}
 
-		vars.ECMs = vars.getECMs(app.Teams, app.SelectedTeam.Type)
+		vars.ECMs = vars.getECMs(app.Teams, app.SelectedTeam)
 		vars.SelectedECMs = selectedECMs
 		if app.SelectedTeam.IsPro() {
 			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID

@@ -15,6 +15,6 @@ describe("Filters", () => {
     cy.get('[data-module=apply-filters]').click();
 
     cy.url().should('include', 'ecm=96');
-    cy.get('.moj-filter__selected').should('contain','ECM');
+    cy.get('.moj-filter__selected').should('contain','Executive Case Manager');
   });
 });

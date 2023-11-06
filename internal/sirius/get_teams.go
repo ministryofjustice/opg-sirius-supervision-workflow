@@ -55,7 +55,6 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	layTeam := model.Team{
 		Members:  []model.Assignee{},
 		Name:     "Lay Deputy Team",
-		Type:     "LAY",
 		Selector: "lay-team",
 		Teams:    []model.Team{},
 	}
@@ -63,7 +62,6 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	proTeam := model.Team{
 		Members:  []model.Assignee{},
 		Name:     "Professional Deputy Team",
-		Type:     "PRO",
 		Selector: "pro-team",
 		Teams:    []model.Team{},
 	}
