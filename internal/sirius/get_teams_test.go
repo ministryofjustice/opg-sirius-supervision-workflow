@@ -87,6 +87,7 @@ func TestGetTeams(t *testing.T) {
 		},
 		{
 			Name:     "Lay Deputy Team",
+			Type:     "LAY",
 			Selector: "lay-team",
 			Members:  []model.Assignee{},
 			Teams: []model.Team{
@@ -118,6 +119,7 @@ func TestGetTeams(t *testing.T) {
 		},
 		{
 			Name:     "Professional Deputy Team",
+			Type:     "PRO",
 			Selector: "pro-team",
 			Members:  []model.Assignee{},
 			Teams: []model.Team{

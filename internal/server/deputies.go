@@ -26,6 +26,11 @@ func (dp DeputiesPage) GetAppliedFilters() []string {
 			appliedFilters = append(appliedFilters, u.Name)
 		}
 	}
+	for _, s := range dp.SelectedECMs {
+		if s == dp.NotAssignedTeamID {
+			appliedFilters = append(appliedFilters, "Not Assigned")
+		}
+	}
 	return appliedFilters
 }
 

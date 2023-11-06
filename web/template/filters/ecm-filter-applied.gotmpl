@@ -2,7 +2,7 @@
 {{ define "ecm-filter-applied" }}
 
 {{ if .SelectedECMs }}
-  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">ECM</h3>
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Executive Case Manager</h3>
   <ul class="moj-filter-tags">
       {{ if (contains .SelectedECMs .NotAssignedTeamID) }}
           <li><a href="{{ .UrlBuilder.GetRemoveFilterUrl "ecm" .NotAssignedTeamID }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> Not Assigned</a></li>
