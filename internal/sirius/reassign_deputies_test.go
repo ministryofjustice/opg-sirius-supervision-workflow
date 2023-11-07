@@ -43,7 +43,6 @@ func TestUpdateReassignDeputies(t *testing.T) {
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
-				assert.True(t, params.IsWorkflow)
 				assert.Equal(t, test.params.DeputyIds, params.DeputyIds)
 
 				return &http.Response{

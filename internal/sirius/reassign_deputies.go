@@ -14,7 +14,6 @@ type ReassignDeputiesParams struct {
 	AssignCM   string
 	AssigneeId int      `json:"assigneeId"`
 	DeputyIds  []string `json:"deputyIds"`
-	IsWorkflow bool     `json:"isWorkflow"`
 }
 
 func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams) (string, error) {
@@ -32,7 +31,6 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		return "", err
 	}
 
-	params.IsWorkflow = true
 	err = json.NewEncoder(&body).Encode(params)
 
 	if err != nil {
