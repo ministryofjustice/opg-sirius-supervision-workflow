@@ -24,7 +24,7 @@ describe("Reassign deputies", () => {
         });
         cy.setCookie("success-route", "/reassign-deputies/1");
         cy.get('#select-deputy-13').click();
-        cy.get('#manage-deputy').should('be.visible').click();
+        cy.get('#manage-deputy').click();
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
         cy.get('#assignCM').select('ProTeam1 User1');
         cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
@@ -39,7 +39,7 @@ describe("Reassign deputies", () => {
         cy.get('#select-deputy-13').click();
         cy.get('#manage-deputy').should('be.visible');
         cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
-        cy.get('#manage-deputy').should('be.visible').click();
+        cy.get('#manage-deputy').click();
         cy.get('.moj-manage-list__edit-panel').should('be.visible');
         cy.get('#edit-cancel').click();
         cy.get('#manage-deputy').should('be.visible');

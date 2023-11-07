@@ -10,16 +10,15 @@ import (
 )
 
 type WorkflowVars struct {
-	Path               string
-	XSRFToken          string
-	MyDetails          model.Assignee
-	TeamSelection      []model.Team
-	PaProTeamSelection []model.Team
-	SelectedTeam       model.Team
-	Tabs               []Tab
-	SuccessMessage     string
-	Errors             sirius.ValidationErrors
-	EnvironmentVars    EnvironmentVars
+	Path            string
+	XSRFToken       string
+	MyDetails       model.Assignee
+	TeamSelection   []model.Team
+	SelectedTeam    model.Team
+	Tabs            []Tab
+	SuccessMessage  string
+	Errors          sirius.ValidationErrors
+	EnvironmentVars EnvironmentVars
 }
 
 type Tab struct {
@@ -52,18 +51,12 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		return nil, err
 	}
 
-	paProTeamSelection := createReassignDeputyDropDownList(teamSelection, []string{"PA", "PRO"}, selectedTeam)
-	if err != nil {
-		return nil, err
-	}
-
 	vars := WorkflowVars{
-		Path:               r.URL.Path,
-		XSRFToken:          ctx.XSRFToken,
-		MyDetails:          myDetails,
-		TeamSelection:      teamSelection,
-		PaProTeamSelection: paProTeamSelection,
-		SelectedTeam:       selectedTeam,
+		Path:          r.URL.Path,
+		XSRFToken:     ctx.XSRFToken,
+		MyDetails:     myDetails,
+		TeamSelection: teamSelection,
+		SelectedTeam:  selectedTeam,
 		Tabs: []Tab{
 			{
 				Title:    "Client tasks",
@@ -124,25 +117,6 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	}
 
 	return model.Team{}, errors.New("invalid team selection")
-}
-
-func createReassignDeputyDropDownList(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
-	//show current team page as first in list
-	teamsToReturn := []model.Team{}
-	for _, m := range requiredTeamTypes {
-		if m == currentSelectedTeam.Type {
-			teamsToReturn = append(teamsToReturn, currentSelectedTeam)
-		}
-	}
-
-	for _, tt := range requiredTeamTypes {
-		for i, m := range allTeams {
-			if m.Type == tt && m.Id != currentSelectedTeam.Id {
-				teamsToReturn = append(teamsToReturn, allTeams[i])
-			}
-		}
-	}
-	return teamsToReturn
 }
 
 func (t Tab) GetURL(team model.Team) string {
