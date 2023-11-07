@@ -947,6 +947,12 @@ module.exports = function () {
         "id": 1,
         "reAssignName": "LayTeam1 User4",
       }
-    ]
+    ],
+    "reassign-deputies": [
+      {
+        "id": 1,
+        "reAssignName": "ProTeam1 User1",
+      }
+    ],
   }
 }

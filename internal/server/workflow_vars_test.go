@@ -70,30 +70,36 @@ func TestNewWorkflowVars(t *testing.T) {
 	deputiesTab := Tab{Title: "Deputies", basePath: "deputies"}
 
 	tests := []struct {
-		teamType string
-		selector string
-		wantTabs []Tab
+		teamType      string
+		selector      string
+		wantTabs      []Tab
+		showProPaTeam bool
 	}{
 		{
-			teamType: "LAY",
-			wantTabs: []Tab{clientTasksTab, caseloadTab},
+			teamType:      "LAY",
+			wantTabs:      []Tab{clientTasksTab, caseloadTab},
+			showProPaTeam: false,
 		},
 		{
-			teamType: "LAY",
-			selector: "lay-team",
-			wantTabs: []Tab{clientTasksTab},
+			teamType:      "LAY",
+			selector:      "lay-team",
+			wantTabs:      []Tab{clientTasksTab},
+			showProPaTeam: false,
 		},
 		{
-			teamType: "PRO",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			teamType:      "PRO",
+			wantTabs:      []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			showProPaTeam: true,
 		},
 		{
-			teamType: "PA",
-			wantTabs: []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			teamType:      "PA",
+			wantTabs:      []Tab{clientTasksTab, deputyTasksTab, deputiesTab},
+			showProPaTeam: true,
 		},
 		{
-			teamType: "HW",
-			wantTabs: []Tab{clientTasksTab, caseloadTab},
+			teamType:      "HW",
+			wantTabs:      []Tab{clientTasksTab, caseloadTab},
+			showProPaTeam: false,
 		},
 	}
 	for _, test := range tests {

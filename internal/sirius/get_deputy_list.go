@@ -10,9 +10,10 @@ import (
 )
 
 type DeputyList struct {
-	Deputies      []model.Deputy        `json:"persons"`
-	Pages         model.PageInformation `json:"pages"`
-	TotalDeputies int                   `json:"total"`
+	Deputies           []model.Deputy        `json:"persons"`
+	Pages              model.PageInformation `json:"pages"`
+	TotalDeputies      int                   `json:"total"`
+	PaProTeamSelection []model.Team
 }
 
 type DeputyListParams struct {

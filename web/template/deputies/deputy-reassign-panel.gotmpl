@@ -24,7 +24,7 @@
           <label class="govuk-label" for="assignTeam">Assign to a team</label>
           <select class="govuk-select option-value-select js-assign-team-select" data-module="assign-team-select" id="assignTeam" name="assignTeam">
             <option value="0" selected>Select a team</option>
-              {{ range .App.TeamSelection }}
+              {{ range .DeputyList.PaProTeamSelection }}
                 <option class="option-value" value="{{ .Id }}">{{ .Name }}</option>
               {{ end }}
           </select>
@@ -38,6 +38,8 @@
             <option value="" label="Select a case manager" selected>Select a case manager</option>
           </select>
         </div>
+
+
 
         <br>
         <button id="edit-save" class="govuk-button govuk-!-margin-right-1" type="submit">Save and continue</button>
