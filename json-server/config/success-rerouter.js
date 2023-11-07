@@ -6,7 +6,6 @@ const getSuccessRoute = (req) => {
 module.exports = (req, res, next) => {
     if (["POST", "PUT", "PATCH"].includes(req.method)) {
         const successRoute = getSuccessRoute(req);
-
         if (successRoute) {
             req.method = "GET";
             req.url = successRoute;

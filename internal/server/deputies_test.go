@@ -13,16 +13,32 @@ import (
 )
 
 type mockDeputiesClient struct {
-	lastCtx            sirius.Context
-	lastParams         sirius.DeputyListParams
-	deputyList         sirius.DeputyList
-	getDeputyListError error
+	lastCtx               sirius.Context
+	deputyList            sirius.DeputyList
+	getDeputyListError    error
+	reassignDeputiesError error
+	count                 map[string]int
+	lastDeputyListParams  sirius.DeputyListParams
 }
 
 func (m *mockDeputiesClient) GetDeputyList(ctx sirius.Context, params sirius.DeputyListParams) (sirius.DeputyList, error) {
+	if m.count == nil {
+		m.count = make(map[string]int)
+	}
+	m.count["GetClientList"] += 1
 	m.lastCtx = ctx
-	m.lastParams = params
+	m.lastDeputyListParams = params
 	return m.deputyList, m.getDeputyListError
+}
+
+func (m *mockDeputiesClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
+	if m.count == nil {
+		m.count = make(map[string]int)
+	}
+	m.count["ReassignDeputies"] += 1
+	m.lastCtx = context
+
+	return "", m.reassignDeputiesError
 }
 
 var testDeputyList = sirius.DeputyList{
@@ -110,7 +126,6 @@ func TestDeputies_MethodNotAllowed(t *testing.T) {
 		http.MethodOptions,
 		http.MethodPatch,
 		http.MethodPut,
-		http.MethodPost,
 		http.MethodTrace,
 	}
 	for _, method := range methods {
@@ -152,7 +167,7 @@ func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumbe
 
 	assert.Equal(t, RedirectError("deputies?team=1&page=2&per-page=25&order-by=deputy&sort=asc"), err)
 	assert.Equal(t, getContext(r), client.lastCtx)
-	assert.Equal(t, 10, client.lastParams.Page)
+	assert.Equal(t, 10, client.lastDeputyListParams.Page)
 }
 
 func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
