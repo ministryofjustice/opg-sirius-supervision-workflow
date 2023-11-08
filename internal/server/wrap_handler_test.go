@@ -57,7 +57,7 @@ func Test_wrapHandler_successful_request(t *testing.T) {
 
 	mockClient := mockApiClient{
 		CurrentUserDetails: mockUserDetailsData,
-		TeamsForSelection:  mockTeamSelectionData,
+		Teams:              mockTeamsData,
 	}
 
 	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
@@ -78,7 +78,7 @@ func Test_wrapHandler_successful_request(t *testing.T) {
 	assert.Equal(t, 1, next.Called)
 	assert.Equal(t, "test-url", next.app.Path)
 	assert.Equal(t, mockClient.CurrentUserDetails, next.app.MyDetails)
-	assert.Equal(t, mockClient.TeamsForSelection, next.app.TeamSelection)
+	assert.Equal(t, mockClient.Teams, next.app.Teams)
 	assert.Len(t, logs, 1)
 	assert.Equal(t, "Application Request", logs[0].Message)
 	assert.Len(t, logs[0].ContextMap(), 3)
@@ -142,7 +142,7 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 
 			mockClient := mockApiClient{
 				CurrentUserDetails: mockUserDetailsData,
-				TeamsForSelection:  mockTeamSelectionData,
+				Teams:              mockTeamsData,
 			}
 
 			observedZapCore, observedLogs := observer.New(zap.InfoLevel)
@@ -215,7 +215,7 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 
 	mockClient := mockApiClient{
 		CurrentUserDetails: mockUserDetailsData,
-		TeamsForSelection:  mockTeamSelectionData,
+		Teams:              mockTeamsData,
 	}
 
 	observedZapCore, observedLogs := observer.New(zap.InfoLevel)

@@ -23,7 +23,7 @@ func (m *mockTemplate) Execute(w io.Writer, vars any) error {
 type mockApiClient struct {
 	error              error
 	CurrentUserDetails model.Assignee
-	TeamsForSelection  []model.Team
+	Teams              []model.Team
 }
 
 func (m mockApiClient) ReassignClients(context sirius.Context, params sirius.ReassignClientsParams) (string, error) {
@@ -34,8 +34,8 @@ func (m mockApiClient) GetCurrentUserDetails(context sirius.Context) (model.Assi
 	return m.CurrentUserDetails, m.error
 }
 
-func (m mockApiClient) GetTeamsForSelection(context sirius.Context) ([]model.Team, error) {
-	return m.TeamsForSelection, m.error
+func (m mockApiClient) GetTeams(context sirius.Context) ([]model.Team, error) {
+	return m.Teams, m.error
 }
 
 func (m mockApiClient) GetTaskTypes(context sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {

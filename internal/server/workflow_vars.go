@@ -13,7 +13,7 @@ type WorkflowVars struct {
 	Path            string
 	XSRFToken       string
 	MyDetails       model.Assignee
-	TeamSelection   []model.Team
+	Teams           []model.Team
 	SelectedTeam    model.Team
 	Tabs            []Tab
 	SuccessMessage  string
@@ -28,7 +28,7 @@ type Tab struct {
 
 type WorkflowVarsClient interface {
 	GetCurrentUserDetails(sirius.Context) (model.Assignee, error)
-	GetTeamsForSelection(sirius.Context) ([]model.Team, error)
+	GetTeams(sirius.Context) ([]model.Team, error)
 }
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
@@ -39,24 +39,24 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		return nil, err
 	}
 
-	teamSelection, err := client.GetTeamsForSelection(ctx)
+	teams, err := client.GetTeams(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultTeamId)
+	loggedInTeamId := getLoggedInTeamId(myDetails, envVars.DefaultWorkflowTeamID)
 
-	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultTeamId, teamSelection)
+	selectedTeam, err := getSelectedTeam(r, loggedInTeamId, envVars.DefaultWorkflowTeamID, teams)
 	if err != nil {
 		return nil, err
 	}
 
 	vars := WorkflowVars{
-		Path:          r.URL.Path,
-		XSRFToken:     ctx.XSRFToken,
-		MyDetails:     myDetails,
-		TeamSelection: teamSelection,
-		SelectedTeam:  selectedTeam,
+		Path:         r.URL.Path,
+		XSRFToken:    ctx.XSRFToken,
+		MyDetails:    myDetails,
+		Teams:        teams,
+		SelectedTeam: selectedTeam,
 		Tabs: []Tab{
 			{
 				Title:    "Client tasks",
@@ -101,7 +101,7 @@ func getLoggedInTeamId(myDetails model.Assignee, defaultTeamId int) int {
 	}
 }
 
-func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teamSelection []model.Team) (model.Team, error) {
+func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teams []model.Team) (model.Team, error) {
 	selectors := []string{
 		r.URL.Query().Get("team"),
 		strconv.Itoa(loggedInTeamId),
@@ -109,7 +109,7 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	}
 
 	for _, selector := range selectors {
-		for _, team := range teamSelection {
+		for _, team := range teams {
 			if team.Selector == selector {
 				return team, nil
 			}
