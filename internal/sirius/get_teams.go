@@ -11,12 +11,9 @@ import (
 type TeamCollection struct {
 	ID          int    `json:"id"`
 	DisplayName string `json:"displayName"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phoneNumber"`
 	Members     []struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
-		Email       string `json:"email"`
 	} `json:"members"`
 	TeamType *struct {
 		Handle string `json:"handle"`
@@ -24,7 +21,7 @@ type TeamCollection struct {
 	} `json:"teamType"`
 }
 
-func (c *ApiClient) GetTeamsForSelection(ctx Context) ([]model.Team, error) {
+func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	var v []TeamCollection
 	var q []model.Team
 
