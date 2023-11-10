@@ -11,6 +11,7 @@ import (
 
 type DeputiesClient interface {
 	GetDeputyList(sirius.Context, sirius.DeputyListParams) (sirius.DeputyList, error)
+	ReassignDeputies(ctx sirius.Context, params sirius.ReassignDeputiesParams) (string, error)
 }
 
 type DeputiesPage struct {
@@ -55,7 +56,7 @@ func (dp DeputiesPage) getECMs(teams []model.Team, selectedTeam model.Team) []mo
 	} else {
 		deputyType = "PA"
 	}
-	
+
 	for _, t := range teams {
 		if t.Type == deputyType {
 			for _, m := range t.Members {
@@ -70,17 +71,52 @@ func (dp DeputiesPage) getECMs(teams []model.Team, selectedTeam model.Team) []mo
 	return members
 }
 
+func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
+	teamsToReturn := []model.Team{}
+
+	for _, tt := range requiredTeamTypes {
+		//show current team page as first in list
+		if tt == currentSelectedTeam.Type {
+			teamsToReturn = append([]model.Team{currentSelectedTeam}, teamsToReturn...)
+		}
+		for _, m := range allTeams {
+			if m.Type == tt && m.Id != currentSelectedTeam.Id {
+				teamsToReturn = append(teamsToReturn, m)
+			}
+		}
+	}
+	return teamsToReturn
+}
+
 func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
-		if r.Method != http.MethodGet {
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+		}
+
+		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				DeputyIds:  r.Form["selected-deputies"],
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		params := r.URL.Query()
@@ -109,7 +145,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars := DeputiesPage{
 			DeputyList: deputyList,
 		}
-
+		vars.DeputyList.PaProTeamSelection = paProTeamSelection
 		vars.ECMs = vars.getECMs(app.Teams, app.SelectedTeam)
 		vars.SelectedECMs = selectedECMs
 		if app.SelectedTeam.IsPro() {
