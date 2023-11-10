@@ -17,10 +17,11 @@ type DeputyList struct {
 }
 
 type DeputyListParams struct {
-	Team    model.Team
-	Page    int
-	PerPage int
-	Sort    string
+	Team         model.Team
+	Page         int
+	PerPage      int
+	Sort         string
+	SelectedECMs []string
 }
 
 func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyList, error) {
@@ -35,10 +36,11 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 	}
 
 	endpoint := fmt.Sprintf(
-		"/api/v1/assignees/teams/deputies?%s&limit=%d&page=%d&sort=%s",
+		"/api/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
 		strings.Join(teamIds, "&"),
 		params.PerPage,
 		params.Page,
+		params.CreateFilter(),
 		params.Sort,
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
@@ -72,4 +74,12 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 	}
 
 	return v, nil
+}
+
+func (d DeputyListParams) CreateFilter() string {
+	var filter string
+	for _, s := range d.SelectedECMs {
+		filter += "ecm:" + s + ","
+	}
+	return strings.TrimRight(filter, ",")
 }
