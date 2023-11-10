@@ -68,7 +68,7 @@ func TestDeputies(t *testing.T) {
 	app := WorkflowVars{
 		Path:         "test-path",
 		SelectedTeam: model.Team{Id: 123, Type: "PRO", Selector: "1"},
-		TeamSelection: []model.Team{
+		Teams: []model.Team{
 			{Id: 123, Type: "PRO", Selector: "1"},
 			{Id: 222, Type: "PA", Selector: "1"},
 			{Id: 333, Type: "LAY", Selector: "1"},

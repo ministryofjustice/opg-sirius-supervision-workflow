@@ -56,7 +56,7 @@ func (dp DeputiesPage) getECMs(teams []model.Team, selectedTeam model.Team) []mo
 	} else {
 		deputyType = "PA"
 	}
-	
+
 	for _, t := range teams {
 		if t.Type == deputyType {
 			for _, m := range t.Members {
@@ -101,7 +101,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
-		paProTeamSelection := listPaAndProDeputyTeams(app.TeamSelection, []string{"PA", "PRO"}, app.SelectedTeam)
+		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
 
 		if r.Method == http.MethodPost {
 			err := r.ParseForm()
@@ -145,7 +145,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars := DeputiesPage{
 			DeputyList: deputyList,
 		}
-    vars.DeputyList.PaProTeamSelection = paProTeamSelection
+		vars.DeputyList.PaProTeamSelection = paProTeamSelection
 		vars.ECMs = vars.getECMs(app.Teams, app.SelectedTeam)
 		vars.SelectedECMs = selectedECMs
 		if app.SelectedTeam.IsPro() {
