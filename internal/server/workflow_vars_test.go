@@ -114,7 +114,6 @@ func TestNewWorkflowVars(t *testing.T) {
 
 			envVars := EnvironmentVars{
 				DefaultWorkflowTeamID: 19,
-				ShowDeputies:          true,
 			}
 			vars, err := NewWorkflowVars(client, r, envVars)
 
