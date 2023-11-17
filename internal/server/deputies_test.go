@@ -74,7 +74,7 @@ func TestDeputies(t *testing.T) {
 			{Id: 333, Type: "LAY", Selector: "1"},
 			{Id: 444, Type: "PRO", Selector: "1"},
 		},
-		EnvironmentVars: EnvironmentVars{ShowDeputies: true},
+		EnvironmentVars: EnvironmentVars{},
 	}
 	err := deputies(client, template)(app, w, r)
 
@@ -140,7 +140,7 @@ func TestDeputies_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	app := WorkflowVars{
 		Path:            "test-path",
 		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
-		EnvironmentVars: EnvironmentVars{ShowDeputies: true},
+		EnvironmentVars: EnvironmentVars{},
 	}
 	err := deputies(client, template)(app, w, r)
 
