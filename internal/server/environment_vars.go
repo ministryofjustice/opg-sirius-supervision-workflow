@@ -15,7 +15,6 @@ type EnvironmentVars struct {
 	DefaultWorkflowTeamID int
 	DefaultPaTeamID       string
 	DefaultProTeamID      string
-	ShowDeputies          bool
 }
 
 func NewEnvironmentVars() (EnvironmentVars, error) {
@@ -33,7 +32,6 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		DefaultWorkflowTeamID: defaultTeamId,
 		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
 		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
-		ShowDeputies:          getEnv("SHOW_DEPUTIES", "0") == "1",
 	}, nil
 }
 
