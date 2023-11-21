@@ -65,6 +65,10 @@ func (t Team) IsHW() bool {
 	return t.Type == "HW"
 }
 
+func (t Team) IsClosedCases() bool {
+	return t.Name == "Supervision Closed Cases"
+}
+
 func (t Team) IsLayNewOrdersTeam() bool {
 	return t.Name == "Lay Team - New Deputy Orders"
 }

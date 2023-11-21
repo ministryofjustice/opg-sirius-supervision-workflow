@@ -15,6 +15,7 @@ type ClientListParams struct {
 	CaseOwners    []string
 	OrderStatuses []string
 	SubType       string
+	DebtTypes     []string
 	DeputyTypes   []string
 	CaseTypes     []string
 }

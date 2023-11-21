@@ -22,6 +22,7 @@ type FilterByAssignee struct {
 	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
+	Required           bool
 }
 
 type FilterByTaskType struct {
@@ -54,6 +55,12 @@ type FilterByCaseType struct {
 	SelectedCaseTypes []string
 }
 
+type FilterByDebt struct {
+	ListPage
+	DebtTypes         []model.RefData
+	SelectedDebtTypes []string
+}
+
 type FilterByECM struct {
 	ListPage
 	ECMs              []model.Assignee
@@ -70,6 +77,7 @@ func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 		"deputy-type": FilterByDeputyType{},
 		"case-type":   FilterByCaseType{},
 		"ecm":         FilterByECM{},
+		"debt":        FilterByDebt{},
 	}
 
 	extends := func(parent interface{}, child interface{}) bool {

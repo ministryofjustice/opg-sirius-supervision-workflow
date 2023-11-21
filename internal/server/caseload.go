@@ -6,6 +6,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -20,6 +21,7 @@ type CaseloadPage struct {
 	FilterByStatus
 	FilterByDeputyType
 	FilterByCaseType
+	FilterByDebt
 	ClientList sirius.ClientList
 }
 
@@ -34,6 +36,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
+			urlbuilder.CreateFilter("debt", cv.SelectedDebtTypes, true),
 		},
 	}
 }
@@ -63,6 +66,12 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
+	for _, k := range cv.DebtTypes {
+		if k.IsIn(cv.SelectedDebtTypes) {
+			appliedFilters = append(appliedFilters, k.Label)
+		}
+	}
+
 	return appliedFilters
 }
 
@@ -74,7 +83,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() {
+		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
@@ -115,20 +124,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			}
 		}
 
-		var selectedStatuses []string
-		if params.Has("status") {
-			selectedStatuses = params["status"]
-		}
-
-		var selectedDeputyTypes []string
-		if params.Has("deputy-type") {
-			selectedDeputyTypes = params["deputy-type"]
-		}
-
-		var selectedCaseTypes []string
-		if params.Has("case-type") {
-			selectedCaseTypes = params["case-type"]
-		}
+		selectedStatuses, selectedDeputyTypes, selectedCaseTypes, selectedDebtTypes := getParams(r.URL.Query())
 
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
@@ -156,52 +152,21 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
-		vars.StatusOptions = []model.RefData{
-			{
-				Handle: "active",
-				Label:  "Active",
-			},
-			{
-				Handle: "closed",
-				Label:  "Closed",
-			},
-		}
+		vars.StatusOptions = getOrderStatusOptions()
+		vars.FilterByAssignee.Required = true
 
 		if app.SelectedTeam.IsHW() {
 			vars.SelectedDeputyTypes = selectedDeputyTypes
-			vars.DeputyTypes = []model.RefData{
-				{
-					Handle: "LAY",
-					Label:  "Lay",
-				},
-				{
-					Handle: "PRO",
-					Label:  "Professional",
-				},
-				{
-					Handle: "PA",
-					Label:  "Public Authority",
-				},
-			}
+			vars.DeputyTypes = getDeputyTypes()
 			vars.SelectedCaseTypes = selectedCaseTypes
-			vars.CaseTypes = []model.RefData{
-				{
-					Handle: "HYBRID",
-					Label:  "Hybrid",
-				},
-				{
-					Handle: "DUAL",
-					Label:  "Dual",
-				},
-				{
-					Handle: "HW",
-					Label:  "Health and welfare",
-				},
-				{
-					Handle: "PFA",
-					Label:  "Property and financial affairs",
-				},
-			}
+			vars.CaseTypes = getCaseTypes()
+		}
+
+		if app.SelectedTeam.IsClosedCases() {
+			clientListParams.DebtTypes = selectedDebtTypes
+			vars.SelectedDebtTypes = selectedDebtTypes
+			vars.DebtTypes = getDebtTypes()
+			vars.FilterByAssignee.Required = false
 		}
 
 		vars.App = app
@@ -219,4 +184,92 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
+}
+
+func getCaseTypes() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "HYBRID",
+			Label:  "Hybrid",
+		},
+		{
+			Handle: "DUAL",
+			Label:  "Dual",
+		},
+		{
+			Handle: "HW",
+			Label:  "Health and welfare",
+		},
+		{
+			Handle: "PFA",
+			Label:  "Property and financial affairs",
+		},
+	}
+}
+
+func getDeputyTypes() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "LAY",
+			Label:  "Lay",
+		},
+		{
+			Handle: "PRO",
+			Label:  "Professional",
+		},
+		{
+			Handle: "PA",
+			Label:  "Public Authority",
+		},
+	}
+}
+
+func getOrderStatusOptions() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "active",
+			Label:  "Active",
+		},
+		{
+			Handle: "closed",
+			Label:  "Closed",
+		},
+	}
+}
+
+func getDebtTypes() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "yes",
+			Label:  "Yes",
+		},
+		{
+			Handle: "no",
+			Label:  "No",
+		},
+	}
+}
+
+func getParams(params url.Values) ([]string, []string, []string, []string) {
+	var selectedStatuses []string
+	if params.Has("status") {
+		selectedStatuses = params["status"]
+	}
+
+	var selectedDeputyTypes []string
+	if params.Has("deputy-type") {
+		selectedDeputyTypes = params["deputy-type"]
+	}
+
+	var selectedCaseTypes []string
+	if params.Has("case-type") {
+		selectedCaseTypes = params["case-type"]
+	}
+
+	var selectedDebtTypes []string
+	if params.Has("debt") {
+		selectedDebtTypes = params["debt"]
+	}
+
+	return selectedStatuses, selectedDeputyTypes, selectedCaseTypes, selectedDebtTypes
 }
