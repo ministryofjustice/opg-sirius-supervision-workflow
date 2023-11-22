@@ -195,9 +195,7 @@ compression@^1.7.4:
     vary "~1.1.2"
 
 concurrently@^8.0.0:
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-8.2.1.tgz#bcab9cacc38c23c503839583151e0fa96fd5b584"
-  integrity sha512-nVraf3aXOpIcNud5pB9M82p1tynmZkrSGQ1p6X/VY8cJ+2LMVqAgXsJxYYefACSHbTYlm92O1xuhdGTjwoEvbQ==
+  version "8.2.2"
   dependencies:
     chalk "^4.1.2"
     date-fns "^2.30.0"

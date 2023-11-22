@@ -206,9 +206,7 @@
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
 "@ministryofjustice/frontend@^1.0.0":
-  version "1.8.0"
-  resolved "https://registry.npmjs.org/@ministryofjustice/frontend/-/frontend-1.8.0.tgz"
-  integrity sha512-N4791HcFoqJNLNrK6EN4oMaTJjeFp9ileavCpXkda3qvpEWQByxZUsOd6sDA69FuLRpB6jBFL2C2bqfYbcTdqg==
+  version "1.8.1"
   dependencies:
     govuk-frontend "^3.0.0 || ^4.0.0"
     moment "^2.27.0"
@@ -383,9 +381,7 @@ aws4@^1.8.0:
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
 axe-core@^4.3.5:
-  version "4.7.2"
-  resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.7.2.tgz"
-  integrity sha512-zIURGIS1E1Q4pcrMjp+nnEh+16G56eG/MUllJH8yEvw7asDo7Ac9uhC9KIH5jzpITueEZolfYglnCGIuSBz39g==
+  version "4.8.2"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -613,9 +609,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2:
     which "^2.0.1"
 
 cypress-axe@^1.0.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/cypress-axe/-/cypress-axe-1.4.0.tgz"
-  integrity sha512-Ut7NKfzjyKm0BEbt2WxuKtLkIXmx6FD2j0RwdvO/Ykl7GmB/qRQkwbKLk3VP35+83hiIr8GKD04PDdrTK5BnyA==
+  version "1.5.0"
 
 cypress-failed-log@^2.9.2:
   version "2.10.0"
@@ -626,9 +620,7 @@ cypress-failed-log@^2.9.2:
     logdown "3.3.1"
 
 cypress@^13.4.0:
-  version "13.4.0"
-  resolved "https://registry.npmjs.org/cypress/-/cypress-13.4.0.tgz"
-  integrity sha512-KeWNC9xSHG/ewZURVbaQsBQg2mOKw4XhjJZFKjWbEjgZCdxpPXLpJnfq5Jns1Gvnjp6AlnIfpZfWFlDgVKXdWQ==
+  version "13.5.1"
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -754,32 +746,7 @@ enquirer@^2.3.6:
     ansi-colors "^4.1.1"
 
 esbuild@^0.19.0:
-  version "0.19.5"
-  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.19.5.tgz"
-  integrity sha512-bUxalY7b1g8vNhQKdB24QDmHeY4V4tw/s6Ak5z+jJX9laP5MoQseTOMemAr0gxssjNcH0MCViG8ONI2kksvfFQ==
-  optionalDependencies:
-    "@esbuild/android-arm" "0.19.5"
-    "@esbuild/android-arm64" "0.19.5"
-    "@esbuild/android-x64" "0.19.5"
-    "@esbuild/darwin-arm64" "0.19.5"
-    "@esbuild/darwin-x64" "0.19.5"
-    "@esbuild/freebsd-arm64" "0.19.5"
-    "@esbuild/freebsd-x64" "0.19.5"
-    "@esbuild/linux-arm" "0.19.5"
-    "@esbuild/linux-arm64" "0.19.5"
-    "@esbuild/linux-ia32" "0.19.5"
-    "@esbuild/linux-loong64" "0.19.5"
-    "@esbuild/linux-mips64el" "0.19.5"
-    "@esbuild/linux-ppc64" "0.19.5"
-    "@esbuild/linux-riscv64" "0.19.5"
-    "@esbuild/linux-s390x" "0.19.5"
-    "@esbuild/linux-x64" "0.19.5"
-    "@esbuild/netbsd-x64" "0.19.5"
-    "@esbuild/openbsd-x64" "0.19.5"
-    "@esbuild/sunos-x64" "0.19.5"
-    "@esbuild/win32-arm64" "0.19.5"
-    "@esbuild/win32-ia32" "0.19.5"
-    "@esbuild/win32-x64" "0.19.5"
+  version "0.19.6"
 
 escape-string-regexp@^1.0.5:
   version "1.0.5"
@@ -805,9 +772,7 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1:
   integrity sha512-pZnmmLwYzf+kWaM/Qgrvpen51upAktaaiI01nsJD/Yr3lMOdNtq0cxkrrg16w64VtisN6okbs7Q8AfGqj4c9fA==
 
 eslint@^8.30.0:
-  version "8.44.0"
-  resolved "https://registry.npmjs.org/eslint/-/eslint-8.44.0.tgz"
-  integrity sha512-0wpHoUbDUHgNCyvFB5aXLiQVfK9B0at6gUvzy83k4kAsQ/u769TQDX6iKC+aO4upIHO9WSaA3QoXYQDHbNwf1A==
+  version "8.54.0"
   dependencies:
     "@eslint-community/eslint-utils" "^4.2.0"
     "@eslint-community/regexpp" "^4.4.0"
@@ -1119,9 +1084,7 @@ gopd@^1.0.1:
     get-intrinsic "^1.1.3"
 
 "govuk-frontend@^3.0.0 || ^4.0.0", govuk-frontend@^4.3.1:
-  version "4.6.0"
-  resolved "https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-4.6.0.tgz"
-  integrity sha512-pLJVHVvfsTmNDBH/YBCMyuqSMCQmOrNQXoThdcAzhXJVbuaWnGc1URvjOR7EJeZyOm101fHDjzTkTvpEy6zfiw==
+  version "4.7.0"
 
 graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.11"
@@ -1620,9 +1583,7 @@ prelude-ls@^1.2.1:
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
 prettier@^3.0.0:
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-3.0.3.tgz"
-  integrity sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==
+  version "3.1.0"
 
 pretty-bytes@^5.6.0:
   version "5.6.0"
@@ -1748,9 +1709,7 @@ safer-buffer@^2.0.2, safer-buffer@^2.1.0, safer-buffer@~2.1.0:
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
 sass@^1.38.1:
-  version "1.63.6"
-  resolved "https://registry.npmjs.org/sass/-/sass-1.63.6.tgz"
-  integrity sha512-MJuxGMHzaOW7ipp+1KdELtqKbfAWbH7OLIdoSMnVe3EXPMTmxTmlaZDCTsgIpPCs3w99lLo9/zDKkOrJuT5byw==
+  version "1.69.5"
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
