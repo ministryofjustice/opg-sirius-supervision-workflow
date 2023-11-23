@@ -6,24 +6,43 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type ClientListParams struct {
-	Team          model.Team
-	Page          int
-	PerPage       int
-	CaseOwners    []string
-	OrderStatuses []string
-	SubType       string
-	DebtTypes     []string
-	DeputyTypes   []string
-	CaseTypes     []string
+	Team             model.Team
+	Page             int
+	PerPage          int
+	CaseOwners       []string
+	OrderStatuses    []string
+	SubType          string
+	DebtTypes        []string
+	DeputyTypes      []string
+	CaseTypes        []string
+	LastActionDate   string
+	CachedDebtAmount int
+}
+
+type ClientListMetaData []struct {
+	LastActionDate   string `json:"timestamp"`
+	ClientId         int    `json:"person_id"`
+	CachedDebtAmount int    `json:"cacheddebtamount"`
+}
+
+type ClientMetadata []struct {
+	ClientId int `json:"clientId"`
+	Data     struct {
+		Timestamp        string `json:"timestamp"`
+		PersonId         int    `json:"person_id"`
+		Cacheddebtamount int    `json:"cacheddebtamount"`
+	} `json:"data"`
 }
 
 type ClientList struct {
-	Clients      []model.Client        `json:"clients"`
-	Pages        model.PageInformation `json:"pages"`
-	TotalClients int                   `json:"total"`
+	Clients            []model.Client        `json:"clients"`
+	Pages              model.PageInformation `json:"pages"`
+	TotalClients       int                   `json:"total"`
+	ClientListMetaData ClientMetadata        `json:"metadata"`
 }
 
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
@@ -38,6 +57,10 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 	}
 
 	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	if params.Team.IsClosedCases() {
+		endpoint = fmt.Sprintf("/api/v1/assignees/%d/closed-clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	}
+
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
@@ -50,6 +73,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
+	//io.Copy(os.Stdout, resp.Body)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -67,7 +91,26 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		return v, err
 	}
 
+	v = appendMetaData(v)
 	return v, err
+}
+
+func appendMetaData(v ClientList) ClientList {
+	for i, s := range v.Clients {
+		for _, t := range v.ClientListMetaData {
+			if s.Id == t.ClientId {
+				stringDate := formatTimestampToStandardDate(t.Data.Timestamp)
+				v.Clients[i].LastActionDate = stringDate
+				v.Clients[i].CachedDebtAmount = t.Data.Cacheddebtamount
+			}
+		}
+	}
+	return v
+}
+
+func formatTimestampToStandardDate(timestamp string) string {
+	newTime, _ := time.Parse("2006-01-02 15:04:05", timestamp)
+	return newTime.Format("02/01/2006")
 }
 
 func (p ClientListParams) CreateFilter() string {

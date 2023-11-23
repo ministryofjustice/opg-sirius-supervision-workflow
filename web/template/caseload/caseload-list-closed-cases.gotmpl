@@ -43,16 +43,16 @@
                                 <span class="secondary">{{ .CaseRecNumber }}</span>
                             </td>
                             <td class="govuk-table__cell">
-                                Placeholder
+                                {{ .ClosedOnDate }}
                             </td>
                             <td class="govuk-table__cell">
-                                Placeholder
+                                {{ .LastActionDate }}
                             </td>
                             <td class="govuk-table__cell">
-                                Placeholder
+                                £{{ .CachedDebtAmount }}
                             </td>
                             <td class="govuk-table__cell">
-                                Placeholder
+                                {{ .GetStatus "" }}
                             </td>
                         </tr>
                     {{ end }}

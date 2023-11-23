@@ -133,6 +133,8 @@ func TestCaseload(t *testing.T) {
 			}
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
+			//clean this up
+			want.Required = true
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -157,6 +159,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "case-type",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "debt",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -243,6 +249,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			Name:                  "case-type",
 			ClearBetweenTeamViews: true,
 		},
+		{
+			Name:                  "debt",
+			ClearBetweenTeamViews: true,
+		},
 	}
 
 	tests := []struct {
@@ -260,6 +270,15 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 				},
 			},
 			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team"},
+		},
+		{
+			page: CaseloadPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
 		},
 		{
 			page: CaseloadPage{

@@ -140,6 +140,10 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.CaseTypes = selectedCaseTypes
 		}
 
+		if app.SelectedTeam.IsClosedCases() {
+			clientListParams.DebtTypes = selectedDebtTypes
+		}
+
 		clientList, err := client.GetClientList(ctx, clientListParams)
 		if err != nil {
 			return err
@@ -163,7 +167,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		if app.SelectedTeam.IsClosedCases() {
-			clientListParams.DebtTypes = selectedDebtTypes
 			vars.SelectedDebtTypes = selectedDebtTypes
 			vars.DebtTypes = getDebtTypes()
 			vars.FilterByAssignee.Required = false

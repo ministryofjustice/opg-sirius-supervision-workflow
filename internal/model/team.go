@@ -66,7 +66,7 @@ func (t Team) IsHW() bool {
 }
 
 func (t Team) IsClosedCases() bool {
-	return t.Name == "Supervision Closed Cases"
+	return t.Name == "Supervision Closed Cases" || t.Name == "Supervision closed cases"
 }
 
 func (t Team) IsLayNewOrdersTeam() bool {
