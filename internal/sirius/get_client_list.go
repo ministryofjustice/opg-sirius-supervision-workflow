@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -73,7 +75,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	//io.Copy(os.Stdout, resp.Body)
+	io.Copy(os.Stdout, resp.Body)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
