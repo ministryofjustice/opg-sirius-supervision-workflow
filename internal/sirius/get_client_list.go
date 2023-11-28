@@ -23,15 +23,9 @@ type ClientListParams struct {
 	CachedDebtAmount string
 }
 
-type ClientListMetaData []struct {
-	LastActionDate   string `json:"timestamp"`
-	ClientId         int    `json:"person_id"`
-	CachedDebtAmount int    `json:"cacheddebtamount"`
-}
-
 type ClientMetadata []struct {
 	ClientId         int    `json:"clientId"`
-	Timestamp        string `json:"lastActionDate"`
+	LastActionDate   string `json:"lastActionDate"`
 	CachedDebtAmount string `json:"cachedDebtAmount"`
 }
 
@@ -64,12 +58,13 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logErrorRequest(req, err)
 		return v, err
 	}
-
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
 	}
+	//io.Copy(os.Stdout, resp.Body)
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -95,17 +90,21 @@ func appendMetaData(v ClientList) ClientList {
 	for i, s := range v.Clients {
 		for _, t := range v.ClientListMetaData {
 			if s.Id == t.ClientId {
-				stringDate := formatTimestampToStandardDate(t.Timestamp)
+				stringDate := formatTimestampToStandardDate(t.LastActionDate)
 				v.Clients[i].LastActionDate = stringDate
 				v.Clients[i].CachedDebtAmount = t.CachedDebtAmount
 			}
 		}
 	}
+	fmt.Println("append meta data")
+	fmt.Println(v.Clients[0].LastActionDate)
+	fmt.Println(v.Clients[0].CachedDebtAmount)
+
 	return v
 }
 
 func formatTimestampToStandardDate(timestamp string) string {
-	newTime, _ := time.Parse("2006-01-02 15:04:05", timestamp)
+	newTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", timestamp)
 	return newTime.Format("02/01/2006")
 }
 
