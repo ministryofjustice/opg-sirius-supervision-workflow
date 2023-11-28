@@ -17,7 +17,7 @@ type Client struct {
 	HWDeputyType         RefData  `json:"hwDeputyType"`
 	ClosedOnDate         string   `json:"closedOnDate"`
 	LastActionDate       string   `json:"lastActionDate"`
-	CachedDebtAmount     int      `json:"cachedDebtAmount"`
+	CachedDebtAmount     string   `json:"cachedDebtAmount"`
 }
 
 func (c Client) GetReportDueDate() string {

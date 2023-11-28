@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"io"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 )
@@ -22,7 +20,7 @@ type ClientListParams struct {
 	DeputyTypes      []string
 	CaseTypes        []string
 	LastActionDate   string
-	CachedDebtAmount int
+	CachedDebtAmount string
 }
 
 type ClientListMetaData []struct {
@@ -32,12 +30,9 @@ type ClientListMetaData []struct {
 }
 
 type ClientMetadata []struct {
-	ClientId int `json:"clientId"`
-	Data     struct {
-		Timestamp        string `json:"timestamp"`
-		PersonId         int    `json:"person_id"`
-		Cacheddebtamount int    `json:"cacheddebtamount"`
-	} `json:"data"`
+	ClientId         int    `json:"clientId"`
+	Timestamp        string `json:"lastActionDate"`
+	CachedDebtAmount string `json:"cachedDebtAmount"`
 }
 
 type ClientList struct {
@@ -75,7 +70,6 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	io.Copy(os.Stdout, resp.Body)
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -101,9 +95,9 @@ func appendMetaData(v ClientList) ClientList {
 	for i, s := range v.Clients {
 		for _, t := range v.ClientListMetaData {
 			if s.Id == t.ClientId {
-				stringDate := formatTimestampToStandardDate(t.Data.Timestamp)
+				stringDate := formatTimestampToStandardDate(t.Timestamp)
 				v.Clients[i].LastActionDate = stringDate
-				v.Clients[i].CachedDebtAmount = t.Data.Cacheddebtamount
+				v.Clients[i].CachedDebtAmount = t.CachedDebtAmount
 			}
 		}
 	}
@@ -131,6 +125,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, a := range p.CaseOwners {
 		filter += "caseowner:" + a + ","
+	}
+	for _, d := range p.DebtTypes {
+		filter += "debt:" + d + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
