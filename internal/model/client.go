@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"time"
 )
 
 type Client struct {
@@ -16,8 +15,9 @@ type Client struct {
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
-	LastActionDate       string   `json:"lastActionDate"`
+	LastActionDate       Date     `json:"lastActionDate"`
 	CachedDebtAmount     string   `json:"cachedDebtAmount"`
+	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 
 func (c Client) GetReportDueDate() string {
@@ -25,17 +25,6 @@ func (c Client) GetReportDueDate() string {
 		return c.Orders[0].LatestAnnualReport.DueDate
 	}
 	return ""
-}
-
-func (c Client) GetClosedOnDate() string {
-	var closedOnDate time.Time
-	for _, order := range c.Orders {
-		if order.ClosedOnDate.After(closedOnDate) || closedOnDate.IsZero() {
-			closedOnDate = order.ClosedOnDate
-		}
-	}
-	newTime := closedOnDate.Format("02/01/2006")
-	return newTime
 }
 
 func (c Client) GetStatus(orderType string) string {

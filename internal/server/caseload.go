@@ -175,9 +175,9 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 		vars.Pagination = paginate.Pagination{
-			CurrentPage:     clientList.Pages.PageCurrent,
-			TotalPages:      clientList.Pages.PageTotal,
-			TotalElements:   clientList.TotalClients,
+			CurrentPage: clientList.Pages.PageCurrent,
+			TotalPages:  clientList.Pages.PageTotal,
+			//TotalElements:   clientList.TotalClients,
 			ElementsPerPage: vars.PerPage,
 			ElementName:     "clients",
 			PerPageOptions:  perPageOptions,

@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type Order struct {
 	Id                     int          `json:"id"`
 	Client                 Client       `json:"client"`
@@ -12,5 +10,4 @@ type Order struct {
 	MadeActiveDate         Date         `json:"madeActiveDate"`
 	HowDeputyAppointed     RefData      `json:"howDeputyAppointed"`
 	IntroductoryTargetDate Date         `json:"introductoryTargetDate"`
-	ClosedOnDate           time.Time    `json:"closedOnDate"`
 }

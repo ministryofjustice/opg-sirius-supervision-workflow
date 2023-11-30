@@ -23,17 +23,10 @@ type ClientListParams struct {
 	CachedDebtAmount string
 }
 
-type ClientMetadata []struct {
-	ClientId         int    `json:"clientId"`
-	LastActionDate   string `json:"lastActionDate"`
-	CachedDebtAmount string `json:"cachedDebtAmount"`
-}
-
 type ClientList struct {
-	Clients            []model.Client        `json:"clients"`
-	Pages              model.PageInformation `json:"pages"`
-	TotalClients       int                   `json:"total"`
-	ClientListMetaData ClientMetadata        `json:"metadata"`
+	Clients      []model.Client        `json:"clients"`
+	Pages        model.PageInformation `json:"pages"`
+	TotalClients int                   `json:"total"`
 }
 
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
@@ -82,26 +75,28 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		return v, err
 	}
 
-	v = appendMetaData(v)
+	//v = appendMetaData(v)
+	fmt.Println("v")
+	fmt.Println(v)
 	return v, err
 }
 
-func appendMetaData(v ClientList) ClientList {
-	for i, s := range v.Clients {
-		for _, t := range v.ClientListMetaData {
-			if s.Id == t.ClientId {
-				stringDate := formatTimestampToStandardDate(t.LastActionDate)
-				v.Clients[i].LastActionDate = stringDate
-				v.Clients[i].CachedDebtAmount = t.CachedDebtAmount
-			}
-		}
-	}
-	fmt.Println("append meta data")
-	fmt.Println(v.Clients[0].LastActionDate)
-	fmt.Println(v.Clients[0].CachedDebtAmount)
-
-	return v
-}
+//func appendMetaData(v ClientList) ClientList {
+//	for i, s := range v.Clients {
+//		for _, t := range v.ClientListMetaData {
+//			if s.Id == t.ClientId {
+//				stringDate := formatTimestampToStandardDate(t.LastActionDate)
+//				v.Clients[i].LastActionDate = stringDate
+//				v.Clients[i].CachedDebtAmount = t.CachedDebtAmount
+//			}
+//		}
+//	}
+//	fmt.Println("append meta data")
+//	fmt.Println(v.Clients[0].LastActionDate)
+//	fmt.Println(v.Clients[0].CachedDebtAmount)
+//
+//	return v
+//}
 
 func formatTimestampToStandardDate(timestamp string) string {
 	newTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", timestamp)
