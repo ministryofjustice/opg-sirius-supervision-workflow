@@ -1,6 +1,8 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Client struct {
 	Id                   int      `json:"id"`
@@ -13,6 +15,9 @@ type Client struct {
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
+	LastActionDate       Date     `json:"lastActionDate"`
+	CachedDebtAmount     int      `json:"cachedDebtTotal"`
+	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 
 func (c Client) GetReportDueDate() string {
