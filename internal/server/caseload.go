@@ -187,12 +187,12 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			vars.SelectedSupervisionLevels = selectedSupervisionLevels
 			vars.SupervisionLevels = []model.RefData{
 				{
-					Handle: "MINIMAL",
-					Label:  "Minimal",
-				},
-				{
 					Handle: "GENERAL",
 					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
 				},
 			}
 		}
