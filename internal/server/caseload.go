@@ -20,6 +20,7 @@ type CaseloadPage struct {
 	FilterByStatus
 	FilterByDeputyType
 	FilterByCaseType
+	FilterBySupervisionLevel
 	ClientList sirius.ClientList
 }
 
@@ -34,6 +35,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
+			urlbuilder.CreateFilter("supervision-level", cv.SelectedSupervisionLevels, true),
 		},
 	}
 }
@@ -60,6 +62,11 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	}
 	for _, ct := range cv.CaseTypes {
 		if ct.IsIn(cv.SelectedCaseTypes) {
+			appliedFilters = append(appliedFilters, ct.Label)
+		}
+	}
+	for _, ct := range cv.SupervisionLevels {
+		if ct.IsIn(cv.SelectedSupervisionLevels) {
 			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
@@ -130,6 +137,11 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedCaseTypes = params["case-type"]
 		}
 
+		var selectedSupervisionLevels []string
+		if params.Has("supervision-level") {
+			selectedSupervisionLevels = params["supervision-level"]
+		}
+
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
@@ -142,6 +154,10 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.SubType = "hw"
 			clientListParams.DeputyTypes = selectedDeputyTypes
 			clientListParams.CaseTypes = selectedCaseTypes
+		}
+
+		if app.SelectedTeam.IsLay() {
+			clientListParams.SupervisionLevels = selectedSupervisionLevels
 		}
 
 		clientList, err := client.GetClientList(ctx, clientListParams)
@@ -165,6 +181,20 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 				Handle: "closed",
 				Label:  "Closed",
 			},
+		}
+
+		if app.SelectedTeam.IsLay() {
+			vars.SelectedSupervisionLevels = selectedSupervisionLevels
+			vars.SupervisionLevels = []model.RefData{
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
+				},
+				{
+					Handle: "GENERAL",
+					Label:  "General",
+				},
+			}
 		}
 
 		if app.SelectedTeam.IsHW() {

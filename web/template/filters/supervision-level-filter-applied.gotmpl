@@ -1,0 +1,15 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterBySupervisionLevel*/ -}}
+{{ define "supervision-level-filter-applied" }}
+
+{{ if .SelectedSupervisionLevels }}
+  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Supervision level</h3>
+  <ul class="moj-filter-tags">
+      {{ range .SupervisionLevels }}
+          {{ if .IsIn $.SelectedSupervisionLevels }}
+            <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "supervision-level" .Handle }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Label }}</a></li>
+          {{ end }}
+      {{ end }}
+  </ul>
+{{ end }}
+
+{{ end }}
