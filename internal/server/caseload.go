@@ -234,8 +234,8 @@ func getOrderStatusOptions() []model.RefData {
 			Label:  "Active",
 		},
 		{
-			Handle: "closed",
-			Label:  "Closed",
+			Handle: "open",
+			Label:  "Open",
 		},
 	}
 }
