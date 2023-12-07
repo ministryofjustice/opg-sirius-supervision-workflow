@@ -1,0 +1,63 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.CaseloadPage*/ -}}
+{{ define "caseload-list-closed-cases" }}
+    <section data-module="manage-reassign" class="moj-manage-list">
+        {{ template "client-edit-panel" . }}
+        <table id="caseload-list" class="govuk-table" data-module="moj-sortable-table">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-table__select">
+                    <div class="govuk-checkboxes govuk-checkboxes--small">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input js-mt-checkbox-select-all" id="selectAll" name="organisation" type="checkbox" autocomplete="off" />
+                            <label class="govuk-label govuk-checkboxes__label" for="selectAll">
+                                <span class="govuk-visually-hidden">Select</span>
+                            </label>
+                        </div>
+                    </div>
+                </th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Client">Client</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Closure-date">Closed on date</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Last-action-date">Last action date</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Debt">Debt</th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Status">Status</th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+                {{if ne .ClientList.TotalClients 0 }}
+                    {{ range .ClientList.Clients }} {{ . }}
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell govuk-table__select">
+                                <div class="govuk-checkboxes govuk-checkboxes--small">
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input js-mt-checkbox" multiple="" type="checkbox" name="selected-clients" value="{{ .Id }}" id="select-client-{{ .Id }}" autocomplete="off" />
+                                        <label class="govuk-label govuk-checkboxes__label" >
+                                            <span class="govuk-visually-hidden">Select</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="govuk-table__cell">
+                                <a {{ if ne .Id 0 }}href="{{ sirius .GetURL }}"{{ end }} class="govuk-link">
+                                    {{ .FirstName }} {{ .Surname }}
+                                </a>
+                                <span class="secondary">{{ .CaseRecNumber }}</span>
+                            </td>
+                            <td class="govuk-table__cell">
+                                {{ if .ClosedOnDate.IsNull }} - {{else}}{{ .ClosedOnDate}}{{end}}
+                            </td>
+                            <td class="govuk-table__cell">
+                                {{ .LastActionDate }}
+                            </td>
+                            <td class="govuk-table__cell">
+                                £{{printf "%.2f" .CachedDebtAmount}}
+                            </td>
+                            <td class="govuk-table__cell">
+                                {{ .GetStatus "" }}
+                            </td>
+                        </tr>
+                    {{ end }}
+                {{ end }}
+            </tbody>
+        </table>
+    </section>
+{{ end }}
