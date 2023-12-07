@@ -9,14 +9,17 @@ import (
 )
 
 type ClientListParams struct {
-	Team          model.Team
-	Page          int
-	PerPage       int
-	CaseOwners    []string
-	OrderStatuses []string
-	SubType       string
-	DeputyTypes   []string
-	CaseTypes     []string
+	Team             model.Team
+	Page             int
+	PerPage          int
+	CaseOwners       []string
+	OrderStatuses    []string
+	SubType          string
+	DebtTypes        []string
+	DeputyTypes      []string
+	CaseTypes        []string
+	LastActionDate   string
+	CachedDebtAmount float64
 }
 
 type ClientList struct {
@@ -37,18 +40,22 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 	}
 
 	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	if params.Team.IsClosedCases() {
+		endpoint = fmt.Sprintf("/api/v1/assignees/%d/closed-clients?limit=%d&page=%d&filter=%s", params.Team.Id, params.PerPage, params.Page, filter)
+	}
+
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
 		return v, err
 	}
-
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -85,6 +92,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, a := range p.CaseOwners {
 		filter += "caseowner:" + a + ","
+	}
+	for _, d := range p.DebtTypes {
+		filter += "debt:" + d + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
