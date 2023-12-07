@@ -51,6 +51,13 @@ func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
 }
 
+func (c Client) GetCachedDebtAmount() string {
+	if c.CachedDebtAmount <= 0 {
+		return "-"
+	}
+	return "£" + fmt.Sprintf("%.2f", c.CachedDebtAmount/100)
+}
+
 func (c Client) GetActiveOrders(orderType string) []Order {
 	var activeOrders []Order
 	for _, order := range c.Orders {
