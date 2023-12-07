@@ -127,12 +127,14 @@ func TestCaseload(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "closed",
-					Label:  "Closed",
+					Handle: "open",
+					Label:  "Open",
 				},
 			}
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
+			//clean this up
+			want.Required = true
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -157,6 +159,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "case-type",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "debt",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -243,6 +249,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			Name:                  "case-type",
 			ClearBetweenTeamViews: true,
 		},
+		{
+			Name:                  "debt",
+			ClearBetweenTeamViews: true,
+		},
 	}
 
 	tests := []struct {
@@ -260,6 +270,15 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 				},
 			},
 			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team"},
+		},
+		{
+			page: CaseloadPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
 		},
 		{
 			page: CaseloadPage{
@@ -306,8 +325,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		{
 			selectedAssignees:  []string{"1", "2"},
 			selectedUnassigned: "lay-team",
-			selectedStatuses:   []string{"active", "closed"},
-			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
+			selectedStatuses:   []string{"active", "open"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Open"},
 		},
 		{
 			selectedDeputyTypes: []string{"LAY", "PA"},
@@ -341,8 +360,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "closed",
-					Label:  "Closed",
+					Handle: "open",
+					Label:  "Open",
 				},
 			}
 			page.DeputyTypes = []model.RefData{
