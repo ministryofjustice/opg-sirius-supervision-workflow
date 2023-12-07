@@ -130,6 +130,10 @@ func TestCaseload(t *testing.T) {
 					Handle: "open",
 					Label:  "Open",
 				},
+				{
+					Handle: "duplicate",
+					Label:  "Duplicate",
+				},
 			}
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
@@ -159,10 +163,6 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "case-type",
-						ClearBetweenTeamViews: true,
-					},
-					{
-						Name:                  "debt",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -247,10 +247,6 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 		},
 		{
 			Name:                  "case-type",
-			ClearBetweenTeamViews: true,
-		},
-		{
-			Name:                  "debt",
 			ClearBetweenTeamViews: true,
 		},
 	}

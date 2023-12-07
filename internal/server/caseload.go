@@ -21,7 +21,6 @@ type CaseloadPage struct {
 	FilterByStatus
 	FilterByDeputyType
 	FilterByCaseType
-	FilterByDebt
 	ClientList sirius.ClientList
 }
 
@@ -36,7 +35,6 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
-			urlbuilder.CreateFilter("debt", cv.SelectedDebtTypes, true),
 		},
 	}
 }
@@ -64,11 +62,6 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	for _, ct := range cv.CaseTypes {
 		if ct.IsIn(cv.SelectedCaseTypes) {
 			appliedFilters = append(appliedFilters, ct.Label)
-		}
-	}
-	for _, k := range cv.DebtTypes {
-		if k.IsIn(cv.SelectedDebtTypes) {
-			appliedFilters = append(appliedFilters, k.Label)
 		}
 	}
 
@@ -124,7 +117,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			}
 		}
 
-		selectedStatuses, selectedDeputyTypes, selectedCaseTypes, selectedDebtTypes := getParams(r.URL.Query())
+		selectedStatuses, selectedDeputyTypes, selectedCaseTypes := getParams(r.URL.Query())
 
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
@@ -138,10 +131,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.SubType = "hw"
 			clientListParams.DeputyTypes = selectedDeputyTypes
 			clientListParams.CaseTypes = selectedCaseTypes
-		}
-
-		if app.SelectedTeam.IsClosedCases() {
-			clientListParams.DebtTypes = selectedDebtTypes
 		}
 
 		clientList, err := client.GetClientList(ctx, clientListParams)
@@ -167,17 +156,15 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		if app.SelectedTeam.IsClosedCases() {
-			vars.SelectedDebtTypes = selectedDebtTypes
-			vars.DebtTypes = getDebtTypes()
 			vars.FilterByAssignee.Required = false
 		}
 
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 		vars.Pagination = paginate.Pagination{
-			CurrentPage: clientList.Pages.PageCurrent,
-			TotalPages:  clientList.Pages.PageTotal,
-			//TotalElements:   clientList.TotalClients,
+			CurrentPage:     clientList.Pages.PageCurrent,
+			TotalPages:      clientList.Pages.PageTotal,
+			TotalElements:   clientList.TotalClients,
 			ElementsPerPage: vars.PerPage,
 			ElementName:     "clients",
 			PerPageOptions:  perPageOptions,
@@ -237,23 +224,14 @@ func getOrderStatusOptions() []model.RefData {
 			Handle: "open",
 			Label:  "Open",
 		},
-	}
-}
-
-func getDebtTypes() []model.RefData {
-	return []model.RefData{
 		{
-			Handle: "yes",
-			Label:  "Yes",
-		},
-		{
-			Handle: "no",
-			Label:  "No",
+			Handle: "duplicate",
+			Label:  "Duplicate",
 		},
 	}
 }
 
-func getParams(params url.Values) ([]string, []string, []string, []string) {
+func getParams(params url.Values) ([]string, []string, []string) {
 	var selectedStatuses []string
 	if params.Has("status") {
 		selectedStatuses = params["status"]
@@ -269,10 +247,5 @@ func getParams(params url.Values) ([]string, []string, []string, []string) {
 		selectedCaseTypes = params["case-type"]
 	}
 
-	var selectedDebtTypes []string
-	if params.Has("debt") {
-		selectedDebtTypes = params["debt"]
-	}
-
-	return selectedStatuses, selectedDeputyTypes, selectedCaseTypes, selectedDebtTypes
+	return selectedStatuses, selectedDeputyTypes, selectedCaseTypes
 }
