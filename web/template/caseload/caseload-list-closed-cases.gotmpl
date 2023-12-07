@@ -24,7 +24,7 @@
             </thead>
             <tbody class="govuk-table__body">
                 {{if ne .ClientList.TotalClients 0 }}
-                    {{ range .ClientList.Clients }}
+                    {{ range .ClientList.Clients }} {{ . }}
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell govuk-table__select">
                                 <div class="govuk-checkboxes govuk-checkboxes--small">
@@ -43,7 +43,7 @@
                                 <span class="secondary">{{ .CaseRecNumber }}</span>
                             </td>
                             <td class="govuk-table__cell">
-                                {{ .ClosedOnDate }}
+                                {{ if .ClosedOnDate.IsNull }} - {{else}}{{ .ClosedOnDate}}{{end}}
                             </td>
                             <td class="govuk-table__cell">
                                 {{ .LastActionDate }}

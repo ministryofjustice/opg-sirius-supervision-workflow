@@ -127,8 +127,8 @@ func TestCaseload(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "closed",
-					Label:  "Closed",
+					Handle: "open",
+					Label:  "Open",
 				},
 			}
 			want.DeputyTypes = test.wantDeputyTypes
@@ -325,8 +325,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		{
 			selectedAssignees:  []string{"1", "2"},
 			selectedUnassigned: "lay-team",
-			selectedStatuses:   []string{"active", "closed"},
-			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
+			selectedStatuses:   []string{"active", "open"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Open"},
 		},
 		{
 			selectedDeputyTypes: []string{"LAY", "PA"},
@@ -360,8 +360,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "closed",
-					Label:  "Closed",
+					Handle: "open",
+					Label:  "Open",
 				},
 			}
 			page.DeputyTypes = []model.RefData{
