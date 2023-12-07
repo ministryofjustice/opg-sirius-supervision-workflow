@@ -16,7 +16,7 @@ type Client struct {
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
 	LastActionDate       Date     `json:"lastActionDate"`
-	CachedDebtAmount     int      `json:"cachedDebtTotal"`
+	CachedDebtAmount     float64  `json:"cachedDebtTotal"`
 	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 

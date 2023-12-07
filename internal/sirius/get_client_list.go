@@ -19,7 +19,7 @@ type ClientListParams struct {
 	DeputyTypes      []string
 	CaseTypes        []string
 	LastActionDate   string
-	CachedDebtAmount string
+	CachedDebtAmount float64
 }
 
 type ClientList struct {
@@ -41,7 +41,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 
 	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
 	if params.Team.IsClosedCases() {
-		endpoint = fmt.Sprintf("/api/v1/assignees/%d/closed-clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+		endpoint = fmt.Sprintf("/api/v1/assignees/%d/closed-clients?limit=%d&page=%d&filter=%s", params.Team.Id, params.PerPage, params.Page, filter)
 	}
 
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
@@ -55,7 +55,6 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	//io.Copy(os.Stdout, resp.Body)
 
 	defer resp.Body.Close()
 
