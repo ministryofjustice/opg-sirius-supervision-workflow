@@ -72,6 +72,72 @@ func TestClient_GetStatus(t *testing.T) {
 	}
 }
 
+func TestClient_GetClosedCasesStatus(t *testing.T) {
+	status := func(s string) RefData { return RefData{Label: s} }
+
+	tests := []struct {
+		orders     []Order
+		orderType  string
+		wantStatus string
+	}{
+		{
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Active",
+		},
+		{
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			orderType:  "hw",
+			wantStatus: "Open",
+		},
+		{
+			orders: []Order{
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Open",
+		},
+		{
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Duplicate",
+		},
+		{
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			wantStatus: "Duplicate",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			client := Client{Orders: test.orders}
+			assert.Equal(t, test.wantStatus, client.GetClosedCasesStatus(test.orderType))
+		})
+	}
+}
+
 func TestClient_GetReportDueDate(t *testing.T) {
 	client := Client{
 		Orders: []Order{

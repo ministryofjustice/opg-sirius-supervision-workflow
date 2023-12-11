@@ -36,19 +36,20 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?&limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
 		return v, err
 	}
-
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
