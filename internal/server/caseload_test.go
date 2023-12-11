@@ -43,14 +43,25 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 
 func TestCaseload(t *testing.T) {
 	tests := []struct {
-		name            string
-		teamType        string
-		wantDeputyTypes []model.RefData
-		wantCaseTypes   []model.RefData
+		name              string
+		teamType          string
+		wantDeputyTypes   []model.RefData
+		wantCaseTypes     []model.RefData
+		wantOrderStatuses []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
 			teamType: "LAY",
+			wantOrderStatuses: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
 		},
 		{
 			name:     "Caseload page is viewable for Health & Welfare teams",
@@ -87,7 +98,35 @@ func TestCaseload(t *testing.T) {
 					Label:  "Property and financial affairs",
 				},
 			},
+			wantOrderStatuses: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
 		},
+		//{
+		//	name:     "Caseload page is viewable for Closed Cases teams",
+		//	teamType: "LAY",
+		//	wantOrderStatuses: []model.RefData{
+		//		{
+		//			Handle: "active",
+		//			Label:  "Active",
+		//		},
+		//		{
+		//			Handle: "open",
+		//			Label:  "Open",
+		//		},
+		//		{
+		//			Handle: "duplicate",
+		//			Label:  "Duplicate",
+		//		},
+		//	},
+		//},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -121,24 +160,10 @@ func TestCaseload(t *testing.T) {
 			want.App = app
 			want.PerPage = 25
 			want.AssigneeFilterName = "Case owner"
-			want.StatusOptions = []model.RefData{
-				{
-					Handle: "active",
-					Label:  "Active",
-				},
-				{
-					Handle: "open",
-					Label:  "Open",
-				},
-				{
-					Handle: "duplicate",
-					Label:  "Duplicate",
-				},
-			}
+
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
-			//clean this up
-			want.Required = true
+			want.StatusOptions = test.wantOrderStatuses
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",

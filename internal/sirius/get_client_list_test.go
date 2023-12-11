@@ -150,6 +150,36 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 	}, err)
 }
 
+func TestGetClosedCaseloadListCanAmendUrlEndpoint(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+	}))
+	defer svr.Close()
+
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+
+	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
+		Team:    model.Team{Id: 13, Name: "Supervision Closed Cases"},
+		Page:    1,
+		PerPage: 25,
+	})
+
+	expectedResponse := ClientList{
+		Clients:      nil,
+		Pages:        model.PageInformation{},
+		TotalClients: 0,
+	}
+
+	assert.Equal(t, expectedResponse, clientList)
+
+	assert.Equal(t, StatusError{
+		Code:   http.StatusBadRequest,
+		URL:    svr.URL + "/api/v1/assignees/13/closed-clients?limit=25&page=1&filter=",
+		Method: http.MethodGet,
+	}, err)
+}
+
 func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewApiClient(mockClient, "", logger)
@@ -173,29 +203,6 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	assert.Nil(t, err)
 }
 
-//
-//func TestGetCaseloadListCanAmendUrlForClosedCases(t *testing.T) {
-//	logger, mockClient := SetUpTest()
-//	client, _ := NewApiClient(mockClient, "", logger)
-//
-//	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-//		assert.Contains(t, r.URL.RawQuery, "closed-cases")
-//		return &http.Response{
-//			StatusCode: 200,
-//			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
-//		}, nil
-//	}
-//
-//	team := model.Team{Id: 40, Name: "Supervision Closed Cases"}
-//	_, err := client.GetClientList(getContext(nil), ClientListParams{
-//		Team:       team,
-//		Page:       1,
-//		PerPage:    25,
-//		CaseOwners: []string{"1"},
-//	})
-//	assert.Nil(t, err)
-//}
-
 func TestClientListParams_CreateFilter(t *testing.T) {
 	tests := []struct {
 		params ClientListParams
@@ -216,6 +223,10 @@ func TestClientListParams_CreateFilter(t *testing.T) {
 		{
 			params: ClientListParams{CaseTypes: []string{"HYBRID"}},
 			want:   "case-type:HYBRID",
+		},
+		{
+			params: ClientListParams{OrderStatuses: []string{"active", "duplicate"}},
+			want:   "order-status:active,order-status:duplicate",
 		},
 		{
 			params: ClientListParams{

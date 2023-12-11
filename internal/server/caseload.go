@@ -145,7 +145,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
-		vars.StatusOptions = getOrderStatusOptions()
+		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
 		vars.FilterByAssignee.Required = true
 
 		if app.SelectedTeam.IsHW() {
@@ -214,19 +214,31 @@ func getDeputyTypes() []model.RefData {
 	}
 }
 
-func getOrderStatusOptions() []model.RefData {
+func getOrderStatusOptions(isClosedCases bool) []model.RefData {
+	if isClosedCases {
+		return []model.RefData{
+			{
+				Handle: "active",
+				Label:  "Active",
+			},
+			{
+				Handle: "open",
+				Label:  "Open",
+			},
+			{
+				Handle: "duplicate",
+				Label:  "Duplicate",
+			},
+		}
+	}
 	return []model.RefData{
 		{
 			Handle: "active",
 			Label:  "Active",
 		},
 		{
-			Handle: "open",
-			Label:  "Open",
-		},
-		{
-			Handle: "duplicate",
-			Label:  "Duplicate",
+			Handle: "closed",
+			Label:  "Closed",
 		},
 	}
 }
