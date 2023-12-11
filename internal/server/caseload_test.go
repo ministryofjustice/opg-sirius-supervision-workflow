@@ -43,14 +43,25 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 
 func TestCaseload(t *testing.T) {
 	tests := []struct {
-		name            string
-		teamType        string
-		wantDeputyTypes []model.RefData
-		wantCaseTypes   []model.RefData
+		name              string
+		teamType          string
+		wantDeputyTypes   []model.RefData
+		wantCaseTypes     []model.RefData
+		wantOrderStatuses []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
 			teamType: "LAY",
+			wantOrderStatuses: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
 		},
 		{
 			name:     "Caseload page is viewable for Health & Welfare teams",
@@ -87,7 +98,35 @@ func TestCaseload(t *testing.T) {
 					Label:  "Property and financial affairs",
 				},
 			},
+			wantOrderStatuses: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
 		},
+		//{
+		//	name:     "Caseload page is viewable for Closed Cases teams",
+		//	teamType: "LAY",
+		//	wantOrderStatuses: []model.RefData{
+		//		{
+		//			Handle: "active",
+		//			Label:  "Active",
+		//		},
+		//		{
+		//			Handle: "open",
+		//			Label:  "Open",
+		//		},
+		//		{
+		//			Handle: "duplicate",
+		//			Label:  "Duplicate",
+		//		},
+		//	},
+		//},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -121,18 +160,10 @@ func TestCaseload(t *testing.T) {
 			want.App = app
 			want.PerPage = 25
 			want.AssigneeFilterName = "Case owner"
-			want.StatusOptions = []model.RefData{
-				{
-					Handle: "active",
-					Label:  "Active",
-				},
-				{
-					Handle: "closed",
-					Label:  "Closed",
-				},
-			}
+
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
+			want.StatusOptions = test.wantOrderStatuses
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -270,6 +301,15 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 			},
 			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
 		},
+		{
+			page: CaseloadPage{
+				ListPage: ListPage{
+					App:     WorkflowVars{SelectedTeam: model.Team{Selector: "test-team"}},
+					PerPage: 55,
+				},
+			},
+			want: urlbuilder.UrlBuilder{Path: "caseload", SelectedTeam: "test-team", SelectedPerPage: 55},
+		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
@@ -306,8 +346,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		{
 			selectedAssignees:  []string{"1", "2"},
 			selectedUnassigned: "lay-team",
-			selectedStatuses:   []string{"active", "closed"},
-			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
+			selectedStatuses:   []string{"active", "open"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Open"},
 		},
 		{
 			selectedDeputyTypes: []string{"LAY", "PA"},
@@ -341,8 +381,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "closed",
-					Label:  "Closed",
+					Handle: "open",
+					Label:  "Open",
 				},
 			}
 			page.DeputyTypes = []model.RefData{
@@ -384,6 +424,49 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 			page.SelectedCaseTypes = test.selectedCaseTypes
 
 			assert.Equal(t, test.want, page.GetAppliedFilters())
+		})
+	}
+}
+
+func TestCaseloadPage_GetOrderStatusOptions(t *testing.T) {
+	tests := []struct {
+		isClosedCases bool
+		want          []model.RefData
+	}{
+		{
+			isClosedCases: true,
+			want: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "open",
+					Label:  "Open",
+				},
+				{
+					Handle: "duplicate",
+					Label:  "Duplicate",
+				},
+			},
+		},
+		{
+			isClosedCases: false,
+			want: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, getOrderStatusOptions(test.isClosedCases))
 		})
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -63,6 +64,7 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
+
 	return appliedFilters
 }
 
@@ -74,7 +76,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() {
+		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
@@ -115,20 +117,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			}
 		}
 
-		var selectedStatuses []string
-		if params.Has("status") {
-			selectedStatuses = params["status"]
-		}
-
-		var selectedDeputyTypes []string
-		if params.Has("deputy-type") {
-			selectedDeputyTypes = params["deputy-type"]
-		}
-
-		var selectedCaseTypes []string
-		if params.Has("case-type") {
-			selectedCaseTypes = params["case-type"]
-		}
+		selectedStatuses, selectedDeputyTypes, selectedCaseTypes := getParams(r.URL.Query())
 
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
@@ -153,55 +142,19 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		vars.PerPage = clientsPerPage
 		vars.AssigneeFilterName = "Case owner"
-		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
-		vars.StatusOptions = []model.RefData{
-			{
-				Handle: "active",
-				Label:  "Active",
-			},
-			{
-				Handle: "closed",
-				Label:  "Closed",
-			},
+		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
+
+		if !app.SelectedTeam.IsClosedCases() {
+			vars.SelectedAssignees = userSelectedAssignees
 		}
 
 		if app.SelectedTeam.IsHW() {
 			vars.SelectedDeputyTypes = selectedDeputyTypes
-			vars.DeputyTypes = []model.RefData{
-				{
-					Handle: "LAY",
-					Label:  "Lay",
-				},
-				{
-					Handle: "PRO",
-					Label:  "Professional",
-				},
-				{
-					Handle: "PA",
-					Label:  "Public Authority",
-				},
-			}
+			vars.DeputyTypes = getDeputyTypes()
 			vars.SelectedCaseTypes = selectedCaseTypes
-			vars.CaseTypes = []model.RefData{
-				{
-					Handle: "HYBRID",
-					Label:  "Hybrid",
-				},
-				{
-					Handle: "DUAL",
-					Label:  "Dual",
-				},
-				{
-					Handle: "HW",
-					Label:  "Health and welfare",
-				},
-				{
-					Handle: "PFA",
-					Label:  "Property and financial affairs",
-				},
-			}
+			vars.CaseTypes = getCaseTypes()
 		}
 
 		vars.App = app
@@ -219,4 +172,90 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		return tmpl.Execute(w, vars)
 	}
+}
+
+func getCaseTypes() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "HYBRID",
+			Label:  "Hybrid",
+		},
+		{
+			Handle: "DUAL",
+			Label:  "Dual",
+		},
+		{
+			Handle: "HW",
+			Label:  "Health and welfare",
+		},
+		{
+			Handle: "PFA",
+			Label:  "Property and financial affairs",
+		},
+	}
+}
+
+func getDeputyTypes() []model.RefData {
+	return []model.RefData{
+		{
+			Handle: "LAY",
+			Label:  "Lay",
+		},
+		{
+			Handle: "PRO",
+			Label:  "Professional",
+		},
+		{
+			Handle: "PA",
+			Label:  "Public Authority",
+		},
+	}
+}
+
+func getOrderStatusOptions(isClosedCases bool) []model.RefData {
+	if isClosedCases {
+		return []model.RefData{
+			{
+				Handle: "active",
+				Label:  "Active",
+			},
+			{
+				Handle: "open",
+				Label:  "Open",
+			},
+			{
+				Handle: "duplicate",
+				Label:  "Duplicate",
+			},
+		}
+	}
+	return []model.RefData{
+		{
+			Handle: "active",
+			Label:  "Active",
+		},
+		{
+			Handle: "closed",
+			Label:  "Closed",
+		},
+	}
+}
+
+func getParams(params url.Values) ([]string, []string, []string) {
+	var selectedStatuses []string
+	if params.Has("status") {
+		selectedStatuses = params["status"]
+	}
+
+	var selectedDeputyTypes []string
+	if params.Has("deputy-type") {
+		selectedDeputyTypes = params["deputy-type"]
+	}
+
+	var selectedCaseTypes []string
+	if params.Has("case-type") {
+		selectedCaseTypes = params["case-type"]
+	}
+
+	return selectedStatuses, selectedDeputyTypes, selectedCaseTypes
 }
