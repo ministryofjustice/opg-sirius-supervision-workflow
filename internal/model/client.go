@@ -1,6 +1,8 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Client struct {
 	Id                   int      `json:"id"`
@@ -13,6 +15,9 @@ type Client struct {
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
+	LastActionDate       Date     `json:"lastActionDate"`
+	CachedDebtAmount     float64  `json:"cachedDebtTotal"`
+	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 
 func (c Client) GetReportDueDate() string {
@@ -42,8 +47,35 @@ func (c Client) GetStatus(orderType string) string {
 	return ""
 }
 
+func (c Client) GetClosedCasesStatus(orderType string) string {
+	orderStatuses := make(map[string]string)
+
+	for _, order := range c.Orders {
+		if orderType == "" || orderType == order.Type {
+			label := order.Status.Label
+			orderStatuses[label] = label
+		}
+	}
+
+	statuses := []string{"Active", "Open", "Duplicate", "Closed"}
+	for _, status := range statuses {
+		if _, found := orderStatuses[status]; found {
+			return status
+		}
+	}
+
+	return ""
+}
+
 func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
+}
+
+func (c Client) GetCachedDebtAmount() string {
+	if c.CachedDebtAmount <= 0 {
+		return "-"
+	}
+	return "£" + fmt.Sprintf("%.2f", c.CachedDebtAmount/100)
 }
 
 func (c Client) GetActiveOrders(orderType string) []Order {

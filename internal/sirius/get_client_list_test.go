@@ -173,6 +173,29 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	assert.Nil(t, err)
 }
 
+//
+//func TestGetCaseloadListCanAmendUrlForClosedCases(t *testing.T) {
+//	logger, mockClient := SetUpTest()
+//	client, _ := NewApiClient(mockClient, "", logger)
+//
+//	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
+//		assert.Contains(t, r.URL.RawQuery, "closed-cases")
+//		return &http.Response{
+//			StatusCode: 200,
+//			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
+//		}, nil
+//	}
+//
+//	team := model.Team{Id: 40, Name: "Supervision Closed Cases"}
+//	_, err := client.GetClientList(getContext(nil), ClientListParams{
+//		Team:       team,
+//		Page:       1,
+//		PerPage:    25,
+//		CaseOwners: []string{"1"},
+//	})
+//	assert.Nil(t, err)
+//}
+
 func TestClientListParams_CreateFilter(t *testing.T) {
 	tests := []struct {
 		params ClientListParams
