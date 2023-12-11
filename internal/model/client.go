@@ -37,6 +37,26 @@ func (c Client) GetStatus(orderType string) string {
 		}
 	}
 
+	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
+	for _, status := range statuses {
+		if _, found := orderStatuses[status]; found {
+			return status
+		}
+	}
+
+	return ""
+}
+
+func (c Client) GetClosedCasesStatus(orderType string) string {
+	orderStatuses := make(map[string]string)
+
+	for _, order := range c.Orders {
+		if orderType == "" || orderType == order.Type {
+			label := order.Status.Label
+			orderStatuses[label] = label
+		}
+	}
+
 	statuses := []string{"Active", "Open", "Duplicate", "Closed"}
 	for _, status := range statuses {
 		if _, found := orderStatuses[status]; found {
