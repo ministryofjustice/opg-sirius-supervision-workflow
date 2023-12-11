@@ -144,4 +144,23 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').should('not.exist')
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
+
+  it("can filter by Order Status on the Closed Caseload page", () => {
+    cy.visit("/caseload?team=40")
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Active")').click()
+      cy.get('label:contains("Open")').click()
+      cy.get('label:contains("Duplicate")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'status=active').and('include', 'status=open').and('include', 'status=duplicate')
+    cy.get('.moj-filter__selected').should('contain','Status')
+    cy.get('.moj-filter__tag').should('contain', 'Active')
+    cy.get('.moj-filter__tag').should('contain', 'Open')
+    cy.get('.moj-filter__tag').should('contain', 'Duplicate')
+    cy.get('[data-module=clear-filters]').click()
+    cy.get('.moj-filter__tag').should('not.exist')
+    cy.get('[type="checkbox"]').should('not.be.checked')
+  })
 })
