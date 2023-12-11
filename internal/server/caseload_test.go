@@ -427,3 +427,46 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		})
 	}
 }
+
+func TestCaseloadPage_GetOrderStatusOptions(t *testing.T) {
+	tests := []struct {
+		isClosedCases bool
+		want          []model.RefData
+	}{
+		{
+			isClosedCases: true,
+			want: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "open",
+					Label:  "Open",
+				},
+				{
+					Handle: "duplicate",
+					Label:  "Duplicate",
+				},
+			},
+		},
+		{
+			isClosedCases: false,
+			want: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "closed",
+					Label:  "Closed",
+				},
+			},
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, getOrderStatusOptions(test.isClosedCases))
+		})
+	}
+}

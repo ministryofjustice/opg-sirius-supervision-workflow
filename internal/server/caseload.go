@@ -142,21 +142,19 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		vars.PerPage = clientsPerPage
 		vars.AssigneeFilterName = "Case owner"
-		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
 		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
-		vars.FilterByAssignee.Required = true
+
+		if !app.SelectedTeam.IsClosedCases() {
+			vars.SelectedAssignees = userSelectedAssignees
+		}
 
 		if app.SelectedTeam.IsHW() {
 			vars.SelectedDeputyTypes = selectedDeputyTypes
 			vars.DeputyTypes = getDeputyTypes()
 			vars.SelectedCaseTypes = selectedCaseTypes
 			vars.CaseTypes = getCaseTypes()
-		}
-
-		if app.SelectedTeam.IsClosedCases() {
-			vars.FilterByAssignee.Required = false
 		}
 
 		vars.App = app

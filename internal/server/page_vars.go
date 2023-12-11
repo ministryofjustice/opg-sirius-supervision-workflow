@@ -22,7 +22,6 @@ type FilterByAssignee struct {
 	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
-	Required           bool
 }
 
 type FilterByTaskType struct {

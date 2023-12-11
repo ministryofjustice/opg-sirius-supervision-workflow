@@ -86,13 +86,13 @@ describe("Filters", () => {
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
 
-  // it("shows combined team member filters when viewing combined Lay teams", () => {
-  //   cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Deputy Team")
-  //   cy.get(".moj-team-banner__container > h1").should('contain', "Lay Deputy Team")
-  //   cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam1 User1")
-  //   cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam2 User1")
-  // })
-  //
+  it("shows combined team member filters when viewing combined Lay teams", () => {
+    cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Lay Deputy Team")
+    cy.get(".moj-team-banner__container > h1").should('contain', "Lay Deputy Team")
+    cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam1 User1")
+    cy.get('.govuk-fieldset .govuk-checkboxes__item > .govuk-label').should('contain', "LayTeam2 User1")
+  })
+
   it("applies the ECM Tasks filter to display only ECM tasks", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('[data-filter-name="moj-filter-name-tasktype"]').within(() => {
