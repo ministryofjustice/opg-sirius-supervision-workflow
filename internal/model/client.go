@@ -37,7 +37,7 @@ func (c Client) GetStatus(orderType string) string {
 		}
 	}
 
-	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
+	statuses := []string{"Active", "Open", "Duplicate", "Closed"}
 	for _, status := range statuses {
 		if _, found := orderStatuses[status]; found {
 			return status
