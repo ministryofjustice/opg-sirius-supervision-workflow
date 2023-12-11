@@ -27,8 +27,9 @@ func (c Client) GetReportDueDate() string {
 	return ""
 }
 
-func (c Client) GetStatus(orderType string) string {
+func (c Client) GetStatus(orderType string, closedCases bool) string {
 	orderStatuses := make(map[string]string)
+	var statuses []string
 
 	for _, order := range c.Orders {
 		if orderType == "" || orderType == order.Type {
@@ -36,28 +37,11 @@ func (c Client) GetStatus(orderType string) string {
 			orderStatuses[label] = label
 		}
 	}
-
-	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
-	for _, status := range statuses {
-		if _, found := orderStatuses[status]; found {
-			return status
-		}
+	if closedCases {
+		statuses = []string{"Active", "Open", "Duplicate", "Closed"}
+	} else {
+		statuses = []string{"Active", "Open", "Closed", "Duplicate"}
 	}
-
-	return ""
-}
-
-func (c Client) GetClosedCasesStatus(orderType string) string {
-	orderStatuses := make(map[string]string)
-
-	for _, order := range c.Orders {
-		if orderType == "" || orderType == order.Type {
-			label := order.Status.Label
-			orderStatuses[label] = label
-		}
-	}
-
-	statuses := []string{"Active", "Open", "Duplicate", "Closed"}
 	for _, status := range statuses {
 		if _, found := orderStatuses[status]; found {
 			return status

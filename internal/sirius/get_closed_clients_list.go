@@ -15,21 +15,13 @@ type ClosedClientsParams struct {
 func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
 	var filter string
-	var teamMemberIds []string
 	var body bytes.Buffer
 	var err error
 
 	filter = params.CreateFilter()
+	ClosedClientMemberIds := ClosedClientsParams{TeamMembersIds: CreateMemberIdArray(params)}
 
-	teamMemberIds = append(teamMemberIds, strconv.Itoa(params.Team.Id))
-	for _, member := range params.Team.Members {
-		teamMemberIds = append(teamMemberIds, strconv.Itoa(member.Id))
-	}
-
-	team := ClosedClientsParams{
-		teamMemberIds,
-	}
-	err = json.NewEncoder(&body).Encode(team)
+	err = json.NewEncoder(&body).Encode(ClosedClientMemberIds)
 	if err != nil {
 		return v, err
 	}
@@ -71,4 +63,13 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 	}
 
 	return v, err
+}
+
+func CreateMemberIdArray(params ClientListParams) []string {
+	var teamMemberIds []string
+	teamMemberIds = append(teamMemberIds, strconv.Itoa(params.Team.Id))
+	for _, member := range params.Team.Members {
+		teamMemberIds = append(teamMemberIds, strconv.Itoa(member.Id))
+	}
+	return teamMemberIds
 }

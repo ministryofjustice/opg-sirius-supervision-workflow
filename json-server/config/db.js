@@ -387,7 +387,21 @@ module.exports = function () {
           "label": "HW",
           "deprecated": null
         }
-      }
+      },
+      {
+        "id": 40,
+        "name": "Supervision Closed Cases",
+        "phoneNumber": "0123456789",
+        "displayName": "Supervision Closed Cases",
+        "deleted": false,
+        "email": "ClosedCases.team@opgtest.com",
+        "members": [],
+        "teamType": {
+          "handle": "LAY",
+          "label": "Lay",
+          "deprecated": null
+        }
+      },
     ],
     "tasktypes-supervision": {
       "task_types": {
@@ -924,6 +938,84 @@ module.exports = function () {
               "handle": "PA",
               "label": "PA"
             },
+          },
+        ]
+      },
+      {
+        "id": 40,
+        "pages": {
+          "current": 1,
+          "total": 1
+        },
+        "total": 1,
+        "clients": [
+          {
+            "id": 63,
+            "caseRecNumber": "42687883",
+            "firstname": "Ro",
+            "surname": "Bot",
+            "supervisionCaseOwner": {
+              "id": 40,
+              "teams": [],
+              "displayName": "Supervision Closed Cases"
+            },
+            "cases": [
+              {
+                "id": 92,
+                "caseRecNumber": "42687883",
+                "orderStatus": {
+                  "handle": "CLOSED",
+                  "label": "Closed",
+                  "deprecated": false
+                },
+              },
+              {
+                "id": 93,
+                "caseRecNumber": "42687883",
+                "orderStatus": {
+                  "handle": "CLOSED",
+                  "label": "Closed",
+                  "deprecated": false
+                },
+              },
+            ],
+            "lastActionDate": "15/01/2020",
+            "closedOnDate": "12/01/2020",
+            "cachedDebtTotal": 12201
+          },
+          {
+            "id": 64,
+            "caseRecNumber": "42687993",
+            "firstname": "Dolly",
+            "surname": "Parton",
+            "supervisionCaseOwner": {
+              "id": 40,
+              "teams": [],
+              "displayName": "Supervision Closed Cases"
+            },
+            "cases": [
+              {
+                "id": 101,
+                "caseRecNumber": "42687993",
+                "orderStatus": {
+                  "handle": "OPEN",
+                  "label": "Open",
+                  "deprecated": false
+                },
+              },
+              {
+                "id": 102,
+                "caseRecNumber": "42687993",
+                "orderStatus": {
+                  "handle": "ACTIVE",
+                  "label": "Active",
+                  "deprecated": false
+                },
+              },
+            ],
+            "lastActionDate": "01/01/2021",
+            "closedOnDate": "12/12/2020",
+            "cachedDebtTotal": 10010
           },
         ]
       }

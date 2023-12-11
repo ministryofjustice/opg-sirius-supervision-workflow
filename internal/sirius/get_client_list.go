@@ -36,7 +36,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?&limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	endpoint := fmt.Sprintf("/api/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
 
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 

@@ -38,7 +38,6 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
 		},
 	}
-
 }
 
 func (cv CaseloadPage) GetAppliedFilters() []string {
