@@ -12,6 +12,7 @@ import (
 
 type CaseloadClient interface {
 	GetClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
+	GetClosedClientList(sirius.Context, sirius.ClientListParams) (sirius.ClientList, error)
 	ReassignClients(sirius.Context, sirius.ReassignClientsParams) (string, error)
 }
 
@@ -37,6 +38,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
 		},
 	}
+
 }
 
 func (cv CaseloadPage) GetAppliedFilters() []string {
@@ -133,11 +135,16 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.CaseTypes = selectedCaseTypes
 		}
 
-		clientList, err := client.GetClientList(ctx, clientListParams)
+		var clientList sirius.ClientList
+		var err error
+		if app.SelectedTeam.IsClosedCases() {
+			clientList, err = client.GetClosedClientList(ctx, clientListParams)
+		} else {
+			clientList, err = client.GetClientList(ctx, clientListParams)
+		}
 		if err != nil {
 			return err
 		}
-
 		vars := CaseloadPage{ClientList: clientList}
 
 		vars.PerPage = clientsPerPage
@@ -145,10 +152,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
 		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
-
-		if !app.SelectedTeam.IsClosedCases() {
-			vars.SelectedAssignees = userSelectedAssignees
-		}
+		vars.SelectedAssignees = userSelectedAssignees
 
 		if app.SelectedTeam.IsHW() {
 			vars.SelectedDeputyTypes = selectedDeputyTypes
@@ -159,6 +163,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
+
 		vars.Pagination = paginate.Pagination{
 			CurrentPage:     clientList.Pages.PageCurrent,
 			TotalPages:      clientList.Pages.PageTotal,
