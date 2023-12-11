@@ -54,12 +54,12 @@ func TestCaseload(t *testing.T) {
 			teamType: "LAY",
 			wantSupervisionLevels: []model.RefData{
 				{
-					Handle: "MINIMAL",
-					Label:  "Minimal",
-				},
-				{
 					Handle: "GENERAL",
 					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
 				},
 			},
 		},
