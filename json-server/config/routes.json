@@ -4,7 +4,7 @@
     "/tasktypes/deputy*": "/tasktypes-deputy",
     "/users/current": "/users-current",
     "/assignees/:id/clients?*": "/caseload/:id",
-
+    "/assignees/closed-clients?*": "/caseload/40",
 
     "/assignees/teams/tasks\\?teamIds[]=21&filter=status\\:Not+started&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks/21",
     "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks/22",

@@ -2,6 +2,7 @@ package model
 
 import (
 	"sort"
+	"strings"
 )
 
 type Team struct {
@@ -63,6 +64,10 @@ func (t Team) IsPA() bool {
 
 func (t Team) IsHW() bool {
 	return t.Type == "HW"
+}
+
+func (t Team) IsClosedCases() bool {
+	return strings.ToLower(t.Name) == "supervision closed cases"
 }
 
 func (t Team) IsLayNewOrdersTeam() bool {

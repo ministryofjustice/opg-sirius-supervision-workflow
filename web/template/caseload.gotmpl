@@ -25,6 +25,8 @@
               {{ template "caseload-list-new-orders" . }}
             {{ else if .App.SelectedTeam.IsHW }}
               {{ template "caseload-list-hw" . }}
+            {{ else if .App.SelectedTeam.IsClosedCases }}
+              {{ template "caseload-list-closed-cases" . }}
             {{ else }}
               {{ template "caseload-list" . }}
             {{ end }}
