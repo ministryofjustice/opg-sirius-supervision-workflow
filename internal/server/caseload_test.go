@@ -43,14 +43,25 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 
 func TestCaseload(t *testing.T) {
 	tests := []struct {
-		name            string
-		teamType        string
-		wantDeputyTypes []model.RefData
-		wantCaseTypes   []model.RefData
+		name                  string
+		teamType              string
+		wantDeputyTypes       []model.RefData
+		wantCaseTypes         []model.RefData
+		wantSupervisionLevels []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
 			teamType: "LAY",
+			wantSupervisionLevels: []model.RefData{
+				{
+					Handle: "GENERAL",
+					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
+				},
+			},
 		},
 		{
 			name:     "Caseload page is viewable for Health & Welfare teams",
@@ -133,6 +144,7 @@ func TestCaseload(t *testing.T) {
 			}
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
+			want.SupervisionLevels = test.wantSupervisionLevels
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -157,6 +169,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "case-type",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "supervision-level",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -241,6 +257,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 		},
 		{
 			Name:                  "case-type",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name:                  "supervision-level",
 			ClearBetweenTeamViews: true,
 		},
 	}

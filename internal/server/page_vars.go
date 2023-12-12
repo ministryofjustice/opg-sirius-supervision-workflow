@@ -61,15 +61,22 @@ type FilterByECM struct {
 	NotAssignedTeamID string
 }
 
+type FilterBySupervisionLevel struct {
+	ListPage
+	SupervisionLevels         []model.RefData
+	SelectedSupervisionLevels []string
+}
+
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 	filters := map[string]interface{}{
-		"assignee":    FilterByAssignee{},
-		"due-date":    FilterByDueDate{},
-		"status":      FilterByStatus{},
-		"task-type":   FilterByTaskType{},
-		"deputy-type": FilterByDeputyType{},
-		"case-type":   FilterByCaseType{},
-		"ecm":         FilterByECM{},
+		"assignee":          FilterByAssignee{},
+		"due-date":          FilterByDueDate{},
+		"status":            FilterByStatus{},
+		"task-type":         FilterByTaskType{},
+		"deputy-type":       FilterByDeputyType{},
+		"case-type":         FilterByCaseType{},
+		"ecm":               FilterByECM{},
+		"supervision-level": FilterBySupervisionLevel{},
 	}
 
 	extends := func(parent interface{}, child interface{}) bool {

@@ -144,4 +144,22 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').should('not.exist')
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
+
+  it("can filter by Supervision Level on the Lay Caseload page", () => {
+    cy.get('#option-select-title-supervision-level').click()
+    cy.get('#list-of-supervision-levels-to-filter label').should('contain', 'General')
+    cy.get('#list-of-supervision-levels-to-filter label').should('contain', 'Minimal')
+    cy.get('[data-filter-name="moj-filter-name-supervision-level"]').within(() => {
+      cy.get('label:contains("General")').click()
+      cy.get('label:contains("Minimal")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'supervision-level=GENERAL').and('include', 'supervision-level=MINIMAL')
+    cy.get('.moj-filter__selected').should('contain','Supervision level')
+    cy.get('.moj-filter__tag').should('contain', 'General')
+    cy.get('.moj-filter__tag').should('contain', 'Minimal')
+    cy.get('[data-module=clear-filters]').click()
+    cy.get('.moj-filter__tag').should('not.exist')
+    cy.get('[type="checkbox"]').should('not.be.checked')
+  })
 })
