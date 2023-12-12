@@ -79,3 +79,10 @@ func TestTeam_IsHW(t *testing.T) {
 	assert.True(t, Team{Type: "HW"}.IsHW())
 	assert.False(t, Team{Type: "NOT HW"}.IsHW())
 }
+
+func TestTeam_IsClosedCasesTeam(t *testing.T) {
+	assert.False(t, Team{Name: "Random team"}.IsClosedCases())
+	assert.True(t, Team{Name: "supervision closed cases"}.IsClosedCases())
+	assert.True(t, Team{Name: "Supervision closed cases"}.IsClosedCases())
+	assert.True(t, Team{Name: "Supervision Closed Cases"}.IsClosedCases())
+}

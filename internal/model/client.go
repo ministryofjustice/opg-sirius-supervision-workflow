@@ -16,7 +16,7 @@ type Client struct {
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
 	LastActionDate       Date     `json:"lastActionDate"`
-	CachedDebtAmount     float64  `json:"cachedDebtTotal"`
+	CachedDebtTotal      float64  `json:"cachedDebtTotal"`
 	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 
@@ -55,11 +55,11 @@ func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
 }
 
-func (c Client) GetCachedDebtAmount() string {
-	if c.CachedDebtAmount <= 0 {
+func (c Client) GetCachedDebtTotal() string {
+	if c.CachedDebtTotal <= 0 {
 		return "-"
 	}
-	return "£" + fmt.Sprintf("%.2f", c.CachedDebtAmount/100)
+	return "£" + fmt.Sprintf("%.2f", c.CachedDebtTotal/100)
 }
 
 func (c Client) GetActiveOrders(orderType string) []Order {

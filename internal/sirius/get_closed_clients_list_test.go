@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
@@ -54,7 +55,10 @@ func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
             "supervisionLevel": {
 				"handle": "MINIMAL",
 				"label": "Minimal"
-			}
+			},
+			"cachedDebtTotal": 10010,
+			"lastActionDate": "2023-12-12T12:35:56+00:00",
+			"closedOnDate": "2022-02-02T12:35:56+00:00"
         }
     ]
 }
@@ -63,13 +67,14 @@ func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.NotContains(t, rq.URL.RawQuery, "sort=made_active_date:asc")
-		assert.Contains(t, rq.URL.RawQuery, "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
 		}, nil
 	}
+
+	lastActionDate := time.Date(2023, time.Month(12), 12, 12, 35, 56, 0, time.UTC)
+	closedOnDate := time.Date(2022, time.Month(2), 2, 12, 35, 56, 0, time.UTC)
 
 	expectedResponse := ClientList{
 		Clients: []model.Client{
@@ -100,6 +105,9 @@ func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
 					Handle: "MINIMAL",
 					Label:  "Minimal",
 				},
+				CachedDebtTotal: 10010,
+				LastActionDate:  model.Date{Time: lastActionDate},
+				ClosedOnDate:    model.Date{Time: closedOnDate},
 			},
 		},
 		Pages: model.PageInformation{
@@ -110,10 +118,9 @@ func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
 	}
 
 	clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
-		Team:       model.Team{Id: 13},
-		Page:       1,
-		PerPage:    25,
-		CaseOwners: []string{"1"},
+		Team:    model.Team{Id: 40, Name: "Supervision closed cases"},
+		Page:    1,
+		PerPage: 25,
 	})
 
 	assert.Equal(t, nil, err)

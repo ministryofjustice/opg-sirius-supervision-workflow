@@ -16,7 +16,7 @@
                     </div>
                 </th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Client">Client</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Closed-on-date">Closed on date <span class="secondary">for most recently closed order</span></th>
+                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Closed-on-date">Closed on date</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Last-action-date">Last action date</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Debt">Debt</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Status">Status</th>
@@ -49,7 +49,7 @@
                                 {{ .LastActionDate }}
                             </td>
                             <td class="govuk-table__cell">
-                               {{ .GetCachedDebtAmount }}
+                               {{ .GetCachedDebtTotal }}
                             </td>
                             <td class="govuk-table__cell">
                                 {{ .GetStatus "" true }}

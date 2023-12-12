@@ -150,6 +150,13 @@ func TestClient_GetURL(t *testing.T) {
 	assert.Equal(t, "/supervision/#/clients/12", Client{Id: 12}.GetURL())
 }
 
+func TestClient_GetCachedDebtTotal(t *testing.T) {
+	assert.Equal(t, "-", Client{CachedDebtTotal: 0}.GetCachedDebtTotal())
+	assert.Equal(t, "£1.01", Client{CachedDebtTotal: 101}.GetCachedDebtTotal())
+	assert.Equal(t, "£1.00", Client{CachedDebtTotal: 100}.GetCachedDebtTotal())
+	assert.Equal(t, "£107.10", Client{CachedDebtTotal: 10710}.GetCachedDebtTotal())
+}
+
 func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {
 	tests := []struct {
 		name      string

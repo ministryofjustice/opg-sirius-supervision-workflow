@@ -120,24 +120,24 @@ func TestCaseload(t *testing.T) {
 				},
 			},
 		},
-		//{
-		//	name:     "Caseload page is viewable for Closed Cases teams",
-		//	teamType: "LAY",
-		//	wantOrderStatuses: []model.RefData{
-		//		{
-		//			Handle: "active",
-		//			Label:  "Active",
-		//		},
-		//		{
-		//			Handle: "open",
-		//			Label:  "Open",
-		//		},
-		//		{
-		//			Handle: "duplicate",
-		//			Label:  "Duplicate",
-		//		},
-		//	},
-		//},
+		{
+			name:     "Caseload page is viewable for Closed Cases teams",
+			teamType: "LAY",
+			wantOrderStatuses: []model.RefData{
+				{
+					Handle: "active",
+					Label:  "Active",
+				},
+				{
+					Handle: "open",
+					Label:  "Open",
+				},
+				{
+					Handle: "duplicate",
+					Label:  "Duplicate",
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -151,6 +151,10 @@ func TestCaseload(t *testing.T) {
 				Path:         "test-path",
 				SelectedTeam: model.Team{Type: test.teamType, Selector: "1"},
 			}
+			if test.name == "Caseload page is viewable for Closed Cases teams" {
+				app.SelectedTeam.Name = "Supervision closed cases"
+			}
+
 			err := caseload(client, template)(app, w, r)
 
 			assert.Nil(t, err)
@@ -357,8 +361,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 		{
 			selectedAssignees:  []string{"1", "2"},
 			selectedUnassigned: "lay-team",
-			selectedStatuses:   []string{"active", "open"},
-			want:               []string{"Lay team", "User 1", "User 2", "Active", "Open"},
+			selectedStatuses:   []string{"active", "closed"},
+			want:               []string{"Lay team", "User 1", "User 2", "Active", "Closed"},
 		},
 		{
 			selectedDeputyTypes: []string{"LAY", "PA"},
@@ -392,8 +396,8 @@ func TestCaseloadPage_GetAppliedFilters(t *testing.T) {
 					Label:  "Active",
 				},
 				{
-					Handle: "open",
-					Label:  "Open",
+					Handle: "closed",
+					Label:  "Closed",
 				},
 			}
 			page.DeputyTypes = []model.RefData{

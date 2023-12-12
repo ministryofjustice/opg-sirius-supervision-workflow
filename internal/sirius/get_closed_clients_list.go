@@ -9,7 +9,7 @@ import (
 )
 
 type ClosedClientsParams struct {
-	TeamMembersIds []string `json:"teamMembersIds"`
+	TeamIds []string `json:"teamIds"`
 }
 
 func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (ClientList, error) {
@@ -19,7 +19,7 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 	var err error
 
 	filter = params.CreateFilter()
-	ClosedClientMemberIds := ClosedClientsParams{TeamMembersIds: CreateMemberIdArray(params)}
+	ClosedClientMemberIds := ClosedClientsParams{TeamIds: CreateMemberIdArray(params)}
 
 	err = json.NewEncoder(&body).Encode(ClosedClientMemberIds)
 	if err != nil {
