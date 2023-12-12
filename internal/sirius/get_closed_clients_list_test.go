@@ -10,9 +10,10 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+	"time"
 )
 
-func TestGetCaseloadListCanReturn200(t *testing.T) {
+func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
@@ -54,7 +55,10 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
             "supervisionLevel": {
 				"handle": "MINIMAL",
 				"label": "Minimal"
-			}
+			},
+			"cachedDebtTotal": 10010,
+			"lastActionDate": "2023-12-12T12:35:56+00:00",
+			"closedOnDate": "2022-02-02T12:35:56+00:00"
         }
     ]
 }
@@ -63,13 +67,14 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.NotContains(t, rq.URL.RawQuery, "sort=made_active_date:asc")
-		assert.Contains(t, rq.URL.RawQuery, "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
 		}, nil
 	}
+
+	lastActionDate := time.Date(2023, time.Month(12), 12, 12, 35, 56, 0, time.UTC)
+	closedOnDate := time.Date(2022, time.Month(2), 2, 12, 35, 56, 0, time.UTC)
 
 	expectedResponse := ClientList{
 		Clients: []model.Client{
@@ -100,6 +105,9 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 					Handle: "MINIMAL",
 					Label:  "Minimal",
 				},
+				CachedDebtTotal: 10010,
+				LastActionDate:  model.Date{Time: lastActionDate},
+				ClosedOnDate:    model.Date{Time: closedOnDate},
 			},
 		},
 		Pages: model.PageInformation{
@@ -109,18 +117,17 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 		TotalClients: 1,
 	}
 
-	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
-		Team:       model.Team{Id: 13},
-		Page:       1,
-		PerPage:    25,
-		CaseOwners: []string{"1"},
+	clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
+		Team:    model.Team{Id: 40, Name: "Supervision closed cases"},
+		Page:    1,
+		PerPage: 25,
 	})
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expectedResponse, clientList)
 }
 
-func TestGetCaseloadListCanThrow500Error(t *testing.T) {
+func TestGetClosedCaseloadListCanThrow500Error(t *testing.T) {
 	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -129,7 +136,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 
-	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
+	clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
 		Team:    model.Team{Id: 13},
 		Page:    1,
 		PerPage: 25,
@@ -145,73 +152,48 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/api/v1/assignees/closed-clients?limit=25&page=1&filter=",
 		Method: http.MethodGet,
 	}, err)
 }
 
-func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.T) {
-	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "", logger)
-
-	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
-		assert.NotContains(t, r.URL.RawQuery, "caseowner:1")
-		return &http.Response{
-			StatusCode: 200,
-			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
-		}, nil
-	}
-
-	team := model.Team{Id: 13, Name: "Lay Team - New Deputy Orders"}
-	_, err := client.GetClientList(getContext(nil), ClientListParams{
-		Team:       team,
-		Page:       1,
-		PerPage:    25,
-		CaseOwners: []string{"1"},
-	})
-	assert.Nil(t, err)
-}
-
-func TestClientListParams_CreateFilter(t *testing.T) {
+func TestCreateMemberIdArray(t *testing.T) {
 	tests := []struct {
 		params ClientListParams
-		want   string
+		want   []string
 	}{
 		{
-			params: ClientListParams{},
-			want:   "",
-		},
-		{
-			params: ClientListParams{CaseOwners: []string{"1"}},
-			want:   "caseowner:1",
-		},
-		{
-			params: ClientListParams{SubType: "hw"},
-			want:   "subtype:hw",
-		},
-		{
-			params: ClientListParams{CaseTypes: []string{"HYBRID"}},
-			want:   "case-type:HYBRID",
-		},
-		{
-			params: ClientListParams{OrderStatuses: []string{"active", "duplicate"}},
-			want:   "order-status:active,order-status:duplicate",
+			params: ClientListParams{
+				Team: model.Team{
+					Id:   40,
+					Name: "Closed Cases Team",
+				},
+			},
+			want: []string{"40"},
 		},
 		{
 			params: ClientListParams{
-				OrderStatuses: []string{"active", "closed"},
-				SubType:       "hw",
-				DeputyTypes:   []string{"LAY", "PA"},
-				CaseTypes:     []string{"HYBRID", "DUAL", "HW", "PFA"},
-				CaseOwners:    []string{"1", "2", "3"},
+				Team: model.Team{
+					Id:   40,
+					Name: "Closed Cases Team",
+					Members: []model.Assignee{
+						{
+							Id:   20,
+							Name: "Person 1",
+						},
+						{
+							Id:   21,
+							Name: "Person 2",
+						},
+					},
+				},
 			},
-			want: "order-status:active,order-status:closed,subtype:hw,deputy-type:LAY,deputy-type:PA,case-type:HYBRID,case-type:DUAL,case-type:HW,case-type:PFA,caseowner:1,caseowner:2,caseowner:3",
+			want: []string{"40", "20", "21"},
 		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
-			assert.Equal(t, test.want, test.params.CreateFilter())
+			assert.Equal(t, test.want, CreateMemberIdArray(test.params))
 		})
 	}
 }
