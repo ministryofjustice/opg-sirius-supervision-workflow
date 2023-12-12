@@ -54,11 +54,12 @@ func (m *mockCaseloadClient) ReassignClients(ctx sirius.Context, params sirius.R
 
 func TestCaseload(t *testing.T) {
 	tests := []struct {
-		name              string
-		teamType          string
-		wantDeputyTypes   []model.RefData
-		wantCaseTypes     []model.RefData
-		wantOrderStatuses []model.RefData
+		name                  string
+		teamType              string
+		wantDeputyTypes       []model.RefData
+		wantCaseTypes         []model.RefData
+		wantOrderStatuses     []model.RefData
+		wantSupervisionLevels []model.RefData
 	}{
 		{
 			name:     "Caseload page is viewable for Lay teams",
@@ -71,6 +72,16 @@ func TestCaseload(t *testing.T) {
 				{
 					Handle: "closed",
 					Label:  "Closed",
+				},
+			},
+			wantSupervisionLevels: []model.RefData{
+				{
+					Handle: "GENERAL",
+					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
 				},
 			},
 		},
@@ -137,6 +148,16 @@ func TestCaseload(t *testing.T) {
 					Label:  "Duplicate",
 				},
 			},
+			wantSupervisionLevels: []model.RefData{
+				{
+					Handle: "GENERAL",
+					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
+				},
+			},
 		},
 	}
 	for _, test := range tests {
@@ -179,6 +200,7 @@ func TestCaseload(t *testing.T) {
 			want.DeputyTypes = test.wantDeputyTypes
 			want.CaseTypes = test.wantCaseTypes
 			want.StatusOptions = test.wantOrderStatuses
+			want.SupervisionLevels = test.wantSupervisionLevels
 
 			want.UrlBuilder = urlbuilder.UrlBuilder{
 				Path:            "caseload",
@@ -203,6 +225,10 @@ func TestCaseload(t *testing.T) {
 					},
 					{
 						Name:                  "case-type",
+						ClearBetweenTeamViews: true,
+					},
+					{
+						Name:                  "supervision-level",
 						ClearBetweenTeamViews: true,
 					},
 				},
@@ -287,6 +313,10 @@ func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {
 		},
 		{
 			Name:                  "case-type",
+			ClearBetweenTeamViews: true,
+		},
+		{
+			Name:                  "supervision-level",
 			ClearBetweenTeamViews: true,
 		},
 	}

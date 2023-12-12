@@ -22,6 +22,7 @@ type CaseloadPage struct {
 	FilterByStatus
 	FilterByDeputyType
 	FilterByCaseType
+	FilterBySupervisionLevel
 	ClientList sirius.ClientList
 }
 
@@ -36,6 +37,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("status", cv.SelectedStatuses, true),
 			urlbuilder.CreateFilter("deputy-type", cv.SelectedDeputyTypes, true),
 			urlbuilder.CreateFilter("case-type", cv.SelectedCaseTypes, true),
+			urlbuilder.CreateFilter("supervision-level", cv.SelectedSupervisionLevels, true),
 		},
 	}
 }
@@ -65,7 +67,11 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
-
+	for _, ct := range cv.SupervisionLevels {
+		if ct.IsIn(cv.SelectedSupervisionLevels) {
+			appliedFilters = append(appliedFilters, ct.Label)
+		}
+	}
 	return appliedFilters
 }
 
@@ -120,6 +126,11 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		selectedStatuses, selectedDeputyTypes, selectedCaseTypes := getParams(r.URL.Query())
 
+		var selectedSupervisionLevels []string
+		if params.Has("supervision-level") {
+			selectedSupervisionLevels = params["supervision-level"]
+		}
+
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
@@ -141,6 +152,11 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		} else {
 			clientList, err = client.GetClientList(ctx, clientListParams)
 		}
+
+		if app.SelectedTeam.IsLay() {
+			clientListParams.SupervisionLevels = selectedSupervisionLevels
+		}
+
 		if err != nil {
 			return err
 		}
@@ -152,6 +168,20 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.SelectedStatuses = selectedStatuses
 		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
 		vars.SelectedAssignees = userSelectedAssignees
+
+		if app.SelectedTeam.IsLay() {
+			vars.SelectedSupervisionLevels = selectedSupervisionLevels
+			vars.SupervisionLevels = []model.RefData{
+				{
+					Handle: "GENERAL",
+					Label:  "General",
+				},
+				{
+					Handle: "MINIMAL",
+					Label:  "Minimal",
+				},
+			}
+		}
 
 		if app.SelectedTeam.IsHW() {
 			vars.SelectedDeputyTypes = selectedDeputyTypes

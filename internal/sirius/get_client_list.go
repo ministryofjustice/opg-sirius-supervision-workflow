@@ -9,14 +9,15 @@ import (
 )
 
 type ClientListParams struct {
-	Team          model.Team
-	Page          int
-	PerPage       int
-	CaseOwners    []string
-	OrderStatuses []string
-	SubType       string
-	DeputyTypes   []string
-	CaseTypes     []string
+	Team              model.Team
+	Page              int
+	PerPage           int
+	CaseOwners        []string
+	OrderStatuses     []string
+	SubType           string
+	DeputyTypes       []string
+	CaseTypes         []string
+	SupervisionLevels []string
 }
 
 type ClientList struct {
@@ -85,6 +86,9 @@ func (p ClientListParams) CreateFilter() string {
 	}
 	for _, a := range p.CaseOwners {
 		filter += "caseowner:" + a + ","
+	}
+	for _, a := range p.SupervisionLevels {
+		filter += "supervision-level:" + a + ","
 	}
 	return strings.TrimRight(filter, ",")
 }
