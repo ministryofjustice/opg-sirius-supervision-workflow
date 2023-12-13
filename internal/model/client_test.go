@@ -10,9 +10,10 @@ func TestClient_GetStatus(t *testing.T) {
 	status := func(s string) RefData { return RefData{Label: s} }
 
 	tests := []struct {
-		orders     []Order
-		orderType  string
-		wantStatus string
+		orders      []Order
+		orderType   string
+		closedCases bool
+		wantStatus  string
 	}{
 		{
 			orders: []Order{
@@ -24,7 +25,21 @@ func TestClient_GetStatus(t *testing.T) {
 				{Status: status("Open"), Type: "pfa"},
 				{Status: status("Duplicate"), Type: "pfa"},
 			},
-			wantStatus: "Active",
+			closedCases: false,
+			wantStatus:  "Active",
+		},
+		{
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			closedCases: true,
+			wantStatus:  "Active",
 		},
 		{
 			orders: []Order{
@@ -36,8 +51,23 @@ func TestClient_GetStatus(t *testing.T) {
 				{Status: status("Open"), Type: "hw"},
 				{Status: status("Duplicate"), Type: "pfa"},
 			},
-			orderType:  "hw",
-			wantStatus: "Open",
+			orderType:   "hw",
+			closedCases: false,
+			wantStatus:  "Open",
+		},
+		{
+			orders: []Order{
+				{Status: status("Closed"), Type: "pfa"},
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Active"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			orderType:   "hw",
+			closedCases: true,
+			wantStatus:  "Open",
 		},
 		{
 			orders: []Order{
@@ -47,7 +77,19 @@ func TestClient_GetStatus(t *testing.T) {
 				{Status: status("Open"), Type: "hw"},
 				{Status: status("Duplicate"), Type: "pfa"},
 			},
-			wantStatus: "Open",
+			closedCases: false,
+			wantStatus:  "Open",
+		},
+		{
+			orders: []Order{
+				{Status: status("Open"), Type: "pfa"},
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Open"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			closedCases: true,
+			wantStatus:  "Open",
 		},
 		{
 			orders: []Order{
@@ -55,19 +97,37 @@ func TestClient_GetStatus(t *testing.T) {
 				{Status: status("Closed"), Type: "hw"},
 				{Status: status("Duplicate"), Type: "pfa"},
 			},
-			wantStatus: "Closed",
+			closedCases: false,
+			wantStatus:  "Closed",
+		},
+		{
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+				{Status: status("Closed"), Type: "hw"},
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			closedCases: true,
+			wantStatus:  "Duplicate",
 		},
 		{
 			orders: []Order{
 				{Status: status("Duplicate"), Type: "pfa"},
 			},
-			wantStatus: "Duplicate",
+			closedCases: false,
+			wantStatus:  "Duplicate",
+		},
+		{
+			orders: []Order{
+				{Status: status("Duplicate"), Type: "pfa"},
+			},
+			closedCases: true,
+			wantStatus:  "Duplicate",
 		},
 	}
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			client := Client{Orders: test.orders}
-			assert.Equal(t, test.wantStatus, client.GetStatus(test.orderType))
+			assert.Equal(t, test.wantStatus, client.GetStatus(test.orderType, test.closedCases))
 		})
 	}
 }
@@ -88,6 +148,13 @@ func TestClient_GetReportDueDate(t *testing.T) {
 func TestClient_GetURL(t *testing.T) {
 	assert.Equal(t, "/supervision/#/clients/0", Client{}.GetURL())
 	assert.Equal(t, "/supervision/#/clients/12", Client{Id: 12}.GetURL())
+}
+
+func TestClient_GetCachedDebtTotal(t *testing.T) {
+	assert.Equal(t, "-", Client{CachedDebtTotal: 0}.GetCachedDebtTotal())
+	assert.Equal(t, "£1.01", Client{CachedDebtTotal: 101}.GetCachedDebtTotal())
+	assert.Equal(t, "£1.00", Client{CachedDebtTotal: 100}.GetCachedDebtTotal())
+	assert.Equal(t, "£107.10", Client{CachedDebtTotal: 10710}.GetCachedDebtTotal())
 }
 
 func TestClient_GetMostRecentlyMadeActiveOrder(t *testing.T) {

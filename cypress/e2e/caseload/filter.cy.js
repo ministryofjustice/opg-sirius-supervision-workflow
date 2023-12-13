@@ -7,7 +7,8 @@ describe("Filters", () => {
       win.sessionStorage.clear()
     })
     cy.visit("/caseload?team=21");
-});
+  });
+
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-assignee').click()
     cy.get('#list-of-assignees-to-filter label').should('contain', 'Not Assigned')
@@ -145,6 +146,21 @@ describe("Filters", () => {
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
 
+  it("can filter by Order Status on the Closed Caseload page", () => {
+    cy.visit("/caseload?team=40")
+    cy.get('#option-select-title-status').click()
+    cy.get('[data-filter-name="moj-filter-name-status"]').within(() => {
+      cy.get('label:contains("Active")').click()
+      cy.get('label:contains("Open")').click()
+      cy.get('label:contains("Duplicate")').click()
+    })
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'status=active').and('include', 'status=open').and('include', 'status=duplicate')
+    cy.get('.moj-filter__selected').should('contain','Status')
+    cy.get('.moj-filter__tag').should('contain', 'Active')
+    cy.get('.moj-filter__tag').should('contain', 'Open')
+    cy.get('.moj-filter__tag').should('contain', 'Duplicate')
+    
   it("can filter by Supervision Level on the Lay Caseload page", () => {
     cy.get('#option-select-title-supervision-level').click()
     cy.get('#list-of-supervision-levels-to-filter label').should('contain', 'General')
@@ -162,4 +178,5 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').should('not.exist')
     cy.get('[type="checkbox"]').should('not.be.checked')
   })
-})
+  })
+});

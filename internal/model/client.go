@@ -1,6 +1,8 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Client struct {
 	Id                   int      `json:"id"`
@@ -13,6 +15,9 @@ type Client struct {
 	SupervisionLevel     RefData  `json:"supervisionLevel"`
 	ActiveCaseType       RefData  `json:"activeCaseType"`
 	HWDeputyType         RefData  `json:"hwDeputyType"`
+	LastActionDate       Date     `json:"lastActionDate"`
+	CachedDebtTotal      float64  `json:"cachedDebtTotal"`
+	ClosedOnDate         Date     `json:"closedOnDate"`
 }
 
 func (c Client) GetReportDueDate() string {
@@ -22,8 +27,9 @@ func (c Client) GetReportDueDate() string {
 	return ""
 }
 
-func (c Client) GetStatus(orderType string) string {
+func (c Client) GetStatus(orderType string, closedCases bool) string {
 	orderStatuses := make(map[string]string)
+	var statuses []string
 
 	for _, order := range c.Orders {
 		if orderType == "" || orderType == order.Type {
@@ -31,8 +37,11 @@ func (c Client) GetStatus(orderType string) string {
 			orderStatuses[label] = label
 		}
 	}
-
-	statuses := []string{"Active", "Open", "Closed", "Duplicate"}
+	if closedCases {
+		statuses = []string{"Active", "Open", "Duplicate", "Closed"}
+	} else {
+		statuses = []string{"Active", "Open", "Closed", "Duplicate"}
+	}
 	for _, status := range statuses {
 		if _, found := orderStatuses[status]; found {
 			return status
@@ -44,6 +53,13 @@ func (c Client) GetStatus(orderType string) string {
 
 func (c Client) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", c.Id)
+}
+
+func (c Client) GetCachedDebtTotal() string {
+	if c.CachedDebtTotal <= 0 {
+		return "-"
+	}
+	return "£" + fmt.Sprintf("%.2f", c.CachedDebtTotal/100)
 }
 
 func (c Client) GetActiveOrders(orderType string) []Order {
