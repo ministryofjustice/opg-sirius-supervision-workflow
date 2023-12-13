@@ -100,7 +100,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		perPageOptions := []int{25, 50, 100}
 		deputiesPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
-		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "noncompliance"})
+		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "noncompliance", "assurance"})
 
 		var selectedECMs []string
 		if params.Has("ecm") {
