@@ -21,7 +21,7 @@
           <th scope="col" class="govuk-table__header" aria-sort="none">Executive case manager</th>
           <th scope="col" class="govuk-table__header" aria-sort="none">Active clients</th>
           <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "noncompliance" }}"><a href="{{ .UrlBuilder.GetSortUrl "noncompliance" }}"><button type="button">Non-compliance</button></a></th>
-          <th scope="col" class="govuk-table__header" aria-sort="none">Assurance visits</th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "assurance" }}"><a href="{{ .UrlBuilder.GetSortUrl "assurance" }}"><button type="button">Assurance visits</button></a></th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">

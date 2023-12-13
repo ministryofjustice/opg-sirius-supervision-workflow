@@ -23,7 +23,7 @@ describe("Deputies list", () => {
         })
     })
 
-    it("can be sorted by Non-compliance and Deputy", () => {
+    it("can be sorted by Non-compliance, Deputy & Assurance", () => {
         cy.url().should("not.contain", "order-by").and("not.contain", "sort")
 
         cy.get("th:nth-child(5) button").click()
@@ -41,5 +41,13 @@ describe("Deputies list", () => {
         cy.get("th:nth-child(2) button").click()
         cy.get("th:nth-child(2)").should("have.attr", "aria-sort", "descending")
         cy.url().should("contain", "order-by=deputy&sort=desc")
+
+        cy.get("th:nth-child(6) button").click()
+        cy.get("th:nth-child(6)").should("have.attr", "aria-sort", "ascending")
+        cy.url().should("contain", "order-by=assurance&sort=asc")
+
+        cy.get("th:nth-child(6) button").click()
+        cy.get("th:nth-child(6)").should("have.attr", "aria-sort", "descending")
+        cy.url().should("contain", "order-by=assurance&sort=desc")
     })
 });
