@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -31,6 +32,7 @@ func (cv CaseloadPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		Path:            "caseload",
 		SelectedTeam:    cv.App.SelectedTeam.Selector,
 		SelectedPerPage: cv.PerPage,
+		SelectedSort:    cv.Sort,
 		SelectedFilters: []urlbuilder.Filter{
 			urlbuilder.CreateFilter("assignee", cv.SelectedAssignees, true),
 			urlbuilder.CreateFilter("unassigned", cv.SelectedUnassigned, true),
@@ -131,12 +133,15 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			selectedSupervisionLevels = params["supervision-level"]
 		}
 
+		sort := urlbuilder.CreateSortFromURL(params, []string{"client", "report-due-date"})
+
 		clientListParams := sirius.ClientListParams{
 			Team:          app.SelectedTeam,
 			Page:          page,
 			PerPage:       clientsPerPage,
 			CaseOwners:    selectedAssignees,
 			OrderStatuses: selectedStatuses,
+			Sort:          fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
 		}
 
 		if app.SelectedTeam.IsHW() {
@@ -191,6 +196,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		vars.App = app
+		vars.Sort = sort
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		vars.Pagination = paginate.Pagination{

@@ -18,6 +18,7 @@ type ClientListParams struct {
 	DeputyTypes       []string
 	CaseTypes         []string
 	SupervisionLevels []string
+	Sort              string
 }
 
 type ClientList struct {

@@ -15,8 +15,8 @@
                         </div>
                     </div>
                 </th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Client">Client</th>
-                <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Report due date">Report due date</th>
+                <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "client" }}" data-cy="Client"><a href="{{ .UrlBuilder.GetSortUrl "client" }}"><button type="button">Client</button></a></th>
+                <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "report-due-date" }}" data-cy="Report due date"><a href="{{ .UrlBuilder.GetSortUrl "report-due-date" }}"><button type="button">Report due date</button></a></th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Case owner">Case owner</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Supervision level">Supervision level</th>
                 <th scope="col" class="govuk-table__header" aria-sort="none" data-cy="Status">Status</th>
