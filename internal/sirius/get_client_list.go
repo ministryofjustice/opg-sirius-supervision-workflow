@@ -18,6 +18,7 @@ type ClientListParams struct {
 	DeputyTypes       []string
 	CaseTypes         []string
 	SupervisionLevels []string
+	Sort              string
 }
 
 type ClientList struct {
@@ -30,6 +31,10 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 	var v ClientList
 	var sort string
 	var filter string
+
+	if params.Team.IsLay() {
+		sort = "report_due_date:asc"
+	}
 
 	if params.Team.IsLayNewOrdersTeam() {
 		sort = "made_active_date:asc"
