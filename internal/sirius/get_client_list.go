@@ -31,6 +31,10 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 	var sort string
 	var filter string
 
+	if params.Team.IsLay() {
+		sort = "report_due_date:asc"
+	}
+
 	if params.Team.IsLayNewOrdersTeam() {
 		sort = "made_active_date:asc"
 	} else {

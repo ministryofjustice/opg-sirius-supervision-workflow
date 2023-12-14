@@ -173,6 +173,27 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	assert.Nil(t, err)
 }
 
+func TestGetCaseloadListSortedByReportDueDateForLayTeam(t *testing.T) {
+	logger, mockClient := SetUpTest()
+	client, _ := NewApiClient(mockClient, "", logger)
+
+	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
+		assert.Contains(t, r.URL.RawQuery, "sort=report_due_date:asc")
+		return &http.Response{
+			StatusCode: 200,
+			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
+		}, nil
+	}
+
+	team := model.Team{Id: 13, Name: "Lay Team 1", Type: "LAY"}
+	_, err := client.GetClientList(getContext(nil), ClientListParams{
+		Team:    team,
+		Page:    1,
+		PerPage: 25,
+	})
+	assert.Nil(t, err)
+}
+
 func TestClientListParams_CreateFilter(t *testing.T) {
 	tests := []struct {
 		params ClientListParams
