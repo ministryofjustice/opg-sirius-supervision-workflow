@@ -67,9 +67,9 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 			appliedFilters = append(appliedFilters, ct.Label)
 		}
 	}
-	for _, ct := range cv.SupervisionLevels {
-		if ct.IsIn(cv.SelectedSupervisionLevels) {
-			appliedFilters = append(appliedFilters, ct.Label)
+	for _, sl := range cv.SupervisionLevels {
+		if sl.IsIn(cv.SelectedSupervisionLevels) {
+			appliedFilters = append(appliedFilters, sl.Label)
 		}
 	}
 	return appliedFilters
@@ -145,16 +145,16 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.CaseTypes = selectedCaseTypes
 		}
 
+		if app.SelectedTeam.IsLay() {
+			clientListParams.SupervisionLevels = selectedSupervisionLevels
+		}
+
 		var clientList sirius.ClientList
 		var err error
 		if app.SelectedTeam.IsClosedCases() {
 			clientList, err = client.GetClosedClientList(ctx, clientListParams)
 		} else {
 			clientList, err = client.GetClientList(ctx, clientListParams)
-		}
-
-		if app.SelectedTeam.IsLay() {
-			clientListParams.SupervisionLevels = selectedSupervisionLevels
 		}
 
 		if err != nil {
