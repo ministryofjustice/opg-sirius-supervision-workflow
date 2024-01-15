@@ -5,6 +5,7 @@ import (
 	"github.com/ministryofjustice/opg-go-common/env"
 	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-go-common/paginate"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/util"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/contrib/propagators/aws/xray"
@@ -134,6 +135,7 @@ func createTemplates(envVars server.EnvironmentVars) map[string]*template.Templa
 		"sirius": func(s string) string {
 			return envVars.SiriusPublicURL + s
 		},
+		"is_last": util.IsLast,
 	}
 
 	templateDirPath := envVars.WebDir + "/template"
