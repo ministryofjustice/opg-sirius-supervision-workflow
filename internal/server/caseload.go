@@ -140,7 +140,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 
 		if app.SelectedTeam.IsHW() {
-			clientListParams.SubType = "hw"
 			clientListParams.DeputyTypes = selectedDeputyTypes
 			clientListParams.CaseTypes = selectedCaseTypes
 		}
