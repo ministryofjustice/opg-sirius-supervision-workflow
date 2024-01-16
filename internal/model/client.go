@@ -14,7 +14,7 @@ type Client struct {
 	Orders               []Order   `json:"cases"`
 	SupervisionLevel     RefData   `json:"supervisionLevel"`
 	ActiveCaseType       RefData   `json:"activeCaseType"`
-	HWDeputyTypes        []RefData `json:"hwDeputyTypes"`
+	DeputyTypes          []RefData `json:"deputyTypes"`
 	LastActionDate       Date      `json:"lastActionDate"`
 	CachedDebtTotal      float64   `json:"cachedDebtTotal"`
 	ClosedOnDate         Date      `json:"closedOnDate"`

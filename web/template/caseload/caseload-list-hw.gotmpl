@@ -44,9 +44,9 @@
                                 <span class="secondary">{{ .CaseRecNumber }}</span>
                             </td>
                             <td class="govuk-table__cell">
-                                {{ $HWDeputyTypes := .HWDeputyTypes }}
-                                {{ range $i, $deputyType := .HWDeputyTypes }}
-                                    {{ $deputyType.Label }}{{ if not (is_last $i $HWDeputyTypes )}}, {{ end }}
+                                {{ $DeputyTypes := .DeputyTypes }}
+                                {{ range $i, $deputyType := $DeputyTypes }}
+                                    {{ $deputyType.Label }}{{ if not (is_last $i $DeputyTypes )}}, {{ end }}
                                 {{ end }}
                             </td>
                             <td class="govuk-table__cell">
