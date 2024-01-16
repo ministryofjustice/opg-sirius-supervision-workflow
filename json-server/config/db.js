@@ -934,10 +934,13 @@ module.exports = function () {
               "handle": "MINIMAL",
               "label": "Minimal"
             },
-            "hwDeputyType": {
-              "handle": "PA",
-              "label": "PA"
-            },
+            "DeputyTypes":
+            [
+              {
+                "handle": "PA",
+                "label": "PA"
+              },
+            ],
           },
         ]
       },
