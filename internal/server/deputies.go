@@ -22,7 +22,7 @@ type DeputiesPage struct {
 
 func (dp DeputiesPage) GetAppliedFilters() []string {
 	var appliedFilters []string
-	for _, u := range dp.ECMs {
+	for _, u := range dp.App.SelectedTeam.GetAssigneesForFilter() {
 		if u.IsSelected(dp.SelectedECMs) {
 			appliedFilters = append(appliedFilters, u.Name)
 		}
@@ -122,7 +122,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			DeputyList: deputyList,
 		}
 		vars.DeputyList.PaProTeamSelection = paProTeamSelection
-		vars.ECMs = app.SelectedTeam.Members
 		vars.SelectedECMs = selectedECMs
 		if app.SelectedTeam.IsPro() {
 			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
