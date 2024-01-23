@@ -7,7 +7,7 @@
       {{ if (contains .SelectedECMs .NotAssignedTeamID) }}
           <li><a href="{{ .UrlBuilder.GetRemoveFilterUrl "ecm" .NotAssignedTeamID }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> Not Assigned</a></li>
       {{ end }}
-      {{ range .ECMs }}
+      {{ range .App.SelectedTeam.GetAssigneesForFilter }}
           {{ if .IsSelected $.SelectedECMs }}
             <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "ecm" .Id }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .Name }}</a></li>
           {{ end }}

@@ -26,7 +26,7 @@
           </div>
         </div>
 
-        {{ range .ECMs }}
+        {{ range .App.SelectedTeam.GetAssigneesForFilter }}
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
               <input class="govuk-checkboxes__input" id="ecm_{{ .Id }}" name="ecm" type="checkbox" value="{{ .Id }}" data-module="filter" {{ if .IsSelected $.SelectedECMs }}checked{{ end }} />
