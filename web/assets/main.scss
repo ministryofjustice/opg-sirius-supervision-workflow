@@ -2,7 +2,7 @@ $govuk-include-default-font-face: false;
 $govuk-moj-table-background-color: #e7f2fb;
 $moj-assets-path: "/supervision/workflow/assets/";
 
-@import "node_modules/govuk-frontend/govuk/all";
+@import "node_modules/govuk-frontend/dist/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
 @import "node_modules/opg-sirius-header/sass/sirius-header";
 @import "./scss/app-c-option-select";

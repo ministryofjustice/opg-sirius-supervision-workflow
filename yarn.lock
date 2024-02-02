@@ -210,12 +210,12 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.2.tgz#d9fae00a2d5cb40f92cfe64b47ad749fbc38f917"
   integrity sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==
 
-"@ministryofjustice/frontend@^1.0.0":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-1.8.1.tgz#6bac39524ba406533d1ce51c55d4c8ff96ad358e"
-  integrity sha512-HNl8XXbNje/NtQRlGM57CTLlAGBTW+ziGTBkxXHDn7VauKNz418PnErDlKRWeaHIyc6V9twI5EbOj4lFCsvasw==
+"@ministryofjustice/frontend@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-2.1.0.tgz#6abf032263f243bf9a05dade198d4a0b5ecd1570"
+  integrity sha512-LekTR097OsFku0+sREn7gR3G7UvH7jATw40PvZH4mKtnE8hyyw0gDrCSvFYsRS4kPLDsoFqZ5l0Y3CZE9f364g==
   dependencies:
-    govuk-frontend "^3.0.0 || ^4.0.0"
+    govuk-frontend "^5.0.0"
     moment "^2.27.0"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -387,7 +387,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axe-core@^4.3.5:
+axe-core@^4.8.3:
   version "4.8.3"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.8.3.tgz#205df863dd9917d5979e9435dab4d47692759051"
   integrity sha512-d5ZQHPSPkF9Tw+yfyDcRoUOc4g/8UloJJe5J8m4L5+c7AtDdjDLRxew/knnI4CxvtdxEUVgWz4x3OIQUIFiMfw==
@@ -617,12 +617,12 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-cypress-axe@^1.0.0:
+cypress-axe@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/cypress-axe/-/cypress-axe-1.5.0.tgz#95082734583da77b51ce9b7784e14a442016c7a1"
   integrity sha512-Hy/owCjfj+25KMsecvDgo4fC/781ccL+e8p+UUYoadGVM2ogZF9XIKbiM6KI8Y3cEaSreymdD6ZzccbI2bY0lQ==
 
-cypress-failed-log@^2.9.2:
+cypress-failed-log@^2.10.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/cypress-failed-log/-/cypress-failed-log-2.10.0.tgz#dbbe9b57a55a7a204b2f7898eb17a2b34253d4fd"
   integrity sha512-v+GsOcpCAgj335zfDy9jDnaujH31SM/6pEQBp0dH0clbYu4NSXirLRXW9WoKhd0j70UrAA0hTLNbS2oTt1Y5kA==
@@ -630,10 +630,10 @@ cypress-failed-log@^2.9.2:
     debug "4.3.4"
     logdown "3.3.1"
 
-cypress@^13.4.0:
-  version "13.6.3"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.3.tgz#54f03ca07ee56b2bc18211e7bd32abd2533982ba"
-  integrity sha512-d/pZvgwjAyZsoyJ3FOsJT5lDsqnxQ/clMqnNc++rkHjbkkiF2h9s0JsZSyyH4QXhVFW3zPFg82jD25roFLOdZA==
+cypress@^13.6.4:
+  version "13.6.4"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.6.4.tgz#42c88d3ee0342f1681abfacabf9c1f082676bc53"
+  integrity sha512-pYJjCfDYB+hoOoZuhysbbYhEmNW7DEDsqn+ToCLwuVowxUXppIWRr7qk4TVRIU471ksfzyZcH+mkoF0CQUKnpw==
   dependencies:
     "@cypress/request" "^3.0.0"
     "@cypress/xvfb" "^1.2.4"
@@ -810,7 +810,7 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1, eslint-visitor-keys@^3.4
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz#0cd72fe8550e3c2eae156a96a4dddcd1c8ac5800"
   integrity sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==
 
-eslint@^8.30.0:
+eslint@^8.56.0:
   version "8.56.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.56.0.tgz#4957ce8da409dc0809f99ab07a1b94832ab74b15"
   integrity sha512-Go19xM6T9puCOWntie1/P997aXxFsOi37JIHRWI514Hc6ZnaHGKY9xFhrU65RT6CcBEzZoGG1e6Nq+DT04ZtZQ==
@@ -1129,10 +1129,10 @@ gopd@^1.0.1:
   dependencies:
     get-intrinsic "^1.1.3"
 
-"govuk-frontend@^3.0.0 || ^4.0.0", govuk-frontend@^4.3.1:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/govuk-frontend/-/govuk-frontend-4.7.0.tgz#69950b6c2e69f435ffe9aa60d8dee232dac977de"
-  integrity sha512-0OsdCusF5qvLWwKziU8zqxiC0nq6WP0ZQuw51ymZ/1V0tO71oIKMlSLN2S9bm8RcEGSoidPt2A34gKxePrLjvg==
+govuk-frontend@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/govuk-frontend/-/govuk-frontend-5.0.0.tgz#c08a4d1115fb31eb39b6d19979c627f816185dd7"
+  integrity sha512-3WSfvQ+3kw/q/m8jrq/t8XnMUA8D2r0uhGyZaDbIh1gWTJBQzJBHbHiKYI9nc9ixIXdCFsc9RozkgEm57a795g==
 
 graceful-fs@^4.1.6, graceful-fs@^4.2.0:
   version "4.2.11"
@@ -1553,7 +1553,6 @@ onetime@^5.1.0:
 
 "opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.17.0":
   version "1.0.0"
-  uid d862857087632b08a6f869ec580d6a349d0f90fc
   resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/d862857087632b08a6f869ec580d6a349d0f90fc"
   dependencies:
     scss "^0.2.4"
@@ -1771,7 +1770,7 @@ safer-buffer@^2.0.2, safer-buffer@^2.1.0, safer-buffer@~2.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.38.1:
+sass@^1.70.0:
   version "1.70.0"
   resolved "https://registry.yarnpkg.com/sass/-/sass-1.70.0.tgz#761197419d97b5358cb25f9dd38c176a8a270a75"
   integrity sha512-uUxNQ3zAHeAx5nRFskBnrWzDUJrrvpCPD5FNAoRvTi0WwremlheES3tg+56PaVtCs5QDRX5CBLxxKMDJMEa1WQ==
