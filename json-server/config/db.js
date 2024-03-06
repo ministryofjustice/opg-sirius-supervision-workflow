@@ -678,7 +678,10 @@ module.exports = function () {
               }
             },
             "activeClientCount": 100,
-            "activeNonCompliantClientCount": 10
+            "activeNonCompliantClientCount": 10,
+            "deputyImportantInformation": {
+              "panelDeputy": true
+            }
           },
           {
             "id": 14,
