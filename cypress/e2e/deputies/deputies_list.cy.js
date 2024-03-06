@@ -15,7 +15,9 @@ describe("Deputies list", () => {
 
     it("has column values", () => {
         cy.get(".govuk-table__body .govuk-table__row:nth-child(1)").within(() => {
-            cy.get("td:nth-child(2)").should("contain.text", "Mr Fee-paying Deputy").and("contain.text", "Derby - 123456")
+            cy.get("td:nth-child(2)").should("contain.text", "Mr Fee-paying Deputy")
+                .and("contain.text", "Derby - 123456")
+                .and("contain.text", "Panel Deputy")
             cy.get("td:nth-child(3)").should("contain.text", "PROTeam1 User1")
             cy.get("td:nth-child(4)").should("contain.text", "100")
             cy.get("td:nth-child(5)").should("contain.text", "10 (10%)")
