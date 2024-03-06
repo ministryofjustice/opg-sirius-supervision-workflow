@@ -5,16 +5,21 @@ import (
 	"math"
 )
 
+type DeputyImportantInformation struct {
+	PanelDeputy bool `json:"panelDeputy"`
+}
+
 type Deputy struct {
-	Id                            int       `json:"id"`
-	DisplayName                   string    `json:"displayName"`
-	Type                          RefData   `json:"deputyType"`
-	Number                        int       `json:"deputyNumber"`
-	Address                       Address   `json:"deputyAddress"`
-	ExecutiveCaseManager          Assignee  `json:"executiveCaseManager"`
-	Assurance                     Assurance `json:"mostRecentlyCompletedAssurance"`
-	ActiveClientCount             int       `json:"activeClientCount"`
-	ActiveNonCompliantClientCount int       `json:"activeNonCompliantClientCount"`
+	Id                            int                        `json:"id"`
+	DisplayName                   string                     `json:"displayName"`
+	Type                          RefData                    `json:"deputyType"`
+	Number                        int                        `json:"deputyNumber"`
+	Address                       Address                    `json:"deputyAddress"`
+	ExecutiveCaseManager          Assignee                   `json:"executiveCaseManager"`
+	Assurance                     Assurance                  `json:"mostRecentlyCompletedAssurance"`
+	ActiveClientCount             int                        `json:"activeClientCount"`
+	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
+	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
 }
 
 func (d Deputy) GetURL() string {
