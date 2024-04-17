@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -176,13 +175,9 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
-		fmt.Println("meta")
-		fmt.Println(taskList.MetaData)
-		fmt.Println(vars.TaskList.MetaData)
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
-		//vars.AssigneeCount1 = taskList.MetaData.AssigneeCount
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.AssigneeCount = taskList.MetaData.AssigneeCount
+		vars.AssigneeCount = CalculateAssigneeCounts(vars.TaskList.MetaData.AssigneeCount, app.SelectedTeam.Members)
 
 		return tmpl.Execute(w, vars)
 	}
@@ -199,18 +194,40 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
-//func CalculateAssigneeCounts(selectedAssignees []string, selectedUnassigned string, taskListMetadata []sirius.AssigneeAndCount) map[string]int {
-//	assigneesWithCount := map[string]int{}
-//
-//	for a, _ := range selectedAssignees {
-//		fmt.Print("selected assignee")
-//		fmt.Println(a)
-//		for i := 0; i < len(taskListMetadata); i++ {
-//			if a == taskListMetadata[i].AssigneeId {
-//				assigneesWithCount = append(assigneesWithCount())
-//			}
-//		}
-//	}
-//
-//	return assigneesWithCount
-//}
+func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee) []sirius.AssigneeAndCount {
+	var assigneesWithCount []sirius.AssigneeAndCount
+
+	for i := 0; i < len(teamMembers); i++ {
+		addNewAssignee := sirius.AssigneeAndCount{
+			AssigneeId: teamMembers[i].Id,
+		}
+		inMetaData := false
+		for _, data := range taskListMetadata {
+			if teamMembers[i].Id == data.AssigneeId {
+				addNewAssignee.Count = data.Count
+				assigneesWithCount = append(assigneesWithCount, addNewAssignee)
+				inMetaData = true
+			}
+		}
+
+		if inMetaData == false {
+			addNewAssignee.Count = 0
+			assigneesWithCount = append(assigneesWithCount, addNewAssignee)
+		}
+	}
+
+	//also add unassigned count
+	addUnassignedCount := sirius.AssigneeAndCount{AssigneeId: 0, Count: 0}
+	for _, data := range taskListMetadata {
+		if 0 == data.AssigneeId {
+			if data.Count > 0 {
+				addUnassignedCount.Count = data.Count
+			} else {
+				addUnassignedCount.Count = 0
+			}
+		}
+	}
+	assigneesWithCount = append(assigneesWithCount, addUnassignedCount)
+
+	return assigneesWithCount
+}

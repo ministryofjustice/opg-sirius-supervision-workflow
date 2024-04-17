@@ -92,11 +92,6 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
-	fmt.Println("v")
-	fmt.Println(v.MetaData)
-	fmt.Println(v.MetaData.AssigneeCount)
-
 	return v, nil
 }
 
@@ -165,35 +160,3 @@ func (tl TaskList) CalculateTaskTypeCounts(taskTypes []model.TaskType) []model.T
 
 	return taskTypes
 }
-
-//func (tl TaskList) CalculateAssigneeTaskCounts(assignees []model.Assignee) {
-//	fmt.Println("assignees")
-//	fmt.Println(assignees)
-//
-//	fmt.Println("meta")
-//	fmt.Println(tl.MetaData.AssigneeCount)
-//	for i, t := range assignees {
-//		for assigneeId, count := range tl.MetaData.AssigneeCount {
-//			if i == assigneeId {
-//				assignees.
-//			}
-//		}
-//	}
-//	//
-//	//for i, t := range taskTypes {
-//	//	taskTypes[i].TaskCount = getTaskTypeCount(t.Handle)
-//	//	if t.EcmTask {
-//	//		ecmTasksCount += taskTypes[i].TaskCount
-//	//	}
-//	//}
-//	//
-//	//if ecmTasksCount > 0 {
-//	//	for i, t := range taskTypes {
-//	//		if t.Handle == TaskTypeEcmHandle {
-//	//			taskTypes[i].TaskCount = ecmTasksCount
-//	//		}
-//	//	}
-//	//}
-//
-//	return taskTypes
-//}

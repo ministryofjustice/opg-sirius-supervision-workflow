@@ -161,7 +161,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
-		//vars.Kate = taskList.MetaData.AssigneeCount
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters()
 
