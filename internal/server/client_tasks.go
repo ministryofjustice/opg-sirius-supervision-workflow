@@ -177,7 +177,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.AssigneeCount = CalculateAssigneeCounts(vars.TaskList.MetaData.AssigneeCount, app.SelectedTeam.Members, app.SelectedTeam.Id)
+		vars.FilterByAssignee.AssigneeCount = CalculateAssigneeCounts(vars.TaskList.MetaData.AssigneeCount, app.SelectedTeam.Members, app.SelectedTeam.Id)
 		return tmpl.Execute(w, vars)
 	}
 }
@@ -193,11 +193,11 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
-func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee, teamId int) []sirius.AssigneeAndCount {
-	var assigneesWithCount []sirius.AssigneeAndCount
+func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee, teamId int) []model.AssigneeAndCount {
+	var assigneesWithCount []model.AssigneeAndCount
 
 	for i := 0; i < len(teamMembers); i++ {
-		addNewAssignee := sirius.AssigneeAndCount{
+		addNewAssignee := model.AssigneeAndCount{
 			AssigneeId: teamMembers[i].Id,
 		}
 		inMetaData := false
@@ -233,9 +233,9 @@ func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMem
 		}
 	}
 	if addedAlreadyTeam == false {
-		assigneesWithCount = append(assigneesWithCount, sirius.AssigneeAndCount{AssigneeId: teamId, Count: 0})
+		assigneesWithCount = append(assigneesWithCount, model.AssigneeAndCount{AssigneeId: teamId, Count: 0})
 	} else {
-		assigneesWithCount = append(assigneesWithCount, sirius.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks})
+		assigneesWithCount = append(assigneesWithCount, model.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks})
 	}
 
 	return assigneesWithCount

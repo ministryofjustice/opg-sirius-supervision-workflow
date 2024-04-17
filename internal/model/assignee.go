@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+type AssigneeAndCount struct {
+	AssigneeId int `json:"assignee"`
+	Count      int `json:"count"`
+}
+
 type Assignee struct {
 	Id          int      `json:"id"`
 	Name        string   `json:"displayName"`
@@ -17,7 +22,6 @@ type Assignee struct {
 	Roles       []string `json:"roles"`
 	Locked      bool     `json:"locked"`
 	Suspended   bool     `json:"suspended"`
-	TaskCount   int
 }
 
 func (m Assignee) IsSelected(selectedAssignees []string) bool {
@@ -30,15 +34,25 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 	return false
 }
 
-//
-//func (m Assignee) GetTaskCount(assigneeCount []sirius.AssigneeAndCount) int {
-//	for i := 0; i < len(assigneeCount); i++ {
-//		if m.Id == assigneeCount[i].AssigneeId {
-//			return assigneeCount[i].Count
-//		}
-//	}
-//	return 0
-//}
+func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) string {
+	for _, a := range selectedAssignees {
+		if m.Id == a.AssigneeId {
+			stringValue := strconv.Itoa(a.Count)
+			return "(" + stringValue + ")"
+		}
+	}
+	return "(0)"
+}
+
+func (m Assignee) GetUnassignedCount(selectedAssignees []AssigneeAndCount, teamId int) string {
+	for _, a := range selectedAssignees {
+		if teamId == a.AssigneeId {
+			stringValue := strconv.Itoa(a.Count)
+			return "(" + stringValue + ")"
+		}
+	}
+	return "(0)"
+}
 
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")
