@@ -16,7 +16,7 @@ type ListPage struct {
 	PerPage        int
 	Sort           urlbuilder.Sort
 	UrlBuilder     urlbuilder.UrlBuilder
-	AssigneeCount1 []sirius.AssigneeAndCount
+	AssigneeCount  []sirius.AssigneeAndCount
 }
 
 type FilterByAssignee struct {
@@ -24,7 +24,7 @@ type FilterByAssignee struct {
 	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
-	AssigneeCount      []sirius.AssigneeAndCount
+	//AssigneeCount      []sirius.AssigneeAndCount
 }
 
 type FilterByTaskType struct {

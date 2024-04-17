@@ -177,8 +177,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.AssigneeCount = CalculateAssigneeCounts(vars.TaskList.MetaData.AssigneeCount, app.SelectedTeam.Members)
-
+		vars.AssigneeCount = CalculateAssigneeCounts(vars.TaskList.MetaData.AssigneeCount, app.SelectedTeam.Members, app.SelectedTeam.Id)
 		return tmpl.Execute(w, vars)
 	}
 }
@@ -194,7 +193,7 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	return &parsed, nil
 }
 
-func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee) []sirius.AssigneeAndCount {
+func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee, teamId int) []sirius.AssigneeAndCount {
 	var assigneesWithCount []sirius.AssigneeAndCount
 
 	for i := 0; i < len(teamMembers); i++ {
@@ -217,17 +216,27 @@ func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMem
 	}
 
 	//also add unassigned count
-	addUnassignedCount := sirius.AssigneeAndCount{AssigneeId: 0, Count: 0}
+	addedAlreadyTeam := false
+	caseManagerTasks := 0
+	teamTasks := 0
+
 	for _, data := range taskListMetadata {
+		//how many tasks are case manager true tasks with no assignee id
 		if 0 == data.AssigneeId {
-			if data.Count > 0 {
-				addUnassignedCount.Count = data.Count
-			} else {
-				addUnassignedCount.Count = 0
-			}
+			caseManagerTasks = data.Count
+		}
+
+		//how many tasks are assigned to the team itself
+		if teamId == data.AssigneeId {
+			teamTasks = data.Count
+			addedAlreadyTeam = true
 		}
 	}
-	assigneesWithCount = append(assigneesWithCount, addUnassignedCount)
+	if addedAlreadyTeam == false {
+		assigneesWithCount = append(assigneesWithCount, sirius.AssigneeAndCount{AssigneeId: teamId, Count: 0})
+	} else {
+		assigneesWithCount = append(assigneesWithCount, sirius.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks})
+	}
 
 	return assigneesWithCount
 }
