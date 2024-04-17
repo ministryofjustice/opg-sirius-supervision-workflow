@@ -17,6 +17,7 @@ type Assignee struct {
 	Roles       []string `json:"roles"`
 	Locked      bool     `json:"locked"`
 	Suspended   bool     `json:"suspended"`
+	TaskCount   int
 }
 
 func (m Assignee) IsSelected(selectedAssignees []string) bool {
@@ -28,6 +29,16 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 	}
 	return false
 }
+
+//
+//func (m Assignee) GetTaskCount(assigneeCount []sirius.AssigneeAndCount) int {
+//	for i := 0; i < len(assigneeCount); i++ {
+//		if m.Id == assigneeCount[i].AssigneeId {
+//			return assigneeCount[i].Count
+//		}
+//	}
+//	return 0
+//}
 
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")

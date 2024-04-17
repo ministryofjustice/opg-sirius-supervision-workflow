@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -175,8 +176,13 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		fmt.Println("meta")
+		fmt.Println(taskList.MetaData)
+		fmt.Println(vars.TaskList.MetaData)
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
+		//vars.AssigneeCount1 = taskList.MetaData.AssigneeCount
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
+		vars.AssigneeCount = taskList.MetaData.AssigneeCount
 
 		return tmpl.Execute(w, vars)
 	}
@@ -192,3 +198,19 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 	}
 	return &parsed, nil
 }
+
+//func CalculateAssigneeCounts(selectedAssignees []string, selectedUnassigned string, taskListMetadata []sirius.AssigneeAndCount) map[string]int {
+//	assigneesWithCount := map[string]int{}
+//
+//	for a, _ := range selectedAssignees {
+//		fmt.Print("selected assignee")
+//		fmt.Println(a)
+//		for i := 0; i < len(taskListMetadata); i++ {
+//			if a == taskListMetadata[i].AssigneeId {
+//				assigneesWithCount = append(assigneesWithCount())
+//			}
+//		}
+//	}
+//
+//	return assigneesWithCount
+//}

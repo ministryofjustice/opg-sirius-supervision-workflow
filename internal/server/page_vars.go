@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"reflect"
 )
@@ -15,6 +16,7 @@ type ListPage struct {
 	PerPage        int
 	Sort           urlbuilder.Sort
 	UrlBuilder     urlbuilder.UrlBuilder
+	AssigneeCount1 []sirius.AssigneeAndCount
 }
 
 type FilterByAssignee struct {
@@ -22,6 +24,7 @@ type FilterByAssignee struct {
 	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
+	AssigneeCount      []sirius.AssigneeAndCount
 }
 
 type FilterByTaskType struct {

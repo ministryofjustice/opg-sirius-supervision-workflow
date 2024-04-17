@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -135,6 +136,10 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 		}
 
 		vars.TaskList = taskList
+
+		fmt.Println("deputy tasks")
+		fmt.Println(taskList.MetaData.AssigneeCount)
+
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.SelectedAssignees = userSelectedAssignees
@@ -156,6 +161,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		//vars.Kate = taskList.MetaData.AssigneeCount
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters()
 
