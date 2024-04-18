@@ -11,12 +11,18 @@ import (
 )
 
 type MetaData struct {
-	TaskTypeCount []TypeAndCount `json:"taskTypeCount"`
+	TaskTypeCount []TypeAndCount     `json:"taskTypeCount"`
+	AssigneeCount []AssigneeAndCount `json:"assigneeTaskCount"`
 }
 
 type TypeAndCount struct {
 	Type  string `json:"type"`
 	Count int    `json:"count"`
+}
+
+type AssigneeAndCount struct {
+	AssigneeId int `json:"assignee"`
+	Count      int `json:"count"`
 }
 
 type TaskList struct {
@@ -86,7 +92,6 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
 	return v, nil
 }
 
