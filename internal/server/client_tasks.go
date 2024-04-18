@@ -232,7 +232,7 @@ func calculateUnassignedCases(taskListMetadata []sirius.AssigneeAndCount, teamId
 			hasUnassignedTasks = true
 		}
 	}
-	if hasUnassignedTasks == false {
+	if !hasUnassignedTasks {
 		return model.AssigneeAndCount{AssigneeId: teamId, Count: 0}
 	} else {
 		return model.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks}
