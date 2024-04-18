@@ -196,27 +196,26 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMembers []model.Assignee, teamId int) []model.AssigneeAndCount {
 	var assigneesWithCount []model.AssigneeAndCount
 
+	//make sure all assignees are in the list
 	for i := 0; i < len(teamMembers); i++ {
 		addNewAssignee := model.AssigneeAndCount{
 			AssigneeId: teamMembers[i].Id,
 		}
-		inMetaData := false
 		for _, data := range taskListMetadata {
 			if teamMembers[i].Id == data.AssigneeId {
 				addNewAssignee.Count = data.Count
 				assigneesWithCount = append(assigneesWithCount, addNewAssignee)
-				inMetaData = true
 			}
-		}
-
-		if inMetaData == false {
-			addNewAssignee.Count = 0
-			assigneesWithCount = append(assigneesWithCount, addNewAssignee)
 		}
 	}
 
 	//also add unassigned count
-	addedAlreadyTeam := false
+	assigneesWithCount = append(assigneesWithCount, calculateUnassignedCases(taskListMetadata, teamId))
+	return assigneesWithCount
+}
+
+func calculateUnassignedCases(taskListMetadata []sirius.AssigneeAndCount, teamId int) model.AssigneeAndCount {
+	hasUnassignedTasks := false
 	caseManagerTasks := 0
 	teamTasks := 0
 
@@ -224,19 +223,18 @@ func CalculateAssigneeCounts(taskListMetadata []sirius.AssigneeAndCount, teamMem
 		//how many tasks are case manager true tasks with no assignee id
 		if 0 == data.AssigneeId {
 			caseManagerTasks = data.Count
+			hasUnassignedTasks = true
 		}
 
 		//how many tasks are assigned to the team itself
 		if teamId == data.AssigneeId {
 			teamTasks = data.Count
-			addedAlreadyTeam = true
+			hasUnassignedTasks = true
 		}
 	}
-	if addedAlreadyTeam == false {
-		assigneesWithCount = append(assigneesWithCount, model.AssigneeAndCount{AssigneeId: teamId, Count: 0})
+	if hasUnassignedTasks == false {
+		return model.AssigneeAndCount{AssigneeId: teamId, Count: 0}
 	} else {
-		assigneesWithCount = append(assigneesWithCount, model.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks})
+		return model.AssigneeAndCount{AssigneeId: teamId, Count: teamTasks + caseManagerTasks}
 	}
-
-	return assigneesWithCount
 }

@@ -44,16 +44,6 @@ func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) string {
 	return "(0)"
 }
 
-func (m Assignee) GetUnassignedCount(selectedAssignees []AssigneeAndCount, teamId int) string {
-	for _, a := range selectedAssignees {
-		if teamId == a.AssigneeId {
-			stringValue := strconv.Itoa(a.Count)
-			return "(" + stringValue + ")"
-		}
-	}
-	return "(0)"
-}
-
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")
 }

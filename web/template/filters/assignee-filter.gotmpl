@@ -16,10 +16,6 @@
         </div>
       </div>
 
-      {{ $assigneesForFilter := .App.SelectedTeam.GetAssigneesForFilter}}
-      {{ $currentTeamId := .App.SelectedTeam.Id }}
-      {{ $assigneeTaskCount := .AssigneeCount }}
-
       <div role="group" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list-of-assignees-to-filter" tabindex="-1" style="height: 254.333px;">
         <div class="app-c-option-select__container-inner js-auto-height-inner">
           <fieldset class="govuk-fieldset" aria-label="Assigned">
@@ -27,27 +23,26 @@
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item filter__checkbox">
                 <input class="govuk-checkboxes__input" id="not_assigned" name="unassigned" type="checkbox" value="{{ .App.SelectedTeam.Selector }}" data-module="filter" {{ if eq .App.SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
-                <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned {{ range $assigneesForFilter := $assigneesForFilter }}{{ .GetUnassignedCount $assigneeTaskCount $currentTeamId}} {{end}}</label>
+                <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned {{ $.App.SelectedTeam.GetUnassignedCount $.AssigneeCount }} </label>
               </div>
             </div>
-
-            {{ range $assigneesForFilter := $assigneesForFilter }}
+            {{ range .App.SelectedTeam.GetAssigneesForFilter }}
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item filter__checkbox">
                   <input class="govuk-checkboxes__input"
-                      id="assignee_{{ $assigneesForFilter.Id }}"
+                      id="assignee_{{ .Id }}"
                       name="assignee"
                       type="checkbox"
-                      value="{{ $assigneesForFilter.Id }}"
-                      data-module="filter" {{ if $assigneesForFilter.IsSelected $.SelectedAssignees }}checked{{ end }} />
+                      value="{{ .Id }}"
+                      data-module="filter" {{ if .IsSelected $.SelectedAssignees }}checked{{ end }} />
                   <label class="govuk-label govuk-checkboxes__label"
-                  for="assignee_{{ $assigneesForFilter.Id }}">
-                  {{ $assigneesForFilter.Name }}
-                  {{ .GetCount $assigneeTaskCount}}
-                  {{ end }} </label>
+                  for="assignee_{{ .Id }}">
+                  {{ .Name }}
+                  {{ .GetCount $.AssigneeCount}}
+                   </label>
                 </div>
               </div>
-
+            {{ end }}
           </fieldset>
         </div>
       </div>
