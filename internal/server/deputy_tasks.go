@@ -135,7 +135,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 		}
 
 		vars.TaskList = taskList
-
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.SelectedAssignees = userSelectedAssignees

@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -149,8 +148,6 @@ func TestClientTasks(t *testing.T) {
 		PerPageOptions:  []int{25, 50, 100},
 		UrlBuilder:      want.UrlBuilder,
 	}
-
-	fmt.Print(template.lastVars)
 
 	assert.Equal(t, want, template.lastVars)
 }

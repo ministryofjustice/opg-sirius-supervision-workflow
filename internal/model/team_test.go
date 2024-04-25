@@ -86,3 +86,38 @@ func TestTeam_IsClosedCasesTeam(t *testing.T) {
 	assert.True(t, Team{Name: "Supervision closed cases"}.IsClosedCases())
 	assert.True(t, Team{Name: "Supervision Closed Cases"}.IsClosedCases())
 }
+
+func TestGetUnassignedCount(t *testing.T) {
+	tests := []struct {
+		testname     string
+		selectedTeam Team
+		want         string
+	}{
+		{
+			testname:     "Returns count for team",
+			selectedTeam: Team{Id: 10},
+			want:         "(11)",
+		},
+		{
+			testname:     "Returns null count for team",
+			selectedTeam: Team{Id: 11},
+			want:         "(0)",
+		},
+		{
+			testname:     "Returns null if team not in list",
+			selectedTeam: Team{Id: 22},
+			want:         "(0)",
+		},
+	}
+	for _, test := range tests {
+		selectedAssignees := []AssigneeAndCount{
+			{AssigneeId: 10, Count: 11},
+			{AssigneeId: 11, Count: 0},
+			{AssigneeId: 12, Count: 1},
+		}
+
+		t.Run(test.testname, func(t *testing.T) {
+			assert.Equal(t, test.selectedTeam.GetUnassignedCount(selectedAssignees), test.want)
+		})
+	}
+}
