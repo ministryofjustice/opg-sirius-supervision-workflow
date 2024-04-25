@@ -84,7 +84,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalTasks: 13,
-		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}},
+		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}, []AssigneeAndCount(nil)},
 	}
 
 	selectedTeam := model.Team{Id: 13}
