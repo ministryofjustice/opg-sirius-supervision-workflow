@@ -2,6 +2,7 @@ package model
 
 import (
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -32,6 +33,16 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 		return deduped[i].Name < deduped[j].Name
 	})
 	return deduped
+}
+
+func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
+	for _, a := range selectedAssignees {
+		if t.Id == a.AssigneeId {
+			stringValue := strconv.Itoa(a.Count)
+			return "(" + stringValue + ")"
+		}
+	}
+	return "(0)"
 }
 
 func (t Team) HasTeam(id int) bool {
