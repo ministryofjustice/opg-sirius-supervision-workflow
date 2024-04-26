@@ -45,7 +45,7 @@ func TestGetCount(t *testing.T) {
 		}
 
 		t.Run(test.testname, func(t *testing.T) {
-			assert.Equal(t, test.selectedAssignee.GetCount(selectedAssignees), test.want)
+			assert.Equal(t, test.selectedAssignee.GetCountAsString(selectedAssignees), test.want)
 		})
 	}
 }
@@ -63,5 +63,5 @@ func TestGetCount2(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, selectedAssignee.GetCount(selectedAssignees), "(0)")
+	assert.Equal(t, selectedAssignee.GetCountAsString(selectedAssignees), "(0)")
 }

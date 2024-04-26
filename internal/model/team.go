@@ -42,7 +42,33 @@ func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
 			return "(" + stringValue + ")"
 		}
 	}
+	if t.IsFullLayTeam() {
+		total := t.GetMultiTeamUnassignedCount(selectedAssignees)
+		return "(" + strconv.Itoa(total) + ")"
+	}
+	if t.IsProDeputyTeam() {
+		total := t.GetMultiTeamUnassignedCount(selectedAssignees)
+		return "(" + strconv.Itoa(total) + ")"
+	}
+
 	return "(0)"
+}
+
+func (t Team) GetMultiTeamUnassignedCount(selectedAssignees []AssigneeAndCount) int {
+	var total int
+	for _, a := range t.Teams {
+		total += a.GetCountForATeam(selectedAssignees, a.Id)
+	}
+	return total
+}
+
+func (t Team) GetCountForATeam(selectedAssignees []AssigneeAndCount, teamId int) int {
+	for _, a := range selectedAssignees {
+		if teamId == a.AssigneeId {
+			return a.Count
+		}
+	}
+	return 0
 }
 
 func (t Team) HasTeam(id int) bool {
@@ -59,6 +85,10 @@ func (t Team) HasTeam(id int) bool {
 
 func (t Team) IsFullLayTeam() bool {
 	return t.Selector == "lay-team"
+}
+
+func (t Team) IsProDeputyTeam() bool {
+	return t.Selector == "pro-team" && t.Id == 0
 }
 
 func (t Team) IsLay() bool {

@@ -34,7 +34,7 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 	return false
 }
 
-func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) string {
+func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount) string {
 	for _, a := range selectedAssignees {
 		if m.Id == a.AssigneeId {
 			stringValue := strconv.Itoa(a.Count)
@@ -42,6 +42,15 @@ func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) string {
 		}
 	}
 	return "(0)"
+}
+
+func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) int {
+	for _, a := range selectedAssignees {
+		if m.Id == a.AssigneeId {
+			return a.Count
+		}
+	}
+	return 0
 }
 
 func (m Assignee) GetRoles() string {
