@@ -42,15 +42,11 @@ func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
 			return "(" + stringValue + ")"
 		}
 	}
-	if t.IsFullLayTeam() {
+	//calculate unassigned count for a team of teams
+	if t.IsFullLayTeam() || t.IsProDeputyTeam() {
 		total := t.GetMultiTeamUnassignedCount(selectedAssignees)
 		return "(" + strconv.Itoa(total) + ")"
 	}
-	if t.IsProDeputyTeam() {
-		total := t.GetMultiTeamUnassignedCount(selectedAssignees)
-		return "(" + strconv.Itoa(total) + ")"
-	}
-
 	return "(0)"
 }
 

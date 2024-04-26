@@ -44,15 +44,6 @@ func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount) string 
 	return "(0)"
 }
 
-func (m Assignee) GetCount(selectedAssignees []AssigneeAndCount) int {
-	for _, a := range selectedAssignees {
-		if m.Id == a.AssigneeId {
-			return a.Count
-		}
-	}
-	return 0
-}
-
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")
 }

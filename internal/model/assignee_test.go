@@ -49,19 +49,3 @@ func TestGetCount(t *testing.T) {
 		})
 	}
 }
-
-func TestGetCount2(t *testing.T) {
-	selectedAssignee := Assignee{Id: 11}
-	selectedAssignees := []AssigneeAndCount{
-		{
-			AssigneeId: 10,
-			Count:      11,
-		},
-		{
-			AssigneeId: 11,
-			Count:      0,
-		},
-	}
-
-	assert.Equal(t, selectedAssignee.GetCountAsString(selectedAssignees), "(0)")
-}
