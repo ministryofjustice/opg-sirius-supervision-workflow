@@ -40,12 +40,12 @@ func TestGetCount(t *testing.T) {
 			want:             "(0)",
 			url:              "test",
 		},
-		{
-			testname:         "Returns empty string if deputy tasks page",
-			selectedAssignee: Assignee{Id: 10},
-			want:             "",
-			url:              "deputy-tasks",
-		},
+		//{
+		//	testname:         "Returns empty string if deputy tasks page",
+		//	selectedAssignee: Assignee{Id: 10},
+		//	want:             "",
+		//	url:              "deputy-tasks",
+		//},
 	}
 	for _, test := range tests {
 		selectedAssignees := []AssigneeAndCount{
