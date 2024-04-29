@@ -11,8 +11,7 @@ import (
 )
 
 type MetaData struct {
-	TaskTypeCount []TypeAndCount           `json:"taskTypeCount"`
-	AssigneeCount []model.AssigneeAndCount `json:"assigneeTaskCount"`
+	TaskTypeCount []TypeAndCount `json:"taskTypeCount"`
 }
 
 type TypeAndCount struct {

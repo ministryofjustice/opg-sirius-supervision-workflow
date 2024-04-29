@@ -22,7 +22,6 @@ type FilterByAssignee struct {
 	AssigneeFilterName string
 	SelectedAssignees  []string
 	SelectedUnassigned string
-	AssigneeCount      []model.AssigneeAndCount
 }
 
 type FilterByTaskType struct {
