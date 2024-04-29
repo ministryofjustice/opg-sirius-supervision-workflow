@@ -92,21 +92,31 @@ func TestGetUnassignedCount(t *testing.T) {
 		testname     string
 		selectedTeam Team
 		want         string
+		url          string
 	}{
 		{
 			testname:     "Returns count for team",
 			selectedTeam: Team{Id: 10},
 			want:         "(11)",
+			url:          "test",
 		},
 		{
 			testname:     "Returns null count for team",
 			selectedTeam: Team{Id: 11},
 			want:         "(0)",
+			url:          "test",
 		},
 		{
 			testname:     "Returns null if team not in list",
 			selectedTeam: Team{Id: 22},
 			want:         "(0)",
+			url:          "test",
+		},
+		{
+			testname:     "Returns empty string if deputy tasks page",
+			selectedTeam: Team{Id: 22},
+			want:         "",
+			url:          "deputy-tasks",
 		},
 	}
 	for _, test := range tests {
@@ -117,7 +127,7 @@ func TestGetUnassignedCount(t *testing.T) {
 		}
 
 		t.Run(test.testname, func(t *testing.T) {
-			assert.Equal(t, test.selectedTeam.GetUnassignedCount(selectedAssignees), test.want)
+			assert.Equal(t, test.selectedTeam.GetUnassignedCount(selectedAssignees, test.url), test.want)
 		})
 	}
 }
@@ -163,6 +173,7 @@ func TestGetMultiTeamUnassignedCount(t *testing.T) {
 		testname string
 		teams    []Team
 		want     int
+		url      string
 	}{
 		{
 			testname: "Returns count for teams",
@@ -171,6 +182,7 @@ func TestGetMultiTeamUnassignedCount(t *testing.T) {
 				{Id: 30},
 			},
 			want: 21,
+			url:  "test",
 		},
 		{
 			testname: "Returns count even when some team ids dont exist",
@@ -180,6 +192,7 @@ func TestGetMultiTeamUnassignedCount(t *testing.T) {
 				{Id: 98},
 			},
 			want: 1,
+			url:  "test",
 		},
 		{
 			testname: "Returns null if no teams found",

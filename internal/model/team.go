@@ -35,7 +35,10 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 	return deduped
 }
 
-func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
+func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {
+	if urlPath == "deputy-tasks" {
+		return ""
+	}
 	for _, a := range selectedAssignees {
 		if t.Id == a.AssigneeId {
 			stringValue := strconv.Itoa(a.Count)

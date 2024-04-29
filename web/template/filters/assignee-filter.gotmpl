@@ -1,7 +1,6 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByAssignee*/ -}}
 {{ define "assignee-filter" }}
   {{ if eq .App.SelectedTeam.IsClosedCases false }}
-
     <div class="moj-filter__options" data-filter-name="moj-filter-name-assignee">
 
       <div class="app-c-option-select">
@@ -23,7 +22,7 @@
             <div class="govuk-checkboxes govuk-checkboxes--small">
               <div class="govuk-checkboxes__item filter__checkbox">
                 <input class="govuk-checkboxes__input" id="not_assigned" name="unassigned" type="checkbox" value="{{ .App.SelectedTeam.Selector }}" data-module="filter" {{ if eq .App.SelectedTeam.Selector .SelectedUnassigned }}checked{{ end }}>
-                <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned {{ $.App.SelectedTeam.GetUnassignedCount $.AssigneeCount }} </label>
+                <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned {{ $.App.SelectedTeam.GetUnassignedCount $.AssigneeCount $.UrlBuilder.Path }}</label>
               </div>
             </div>
             {{ range .App.SelectedTeam.GetAssigneesForFilter }}
@@ -38,7 +37,7 @@
                   <label class="govuk-label govuk-checkboxes__label"
                   for="assignee_{{ .Id }}">
                   {{ .Name }}
-                  {{ .GetCountAsString $.AssigneeCount}}
+                  {{ .GetCountAsString $.AssigneeCount $.UrlBuilder.Path}}
                    </label>
                 </div>
               </div>

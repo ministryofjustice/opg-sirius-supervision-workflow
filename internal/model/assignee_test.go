@@ -20,21 +20,31 @@ func TestGetCount(t *testing.T) {
 		testname         string
 		selectedAssignee Assignee
 		want             string
+		url              string
 	}{
 		{
 			testname:         "Returns count for assignee",
 			selectedAssignee: Assignee{Id: 10},
 			want:             "(11)",
+			url:              "test",
 		},
 		{
 			testname:         "Returns null count for assignee",
 			selectedAssignee: Assignee{Id: 11},
 			want:             "(0)",
+			url:              "test",
 		},
 		{
 			testname:         "Returns null if assignee not in list",
 			selectedAssignee: Assignee{Id: 22},
 			want:             "(0)",
+			url:              "test",
+		},
+		{
+			testname:         "Returns empty string if deputy tasks page",
+			selectedAssignee: Assignee{Id: 10},
+			want:             "",
+			url:              "deputy-tasks",
 		},
 	}
 	for _, test := range tests {
@@ -45,7 +55,7 @@ func TestGetCount(t *testing.T) {
 		}
 
 		t.Run(test.testname, func(t *testing.T) {
-			assert.Equal(t, test.selectedAssignee.GetCountAsString(selectedAssignees), test.want)
+			assert.Equal(t, test.selectedAssignee.GetCountAsString(selectedAssignees, test.url), test.want)
 		})
 	}
 }
