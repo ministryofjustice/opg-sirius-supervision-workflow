@@ -35,9 +35,6 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 }
 
 func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount, urlPath string) string {
-	if urlPath == "deputy-tasks" {
-		return ""
-	}
 	for _, a := range selectedAssignees {
 		if m.Id == a.AssigneeId {
 			stringValue := strconv.Itoa(a.Count)

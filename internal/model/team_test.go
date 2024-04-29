@@ -112,12 +112,6 @@ func TestGetUnassignedCount(t *testing.T) {
 			want:         "(0)",
 			url:          "test",
 		},
-		{
-			testname:     "Returns empty string if deputy tasks page",
-			selectedTeam: Team{Id: 22},
-			want:         "",
-			url:          "deputy-tasks",
-		},
 	}
 	for _, test := range tests {
 		selectedAssignees := []AssigneeAndCount{
