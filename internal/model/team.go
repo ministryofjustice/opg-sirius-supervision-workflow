@@ -2,7 +2,6 @@ package model
 
 import (
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -35,38 +34,6 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 	return deduped
 }
 
-func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
-	for _, a := range selectedAssignees {
-		if t.Id == a.AssigneeId {
-			stringValue := strconv.Itoa(a.Count)
-			return "(" + stringValue + ")"
-		}
-	}
-	//calculate unassigned count for a team of teams
-	if t.IsFullLayTeam() || t.IsProDeputyTeam() {
-		total := t.GetMultiTeamUnassignedCount(selectedAssignees)
-		return "(" + strconv.Itoa(total) + ")"
-	}
-	return "(0)"
-}
-
-func (t Team) GetMultiTeamUnassignedCount(selectedAssignees []AssigneeAndCount) int {
-	var total int
-	for _, a := range t.Teams {
-		total += a.GetCountForATeam(selectedAssignees, a.Id)
-	}
-	return total
-}
-
-func (t Team) GetCountForATeam(selectedAssignees []AssigneeAndCount, teamId int) int {
-	for _, a := range selectedAssignees {
-		if teamId == a.AssigneeId {
-			return a.Count
-		}
-	}
-	return 0
-}
-
 func (t Team) HasTeam(id int) bool {
 	if t.Id == id {
 		return true
@@ -81,10 +48,6 @@ func (t Team) HasTeam(id int) bool {
 
 func (t Team) IsFullLayTeam() bool {
 	return t.Selector == "lay-team"
-}
-
-func (t Team) IsProDeputyTeam() bool {
-	return t.Selector == "pro-team" && t.Id == 0
 }
 
 func (t Team) IsLay() bool {

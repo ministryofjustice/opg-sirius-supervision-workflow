@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type AssigneeAndCount struct {
-	AssigneeId int `json:"assignee"`
-	Count      int `json:"count"`
-}
-
 type Assignee struct {
 	Id          int      `json:"id"`
 	Name        string   `json:"displayName"`
@@ -32,16 +27,6 @@ func (m Assignee) IsSelected(selectedAssignees []string) bool {
 		}
 	}
 	return false
-}
-
-func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount) string {
-	for _, a := range selectedAssignees {
-		if m.Id == a.AssigneeId {
-			stringValue := strconv.Itoa(a.Count)
-			return "(" + stringValue + ")"
-		}
-	}
-	return "(0)"
 }
 
 func (m Assignee) GetRoles() string {

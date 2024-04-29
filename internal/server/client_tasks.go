@@ -177,7 +177,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.FilterByAssignee.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
+
 		return tmpl.Execute(w, vars)
 	}
 }
