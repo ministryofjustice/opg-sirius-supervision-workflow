@@ -114,7 +114,6 @@ func TestClientTasks(t *testing.T) {
 	want.PerPage = 25
 	want.TaskTypes = testTaskType
 	want.TaskList = testTaskList
-
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
 		SelectedTeam:    app.SelectedTeam.Selector,
