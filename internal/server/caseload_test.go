@@ -266,6 +266,23 @@ func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 	assert.Equal(t, 0, template.count)
 }
 
+func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) {
+	client := &mockCaseloadClient{}
+	template := &mockTemplate{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path",
+		SelectedTeam: model.Team{Type: "LAY", Name: "Lay Team - New Deputy Orders", Selector: "998"},
+	}
+	err := caseload(client, template)(app, w, r)
+
+	assert.Equal(t, RedirectError("client-tasks?team=998&page=1&per-page=25"), err)
+	assert.Equal(t, 0, template.count)
+}
+
 func TestCaseload_MethodNotAllowed(t *testing.T) {
 	methods := []string{
 		http.MethodConnect,

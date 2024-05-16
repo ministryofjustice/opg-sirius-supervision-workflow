@@ -17,11 +17,6 @@ describe("Pagination", () => {
         assertPaginationHasLoaded();
     })
 
-    it("is visible on the New Deputy Orders list page", () => {
-        cy.visit("/caseload?team=28");
-        assertPaginationHasLoaded();
-    })
-
     it("is visible on the Closed Clients list page", () => {
         cy.visit("/caseload?team=40");
         assertPaginationHasLoaded();
