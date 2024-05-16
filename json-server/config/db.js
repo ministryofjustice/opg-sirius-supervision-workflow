@@ -389,6 +389,12 @@ module.exports = function () {
         }
       },
       {
+        "id": 0,
+        "name": "Lay Deputy Team",
+        "displayName": "Lay Deputy Team",
+        "members": [],
+      },
+      {
         "id": 40,
         "name": "Supervision Closed Cases",
         "phoneNumber": "0123456789",
