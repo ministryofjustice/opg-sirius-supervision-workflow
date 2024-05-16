@@ -275,11 +275,11 @@ func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) 
 
 	app := WorkflowVars{
 		Path:         "test-path",
-		SelectedTeam: model.Team{Type: "LAY", Name: "Lay Team - New Deputy Orders", Selector: "998"},
+		SelectedTeam: model.Team{Type: "LAY", Name: "Lay Deputy Team", Selector: "lay-team"},
 	}
 	err := caseload(client, template)(app, w, r)
 
-	assert.Equal(t, RedirectError("client-tasks?team=998&page=1&per-page=25"), err)
+	assert.Equal(t, RedirectError("client-tasks?team=lay-team&page=1&per-page=25"), err)
 	assert.Equal(t, 0, template.count)
 }
 

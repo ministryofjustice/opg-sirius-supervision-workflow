@@ -88,7 +88,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
-		if app.SelectedTeam.IsLayNewOrdersTeam() {
+		if app.SelectedTeam.IsLayDeputyTeam() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}

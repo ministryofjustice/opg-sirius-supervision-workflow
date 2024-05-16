@@ -20,4 +20,10 @@ describe("Caseload page redirect", () => {
         cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('Lay Team 2 - (Supervision)')
         cy.url().should('contain', '/caseload?team=22')
     })
+
+   it("Switching to Lay Deputy Team from the Caseload page should redirect to the Client tasks list", () => {
+        cy.visit("/caseload?team=21");
+        cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('Lay Deputy Team')
+        cy.url().should('contain', '/client-tasks?team=lay-team')
+    })
 })
