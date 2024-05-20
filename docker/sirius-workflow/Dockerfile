@@ -1,4 +1,4 @@
-FROM golang:1.21 as base
+FROM golang:1.22 as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0 GOOS=linux
@@ -52,7 +52,7 @@ RUN apk --update --no-cache add \
     tzdata
 
 # Patch vulnerabilities
-RUN apk upgrade --no-cache libcrypto3 libssl3
+RUN apk upgrade --no-cache busybox libcrypto3 libssl3
 
 COPY --from=build-env /go/bin/opg-sirius-workflow opg-sirius-workflow
 COPY --from=build-env /app/web/template web/template
