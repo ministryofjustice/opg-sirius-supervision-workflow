@@ -110,3 +110,7 @@ func (t Team) IsClosedCases() bool {
 func (t Team) IsLayNewOrdersTeam() bool {
 	return t.Name == "Lay Team - New Deputy Orders"
 }
+
+func (t Team) IsLayDeputyTeam() bool {
+	return t.Name == "Lay Deputy Team"
+}
