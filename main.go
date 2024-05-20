@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/ministryofjustice/opg-go-common/env"
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/util"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
@@ -13,8 +12,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -35,7 +34,6 @@ func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 	traceExporter, err := otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint("0.0.0.0:4317"),
-		otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
 	if err != nil {
 		logger.Fatal(err)
@@ -61,7 +59,25 @@ func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 
 func main() {
 	logger := zap.Must(zap.NewProduction(zap.Fields(zap.String("service_name", "opg-sirius-workflow")))).Sugar()
-	apiCallLogger := logging.New(os.Stdout, "opg-sirius-workflow")
+	apiCallLogger := slog.New(slog.
+		NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+				if a.Key == "level" {
+					return slog.Attr{}
+				}
+
+				if a.Key == "time" {
+					a.Key = "timestamp"
+				}
+
+				if a.Key == "msg" {
+					a.Key = "message"
+				}
+
+				return a
+			},
+		}).
+		WithAttrs([]slog.Attr{slog.String("service_name", "opg-sirius-workflow")}))
 
 	defer func() { _ = logger.Sync() }()
 
