@@ -3,8 +3,8 @@ package sirius
 import (
 	"context"
 	"fmt"
-	"github.com/ministryofjustice/opg-go-common/logging"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
@@ -68,7 +68,7 @@ func (ctx Context) With(c context.Context) Context {
 	}
 }
 
-func NewApiClient(httpClient HTTPClient, baseURL string, logger *logging.Logger) (*ApiClient, error) {
+func NewApiClient(httpClient HTTPClient, baseURL string, logger *slog.Logger) (*ApiClient, error) {
 	return &ApiClient{
 		http:    httpClient,
 		baseURL: baseURL,
@@ -83,7 +83,7 @@ type HTTPClient interface {
 type ApiClient struct {
 	http    HTTPClient
 	baseURL string
-	logger  *logging.Logger
+	logger  *slog.Logger
 }
 
 func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {
@@ -103,9 +103,9 @@ func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader)
 }
 
 func (c *ApiClient) logErrorRequest(req *http.Request, err error) {
-	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path)
+	c.logger.Info("method: " + req.Method + ", url: " + req.URL.Path)
 	if err != nil {
-		c.logger.Print(err)
+		c.logger.Error(err.Error())
 	}
 }
 
@@ -114,8 +114,30 @@ func (c *ApiClient) logResponse(req *http.Request, resp *http.Response, err erro
 	if resp != nil {
 		response = strconv.Itoa(resp.StatusCode)
 	}
-	c.logger.Print("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + response)
+	c.logger.Info("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + response)
 	if err != nil {
-		c.logger.Print(err)
+		c.logger.Error(err.Error())
+	}
+}
+
+type ExpandedError interface {
+	Title() string
+	Data() interface{}
+}
+
+func (c *ApiClient) logRequest(r *http.Request, err error) {
+	if ee, ok := err.(ExpandedError); ok {
+		c.logger.Info(ee.Title(),
+			slog.String("request_method", r.Method),
+			slog.String("request_uri", r.URL.String()),
+			slog.Any("data", ee.Data()))
+	} else if err != nil {
+		c.logger.Info(err.Error(),
+			slog.String("request_method", r.Method),
+			slog.String("request_uri", r.URL.String()))
+	} else {
+		c.logger.Info("",
+			slog.String("request_method", r.Method),
+			slog.String("request_uri", r.URL.String()))
 	}
 }
