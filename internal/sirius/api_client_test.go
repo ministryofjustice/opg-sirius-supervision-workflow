@@ -2,12 +2,11 @@ package sirius
 
 import (
 	"context"
-	"github.com/ministryofjustice/opg-go-common/logging"
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"log/slog"
 	"net/http"
-	"os"
 	"testing"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,8 +41,8 @@ func TestStatusError(t *testing.T) {
 	assert.Equal(t, err, err.Data())
 }
 
-func SetUpTest() (*logging.Logger, *mocks.MockClient) {
-	logger := logging.New(os.Stdout, "opg-sirius-workflow ")
+func SetUpTest() (*slog.Logger, *mocks.MockClient) {
+	logger := telemetry.NewLogger("opg-sirius-workflow")
 	mockClient := &mocks.MockClient{}
 	return logger, mockClient
 }
