@@ -20,6 +20,7 @@ type Deputy struct {
 	ActiveClientCount             int                        `json:"activeClientCount"`
 	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
 	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
+	Firm                          Firm                       `json:"firm"`
 }
 
 func (d Deputy) GetURL() string {
