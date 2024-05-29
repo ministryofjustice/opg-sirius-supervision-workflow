@@ -19,7 +19,7 @@
   "dependencies": {
     "@ministryofjustice/frontend": "^2.1.0",
     "govuk-frontend": "^5.0.0",
-    "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.19.0"
+    "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.17.0"
   },
   "devDependencies": {
     "axe-core": "^4.8.3",
