@@ -615,7 +615,12 @@ module.exports = function () {
                 },
                 "deputyAddress": {
                   "town": "Derby"
-                }
+                },
+                "firm": {
+                  "id": 78745361,
+                  "firmName": "Krusty Krabs",
+                  "firmNumber": 789456123
+                },
               }
             ],
             "dueDate": "01/02/2021",
@@ -687,6 +692,11 @@ module.exports = function () {
             "activeNonCompliantClientCount": 10,
             "deputyImportantInformation": {
               "panelDeputy": true
+            },
+            "firm": {
+                "id": 78745361,
+                "firmName": "Krusty Krabs",
+                "firmNumber": 789456123
             }
           },
           {
