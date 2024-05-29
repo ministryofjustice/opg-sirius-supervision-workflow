@@ -18,9 +18,9 @@
             </div>
           </th>
           <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "deputy" }}"><a href="{{ .UrlBuilder.GetSortUrl "deputy" }}"><button type="button">Deputy</button></a></th>
-
+          {{ if $.App.SelectedTeam.IsProDeputyTeam }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Firm</th>
-
+          {{ end }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Executive case manager</th>
           <th scope="col" class="govuk-table__header" aria-sort="none">Active clients</th>
           <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "noncompliance" }}"><a href="{{ .UrlBuilder.GetSortUrl "noncompliance" }}"><button type="button">Non-compliance</button></a></th>
@@ -41,21 +41,21 @@
                   </div>
                 </div>
               </td>
+
               <td class="govuk-table__cell">
                 <a href="{{ sirius .GetURL }}" class="govuk-link">{{ .DisplayName }}</a>
-
                 {{ if eq .DeputyImportantInformation.PanelDeputy true }}
                   <span class="moj-badge">Panel Deputy</span>
                 {{end}}
-
                 <span class="secondary">{{ if .IsPro }}{{ .Address.Town }} - {{ end }}{{ .Number }}</span>
               </td>
 
-
-              <td class="govuk-table__cell">
-                <a href="{{ sirius .GetFirmUrl }}" class="govuk-link">{{ .Firm.Name }}</a>
-              </td>
-
+              {{ if $.App.SelectedTeam.IsProDeputyTeam }}
+                  <td class="govuk-table__cell">
+                    <a href="{{ sirius .GetFirm.GetFirmURL }}" class="govuk-link">{{ .Firm.Name }}</a>
+                    <span class="secondary">{{ if ne .Firm.Number 0 }}{{ .Firm.Number }}{{ end }}</span>
+                  </td>
+              {{ end }}
 
               <td class="govuk-table__cell">
                 <label class="govuk-label" for="assignee-name-and-team">

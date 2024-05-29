@@ -9,7 +9,7 @@ type Firm struct {
 }
 
 func (f Firm) GetFirmURL() string {
-	url := "/supervision/deputies/%d"
+	url := "/supervision/deputies/firm/%d"
 
 	return fmt.Sprintf(url, f.Id)
 }

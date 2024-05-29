@@ -31,6 +31,10 @@ func (d Deputy) GetURL() string {
 	return fmt.Sprintf(url, d.Id)
 }
 
+func (d Deputy) GetFirm() Firm {
+	return d.Firm
+}
+
 func (d Deputy) IsPro() bool {
 	return d.Type.Handle == "PRO"
 }

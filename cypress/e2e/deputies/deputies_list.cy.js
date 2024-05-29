@@ -53,3 +53,18 @@ describe("Deputies list", () => {
         cy.url().should("contain", "order-by=assurance&sort=desc")
     })
 });
+
+describe("Pro Deputy Team Deputies list", () => {
+ beforeEach(() => {
+        cy.setCookie("Other", "other");
+        cy.setCookie("XSRF-TOKEN", "abcde");
+        cy.visit("/deputies?team=27");
+    });
+
+    it("has additional column headers", () => {
+        cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Professional Deputy Team")
+        cy.get("th:nth-child(3)").should("contain", "Firm");
+        cy.get("td:nth-child(3)").should("contain.text", "Krusty Krabs")
+            .and("contain.text", "789456123")
+    })
+});
