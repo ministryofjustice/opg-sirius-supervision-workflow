@@ -129,6 +129,11 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		var vars ClientTasksPage
 
+		if params.Has("first") && app.MyDetails.IsCaseManager() == true && app.MyDetails.Teams[0].Id == app.SelectedTeam.Id {
+			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
+			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
+		}
+
 		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
 
 		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
