@@ -12,15 +12,21 @@ type UrlBuilder struct {
 	SelectedPerPage int
 	SelectedFilters []Filter
 	SelectedSort    Sort
+	MyTeamId        string
 }
 
-func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort, firstBuild bool) string {
-	url := ""
-	if firstBuild == true {
-		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d&first", ub.Path, team, page, perPage)
-	} else {
-		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, team, page, perPage)
-	}
+func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort, preselectCaseManager bool) string {
+	//url := ""
+	//fmt.Println("my team id")
+	////fmt.Println(ub.MyTeamId)
+	//fmt.Println(team)
+	//if preselectCaseManager == false && team != "" {
+	//	fmt.Println("team not null")
+	//	url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d&preselect", ub.Path, team, page, perPage)
+	//} else {
+	url := fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, team, page, perPage)
+	//}
+
 	for _, filter := range filters {
 		for _, value := range filter.SelectedValues {
 			if value != "" {
