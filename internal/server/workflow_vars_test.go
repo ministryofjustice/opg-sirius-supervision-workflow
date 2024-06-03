@@ -64,10 +64,10 @@ var mockTeamsData = []model.Team{
 }
 
 func TestNewWorkflowVars(t *testing.T) {
-	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
-	caseloadTab := Tab{Title: "Caseload", basePath: "caseload"}
-	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks"}
-	deputiesTab := Tab{Title: "Deputies", basePath: "deputies"}
+	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks", MyTeamPageShowing: true}
+	caseloadTab := Tab{Title: "Caseload", basePath: "caseload", MyTeamPageShowing: true}
+	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks", MyTeamPageShowing: true}
+	deputiesTab := Tab{Title: "Deputies", basePath: "deputies", MyTeamPageShowing: true}
 
 	tests := []struct {
 		teamType      string

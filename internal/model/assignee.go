@@ -47,3 +47,12 @@ func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount, urlPath
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")
 }
+
+func (m Assignee) IsCaseManager() bool {
+	for _, a := range m.Roles {
+		if strings.ToLower(a) == "case manager" {
+			return true
+		}
+	}
+	return false
+}
