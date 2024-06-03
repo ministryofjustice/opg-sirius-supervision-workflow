@@ -12,10 +12,17 @@ type UrlBuilder struct {
 	SelectedPerPage int
 	SelectedFilters []Filter
 	SelectedSort    Sort
+	MyTeamId        string
 }
 
-func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort) string {
-	url := fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, team, page, perPage)
+func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort, preselectCaseManager bool) string {
+	url := ""
+	if preselectCaseManager {
+		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d&preselect", ub.Path, team, page, perPage)
+	} else {
+		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, team, page, perPage)
+	}
+
 	for _, filter := range filters {
 		for _, value := range filter.SelectedValues {
 			if value != "" {
@@ -36,7 +43,11 @@ func (ub UrlBuilder) GetTeamUrl(team model.Team) string {
 			retainedFilters = append(retainedFilters, filter)
 		}
 	}
-	return ub.buildUrl(team.Selector, 1, ub.SelectedPerPage, retainedFilters, ub.SelectedSort)
+	return ub.buildUrl(team.Selector, 1, ub.SelectedPerPage, retainedFilters, ub.SelectedSort, CheckForPreSelect(ub.MyTeamId, team.Selector))
+}
+
+func CheckForPreSelect(firstId, secondId string) bool {
+	return firstId == secondId
 }
 
 func (ub UrlBuilder) GetPaginationUrl(page int, perPage ...int) string {
@@ -44,7 +55,7 @@ func (ub UrlBuilder) GetPaginationUrl(page int, perPage ...int) string {
 	if len(perPage) > 0 {
 		selectedPerPage = perPage[0]
 	}
-	return ub.buildUrl(ub.SelectedTeam, page, selectedPerPage, ub.SelectedFilters, ub.SelectedSort)
+	return ub.buildUrl(ub.SelectedTeam, page, selectedPerPage, ub.SelectedFilters, ub.SelectedSort, CheckForPreSelect(ub.MyTeamId, ub.SelectedTeam))
 }
 
 func (ub UrlBuilder) GetSortUrl(orderBy string) string {
@@ -52,11 +63,12 @@ func (ub UrlBuilder) GetSortUrl(orderBy string) string {
 	if orderBy == ub.SelectedSort.OrderBy {
 		sort.Descending = !ub.SelectedSort.Descending
 	}
-	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, ub.SelectedFilters, sort)
+
+	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, ub.SelectedFilters, sort, CheckForPreSelect(ub.MyTeamId, ub.SelectedTeam))
 }
 
 func (ub UrlBuilder) GetClearFiltersUrl() string {
-	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, []Filter{}, ub.SelectedSort)
+	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, []Filter{}, ub.SelectedSort, false)
 }
 
 func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) (string, error) {
@@ -86,5 +98,5 @@ func (ub UrlBuilder) GetRemoveFilterUrl(name string, value interface{}) (string,
 		}
 	}
 
-	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, retainedFilters, ub.SelectedSort), nil
+	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, retainedFilters, ub.SelectedSort, false), nil
 }
