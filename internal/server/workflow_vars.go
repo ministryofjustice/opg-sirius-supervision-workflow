@@ -22,8 +22,9 @@ type WorkflowVars struct {
 }
 
 type Tab struct {
-	Title    string
-	basePath string
+	Title             string
+	basePath          string
+	MyTeamPageShowing bool
 }
 
 type WorkflowVarsClient interface {
@@ -59,8 +60,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		SelectedTeam: selectedTeam,
 		Tabs: []Tab{
 			{
-				Title:    "Client tasks",
-				basePath: "client-tasks",
+				Title:             "Client tasks",
+				basePath:          "client-tasks",
+				MyTeamPageShowing: checkIfOnMyTeamPage(loggedInTeamId, selectedTeam.Id),
 			},
 		},
 		EnvironmentVars: envVars,
@@ -69,24 +71,27 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 	if (selectedTeam.IsLay() && !selectedTeam.IsFullLayTeam()) || (selectedTeam.IsHW()) {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
-				Title:    "Caseload",
-				basePath: "caseload",
+				Title:             "Caseload",
+				basePath:          "caseload",
+				MyTeamPageShowing: checkIfOnMyTeamPage(loggedInTeamId, selectedTeam.Id),
 			})
 	}
 
 	if selectedTeam.IsPro() || selectedTeam.IsPA() {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
-				Title:    "Deputy tasks",
-				basePath: "deputy-tasks",
+				Title:             "Deputy tasks",
+				basePath:          "deputy-tasks",
+				MyTeamPageShowing: checkIfOnMyTeamPage(loggedInTeamId, selectedTeam.Id),
 			})
 	}
 
 	if selectedTeam.IsPro() || selectedTeam.IsPA() {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
-				Title:    "Deputies",
-				basePath: "deputies",
+				Title:             "Deputies",
+				basePath:          "deputies",
+				MyTeamPageShowing: checkIfOnMyTeamPage(loggedInTeamId, selectedTeam.Id),
 			})
 	}
 
@@ -119,7 +124,14 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	return model.Team{}, errors.New("invalid team selection")
 }
 
+func checkIfOnMyTeamPage(loggedInTeamId, selectedTeamId int) bool {
+	return loggedInTeamId == selectedTeamId
+}
+
 func (t Tab) GetURL(team model.Team) string {
+	if t.MyTeamPageShowing {
+		return t.basePath + "?team=" + team.Selector + "&preselect"
+	}
 	return t.basePath + "?team=" + team.Selector
 }
 

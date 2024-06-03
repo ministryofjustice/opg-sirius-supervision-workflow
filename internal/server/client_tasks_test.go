@@ -169,7 +169,20 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/client-tasks?team=&page=10&per-page=25", nil)
 
-	app := WorkflowVars{}
+	app := WorkflowVars{
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   999999,
+					Name: "myTeam",
+				},
+			},
+		},
+		SelectedTeam: model.Team{
+			Id:   123,
+			Name: "anotherTeam",
+		},
+	}
 	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(RedirectError("client-tasks?team=&page=2&per-page=25"), err)
