@@ -90,95 +90,20 @@ var testTaskList = sirius.TaskList{
 	},
 }
 
-//func TestClientTasks(t *testing.T) {
-//	client := &mockClientTasksClient{
-//		taskTypeData: testTaskType,
-//		taskListData: testTaskList,
-//	}
-//	template := &mockTemplate{}
-//
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "", nil)
-//
-//	app := WorkflowVars{
-//		Path:         "test-path?team=101",
-//		SelectedTeam: model.Team{Type: "LAY", Selector: "test-team", Id: 101},
-//		MyDetails: model.Assignee{
-//			Id:        123,
-//			Firstname: "John",
-//			Surname:   "Doe",
-//			Teams: []model.Team{
-//				{
-//					Id:   99,
-//					Name: "my-team",
-//				},
-//			},
-//			Roles: []string{"Case Manager"},
-//		},
-//	}
-//	err := clientTasks(client, template)(app, w, r)
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 1, template.count)
-//
-//	var want ClientTasksPage
-//	want.App = app
-//	want.PerPage = 25
-//	want.TaskTypes = testTaskType
-//	want.TaskList = testTaskList
-//	want.UrlBuilder = urlbuilder.UrlBuilder{
-//		Path:            "client-tasks",
-//		SelectedTeam:    app.SelectedTeam.Selector,
-//		SelectedPerPage: 25,
-//		SelectedFilters: []urlbuilder.Filter{
-//			{
-//				Name: "task-type",
-//			},
-//			{
-//				Name:                  "assignee",
-//				ClearBetweenTeamViews: true,
-//				SelectedValues:        []string{"123"},
-//			},
-//			{
-//				Name:                  "unassigned",
-//				ClearBetweenTeamViews: true,
-//			},
-//			{
-//				Name: "due-date-from",
-//			},
-//			{
-//				Name: "due-date-to",
-//			},
-//		},
-//	}
-//
-//	want.Pagination = paginate.Pagination{
-//		CurrentPage:     0,
-//		TotalPages:      0,
-//		TotalElements:   0,
-//		ElementsPerPage: 25,
-//		ElementName:     "tasks",
-//		PerPageOptions:  []int{25, 50, 100},
-//		UrlBuilder:      want.UrlBuilder,
-//	}
-//	want.MyTeamId = "99"
-//
-//	assert.Equal(t, want, template.lastVars)
-//}
-
-func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing.T) {
-	client := &mockClientTasksClient{}
+func TestClientTasks(t *testing.T) {
+	client := &mockClientTasksClient{
+		taskTypeData: testTaskType,
+		taskListData: testTaskList,
+	}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101", nil)
 
 	app := WorkflowVars{
-		Path: "test-path",
+		Path:         "test-path?team=101",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
 		MyDetails: model.Assignee{
-			Id:        123,
-			Firstname: "John",
-			Surname:   "Doe",
 			Teams: []model.Team{
 				{
 					Id:   99,
@@ -196,9 +121,11 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 	var want ClientTasksPage
 	want.App = app
 	want.PerPage = 25
+	want.TaskTypes = testTaskType
+	want.TaskList = testTaskList
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
-		SelectedTeam:    app.SelectedTeam.Selector,
+		SelectedTeam:    "101",
 		SelectedPerPage: 25,
 		SelectedFilters: []urlbuilder.Filter{
 			{
@@ -207,7 +134,6 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 			{
 				Name:                  "assignee",
 				ClearBetweenTeamViews: true,
-				SelectedValues:        []string{"123"},
 			},
 			{
 				Name:                  "unassigned",
@@ -232,11 +158,144 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 		PerPageOptions:  []int{25, 50, 100},
 		UrlBuilder:      want.UrlBuilder,
 	}
-	want.AppliedFilters = []string{""}
-	want.SelectedAssignees = []string{"123"}
 	want.MyTeamId = "99"
 
 	assert.Equal(t, want, template.lastVars)
+}
+
+func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing.T) {
+	tests := []struct {
+		testName              string
+		url                   string
+		myDetailsTeamId       int
+		urlBuilderTeamId      string
+		wantSelectedAssignees []string
+		myPermissions         []string
+	}{
+		{
+			testName:              "Will preselect if I am looking at my team and url has preselect in it",
+			url:                   "client-tasks?team=101&preselect",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: []string{"123"},
+			myPermissions:         []string{"Case Manager"},
+		},
+		{
+			testName:              "Will preselect if I am looking at my team and url does not have team in it",
+			url:                   "client-tasks?",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: []string{"123"},
+			myPermissions:         []string{"Case Manager"},
+		},
+		{
+			testName:              "Will not preselect if I am looking at my team and url has team in it",
+			url:                   "client-tasks?team=101",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: nil,
+			myPermissions:         []string{"Case Manager"},
+		},
+		{
+			testName:              "Will not preselect if I am looking at another team and url has preselect in it",
+			url:                   "client-tasks?team=105",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: nil,
+			myPermissions:         []string{"Case Manager"},
+		},
+		{
+			testName:              "Will not preselect if I have more than 2 roles",
+			url:                   "client-tasks?",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: nil,
+			myPermissions:         []string{"Case Manager", "Opg User", "System Admin"},
+		},
+		{
+			testName:              "Will not preselect if I do not have case manager role",
+			url:                   "client-tasks?team=101&preselect",
+			myDetailsTeamId:       99,
+			urlBuilderTeamId:      "99",
+			wantSelectedAssignees: nil,
+			myPermissions:         []string{"Opg User", "System Admin"},
+		},
+	}
+	for _, tt := range tests {
+
+		client := &mockClientTasksClient{}
+		template := &mockTemplate{}
+
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequest(http.MethodGet, tt.url, nil)
+
+		app := WorkflowVars{
+			Path: "test-path",
+			MyDetails: model.Assignee{
+				Id:        123,
+				Firstname: "John",
+				Surname:   "Doe",
+				Teams: []model.Team{
+					{
+						Id:   tt.myDetailsTeamId,
+						Name: "my-team",
+					},
+				},
+				Roles: tt.myPermissions,
+			},
+		}
+		err := clientTasks(client, template)(app, w, r)
+
+		assert.Nil(t, err)
+		assert.Equal(t, 1, template.count)
+
+		var want ClientTasksPage
+		want.App = app
+		want.PerPage = 25
+		want.UrlBuilder = urlbuilder.UrlBuilder{
+			Path:            "client-tasks",
+			SelectedTeam:    app.SelectedTeam.Selector,
+			SelectedPerPage: 25,
+			SelectedFilters: []urlbuilder.Filter{
+				{
+					Name: "task-type",
+				},
+				{
+					Name:                  "assignee",
+					ClearBetweenTeamViews: true,
+					SelectedValues:        tt.wantSelectedAssignees,
+				},
+				{
+					Name:                  "unassigned",
+					ClearBetweenTeamViews: true,
+				},
+				{
+					Name: "due-date-from",
+				},
+				{
+					Name: "due-date-to",
+				},
+			},
+			MyTeamId: tt.urlBuilderTeamId,
+		}
+
+		want.Pagination = paginate.Pagination{
+			CurrentPage:     0,
+			TotalPages:      0,
+			TotalElements:   0,
+			ElementsPerPage: 25,
+			ElementName:     "tasks",
+			PerPageOptions:  []int{25, 50, 100},
+			UrlBuilder:      want.UrlBuilder,
+		}
+		want.AppliedFilters = []string{""}
+		want.SelectedAssignees = tt.wantSelectedAssignees
+		want.MyTeamId = "99"
+
+		t.Run(tt.testName, func(t *testing.T) {
+			assert.Equal(t, want, template.lastVars)
+		})
+	}
 }
 
 func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
