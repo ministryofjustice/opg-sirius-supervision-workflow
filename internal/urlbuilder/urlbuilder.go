@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"strconv"
+	"strings"
 )
 
 type UrlBuilder struct {
@@ -55,7 +56,11 @@ func (ub UrlBuilder) GetPaginationUrl(page int, perPage ...int) string {
 	if len(perPage) > 0 {
 		selectedPerPage = perPage[0]
 	}
-	return ub.buildUrl(ub.SelectedTeam, page, selectedPerPage, ub.SelectedFilters, ub.SelectedSort, CheckIfIsMyTeam(ub.MyTeamId, ub.SelectedTeam))
+	if strings.HasSuffix(ub.Path, "prefilter") {
+		return ub.buildUrl(ub.SelectedTeam, page, selectedPerPage, ub.SelectedFilters, ub.SelectedSort, CheckIfIsMyTeam(ub.MyTeamId, ub.SelectedTeam))
+	} else {
+		return ub.buildUrl(ub.SelectedTeam, page, selectedPerPage, ub.SelectedFilters, ub.SelectedSort, false)
+	}
 }
 
 func (ub UrlBuilder) GetSortUrl(orderBy string) string {
@@ -63,8 +68,11 @@ func (ub UrlBuilder) GetSortUrl(orderBy string) string {
 	if orderBy == ub.SelectedSort.OrderBy {
 		sort.Descending = !ub.SelectedSort.Descending
 	}
-
-	return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, ub.SelectedFilters, sort, CheckIfIsMyTeam(ub.MyTeamId, ub.SelectedTeam))
+	if strings.HasSuffix(ub.Path, "prefilter") {
+		return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, ub.SelectedFilters, sort, CheckIfIsMyTeam(ub.MyTeamId, ub.SelectedTeam))
+	} else {
+		return ub.buildUrl(ub.SelectedTeam, 1, ub.SelectedPerPage, ub.SelectedFilters, sort, false)
+	}
 }
 
 func (ub UrlBuilder) GetClearFiltersUrl() string {

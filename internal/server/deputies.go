@@ -7,7 +7,6 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
-	"strconv"
 )
 
 type DeputiesClient interface {
@@ -19,7 +18,6 @@ type DeputiesPage struct {
 	DeputyList sirius.DeputyList
 	ListPage
 	FilterByECM
-	MyTeamId string
 }
 
 func (dp DeputiesPage) GetAppliedFilters() []string {
@@ -134,13 +132,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
-
-		if len(vars.App.MyDetails.Teams) >= 1 {
-			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
-		}
-		fmt.Println("my team id deputies")
-		fmt.Println(vars.MyTeamId)
-		fmt.Println("-----")
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
