@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -21,7 +20,6 @@ type DeputyTasksPage struct {
 	FilterByAssignee
 	FilterByTaskType
 	TaskList sirius.TaskList
-	MyTeamId string
 }
 
 func (dt DeputyTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
@@ -34,7 +32,6 @@ func (dt DeputyTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 			urlbuilder.CreateFilter("assignee", dt.SelectedAssignees, true),
 			urlbuilder.CreateFilter("unassigned", dt.SelectedUnassigned, true),
 		},
-		MyTeamId: dt.MyTeamId,
 	}
 }
 
@@ -143,13 +140,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.App = app
-
-		if len(vars.App.MyDetails.Teams) >= 1 {
-			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
-		}
-		fmt.Println("my team id deputy tasks")
-		fmt.Println(vars.MyTeamId)
-		fmt.Println("-----")
 
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 

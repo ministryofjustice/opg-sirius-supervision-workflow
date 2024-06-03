@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -172,9 +171,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		if len(vars.App.MyDetails.Teams) >= 1 {
 			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
 		}
-		fmt.Println("my team id caseload")
-		fmt.Println(vars.MyTeamId)
-		fmt.Println("-----")
+
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
