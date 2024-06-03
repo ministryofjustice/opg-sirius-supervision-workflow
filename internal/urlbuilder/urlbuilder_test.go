@@ -116,7 +116,7 @@ func TestUrlBuilder_buildUrl(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			builder := UrlBuilder{Path: test.path}
-			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort)
+			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort, false)
 			assert.Equal(t, test.want, url)
 		})
 	}
@@ -405,22 +405,22 @@ func TestUrlBuilder_GetSortUrl(t *testing.T) {
 		want       string
 	}{
 		{
-			urlBuilder: UrlBuilder{},
+			urlBuilder: UrlBuilder{MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test2", Descending: true}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test2", Descending: true}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test"}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test"}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=desc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test", Descending: true}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test", Descending: true}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},

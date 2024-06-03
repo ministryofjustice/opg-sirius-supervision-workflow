@@ -140,6 +140,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.App = app
+
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
