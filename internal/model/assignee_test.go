@@ -15,16 +15,16 @@ func TestAssignee_IsSelected(t *testing.T) {
 	assert.False(t, unselectedAssignee.IsSelected(selectedAssignees), "Assignee ID 11 is selected")
 }
 
-func TestAssignee_IsCaseManager(t *testing.T) {
-	assignee1 := Assignee{Id: 10, Roles: []string{"Case Manager", "System Admin"}}
-	assignee2 := Assignee{Id: 11, Roles: []string{"Case Manager"}}
-	assignee3 := Assignee{Id: 12, Roles: []string{"System Admin"}}
+func TestAssignee_IsOnlyCaseManager(t *testing.T) {
+	assignee1 := Assignee{Id: 10, Roles: []string{"Opg User", "Case Manager"}}
+	assignee2 := Assignee{Id: 11, Roles: []string{"Opg User", "Case Manager", "System Admin"}}
+	assignee3 := Assignee{Id: 12, Roles: []string{"Opg User", "System Admin"}}
 	assignee4 := Assignee{Id: 13, Roles: []string{""}}
 
-	assert.Truef(t, assignee1.IsCaseManager(), "Assignee ID 10 is case manager")
-	assert.Truef(t, assignee2.IsCaseManager(), "Assignee ID 11 is case manager")
-	assert.False(t, assignee3.IsCaseManager(), "Assignee ID 12 is not case manager")
-	assert.False(t, assignee4.IsCaseManager(), "Assignee ID 13 is not case manager")
+	assert.Truef(t, assignee1.IsOnlyCaseManager(), "Assignee ID 10 is case manager")
+	assert.False(t, assignee2.IsOnlyCaseManager(), "Assignee ID 11 has many roles")
+	assert.False(t, assignee3.IsOnlyCaseManager(), "Assignee ID 12 is not case manager")
+	assert.False(t, assignee4.IsOnlyCaseManager(), "Assignee ID 13 is not case manager")
 }
 
 func TestGetCount(t *testing.T) {

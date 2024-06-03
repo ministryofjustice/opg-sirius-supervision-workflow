@@ -131,7 +131,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		var vars ClientTasksPage
 
-		if app.MyDetails.IsCaseManager() && (!params.Has("team") || params.Has("preselect")) {
+		if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
 			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
 			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
 		}
@@ -169,8 +169,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		if len(vars.App.MyDetails.Teams) >= 1 {
 			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
-		} else {
-			vars.MyTeamId = ""
 		}
 
 		vars.UrlBuilder = vars.CreateUrlBuilder()

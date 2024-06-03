@@ -152,6 +152,75 @@ func TestClientTasks(t *testing.T) {
 	assert.Equal(t, want, template.lastVars)
 }
 
+//func TestClientTasksPreselectsCaseManagerOnFirstPageLoad(t *testing.T) {
+//	client := &mockClientTasksClient{}
+//	template := &mockTemplate{}
+//
+//	w := httptest.NewRecorder()
+//	r, _ := http.NewRequest(http.MethodGet, "/client-tasks?&preselect", nil)
+//
+//	app := WorkflowVars{
+//		Path: "test-path",
+//		MyDetails: model.Assignee{
+//			Id:        123,
+//			Firstname: "John",
+//			Surname:   "Doe",
+//			Teams: []model.Team{
+//				{
+//					Id:   99,
+//					Name: "my-team",
+//				},
+//			},
+//			Roles: []string{"Case Manager"},
+//		},
+//	}
+//	err := clientTasks(client, template)(app, w, r)
+//
+//	assert.Nil(t, err)
+//	assert.Equal(t, 1, template.count)
+//
+//	var want ClientTasksPage
+//	want.App = app
+//	want.PerPage = 25
+//	want.UrlBuilder = urlbuilder.UrlBuilder{
+//		Path:            "client-tasks",
+//		SelectedTeam:    app.SelectedTeam.Selector,
+//		SelectedPerPage: 25,
+//		SelectedFilters: []urlbuilder.Filter{
+//			{
+//				Name: "task-type",
+//			},
+//			{
+//				Name:                  "assignee",
+//				ClearBetweenTeamViews: true,
+//			},
+//			{
+//				Name:                  "unassigned",
+//				ClearBetweenTeamViews: true,
+//			},
+//			{
+//				Name: "due-date-from",
+//			},
+//			{
+//				Name: "due-date-to",
+//			},
+//		},
+//		MyTeamId: "99",
+//	}
+//
+//	want.Pagination = paginate.Pagination{
+//		CurrentPage:     0,
+//		TotalPages:      0,
+//		TotalElements:   0,
+//		ElementsPerPage: 25,
+//		ElementName:     "tasks",
+//		PerPageOptions:  []int{25, 50, 100},
+//		UrlBuilder:      want.UrlBuilder,
+//	}
+//
+//	assert.Equal(t, want, template.lastVars)
+//}
+
 func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
 	assert := assert.New(t)
 
