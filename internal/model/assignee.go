@@ -47,3 +47,15 @@ func (m Assignee) GetCountAsString(selectedAssignees []AssigneeAndCount, urlPath
 func (m Assignee) GetRoles() string {
 	return strings.Join(m.Roles, ",")
 }
+
+func (m Assignee) IsOnlyCaseManager() bool {
+	//allow for 2 roles as one will always be OPG User
+	if len(m.Roles) < 3 {
+		for _, a := range m.Roles {
+			if strings.ToLower(a) == "case manager" {
+				return true
+			}
+		}
+	}
+	return false
+}

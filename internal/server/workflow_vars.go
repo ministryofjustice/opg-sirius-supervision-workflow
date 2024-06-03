@@ -22,8 +22,9 @@ type WorkflowVars struct {
 }
 
 type Tab struct {
-	Title    string
-	basePath string
+	Title        string
+	basePath     string
+	IsMyTeamPage bool
 }
 
 type WorkflowVarsClient interface {
@@ -59,8 +60,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 		SelectedTeam: selectedTeam,
 		Tabs: []Tab{
 			{
-				Title:    "Client tasks",
-				basePath: "client-tasks",
+				Title:        "Client tasks",
+				basePath:     "client-tasks",
+				IsMyTeamPage: checkIfOnMyTeamPage(loggedInTeamId, selectedTeam.Id),
 			},
 		},
 		EnvironmentVars: envVars,
@@ -119,7 +121,14 @@ func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, tea
 	return model.Team{}, errors.New("invalid team selection")
 }
 
+func checkIfOnMyTeamPage(loggedInTeamId, selectedTeamId int) bool {
+	return loggedInTeamId == selectedTeamId
+}
+
 func (t Tab) GetURL(team model.Team) string {
+	if t.IsMyTeamPage {
+		return t.basePath + "?team=" + team.Selector + "&preselect"
+	}
 	return t.basePath + "?team=" + team.Selector
 }
 

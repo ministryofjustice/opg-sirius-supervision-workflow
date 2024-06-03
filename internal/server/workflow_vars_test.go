@@ -64,7 +64,7 @@ var mockTeamsData = []model.Team{
 }
 
 func TestNewWorkflowVars(t *testing.T) {
-	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks"}
+	clientTasksTab := Tab{Title: "Client tasks", basePath: "client-tasks", IsMyTeamPage: true}
 	caseloadTab := Tab{Title: "Caseload", basePath: "caseload"}
 	deputyTasksTab := Tab{Title: "Deputy tasks", basePath: "deputy-tasks"}
 	deputiesTab := Tab{Title: "Deputies", basePath: "deputies"}
@@ -213,4 +213,20 @@ func TestTab_IsSelected(t *testing.T) {
 
 	assert.True(t, selectedTab.IsSelected(app))
 	assert.False(t, unselectedTab.IsSelected(app))
+}
+
+func TestTab_GetURLReturnsPreselected(t *testing.T) {
+	tab := Tab{basePath: "test-path", IsMyTeamPage: true}
+	tab2 := Tab{basePath: "test-path", IsMyTeamPage: false}
+
+	team := mockTeamsData[0]
+
+	assert.Equal(t, "test-path?team=13&preselect", tab.GetURL(team))
+	assert.Equal(t, "test-path?team=13", tab2.GetURL(team))
+}
+
+func TestCheckIfOnMyTeamPage(t *testing.T) {
+	assert.True(t, checkIfOnMyTeamPage(15, 15))
+	assert.False(t, checkIfOnMyTeamPage(15, 98))
+	assert.False(t, checkIfOnMyTeamPage(15, 0))
 }
