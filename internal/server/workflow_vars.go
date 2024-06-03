@@ -129,7 +129,7 @@ func checkIfOnMyTeamPage(loggedInTeamId, selectedTeamId int) bool {
 }
 
 func (t Tab) GetURL(team model.Team) string {
-	if t.MyTeamPageShowing {
+	if t.MyTeamPageShowing && strings.HasSuffix(t.basePath, "client-tasks") {
 		return t.basePath + "?team=" + team.Selector + "&preselect"
 	}
 	return t.basePath + "?team=" + team.Selector
