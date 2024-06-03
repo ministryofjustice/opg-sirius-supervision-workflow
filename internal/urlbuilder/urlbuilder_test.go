@@ -55,7 +55,7 @@ func TestUrlBuilder_buildUrl(t *testing.T) {
 			filters: []Filter{
 				{
 					Name:           "test",
-					SelectedValues: []string{""},
+					SelectedValues: nil,
 				},
 			},
 			want: "slug?team=team12&page=11&per-page=25",
@@ -116,7 +116,107 @@ func TestUrlBuilder_buildUrl(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
 			builder := UrlBuilder{Path: test.path}
-			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort)
+			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort, false)
+			assert.Equal(t, test.want, url)
+		})
+	}
+}
+
+func TestUrlBuilder_buildUrl_Preselect(t *testing.T) {
+	tests := []struct {
+		path      string
+		team      string
+		page      int
+		perPage   int
+		filters   []Filter
+		sort      Sort
+		want      string
+		preselect bool
+	}{
+		{
+			path:      "slug",
+			team:      "team12",
+			page:      11,
+			perPage:   25,
+			filters:   nil,
+			want:      "slug?team=team12&page=11&per-page=25&preselect",
+			preselect: true,
+		},
+		{
+			path:    "slug",
+			team:    "team12",
+			page:    11,
+			perPage: 25,
+			filters: []Filter{
+				{
+					Name:           "test",
+					SelectedValues: []string{"val"},
+				},
+			},
+			want:      "slug?team=team12&page=11&per-page=25&preselect&test=val",
+			preselect: true,
+		},
+		{
+			path:    "slug",
+			team:    "team12",
+			page:    11,
+			perPage: 25,
+			filters: []Filter{
+				{
+					Name:           "test",
+					SelectedValues: []string{"val1", "val2"},
+				},
+			},
+			want:      "slug?team=team12&page=11&per-page=25&preselect&test=val1&test=val2",
+			preselect: true,
+		},
+		{
+			path:    "slug",
+			team:    "team12",
+			page:    11,
+			perPage: 25,
+			filters: []Filter{
+				{
+					Name:           "test",
+					SelectedValues: []string{"val1", "val2"},
+				},
+			},
+			want:      "slug?team=team12&page=11&per-page=25&preselect&test=val1&test=val2",
+			preselect: true,
+		},
+		{
+			path:    "slug",
+			team:    "team12",
+			page:    11,
+			perPage: 25,
+			filters: []Filter{
+				{
+					Name:           "test",
+					SelectedValues: []string{"val1", "val2"},
+				},
+				{
+					Name:           "test2",
+					SelectedValues: []string{"val3"},
+				},
+			},
+			want:      "slug?team=team12&page=11&per-page=25&preselect&test=val1&test=val2&test2=val3",
+			preselect: true,
+		},
+		{
+			path:      "",
+			team:      "1",
+			page:      2,
+			perPage:   15,
+			filters:   []Filter{},
+			sort:      Sort{OrderBy: "name"},
+			want:      "?team=1&page=2&per-page=15&preselect&order-by=name&sort=asc",
+			preselect: true,
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			builder := UrlBuilder{Path: test.path}
+			url := builder.buildUrl(test.team, test.page, test.perPage, test.filters, test.sort, test.preselect)
 			assert.Equal(t, test.want, url)
 		})
 	}
@@ -183,6 +283,32 @@ func TestUrlBuilder_GetTeamUrl(t *testing.T) {
 	}
 }
 
+func TestUrlBuilder_GetTeamUrl_Preselect(t *testing.T) {
+	tests := []struct {
+		urlBuilder UrlBuilder
+		team       string
+		want       string
+		myTeamId   string
+	}{
+		{
+			urlBuilder: UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 25, MyTeamId: "22"},
+			team:       "22",
+			want:       "page?team=22&page=1&per-page=25&preselect",
+		},
+		{
+			urlBuilder: UrlBuilder{Path: "page", SelectedTeam: "lay", SelectedPerPage: 25, MyTeamId: "33"},
+			team:       "22",
+			want:       "page?team=22&page=1&per-page=25",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			team := model.Team{Selector: test.team}
+			assert.Equal(t, test.want, test.urlBuilder.GetTeamUrl(team))
+		})
+	}
+}
+
 func TestUrlBuilder_GetPaginationUrl(t *testing.T) {
 	tests := []struct {
 		urlBuilder UrlBuilder
@@ -230,6 +356,42 @@ func TestUrlBuilder_GetPaginationUrl(t *testing.T) {
 			page:    2,
 			perPage: nil,
 			want:    "?team=lay&page=2&per-page=0&retained1=val1&retained1=val2&retained2=val3",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			var result string
+			if test.perPage == nil {
+				result = test.urlBuilder.GetPaginationUrl(test.page)
+			} else {
+				result = test.urlBuilder.GetPaginationUrl(test.page, test.perPage[0])
+			}
+			assert.Equal(t, test.want, result)
+		})
+	}
+}
+
+func TestUrlBuilder_GetPaginationUrl_Preselect(t *testing.T) {
+	tests := []struct {
+		name       string
+		urlBuilder UrlBuilder
+		page       int
+		perPage    []int
+		want       string
+	}{
+		{
+			name:       "adds preselect if it was already in url",
+			urlBuilder: UrlBuilder{Path: "page?team=99&preselect", SelectedTeam: "99", SelectedPerPage: 25, MyTeamId: "99"},
+			page:       1,
+			perPage:    []int{25},
+			want:       "page?team=99&preselect?team=99&page=1&per-page=25&preselect",
+		},
+		{
+			name:       "does not add preselect if not in url",
+			urlBuilder: UrlBuilder{Path: "page?team=99", SelectedTeam: "99", SelectedPerPage: 25, MyTeamId: "99"},
+			page:       2,
+			perPage:    []int{25},
+			want:       "page?team=99?team=99&page=2&per-page=25",
 		},
 	}
 	for i, test := range tests {
@@ -405,22 +567,22 @@ func TestUrlBuilder_GetSortUrl(t *testing.T) {
 		want       string
 	}{
 		{
-			urlBuilder: UrlBuilder{},
+			urlBuilder: UrlBuilder{MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test2", Descending: true}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test2", Descending: true}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test"}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test"}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=desc",
 		},
 		{
-			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test", Descending: true}},
+			urlBuilder: UrlBuilder{SelectedSort: Sort{OrderBy: "test", Descending: true}, MyTeamId: "9999"},
 			orderBy:    "test",
 			want:       "?team=&page=1&per-page=0&order-by=test&sort=asc",
 		},
@@ -430,4 +592,34 @@ func TestUrlBuilder_GetSortUrl(t *testing.T) {
 			assert.Equal(t, test.want, test.urlBuilder.GetSortUrl(test.orderBy))
 		})
 	}
+}
+
+func TestUrlBuilder_GetSortUrl_Preselect(t *testing.T) {
+	tests := []struct {
+		urlBuilder UrlBuilder
+		orderBy    string
+		want       string
+	}{
+		{
+			urlBuilder: UrlBuilder{MyTeamId: "9999", Path: "team=9999&preselect"},
+			orderBy:    "test",
+			want:       "team=9999&preselect?team=&page=1&per-page=0&order-by=test&sort=asc",
+		},
+		{
+			urlBuilder: UrlBuilder{MyTeamId: "9999", Path: "team=9999"},
+			orderBy:    "test",
+			want:       "team=9999?team=&page=1&per-page=0&order-by=test&sort=asc",
+		},
+	}
+	for i, test := range tests {
+		t.Run("Scenario "+strconv.Itoa(i+1), func(t *testing.T) {
+			assert.Equal(t, test.want, test.urlBuilder.GetSortUrl(test.orderBy))
+		})
+	}
+}
+
+func TestCheckIfIsMyTeam(t *testing.T) {
+	assert.True(t, CheckIfIsMyTeam("22", "22"))
+	assert.False(t, CheckIfIsMyTeam("11", "22"))
+	assert.False(t, CheckIfIsMyTeam("", "22"))
 }

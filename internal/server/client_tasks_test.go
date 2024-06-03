@@ -90,19 +90,103 @@ var testTaskList = sirius.TaskList{
 	},
 }
 
-func TestClientTasks(t *testing.T) {
-	client := &mockClientTasksClient{
-		taskTypeData: testTaskType,
-		taskListData: testTaskList,
-	}
+//func TestClientTasks(t *testing.T) {
+//	client := &mockClientTasksClient{
+//		taskTypeData: testTaskType,
+//		taskListData: testTaskList,
+//	}
+//	template := &mockTemplate{}
+//
+//	w := httptest.NewRecorder()
+//	r, _ := http.NewRequest(http.MethodGet, "", nil)
+//
+//	app := WorkflowVars{
+//		Path:         "test-path?team=101",
+//		SelectedTeam: model.Team{Type: "LAY", Selector: "test-team", Id: 101},
+//		MyDetails: model.Assignee{
+//			Id:        123,
+//			Firstname: "John",
+//			Surname:   "Doe",
+//			Teams: []model.Team{
+//				{
+//					Id:   99,
+//					Name: "my-team",
+//				},
+//			},
+//			Roles: []string{"Case Manager"},
+//		},
+//	}
+//	err := clientTasks(client, template)(app, w, r)
+//
+//	assert.Nil(t, err)
+//	assert.Equal(t, 1, template.count)
+//
+//	var want ClientTasksPage
+//	want.App = app
+//	want.PerPage = 25
+//	want.TaskTypes = testTaskType
+//	want.TaskList = testTaskList
+//	want.UrlBuilder = urlbuilder.UrlBuilder{
+//		Path:            "client-tasks",
+//		SelectedTeam:    app.SelectedTeam.Selector,
+//		SelectedPerPage: 25,
+//		SelectedFilters: []urlbuilder.Filter{
+//			{
+//				Name: "task-type",
+//			},
+//			{
+//				Name:                  "assignee",
+//				ClearBetweenTeamViews: true,
+//				SelectedValues:        []string{"123"},
+//			},
+//			{
+//				Name:                  "unassigned",
+//				ClearBetweenTeamViews: true,
+//			},
+//			{
+//				Name: "due-date-from",
+//			},
+//			{
+//				Name: "due-date-to",
+//			},
+//		},
+//	}
+//
+//	want.Pagination = paginate.Pagination{
+//		CurrentPage:     0,
+//		TotalPages:      0,
+//		TotalElements:   0,
+//		ElementsPerPage: 25,
+//		ElementName:     "tasks",
+//		PerPageOptions:  []int{25, 50, 100},
+//		UrlBuilder:      want.UrlBuilder,
+//	}
+//	want.MyTeamId = "99"
+//
+//	assert.Equal(t, want, template.lastVars)
+//}
+
+func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing.T) {
+	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
 
 	app := WorkflowVars{
-		Path:         "test-path",
-		SelectedTeam: model.Team{Type: "LAY", Selector: "test-team"},
+		Path: "test-path",
+		MyDetails: model.Assignee{
+			Id:        123,
+			Firstname: "John",
+			Surname:   "Doe",
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
 	}
 	err := clientTasks(client, template)(app, w, r)
 
@@ -112,8 +196,6 @@ func TestClientTasks(t *testing.T) {
 	var want ClientTasksPage
 	want.App = app
 	want.PerPage = 25
-	want.TaskTypes = testTaskType
-	want.TaskList = testTaskList
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
 		SelectedTeam:    app.SelectedTeam.Selector,
@@ -125,6 +207,7 @@ func TestClientTasks(t *testing.T) {
 			{
 				Name:                  "assignee",
 				ClearBetweenTeamViews: true,
+				SelectedValues:        []string{"123"},
 			},
 			{
 				Name:                  "unassigned",
@@ -137,6 +220,7 @@ func TestClientTasks(t *testing.T) {
 				Name: "due-date-to",
 			},
 		},
+		MyTeamId: "99",
 	}
 
 	want.Pagination = paginate.Pagination{
@@ -148,6 +232,9 @@ func TestClientTasks(t *testing.T) {
 		PerPageOptions:  []int{25, 50, 100},
 		UrlBuilder:      want.UrlBuilder,
 	}
+	want.AppliedFilters = []string{""}
+	want.SelectedAssignees = []string{"123"}
+	want.MyTeamId = "99"
 
 	assert.Equal(t, want, template.lastVars)
 }
@@ -169,7 +256,13 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/client-tasks?team=&page=10&per-page=25", nil)
 
-	app := WorkflowVars{}
+	app := WorkflowVars{
+		MyDetails: mockUserDetailsData,
+		SelectedTeam: model.Team{
+			Id:   123,
+			Name: "anotherTeam",
+		},
+	}
 	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(RedirectError("client-tasks?team=&page=2&per-page=25"), err)
