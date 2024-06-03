@@ -15,6 +15,14 @@ func TestAssignee_IsSelected(t *testing.T) {
 	assert.False(t, unselectedAssignee.IsSelected(selectedAssignees), "Assignee ID 11 is selected")
 }
 
+//func TestAssignee_IsCaseManager(t *testing.T) {
+//	assignee1 := Assignee{Id: 10, Roles: []string{"System Admin": "System Admin", "COP User": "COP User"}}
+//	assignee2 := Assignee{Id: 11, Roles: make([]string, 0)}
+//
+//	assert.Truef(t, assignee1.IsCaseManager(), "Assignee ID 10 is case manager")
+//	assert.Truef(t, assignee2.IsCaseManager(), "Assignee ID 11 is not case manager")
+//}
+
 func TestGetCount(t *testing.T) {
 	tests := []struct {
 		testname         string

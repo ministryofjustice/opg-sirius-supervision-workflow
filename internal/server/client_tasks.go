@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -133,7 +132,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		var vars ClientTasksPage
 
 		if app.MyDetails.IsCaseManager() && (!params.Has("team") || params.Has("preselect")) {
-			//will not have team when its my page - check no other params after
 			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
 			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
 		}
@@ -172,9 +170,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		if len(vars.App.MyDetails.Teams) >= 1 {
 			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
 		}
-		fmt.Println("my team id caseload")
-		fmt.Println(vars.MyTeamId)
-		fmt.Println("-----")
+
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
