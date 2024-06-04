@@ -35,7 +35,7 @@ describe("Task list", () => {
 
   it("should not display deputy's town for PA deputies", () => {
     cy.get(".govuk-table__body > :nth-child(2) > :nth-child(3)")
-      .should("contain.text", "Mr PA Deputy")
+      .should("contain.text", "Mr PRO Deputy")
       .and("contain.text", "654321")
       .and("not.contain.text", "Derby")
       .within(() => {

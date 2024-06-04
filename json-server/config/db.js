@@ -643,7 +643,7 @@ module.exports = function () {
                   "label": "Professional"
                 },
                 "deputyAddress": {
-                  "town": "Derby"
+                  "town": "Nottingham"
                 }
               }
             ],
@@ -699,8 +699,43 @@ module.exports = function () {
                 "firmNumber": 789456123
             }
           },
+          {
+              "id": 15,
+              "deputyNumber": 5535353,
+              "displayName": "Mr Horus Lupercal",
+              "deputyType": {
+                "handle": "PRO",
+                "label": "Professional"
+              },
+              "deputyAddress": {
+                "town": "Istavan"
+              },
+              "executiveCaseManager": {
+                "displayName": "PROTeam1 User2",
+                "id": 96
+              },
+              "mostRecentlyCompletedAssurance": {
+                "reportReviewDate" : "2023-09-12T00:00:00+00:00",
+                "reportMarkedAs": {
+                  "handle": "RED",
+                  "label": "Red"
+                },
+                "assuranceType": {
+                  "handle": "ASSURANCE",
+                  "label": "Assurance"
+                }
+              },
+              "activeClientCount": 77,
+              "activeNonCompliantClientCount": 4,
+              "deputyImportantInformation": {},
+              "firm": {
+                  "id": 444455555,
+                  "firmName": "Chaos Inc",
+                  "firmNumber": 123456
+              }
+            },
         ],
-        "total": 1
+        "total": 2
       },
       {
           "id": 24,
