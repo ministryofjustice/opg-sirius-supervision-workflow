@@ -2,7 +2,7 @@ describe("Deputies list", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.visit("/deputies?team=27");
+        cy.visit("/deputies?team=24");
     });
 
     it("has column headers", () => {
@@ -15,13 +15,10 @@ describe("Deputies list", () => {
 
     it("has column values", () => {
         cy.get(".govuk-table__body .govuk-table__row:nth-child(1)").within(() => {
-            cy.get("td:nth-child(2)").should("contain.text", "Mr Fee-paying Deputy")
-                .and("contain.text", "Derby - 123456")
-                .and("contain.text", "Panel Deputy")
-            cy.get("td:nth-child(3)").should("contain.text", "PROTeam1 User1")
-            cy.get("td:nth-child(4)").should("contain.text", "100")
-            cy.get("td:nth-child(5)").should("contain.text", "10 (10%)")
-            cy.get("td:nth-child(6)").should("contain.text", "26/05/2023").and("contain.text", "Low risk")
+            cy.get("td:nth-child(2)").should("contain.text", "Mr PA Deputy")
+            cy.get("td:nth-child(3)").should("contain.text", "PA Team 1 - (Supervision)")
+            cy.get("td:nth-child(4)").should("contain.text", "81")
+            cy.get("td:nth-child(5)").should("contain.text", "34 (42%)")
         })
     })
 
@@ -54,7 +51,7 @@ describe("Deputies list", () => {
     })
 });
 
-describe("Pro Deputy Team Deputies list", () => {
+describe("Pro Deputies list", () => {
  beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
@@ -64,7 +61,17 @@ describe("Pro Deputy Team Deputies list", () => {
     it("has additional column headers", () => {
         cy.get(".moj-team-banner__container > .govuk-form-group > .govuk-select").select("Professional Deputy Team")
         cy.get("th:nth-child(3)").should("contain", "Firm");
-        cy.get("td:nth-child(3)").should("contain.text", "Krusty Krabs")
-            .and("contain.text", "789456123")
+
+        cy.get(".govuk-table__body .govuk-table__row:nth-child(1)").within(() => {
+            cy.get("td:nth-child(2)").should("contain.text", "Mr Fee-paying Deputy")
+                .and("contain.text", "Derby - 123456")
+                .and("contain.text", "Panel Deputy")
+           cy.get("td:nth-child(3)").should("contain.text", "Krusty Krabs")
+                .and("contain.text", "789456123")
+            cy.get("td:nth-child(4)").should("contain.text", "PROTeam1 User1")
+            cy.get("td:nth-child(5)").should("contain.text", "100")
+            cy.get("td:nth-child(6)").should("contain.text", "10 (10%)")
+            cy.get("td:nth-child(7)").should("contain.text", "26/05/2023").and("contain.text", "Low risk")
+        })
     })
 });

@@ -18,7 +18,7 @@
             </div>
           </th>
           <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "deputy" }}"><a href="{{ .UrlBuilder.GetSortUrl "deputy" }}"><button type="button">Deputy</button></a></th>
-          {{ if $.App.SelectedTeam.IsProDeputyTeam }}
+          {{ if $.App.SelectedTeam.IsPro }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Firm</th>
           {{ end }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Executive case manager</th>
@@ -50,7 +50,7 @@
                 <span class="secondary">{{ if .IsPro }}{{ .Address.Town }} - {{ end }}{{ .Number }}</span>
               </td>
 
-              {{ if $.App.SelectedTeam.IsProDeputyTeam }}
+              {{ if $.App.SelectedTeam.IsPro }}
                   <td class="govuk-table__cell">
                     <a href="{{ sirius .GetFirm.GetFirmURL }}" class="govuk-link">{{ .Firm.Name }}</a>
                     <span class="secondary">{{ if ne .Firm.Number 0 }}{{ .Firm.Number }}{{ end }}</span>
