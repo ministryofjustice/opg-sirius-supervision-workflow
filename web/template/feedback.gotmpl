@@ -1,7 +1,47 @@
 {{ template "feedback-page" . }}
 
-{{ define "title" }}Kate{{ end }}
+{{ define "title" }} Feedback {{ end }}
 
 {{ define "main" }}
+    <main role="main" class="new govuk-main-wrapper" data-dashlane-rid="7ca6062f64a2ef28" data-form-type="contact">
+    <br>
     <h1 class="govuk-heading-l">Feedback</h1>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="feedback-name">
+        Name (optional)
+      </label>
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="name">
+    </div>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="feedback-email">
+        Email (optional)
+      </label>
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="email">
+    </div>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="feedback-case-number">
+        Case number (optional)
+      </label>
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="other">
+    </div>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="feedback-text-content">
+        Feedback
+      </label>
+      <div id="feedback-box-hint" class="govuk-hint">
+        Please let us know about your experience of using Sirius.
+      </div>
+     <textarea class="govuk-textarea" id="more-detail" name="more-detail" rows="5" width="50px" style="width: 30%" data-form-type="other"></textarea>
+    </div>
+
+    <div class="govuk-button-group">
+      <a class="govuk-button" href="feedback-3" data-module="govuk-button">
+            Send feedback
+      </a>
+        <button type="button" data-module="moj-go-back" onclick="goBack()">Go Back</button>
+    </div>
 {{ end }}
