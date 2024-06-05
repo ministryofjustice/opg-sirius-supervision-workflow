@@ -3,6 +3,7 @@ import ManageFilters from "./javascript/manage-filters";
 import ManageJumpMenus from "./javascript/manage-jump-menus";
 import "opg-sirius-header/sirius-header.js";
 import ManageReassign from "./javascript/manage-reassign";
+import GoBack from "./javascript/go-back";
 
 document.body.className = document.body.className
   ? document.body.className + " js-enabled"
@@ -26,4 +27,9 @@ manageReassign.forEach(function (manageReassign) {
 const manageFilters = document.querySelectorAll('[data-module="moj-manage-filters"]');
 manageFilters.forEach(function (manageFilter) {
   new ManageFilters(manageFilter);
+});
+
+const goBack = document.querySelectorAll('[data-module="moj-go-back"]');
+goBack.forEach(function (goBack) {
+  new GoBack(goBack);
 });

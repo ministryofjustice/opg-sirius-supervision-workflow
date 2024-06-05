@@ -91,7 +91,6 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 				basePath: "deputies",
 			})
 	}
-
 	return &vars, nil
 }
 
