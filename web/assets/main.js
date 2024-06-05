@@ -33,3 +33,8 @@ const goBack = document.querySelectorAll('[data-module="moj-go-back"]');
 goBack.forEach(function (goBack) {
   new GoBack(goBack);
 });
+
+const closeTab = document.querySelectorAll('[data-module="moj-close-tab"]');
+closeTab.forEach(function (closeTab) {
+  new CloseTab(closeTab);
+});

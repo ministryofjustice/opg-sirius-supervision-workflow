@@ -31,12 +31,11 @@ func feedbackForm(client FeedbackFormClient, tmpl Template) Handler {
 				Feedback:   r.FormValue("more-detail"),
 			})
 
-			if err != nil {
-				return err
-			}
+			//if err != nil {
+			//	return err
+			//}
 
-			app.SuccessMessage = "Nice work"
-			//	do a redirect to the second page
+			app.SuccessMessage = "Form Submitted"
 		}
 
 		return tmpl.Execute(w, app)
