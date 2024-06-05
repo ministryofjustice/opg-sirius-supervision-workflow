@@ -57,14 +57,19 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 
 			if err != nil {
 				if err == sirius.ErrUnauthorized {
+					fmt.Println("unauthorised error ")
 					http.Redirect(w, r, envVars.SiriusURL+"/auth", http.StatusFound)
 					return
 				}
 
 				if redirect, ok := err.(RedirectError); ok {
+					fmt.Println("redirect error ")
+
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}
+				fmt.Println("error")
+				fmt.Println(err.Error())
 
 				logger.Errorw("Error handler", err)
 
