@@ -1,4 +1,4 @@
-describe("Deputies list", () => {
+describe("PA Deputies list", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
