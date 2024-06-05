@@ -8,28 +8,28 @@
     <h1 class="govuk-heading-l">Feedback</h1>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="feedback-name">
+      <label class="govuk-label" for="name">
         Name (optional)
       </label>
-      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="name">
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="name" type="text" data-form-type="name">
     </div>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="feedback-email">
+      <label class="govuk-label" for="email">
         Email (optional)
       </label>
-      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="email">
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="email" type="text" data-form-type="email">
     </div>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="feedback-case-number">
+      <label class="govuk-label" for="case-number">
         Case number (optional)
       </label>
-      <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text" data-form-type="other">
+      <input class="govuk-input govuk-input--width-20" id="width-20" name="case-number" type="text" data-form-type="other">
     </div>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="feedback-text-content">
+      <label class="govuk-label" for="more-detail">
         Feedback
       </label>
       <div id="feedback-box-hint" class="govuk-hint">
@@ -39,9 +39,7 @@
     </div>
 
     <div class="govuk-button-group">
-      <a class="govuk-button" href="feedback-3" data-module="govuk-button">
-            Send feedback
-      </a>
-        <button type="button" data-module="moj-go-back" onclick="goBack()">Go Back</button>
+      <button id="submit-feedback" class="govuk-button" type="submit">Send Feedback</button>
+      <button type="button" data-module="moj-go-back" onclick="goBack()">Go Back</button>
     </div>
 {{ end }}

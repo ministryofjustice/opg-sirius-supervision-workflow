@@ -28,7 +28,9 @@
 
       <div class="govuk-width-container app-width-container">
         <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
-          {{ block "main" . }}{{ end }}
+            <form method="post">
+               {{ block "main" . }}{{ end }}
+            </form>
         </main>
       </div>
 
