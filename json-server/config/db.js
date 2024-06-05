@@ -615,7 +615,12 @@ module.exports = function () {
                 },
                 "deputyAddress": {
                   "town": "Derby"
-                }
+                },
+                "firm": {
+                  "id": 78745361,
+                  "firmName": "Krusty Krabs",
+                  "firmNumber": 789456123
+                },
               }
             ],
             "dueDate": "01/02/2021",
@@ -632,13 +637,13 @@ module.exports = function () {
               {
                 "id": 14,
                 "deputyNumber": 654321,
-                "displayName": "Mr PA Deputy",
+                "displayName": "Mr PRO Deputy",
                 "deputyType": {
-                  "handle": "PA",
-                  "label": "Public authority"
+                  "handle": "PRO",
+                  "label": "Professional"
                 },
                 "deputyAddress": {
-                  "town": "Derby"
+                  "town": "Nottingham"
                 }
               }
             ],
@@ -687,39 +692,80 @@ module.exports = function () {
             "activeNonCompliantClientCount": 10,
             "deputyImportantInformation": {
               "panelDeputy": true
+            },
+            "firm": {
+                "id": 78745361,
+                "firmName": "Krusty Krabs",
+                "firmNumber": 789456123
             }
           },
           {
-            "id": 14,
-            "deputyNumber": 654321,
-            "displayName": "Mr PA Deputy",
-            "deputyType": {
-              "handle": "PA",
-              "label": "Public authority"
+              "id": 15,
+              "deputyNumber": 5535353,
+              "displayName": "Mr Horus Lupercal",
+              "deputyType": {
+                "handle": "PRO",
+                "label": "Professional"
+              },
+              "deputyAddress": {
+                "town": "Istavan"
+              },
+              "executiveCaseManager": {
+                "displayName": "PROTeam1 User2",
+                "id": 96
+              },
+              "mostRecentlyCompletedAssurance": {
+                "reportReviewDate" : "2023-09-12T00:00:00+00:00",
+                "reportMarkedAs": {
+                  "handle": "RED",
+                  "label": "Red"
+                },
+                "assuranceType": {
+                  "handle": "ASSURANCE",
+                  "label": "Assurance"
+                }
+              },
+              "activeClientCount": 77,
+              "activeNonCompliantClientCount": 4,
+              "deputyImportantInformation": {},
+              "firm": {
+                  "id": 444455555,
+                  "firmName": "Chaos Inc",
+                  "firmNumber": 123456
+              }
             },
-            "deputyAddress": {
-              "town": "Derby"
-            },
-            "executiveCaseManager": {
-              "id": 27,
-              "displayName": "Pro Team 1 - (Supervision)",
-            },
-            "mostRecentlyCompletedAssurance": {},
-            "activeClientCount": 81,
-            "activeNonCompliantClientCount": 34
-          }
         ],
         "total": 2
       },
       {
-        "id": 24,
-        "pages": {
-          "current": 1,
+          "id": 24,
+          "pages": {
+            "current": 1,
+            "total": 1
+          },
+          "persons": [
+            {
+               "id": 14,
+              "deputyNumber": 654321,
+              "displayName": "Mr PA Deputy",
+              "deputyType": {
+                "handle": "PA",
+                "label": "Public authority"
+              },
+              "deputyAddress": {
+                "town": "Derby"
+              },
+              "executiveCaseManager": {
+                "id": 27,
+                "displayName": "PA Team 1 - (Supervision)",
+              },
+              "mostRecentlyCompletedAssurance": {},
+              "activeClientCount": 81,
+              "activeNonCompliantClientCount": 34
+            },
+          ],
           "total": 1
         },
-        "deputies": [],
-        "total": 0
-      }
     ],
     "tasks-view-25": [
       {
