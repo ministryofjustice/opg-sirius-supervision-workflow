@@ -20,6 +20,7 @@ type Deputy struct {
 	ActiveClientCount             int                        `json:"activeClientCount"`
 	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
 	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
+	Firm                          Firm                       `json:"firm"`
 }
 
 func (d Deputy) GetURL() string {
@@ -28,6 +29,10 @@ func (d Deputy) GetURL() string {
 		url = "/supervision/#/deputy-hub/%d"
 	}
 	return fmt.Sprintf(url, d.Id)
+}
+
+func (d Deputy) GetFirm() Firm {
+	return d.Firm
 }
 
 func (d Deputy) IsPro() bool {
