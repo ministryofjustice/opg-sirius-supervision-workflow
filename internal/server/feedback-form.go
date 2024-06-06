@@ -24,16 +24,15 @@ func feedbackForm(client FeedbackFormClient, tmpl Template) Handler {
 			}
 
 			err = client.SubmitFeedback(ctx, model.FeedbackForm{
-				Id:         app.MyDetails.Id,
 				Name:       r.FormValue("name"),
 				Email:      r.FormValue("email"),
 				CaseNumber: r.FormValue("case-number"),
-				Feedback:   r.FormValue("more-detail"),
+				Message:    r.FormValue("more-detail"),
 			})
 
-			//if err != nil {
-			//	return err
-			//}
+			if err != nil {
+				return err
+			}
 
 			app.SuccessMessage = "Form Submitted"
 		}

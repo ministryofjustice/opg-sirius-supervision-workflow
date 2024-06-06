@@ -19,7 +19,7 @@ func (c *ApiClient) SubmitFeedback(ctx Context, form model.FeedbackForm) error {
 	if err != nil {
 		return err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, "/api/v1/supervision-feedback", &body)
+	req, err := c.newRequest(ctx, http.MethodPost, "/api/supervision-feedback", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
