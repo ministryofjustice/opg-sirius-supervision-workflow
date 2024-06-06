@@ -1,0 +1,42 @@
+{{ define "feedback-page" }}
+  <!DOCTYPE html>
+  <html lang="en" class="govuk-template app-html-class">
+    <head>
+      <meta charset="utf-8">
+      <title>{{ block "title" . }}{{ end }} - OPG Sirius Workflow</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <meta name="api-base-uri" content="{{ sirius "" }}">
+      <meta name="theme-color" content="blue">
+
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+      <link rel="shortcut icon" sizes="16x16 32x32 48x48"  href="{{ prefix "/assets/images/favicon.ico" }}" type="image/x-icon">
+      <link rel="mask-icon" href="{{ prefix "/assets/images/govuk-mask-icon.svg"}}" color="blue">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ prefix "/assets/images/govuk-apple-touch-icon-180x180.png"}}">
+      <link rel="apple-touch-icon" sizes="167x167" href="{{ prefix "/assets/images/govuk-apple-touch-icon-167x167.png"}}">
+      <link rel="apple-touch-icon" sizes="152x152" href="{{ prefix "/assets/images/govuk-apple-touch-icon-152x152.png"}}">
+      <link rel="apple-touch-icon" href="{{ prefix "/assets/images/govuk-apple-touch-icon.png"}}">
+
+      <link href="{{ prefix "/stylesheets/all.css" }}" rel="stylesheet">
+    </head>
+
+    <body class="govuk-template__body sirius-workflow" data-test="My value" data-other="report:details">
+      <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+
+        {{ $errorCount := len .Errors }}
+        <sirius-header {{ if eq $errorCount 0 }} user-roles="{{ .MyDetails.Roles }}" {{ end }}></sirius-header>
+
+      <div class="govuk-width-container app-width-container">
+        <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
+            <form method="post">
+               {{ block "main" . }}{{ end }}
+            </form>
+        </main>
+      </div>
+
+      <footer class="govuk-footer" role="contentinfo"> </footer>
+
+      <script src="{{ prefix "/javascript/all.js" }}"></script>
+    </body>
+  </html>
+{{ end }}

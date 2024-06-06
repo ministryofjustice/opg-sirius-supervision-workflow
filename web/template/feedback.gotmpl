@@ -1,0 +1,67 @@
+{{ template "feedback-page" . }}
+
+{{ define "title" }} Feedback {{ end }}
+
+{{ define "main" }}
+    {{ if eq .SuccessMessage "" }}
+        <main role="main" class="new govuk-main-wrapper" data-dashlane-rid="7ca6062f64a2ef28" data-form-type="contact">
+        <br>
+        <h1 class="govuk-heading-l">Feedback</h1>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="name">
+            Name (optional)
+          </label>
+          <input class="govuk-input govuk-input--width-20" id="width-20" name="name" type="text" data-form-type="name">
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="email">
+            Email (optional)
+          </label>
+          <input class="govuk-input govuk-input--width-20" id="width-20" name="email" type="text" data-form-type="email">
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="case-number">
+            Case number (optional)
+          </label>
+          <input class="govuk-input govuk-input--width-20" id="width-20" name="case-number" type="text" data-form-type="other">
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="more-detail">
+            Feedback
+          </label>
+          <div id="feedback-box-hint" class="govuk-hint">
+            Please let us know about your experience of using Sirius.
+          </div>
+         <textarea class="govuk-textarea" id="more-detail" name="more-detail" rows="5" width="50px" style="width: 30%" data-form-type="other"></textarea>
+        </div>
+
+        <div class="govuk-button-group">
+          <button id="submit-feedback" class="govuk-button" type="submit">Send Feedback</button>
+          <button type="button" data-module="moj-go-back" onclick="goBack()">Go Back</button>
+        </div>
+    {{ else }}
+        <br><br>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        Success
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        Your feedback has been successfully sent to the team
+                    </h3>
+                    <p class="govuk-body">We may be in touch if we need further information around your feedback.</p>
+                </div>
+            </div>
+            <p class="govuk-body" data-module="moj-close-tab" onclick="closeTab()">You can now <a href="feedback-2"> close this tab </a></p>
+          </div>
+        </div>
+    {{ end }}
+{{ end }}

@@ -16,6 +16,7 @@ type ApiClient interface {
 	ClientTasksClient
 	CaseloadClient
 	DeputiesClient
+	FeedbackFormClient
 }
 
 type Template interface {
@@ -44,6 +45,10 @@ func New(logger *zap.SugaredLogger, client ApiClient, templates map[string]*temp
 	mux.Handle("/deputies",
 		wrap(
 			deputies(client, templates["deputies.gotmpl"])))
+
+	mux.Handle("/feedback",
+		wrap(
+			feedbackForm(client, templates["feedback.gotmpl"])))
 
 	mux.Handle("/health-check", healthCheck())
 
