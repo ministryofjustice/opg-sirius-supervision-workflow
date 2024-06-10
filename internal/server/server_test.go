@@ -65,3 +65,7 @@ func (m mockApiClient) GetDeputyList(context sirius.Context, params sirius.Deput
 func (m mockApiClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
 	return "", nil
 }
+
+func (m mockApiClient) SubmitFeedback(context sirius.Context, form model.FeedbackForm) error {
+	panic("implement me")
+}
