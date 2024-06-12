@@ -19,7 +19,7 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	json := `
 {
     "limit": 15,
-    "metadata": [],
+    "metadata":{"assigneeClientCount": [{"assignee" : 1, "count": 14}]},
     "pages": {
         "current": 1,
         "total": 1
@@ -107,6 +107,11 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalClients: 1,
+		MetaData: ClientMetaData{
+			[]model.AssigneeAndCount{
+				{AssigneeId: 1, Count: 14},
+			},
+		},
 	}
 
 	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
