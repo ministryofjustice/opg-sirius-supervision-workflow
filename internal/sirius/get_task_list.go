@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type MetaData struct {
+type TaskMetaData struct {
 	TaskTypeCount []TypeAndCount           `json:"taskTypeCount"`
 	AssigneeCount []model.AssigneeAndCount `json:"assigneeTaskCount"`
 }
@@ -24,7 +24,7 @@ type TaskList struct {
 	Tasks      []model.Task          `json:"tasks"`
 	Pages      model.PageInformation `json:"pages"`
 	TotalTasks int                   `json:"total"`
-	MetaData   MetaData              `json:"metadata"`
+	MetaData   TaskMetaData          `json:"metadata"`
 }
 
 type TaskListParams struct {
