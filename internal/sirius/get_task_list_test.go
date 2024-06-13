@@ -84,7 +84,7 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalTasks: 13,
-		MetaData:   MetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}, []model.AssigneeAndCount(nil)},
+		MetaData:   TaskMetaData{[]TypeAndCount{{Type: "FCC", Count: 14}}, []model.AssigneeAndCount(nil)},
 	}
 
 	selectedTeam := model.Team{Id: 13}
@@ -245,7 +245,7 @@ func TestTaskList_CalculateTaskTypeCounts(t *testing.T) {
 		},
 	}
 	tasks := TaskList{
-		MetaData: MetaData{
+		MetaData: TaskMetaData{
 			TaskTypeCount: []TypeAndCount{
 				{Type: "CDFC", Count: 25},
 				{Type: "ECM_1", Count: 33},

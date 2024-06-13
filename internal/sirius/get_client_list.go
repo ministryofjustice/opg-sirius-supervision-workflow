@@ -20,10 +20,15 @@ type ClientListParams struct {
 	SupervisionLevels []string
 }
 
+type ClientMetaData struct {
+	AssigneeCount []model.AssigneeAndCount `json:"assigneeClientCount"`
+}
+
 type ClientList struct {
 	Clients      []model.Client        `json:"clients"`
 	Pages        model.PageInformation `json:"pages"`
 	TotalClients int                   `json:"total"`
+	MetaData     ClientMetaData        `json:"metadata"`
 }
 
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
