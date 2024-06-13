@@ -8,6 +8,7 @@ describe("Accessibility test client tasks", () => {
     });
 
     it("Should have no accessibility violations",() => {
+        cy.debug();
         cy.checkA11y();
     });
 });
