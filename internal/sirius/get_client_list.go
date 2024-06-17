@@ -31,6 +31,13 @@ type ClientList struct {
 	MetaData     ClientMetaData        `json:"metadata"`
 }
 
+func (m ClientMetaData) UnmarshalJSON(b []byte) error {
+	if string(b) == "[]" {
+		return nil
+	}
+	return json.Unmarshal(b, &m)
+}
+
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
 	var sort string
