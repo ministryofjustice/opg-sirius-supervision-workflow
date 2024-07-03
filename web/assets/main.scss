@@ -36,3 +36,7 @@ $moj-assets-path: "/supervision/workflow/assets/";
   color: govuk-colour("blue");
   text-decoration: underline;
 }
+
+#list-of-tasks-to-filter{
+    max-height: 500px !important;
+}
