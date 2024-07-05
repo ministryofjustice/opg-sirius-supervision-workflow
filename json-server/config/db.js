@@ -19,7 +19,8 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
-      "name": "Case work - Complaint review",
+      "type":"CWGN",
+      "name": "Case work - General",
       "isPriority": true
     },
     {
@@ -41,6 +42,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "28/02/2018",
+      "type":"ORAL",
       "name": "Order - Allocate to team"
     },
     {
@@ -62,6 +64,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/12/2018",
+      "type":"CCBR",
       "name": "Case work - Call back request"
     },
     {
@@ -83,6 +86,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"CCR",
       "name": "Case work - Complaint review"
     },
     {
@@ -104,6 +108,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"CS",
       "name": "Case work - Safeguarding"
     },
     {
@@ -125,6 +130,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"CDFC",
       "name": "Correspondence - Review failed draft"
     },
     {
@@ -146,6 +152,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"FSPR",
       "name": "Finance - Sop processing"
     },
     {
@@ -167,6 +174,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"RFSR",
       "name": "Report - Full staff review"
     },
     {
@@ -188,6 +196,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"RVRR",
       "name": "Visit - Review report"
     },
     {
@@ -209,6 +218,7 @@ module.exports = function () {
         }
       ],
       "dueDate": "01/02/2021",
+      "type":"ORRE",
       "name": "Order - Review the order"
     }
   ]
@@ -419,6 +429,46 @@ module.exports = function () {
           "user": true,
           "ecmTask": true
         },
+        "CCR": {
+          "category": "supervision",
+          "complete": "Casework - Complaint reviewed",
+          "handle": "CCR",
+          "incomplete": "Casework - Complaint review",
+          "user": true,
+          "ecmTask": true
+        },
+        "CCBR": {
+          "category": "supervision",
+          "complete": "Casework - Call back request completed",
+          "handle": "CCBR",
+          "incomplete": "Casework - Call back request",
+          "user": true,
+          "ecmTask": true
+        },
+        "CS": {
+          "category": "supervision",
+          "complete": "Casework - Safeguarding completed",
+          "handle": "CS",
+          "incomplete": "Casework - Safeguarding",
+          "user": true,
+          "ecmTask": true
+        },
+        "CDFC": {
+          "category": "supervision",
+          "complete": "Correspondence - Review failed draft",
+          "handle": "CDFC",
+          "incomplete": "Correspondence - Reviewed draft failure",
+          "user": true,
+          "ecmTask": true
+        },
+        "FSPR": {
+          "category": "supervision",
+          "complete": "Finance - Sop processed",
+          "handle": "FSPR",
+          "incomplete": "Finance - Sop processing",
+          "user": true,
+          "ecmTask": true
+        },
         "ORAL": {
           "category": "supervision",
           "complete": "Order - Allocate to team",
@@ -426,6 +476,30 @@ module.exports = function () {
           "incomplete": "Order - Allocate to team",
           "user": true,
           "ecmTask": false
+        },
+        "ORRE": {
+          "category": "supervision",
+          "complete": "Order - Reviewed the order",
+          "handle": "ORRE",
+          "incomplete": "Order - Review the order",
+          "user": true,
+          "ecmTask": false
+        },
+       "RFSR": {
+          "category": "supervision",
+          "complete": "Report - Full staff reviewed",
+          "handle": "RFSR",
+          "incomplete": "Report - Full staff review",
+          "user": true,
+          "ecmTask": true
+        },
+       "RVRR": {
+          "category": "supervision",
+          "complete": "Visit - Reviewed report",
+          "handle": "RVRR",
+          "incomplete": "Visit - Review report",
+          "user": true,
+          "ecmTask": true
         }
       }
     },
@@ -446,7 +520,23 @@ module.exports = function () {
           "incomplete": "Quarterly catch up call",
           "user": true,
           "paDeputyTask": true
-        }
+        },
+        "AVR": {
+          "category": "deputy",
+          "complete": "Assurance visit review",
+          "handle": "AVR",
+          "incomplete": "Assurance visit review",
+          "user": true,
+          "paDeputyTask": true
+        },
+        "AVC": {
+          "category": "deputy",
+          "complete": "Assurance visit commission",
+          "handle": "AVC",
+          "incomplete": "Assurance visit commission",
+          "user": true,
+          "paDeputyTask": true
+        },
       }
     },
     "users-current": {
@@ -476,18 +566,39 @@ module.exports = function () {
       {
         "id": 13,
         "page": 1,
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":2},
+                {"type":"CCR","count":2},
+                {"type":"CCBR","count":2},
+                {"type":"CS","count":2},
+                {"type":"CDFC","count":2},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
+        },
         "pages": {
           "current": 1,
           "total": 1
         },
-        "tasks": generateTasks(25),
-        "total": 13
+        "tasks": generateTasks(20),
+        "total": 20
       },
       {
         "id": 21,
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[],
+            "assigneeTaskCount":[]
         },
         "tasks": [],
         "total": 0
@@ -497,6 +608,14 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CCR","count":1}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":86,"count":1}
+            ]
         },
         "tasks": [
           {
@@ -518,6 +637,7 @@ module.exports = function () {
               }
             ],
             "dueDate": "11/11/2011",
+            "type": "CCR",
             "name": "Case work - Complaint review"
           }
         ],
@@ -528,6 +648,14 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CCR","count":1}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":86,"count":1}
+            ]
         },
         "tasks": [
           {
@@ -557,6 +685,7 @@ module.exports = function () {
               }
             ],
             "dueDate": "11/11/2011",
+            "type": "CCR",
             "name": "Case work - Complaint review"
           }
         ],
@@ -568,6 +697,10 @@ module.exports = function () {
           "current": 1,
           "total": 1
         },
+        "metadata":{
+            "taskTypeCount":[],
+            "assigneeTaskCount":[]
+        },
         "tasks": [],
         "total": 0
       },
@@ -576,6 +709,10 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[],
+            "assigneeTaskCount":[]
         },
         "tasks": [],
         "total": 0
@@ -588,6 +725,10 @@ module.exports = function () {
           "current": 1,
           "total": 1
         },
+        "metadata":{
+            "taskTypeCount":[],
+            "assigneeTaskCount":[]
+        },
         "tasks": [],
         "total": 0
       },
@@ -596,6 +737,18 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"PFU","count":1},
+                {"type":"AVC","count":1},
+                {"type":"AVR","count":1},
+                {"type":"QCUC","count":1}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":96,"count":3},
+                {"assignee":27,"count":1}
+            ]
         },
         "tasks": [
           {
@@ -623,7 +776,7 @@ module.exports = function () {
                 },
               }
             ],
-            "dueDate": "01/02/2021",
+            "dueDate": "11/02/2021",
             "name": "PDR follow up",
             "isPriority": true
           },
@@ -648,8 +801,51 @@ module.exports = function () {
               }
             ],
             "dueDate": "01/02/2021",
-            "name": "Quarterly catch up call"
-          }
+            "name": "Assurance visit report due"
+          },
+         {
+              "id": 3,
+              "assignee": {
+                "displayName": "PROTeam1 User1",
+                "id": 96
+              },
+              "deputies": [
+                {
+                  "id": 14,
+                  "deputyNumber": 654321,
+                  "displayName": "Mr PRO Deputy",
+                  "deputyType": {
+                    "handle": "PRO",
+                    "label": "Professional"
+                  },
+                  "deputyAddress": {
+                    "town": "Nottingham"
+                  }
+                }
+              ],
+              "dueDate": "03/02/2021",
+              "name": "Assurance visit review"
+            },
+          {
+              "id": 4,
+              "assignee":{"id":27,"teams":[],"displayName":"Pro Team 1 - (Supervision)"},
+              "deputies": [
+                {
+                  "id": 14,
+                  "deputyNumber": 654321,
+                  "displayName": "Mr PRO Deputy",
+                  "deputyType": {
+                    "handle": "PRO",
+                    "label": "Professional"
+                  },
+                  "deputyAddress": {
+                    "town": "Nottingham"
+                  }
+                }
+              ],
+              "dueDate": "01/04/2021",
+              "name": "Quarterly catch up call"
+            }
         ],
         "total": 2
       },
@@ -775,6 +971,23 @@ module.exports = function () {
           "current": 1,
           "total": 5
         },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":3},
+                {"type":"CCR","count":3},
+                {"type":"CCBR","count":3},
+                {"type":"CS","count":3},
+                {"type":"CDFC","count":3},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
+        },
         "tasks": generateTasks(25),
         "total": 101
       },
@@ -784,6 +997,23 @@ module.exports = function () {
         "pages": {
           "current": 2,
           "total": 5
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":3},
+                {"type":"CCR","count":3},
+                {"type":"CCBR","count":3},
+                {"type":"CS","count":3},
+                {"type":"CDFC","count":3},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
         },
         "tasks": generateTasks(25),
         "total": 101
@@ -795,6 +1025,23 @@ module.exports = function () {
           "current": 3,
           "total": 5
         },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":3},
+                {"type":"CCR","count":3},
+                {"type":"CCBR","count":3},
+                {"type":"CS","count":3},
+                {"type":"CDFC","count":3},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
+        },
         "tasks": generateTasks(25),
         "total": 101
       },
@@ -805,6 +1052,23 @@ module.exports = function () {
           "current": 4,
           "total": 5
         },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":3},
+                {"type":"CCR","count":3},
+                {"type":"CCBR","count":3},
+                {"type":"CS","count":3},
+                {"type":"CDFC","count":3},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
+        },
         "tasks": generateTasks(25),
         "total": 101
       },
@@ -814,6 +1078,23 @@ module.exports = function () {
         "pages": {
           "current": 5,
           "total": 5
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":3},
+                {"type":"CCR","count":3},
+                {"type":"CCBR","count":3},
+                {"type":"CS","count":3},
+                {"type":"CDFC","count":3},
+                {"type":"FSPR","count":2},
+                {"type":"ORAL","count":2},
+                {"type":"ORRE","count":2},
+                {"type":"RFSR","count":2},
+                {"type":"RVRR","count":2}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":20}
+            ]
         },
         "tasks": generateTasks(25),
         "total": 101
@@ -827,6 +1108,23 @@ module.exports = function () {
           "current": 1,
           "total": 2
         },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":5},
+                {"type":"CCR","count":5},
+                {"type":"CCBR","count":5},
+                {"type":"CS","count":5},
+                {"type":"CDFC","count":5},
+                {"type":"FSPR","count":5},
+                {"type":"ORAL","count":5},
+                {"type":"ORRE","count":5},
+                {"type":"RFSR","count":5},
+                {"type":"RVRR","count":5}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":50}
+            ]
+        },
         "tasks": generateTasks(50),
         "total": 51
       },
@@ -836,6 +1134,23 @@ module.exports = function () {
         "pages": {
           "current": 2,
           "total": 2
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":6},
+                {"type":"CCR","count":5},
+                {"type":"CCBR","count":5},
+                {"type":"CS","count":5},
+                {"type":"CDFC","count":5},
+                {"type":"FSPR","count":5},
+                {"type":"ORAL","count":5},
+                {"type":"ORRE","count":5},
+                {"type":"RFSR","count":5},
+                {"type":"RVRR","count":5}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":51}
+            ]
         },
         "tasks": generateTasks(1),
         "total": 51
@@ -848,6 +1163,23 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "taskTypeCount":[
+                {"type":"CWGN","count":1},
+                {"type":"CCR","count":1},
+                {"type":"CCBR","count":1},
+                {"type":"CS","count":1},
+                {"type":"CDFC","count":1},
+                {"type":"FSPR","count":1},
+                {"type":"ORAL","count":1},
+                {"type":"ORRE","count":1},
+                {"type":"RFSR","count":1},
+                {"type":"RVRR","count":1}
+            ],
+            "assigneeTaskCount":[
+                {"assignee":20,"count":10}
+            ]
         },
         "tasks": generateTasks(10),
         "total": 10
