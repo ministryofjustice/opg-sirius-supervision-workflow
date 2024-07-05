@@ -1,7 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByTaskType*/ -}}
 {{ define "task-type-filter" }}
 
-<div class="moj-filter__options" data-filter-name="moj-filter-name-tasktype">
+<div class="moj-filter__options" data-filter-name="moj-filter-name-tasktype" id="moj-filter-name-tasktype">
 
   <div class="app-c-option-select">
     <div class="app-c-option-select__heading js-container-heading filter-toggle-button">
@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div role="group" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list-of-tasks-to-filter" tabindex="-1" style="height: 254.333px;">
+  <div role="group" class="app-c-option-select__container js-options-container filter-inner-container hide" id="list-of-tasks-to-filter" tabindex="-1">
     <div class="app-c-option-select__container-inner js-auto-height-inner ">
       <fieldset class="govuk-fieldset" aria-label="Task type">
         <legend class="hide" >Task types</legend>
