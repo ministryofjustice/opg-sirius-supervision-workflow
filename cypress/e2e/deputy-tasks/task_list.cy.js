@@ -51,7 +51,7 @@ describe("Task list", () => {
   })
 
   it("should have a table with the column Due date with overdue label", () => {
-    cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "01/02/2021")
+    cy.get(".govuk-table__body > :nth-child(1) > :nth-child(5)").should("contain", "11/02/2021")
     cy.get('.govuk-tag--red').first().should('contain', "Overdue")
   })
 });

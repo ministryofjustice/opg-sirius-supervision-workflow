@@ -19,7 +19,7 @@ describe("Task list", () => {
   })
 
   it("should have a table with the column Task type", () => {
-    cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2)").should("contain", "Case work - Complaint review")
+    cy.get(".govuk-table__body > :nth-child(1) > :nth-child(2)").should("contain", "Casework - General")
   })
 
   it("should have a table with the column Client", () => {
