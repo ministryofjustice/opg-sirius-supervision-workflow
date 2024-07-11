@@ -187,6 +187,26 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		if len(selectedTaskTypes) > 0 {
+			//	make another call to get original task count
+			taskList2, err := client.GetTaskList(ctx, sirius.TaskListParams{
+				Team:              app.SelectedTeam,
+				Page:              page,
+				PerPage:           tasksPerPage,
+				TaskTypes:         taskTypes,
+				SelectedTaskTypes: []string{},
+				Assignees:         selectedAssignees,
+				DueDateFrom:       selectedDueDateFrom,
+				DueDateTo:         selectedDueDateTo,
+			})
+
+			if err != nil {
+				return err
+			}
+			vars.TaskList.MetaData = taskList2.MetaData
+		}
+		taskList.MetaData = vars.TaskList.MetaData
+
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 		vars.FilterByAssignee.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
