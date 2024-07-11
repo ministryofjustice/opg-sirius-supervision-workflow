@@ -24,6 +24,90 @@ type mockClientTasksClient struct {
 	taskListData            sirius.TaskList
 }
 
+var unfilteredTaskListData = sirius.TaskList{
+	Tasks: []model.Task{
+		{
+			Assignee: model.Assignee{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
+			},
+			Type:    "ORAL",
+			Name:    "Case work - General",
+			DueDate: "01/02/2021",
+			Orders: []model.Order{
+				{
+					Client: model.Client{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: model.Assignee{
+							Name: "Supervision - Team - Name",
+						},
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
+					},
+				},
+			},
+		},
+		{
+			Assignee: model.Assignee{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
+			},
+			Type:    "CDFC",
+			Name:    "Case work - General",
+			DueDate: "01/02/2021",
+			Orders: []model.Order{
+				{
+					Client: model.Client{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: model.Assignee{
+							Name: "Supervision - Team - Name",
+						},
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
+					},
+				},
+			},
+		},
+		{
+			Assignee: model.Assignee{
+				Name: "Assignee Duke Clive Henry Hetley Junior Jones",
+			},
+			Type:    "CWGN",
+			Name:    "Case work - General",
+			DueDate: "01/02/2021",
+			Orders: []model.Order{
+				{
+					Client: model.Client{
+						CaseRecNumber: "caseRecNumber",
+						FirstName:     "Client Alexander Zacchaeus",
+						Id:            3333,
+						SupervisionCaseOwner: model.Assignee{
+							Name: "Supervision - Team - Name",
+						},
+						Surname: "Client Wolfeschlegelsteinhausenbergerdorff",
+					},
+				},
+			},
+		},
+	},
+	MetaData: sirius.TaskMetaData{
+		TaskTypeCount: []sirius.TypeAndCount{
+			{
+				Type:  "CWGN",
+				Count: 1,
+			},
+			{
+				Type:  "ORAL",
+				Count: 1,
+			},
+			{
+				Type:  "CDFC",
+				Count: 1,
+			},
+		},
+	},
+}
+
 func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
 	if m.count == nil {
 		m.count = make(map[string]int)
@@ -41,7 +125,11 @@ func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.Ta
 	m.count["GetTaskList"] += 1
 	m.lastCtx = ctx
 
-	return m.taskListData, m.err
+	if (m.count["GetTaskList"]) == 1 {
+		return m.taskListData, m.err
+	} else {
+		return unfilteredTaskListData, m.err
+	}
 }
 
 func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
@@ -62,6 +150,14 @@ var testTaskType = []model.TaskType{
 		Category:   sirius.TaskTypeCategorySupervision,
 		Complete:   "Correspondence - Reviewed draft failure",
 		User:       true,
+	},
+	{
+		Handle:     "ORAL",
+		Incomplete: "Order - Allocated to team",
+	},
+	{
+		Handle:     "VCMR",
+		Incomplete: "Visit - Commission medium risk complete",
 	},
 }
 
@@ -130,6 +226,86 @@ func TestClientTasks(t *testing.T) {
 		SelectedFilters: []urlbuilder.Filter{
 			{
 				Name: "task-type",
+			},
+			{
+				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name: "due-date-from",
+			},
+			{
+				Name: "due-date-to",
+			},
+		},
+		MyTeamId: "99",
+	}
+
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     0,
+		TotalPages:      0,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "tasks",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want.UrlBuilder,
+	}
+	want.MyTeamId = "99"
+
+	assert.Equal(t, want, template.lastVars)
+}
+
+func TestClientTasksWillRefetchWholeTaskListCountWhenFilteringOnTaskTypes(t *testing.T) {
+	client := &mockClientTasksClient{
+		taskTypeData: testTaskType,
+		taskListData: testTaskList,
+	}
+	template := &mockTemplate{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, template.count)
+
+	var want ClientTasksPage
+	want.App = app
+	want.PerPage = 25
+	want.TaskTypes = testTaskType
+	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
+	want.AppliedFilters = []string{
+		"Correspondence - Review failed draft",
+		"Order - Allocated to team",
+	}
+	want.TaskList = testTaskList
+	want.UrlBuilder = urlbuilder.UrlBuilder{
+		Path:            "client-tasks",
+		SelectedTeam:    "101",
+		SelectedPerPage: 25,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name:           "task-type",
+				SelectedValues: []string{"CDFC", "ORAL"},
 			},
 			{
 				Name:                  "assignee",
