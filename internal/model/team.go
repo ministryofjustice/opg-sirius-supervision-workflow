@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,8 +37,14 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 }
 
 func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {
+	fmt.Println("in unassigned count")
 	for _, a := range selectedAssignees {
+		fmt.Println(t.Id)
 		if t.Id == a.AssigneeId {
+			stringValue := strconv.Itoa(a.Count)
+			return "(" + stringValue + ")"
+		}
+		if a.AssigneeId == 0 {
 			stringValue := strconv.Itoa(a.Count)
 			return "(" + stringValue + ")"
 		}
