@@ -156,6 +156,24 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 
+		if len(selectedTaskTypes) > 0 {
+			//	make another call to get original task count
+			taskList2, err := client.GetTaskList(ctx, sirius.TaskListParams{
+				Team:              app.SelectedTeam,
+				Page:              page,
+				PerPage:           tasksPerPage,
+				TaskTypes:         taskTypes,
+				TaskTypeCategory:  "deputy",
+				SelectedTaskTypes: selectedTaskTypes,
+				Assignees:         selectedAssignees,
+			})
+			if err != nil {
+				return err
+			}
+			vars.TaskList.MetaData = taskList2.MetaData
+		}
+		taskList.MetaData = vars.TaskList.MetaData
+
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters()
 		vars.FilterByAssignee.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
