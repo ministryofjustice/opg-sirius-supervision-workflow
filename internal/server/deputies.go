@@ -150,6 +150,10 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		vars.AppliedFilters = vars.GetAppliedFilters()
 
+		fmt.Println("meta data")
+		fmt.Println(vars.DeputyList.MetaData.DeputyMetaData)
+
+		vars.FilterByECM.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
 		return tmpl.Execute(w, vars)
 	}
 }

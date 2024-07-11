@@ -9,11 +9,16 @@ import (
 	"strings"
 )
 
+type DeputyMetaData struct {
+	DeputyMetaData []model.AssigneeAndCount `json:"ecmCount"`
+}
+
 type DeputyList struct {
 	Deputies           []model.Deputy        `json:"persons"`
 	Pages              model.PageInformation `json:"pages"`
 	TotalDeputies      int                   `json:"total"`
 	PaProTeamSelection []model.Team
+	MetaData           DeputyMetaData `json:"metadata"`
 }
 
 type DeputyListParams struct {
