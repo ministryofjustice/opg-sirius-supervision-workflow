@@ -60,7 +60,7 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
+	
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {
