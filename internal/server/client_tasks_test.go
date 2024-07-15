@@ -292,12 +292,29 @@ func TestClientTasksWillRefetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 	want.App = app
 	want.PerPage = 25
 	want.TaskTypes = testTaskType
+	want.TaskList = testTaskList
+	want.TaskList.MetaData = sirius.TaskMetaData{
+		TaskTypeCount: []sirius.TypeAndCount{
+			{
+				Type:  "CWGN",
+				Count: 1,
+			},
+			{
+				Type:  "ORAL",
+				Count: 1,
+			},
+			{
+				Type:  "CDFC",
+				Count: 1,
+			},
+		},
+	}
 	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
 	want.AppliedFilters = []string{
 		"Correspondence - Review failed draft",
 		"Order - Allocated to team",
 	}
-	want.TaskList = testTaskList
+
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "client-tasks",
 		SelectedTeam:    "101",
