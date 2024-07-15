@@ -7,7 +7,8 @@ describe("Filters", () => {
       win.sessionStorage.clear();
     });
     cy.visit("/deputies?team=27");
-});
+  });
+
   it("applies and removes an ECM filter", () => {
     cy.get('[data-filter-name="moj-filter-name-ecm"]').click();
       cy.get('[data-filter-name="moj-filter-name-ecm"]')
@@ -16,5 +17,11 @@ describe("Filters", () => {
 
     cy.url().should('include', 'ecm=96');
     cy.get('.moj-filter__selected').should('contain','Executive Case Manager');
+  });
+
+  it("includes the ecm count", () => {
+      cy.contains('Not Assigned').should('contain', '(0)');
+      cy.contains('PROTeam1 User1').should('contain', '(1)');
+      cy.contains('PROTeam1 User2').should('contain', '(1)');
   });
 });

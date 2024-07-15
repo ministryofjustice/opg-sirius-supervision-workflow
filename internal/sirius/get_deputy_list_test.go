@@ -17,44 +17,44 @@ func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
 
 	json := `
 {
-    "limit": 15,
-    "metadata": [],
-    "pages": {
-        "current": 1,
-        "total": 1
-    },
-    "total": 1,
-    "persons": [
-        {
-            "id": 13,
-            "deputyNumber": 123456,
-            "displayName": "Mr Fee-paying Deputy",
-            "deputyType": {
-              "handle": "PRO",
-              "label": "Professional"
-            },
-            "deputyAddress": {
-              "town": "Derby"
-            },
-            "executiveCaseManager": {
-              "displayName": "PROTeam1 User1",
-              "id": 96
-            },
-            "mostRecentlyCompletedAssurance": {
-              "reportReviewDate" : "2023-05-26T00:00:00+00:00",
-              "reportMarkedAs": {
-                "handle": "GREEN",
-                "label": "Green"
-              },
-              "assuranceType": {
-                "handle": "VISIT",
-                "label": "Visit"
-              }
-            },
-            "activeClientCount": 100,
-            "activeNonCompliantClientCount": 10
+   "limit": 15,
+   "metadata":{"ecmCount": [{"assignee" : 1, "count": 14}]},
+   "pages": {
+       "current": 1,
+       "total": 1
+   },
+   "total": 1,
+   "persons": [
+       {
+           "id": 13,
+           "deputyNumber": 123456,
+           "displayName": "Mr Fee-paying Deputy",
+           "deputyType": {
+             "handle": "PRO",
+             "label": "Professional"
+           },
+           "deputyAddress": {
+             "town": "Derby"
+           },
+           "executiveCaseManager": {
+             "displayName": "PROTeam1 User1",
+             "id": 96
+           },
+           "mostRecentlyCompletedAssurance": {
+             "reportReviewDate" : "2023-05-26T00:00:00+00:00",
+             "reportMarkedAs": {
+               "handle": "GREEN",
+               "label": "Green"
+             },
+             "assuranceType": {
+               "handle": "VISIT",
+               "label": "Visit"
+             }
+           },
+           "activeClientCount": 100,
+           "activeNonCompliantClientCount": 10
 		}
-    ]
+   ]
 }
 `
 
@@ -102,6 +102,11 @@ func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
 			PageTotal:   1,
 		},
 		TotalDeputies: 1,
+		MetaData: DeputyMetaData{
+			[]model.AssigneeAndCount{
+				{AssigneeId: 1, Count: 14},
+			},
+		},
 	}
 
 	deputyList, err := client.GetDeputyList(getContext(nil), params)
