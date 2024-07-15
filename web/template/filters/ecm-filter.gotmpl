@@ -22,7 +22,7 @@
         <div class="govuk-checkboxes govuk-checkboxes--small">
           <div class="govuk-checkboxes__item filter__checkbox">
             <input class="govuk-checkboxes__input" id="not_assigned" name="ecm" type="checkbox" value="{{ .NotAssignedTeamID }}" data-module="filter" {{ if (contains .SelectedECMs .NotAssignedTeamID) }}checked{{ end }}>
-            <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned</label>
+            <label class="govuk-label govuk-checkboxes__label" for="not_assigned">Not Assigned {{ $.App.SelectedTeam.GetUnassignedCount $.EcmCount $.UrlBuilder.Path }}</label>
           </div>
         </div>
 
@@ -30,7 +30,10 @@
           <div class="govuk-checkboxes govuk-checkboxes--small">
             <div class="govuk-checkboxes__item filter__checkbox">
               <input class="govuk-checkboxes__input" id="ecm_{{ .Id }}" name="ecm" type="checkbox" value="{{ .Id }}" data-module="filter" {{ if .IsSelected $.SelectedECMs }}checked{{ end }} />
-              <label class="govuk-label govuk-checkboxes__label" for="ecm_{{ .Id }}">{{ .Name }}</label>
+              <label class="govuk-label govuk-checkboxes__label" for="ecm_{{ .Id }}">
+              {{ .Name }}
+              {{ .GetCountAsString $.EcmCount $.UrlBuilder.Path}}
+              </label>
             </div>
           </div>
         {{ end }}
