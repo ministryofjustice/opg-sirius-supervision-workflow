@@ -203,7 +203,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-			vars.TaskList.MetaData = taskList2.MetaData
+			vars.TaskList.MetaData.TaskTypeCount = taskList2.MetaData.TaskTypeCount
+			vars.TaskList.MetaData.AssigneeCount = taskList.MetaData.AssigneeCount
 		}
 		taskList.MetaData = vars.TaskList.MetaData
 
