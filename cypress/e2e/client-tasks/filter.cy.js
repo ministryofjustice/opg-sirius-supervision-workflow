@@ -7,7 +7,18 @@ describe("Filters", () => {
       win.sessionStorage.clear()
     })
     cy.visit("/client-tasks");
-});
+  });
+
+  it("includes the task type count", () => {
+      cy.contains('ECM Tasks').should('contain', '(21)');
+      cy.contains('Casework - Call back request').should('contain', '(3)');
+  });
+
+  it("includes the assignee count", () => {
+        cy.contains('Allocations User1').should('contain', '(12)');
+        cy.contains('Allocations User2').should('contain', '(8)');
+  });
+
   it("can expand the filters which are hidden by default", () => {
     cy.get('#option-select-title-task-type').click()
     cy.get('#list-of-tasks-to-filter label').should('contain', 'Casework')
