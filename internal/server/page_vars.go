@@ -60,6 +60,7 @@ type FilterByECM struct {
 	ListPage
 	ECMs              []model.Assignee
 	SelectedECMs      []string
+	EcmCount          []model.AssigneeAndCount
 	NotAssignedTeamID string
 }
 

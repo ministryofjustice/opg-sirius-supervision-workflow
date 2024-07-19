@@ -253,6 +253,14 @@ module.exports = function () {
             "displayName": "Allocations User1",
             "deleted": false,
             "email": "allocations@opgtest.com"
+          },
+          {
+              "id": 73,
+              "name": "Allocations",
+              "phoneNumber": "12345678",
+              "displayName": "Allocations User2",
+              "deleted": false,
+              "email": "allocations2@opgtest.com"
           }
         ],
         "teamType": {
@@ -368,6 +376,14 @@ module.exports = function () {
             "displayName": "PROTeam1 User1",
             "deleted": false,
             "email": "pro1@opgtest.com"
+          },
+          {
+              "id":97,
+              "name": "PROTeam1",
+              "phoneNumber": "12345678",
+              "displayName": "PROTeam1 User2",
+              "deleted": false,
+              "email": "pro2@opgtest.com"
           }
         ],
         "teamType": {
@@ -580,7 +596,8 @@ module.exports = function () {
                 {"type":"RVRR","count":2}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+                {"assignee":72,"count":12},
+                {"assignee":73,"count":8}
             ]
         },
         "pages": {
@@ -825,7 +842,7 @@ module.exports = function () {
               ],
               "dueDate": "03/02/2021",
               "name": "Assurance visit review"
-            },
+          },
           {
               "id": 4,
               "assignee":{"id":27,"teams":[],"displayName":"Pro Team 1 - (Supervision)"},
@@ -856,6 +873,12 @@ module.exports = function () {
         "pages": {
           "current": 1,
           "total": 1
+        },
+        "metadata":{
+            "ecmCount": [
+                {"assignee" : 96, "count": 1},
+                {"assignee" : 97, "count": 1}
+            ],
         },
         "persons": [
           {
@@ -908,7 +931,7 @@ module.exports = function () {
               },
               "executiveCaseManager": {
                 "displayName": "PROTeam1 User2",
-                "id": 96
+                "id": 97
               },
               "mostRecentlyCompletedAssurance": {
                 "reportReviewDate" : "2023-09-12T00:00:00+00:00",
@@ -929,7 +952,7 @@ module.exports = function () {
                   "firmName": "Chaos Inc",
                   "firmNumber": 123456
               }
-            },
+          },
         ],
         "total": 2
       },
@@ -938,6 +961,11 @@ module.exports = function () {
           "pages": {
             "current": 1,
             "total": 1
+          },
+          "metadata":{
+              "ecmCount": [
+                  {"assignee" : 27, "count": 1},
+              ],
           },
           "persons": [
             {
@@ -961,7 +989,7 @@ module.exports = function () {
             },
           ],
           "total": 1
-        },
+      },
     ],
     "tasks-view-25": [
       {
@@ -985,7 +1013,8 @@ module.exports = function () {
                 {"type":"RVRR","count":2}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+              {"assignee":72,"count":12},
+              {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1011,8 +1040,9 @@ module.exports = function () {
                 {"type":"RFSR","count":2},
                 {"type":"RVRR","count":2}
             ],
-            "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+             "assigneeTaskCount":[
+                   {"assignee":72,"count":12},
+                   {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1039,7 +1069,8 @@ module.exports = function () {
                 {"type":"RVRR","count":2}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+              {"assignee":72,"count":12},
+              {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1066,7 +1097,8 @@ module.exports = function () {
                 {"type":"RVRR","count":2}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+              {"assignee":72,"count":12},
+              {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1093,7 +1125,8 @@ module.exports = function () {
                 {"type":"RVRR","count":2}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":20}
+              {"assignee":72,"count":12},
+              {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1122,7 +1155,8 @@ module.exports = function () {
                 {"type":"RVRR","count":5}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":50}
+              {"assignee":72,"count":12},
+              {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(50),
@@ -1149,7 +1183,8 @@ module.exports = function () {
                 {"type":"RVRR","count":5}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":51}
+               {"assignee":72,"count":12},
+               {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(1),
@@ -1178,7 +1213,8 @@ module.exports = function () {
                 {"type":"RVRR","count":1}
             ],
             "assigneeTaskCount":[
-                {"assignee":20,"count":10}
+               {"assignee":72,"count":12},
+               {"assignee":73,"count":8}
             ]
         },
         "tasks": generateTasks(10),
