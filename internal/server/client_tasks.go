@@ -203,9 +203,9 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-			vars.TaskList.MetaData = taskList2.MetaData
+			vars.TaskList.MetaData.TaskTypeCount = taskList2.MetaData.TaskTypeCount
 		}
-		taskList.MetaData = vars.TaskList.MetaData
+		taskList.MetaData.TaskTypeCount = vars.TaskList.MetaData.TaskTypeCount
 
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
