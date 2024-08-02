@@ -1547,10 +1547,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.23.0":
+"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.24.0":
   version "1.0.0"
-  uid "7bf654680e7d2e36476c1b78c1604e9dbe0f2173"
-  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/7bf654680e7d2e36476c1b78c1604e9dbe0f2173"
+  uid "8c0613962eaf4c8f47c0cef513de3383d0d38b20"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/8c0613962eaf4c8f47c0cef513de3383d0d38b20"
   dependencies:
     "@cypress/request" "3.0.0"
     scss "^0.2.4"
