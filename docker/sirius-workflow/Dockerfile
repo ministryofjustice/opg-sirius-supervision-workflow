@@ -1,4 +1,4 @@
-FROM golang:1.22 as base
+FROM golang:1.23 as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0 GOOS=linux
