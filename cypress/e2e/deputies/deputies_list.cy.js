@@ -25,35 +25,35 @@ describe("PA Deputies list", () => {
     it("can be sorted by Deputy, Active clients, Non-compliance & Assurance", () => {
         cy.url().should("not.contain", "order-by").and("not.contain", "sort")
 
-        cy.get("th:nth-child(2) button").click()
+        cy.get("a > button").contains('Deputy').click()
         cy.get("th:nth-child(2)").should("have.attr", "aria-sort", "descending")
         cy.url().should("contain", "order-by=deputy&sort=desc")
 
-        cy.get("th:nth-child(2) button").click()
+        cy.get("a > button").contains('Deputy').click()
         cy.get("th:nth-child(2)").should("have.attr", "aria-sort", "ascending")
         cy.url().should("contain", "order-by=deputy&sort=asc")
 
-        cy.get("th:nth-child(4) button").click()
+        cy.get("a > button").contains('Active clients').click()
         cy.get("th:nth-child(4)").should("have.attr", "aria-sort", "ascending")
         cy.url().should("contain", "order-by=activeclients&sort=asc")
 
-        cy.get("th:nth-child(4) button").click()
+        cy.get("a > button").contains('Active clients').click()
         cy.get("th:nth-child(4)").should("have.attr", "aria-sort", "descending")
         cy.url().should("contain", "order-by=activeclients&sort=desc")
 
-        cy.get("th:nth-child(5) button").click()
+        cy.get("a > button").contains('Non-compliance').click()
         cy.get("th:nth-child(5)").should("have.attr", "aria-sort", "ascending")
         cy.url().should("contain", "order-by=noncompliance&sort=asc")
 
-        cy.get("th:nth-child(5) button").click()
+        cy.get("a > button").contains('Non-compliance').click()
         cy.get("th:nth-child(5)").should("have.attr", "aria-sort", "descending")
         cy.url().should("contain", "order-by=noncompliance&sort=desc")
 
-        cy.get("th:nth-child(6) button").click()
+        cy.get("a > button").contains('Assurance visits').click()
         cy.get("th:nth-child(6)").should("have.attr", "aria-sort", "ascending")
         cy.url().should("contain", "order-by=assurance&sort=asc")
 
-        cy.get("th:nth-child(6) button").click()
+        cy.get("a > button").contains('Assurance visits').click()
         cy.get("th:nth-child(6)").should("have.attr", "aria-sort", "descending")
         cy.url().should("contain", "order-by=assurance&sort=desc")
     })
