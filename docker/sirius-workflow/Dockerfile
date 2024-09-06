@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0 GOOS=linux
 
 RUN update-ca-certificates
 
-FROM node:20.16.0-alpine3.20 as asset-env
+FROM node:20.17.0-alpine3.20 as asset-env
 
 WORKDIR /app
 
