@@ -1,11 +1,14 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"go.uber.org/zap"
 	"net/http"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"go.uber.org/zap"
 )
 
 type ErrorVars struct {
@@ -56,6 +59,11 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 			)
 
 			if err != nil {
+				if errors.Is(err, context.Canceled) {
+					w.WriteHeader(499)
+					return
+				}
+
 				if err == sirius.ErrUnauthorized {
 					http.Redirect(w, r, envVars.SiriusURL+"/auth", http.StatusFound)
 					return
