@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -115,7 +116,7 @@ func (c *ApiClient) logResponse(req *http.Request, resp *http.Response, err erro
 		response = strconv.Itoa(resp.StatusCode)
 	}
 	c.logger.Info("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + response)
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		c.logger.Error(err.Error())
 	}
 }
