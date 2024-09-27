@@ -1,15 +1,17 @@
 package server
 
 import (
+	"context"
 	"errors"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestRedirectError_Error(t *testing.T) {
@@ -243,4 +245,29 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	location, err := w.Result().Location()
 	assert.Nil(t, err)
 	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
+}
+
+func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{error: context.Canceled}
+
+	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
+	logger := zap.New(observedZapCore).Sugar()
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
+	next := mockNext{}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+
+	logs := observedLogs.All()
+
+	assert.Equal(t, 0, next.Called)
+	assert.Len(t, logs, 1)
+	assert.Equal(t, "Application Request", logs[0].Message)
+	assert.Equal(t, 0, errorTemplate.count)
+	assert.Equal(t, 499, w.Result().StatusCode)
 }

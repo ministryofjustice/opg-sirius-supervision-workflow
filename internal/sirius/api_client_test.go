@@ -1,12 +1,18 @@
 package sirius
 
 import (
+	"bytes"
 	"context"
-	"github.com/ministryofjustice/opg-go-common/telemetry"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strings"
 	"testing"
+
+	"github.com/ministryofjustice/opg-go-common/telemetry"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,4 +51,64 @@ func SetUpTest() (*slog.Logger, *mocks.MockClient) {
 	logger := telemetry.NewLogger("opg-sirius-workflow")
 	mockClient := &mocks.MockClient{}
 	return logger, mockClient
+}
+
+type LogEntry struct {
+	Level   string `json:"level"`
+	Message string `json:"msg"`
+}
+
+func TestLogResponseLogsErrors(t *testing.T) {
+	var buf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&buf, nil))
+	client := ApiClient{
+		logger: logger,
+	}
+
+	client.logResponse(
+		&http.Request{Method: "POST", URL: &url.URL{Path: "/my-page"}},
+		&http.Response{StatusCode: 200},
+		errors.New("some error"),
+	)
+
+	logLines := strings.Split(strings.Trim(buf.String(), "\n"), "\n")
+	assert.Equal(t, 2, len(logLines))
+
+	logEntries := make([]LogEntry, len(logLines))
+	for i, line := range logLines {
+		err := json.Unmarshal([]byte(line), &logEntries[i])
+		assert.Nil(t, err)
+	}
+
+	assert.Equal(t, "INFO", logEntries[0].Level)
+	assert.Equal(t, "method: POST, url: /my-page, response: 200", logEntries[0].Message)
+
+	assert.Equal(t, "ERROR", logEntries[1].Level)
+	assert.Equal(t, "some error", logEntries[1].Message)
+}
+
+func TestLogResponseIgnoresContextCanceled(t *testing.T) {
+	var buf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&buf, nil))
+	client := ApiClient{
+		logger: logger,
+	}
+
+	client.logResponse(
+		&http.Request{Method: "POST", URL: &url.URL{Path: "/my-page"}},
+		&http.Response{StatusCode: 200},
+		context.Canceled,
+	)
+
+	logLines := strings.Split(strings.Trim(buf.String(), "\n"), "\n")
+	assert.Equal(t, 1, len(logLines))
+
+	logEntries := make([]LogEntry, len(logLines))
+	for i, line := range logLines {
+		err := json.Unmarshal([]byte(line), &logEntries[i])
+		assert.Nil(t, err)
+	}
+
+	assert.Equal(t, "INFO", logEntries[0].Level)
+	assert.Equal(t, "method: POST, url: /my-page, response: 200", logEntries[0].Message)
 }
