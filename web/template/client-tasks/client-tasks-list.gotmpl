@@ -21,7 +21,7 @@
         </th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Task type</th>
         <th scope="col" class="govuk-table__header" aria-sort="none">Client</th>
-        {{ if eq .App.SelectedTeam.Type "PA" }}
+        {{ if or (eq $.App.SelectedTeam.Type "PA") (eq $.App.SelectedTeam.Type "PRO") }}
             <th scope="col" class="govuk-table__header" aria-sort="none">Deputy</th>
         {{ end }}
         <th scope="col" class="govuk-table__header" aria-sort="none">Case owner</th>
@@ -57,10 +57,10 @@
                 <span class="secondary">{{ .GetClient.CaseRecNumber }}</span>
               </label>
             </td>
-            {{ if eq $.App.SelectedTeam.Type "PA" }}
+            {{ if or (eq $.App.SelectedTeam.Type "PA") (eq $.App.SelectedTeam.Type "PRO") }}
                 <td class="govuk-table__cell">
                   <a {{ if ne .GetClient.FeePayer.Id 0 }}href="{{ sirius .GetClient.FeePayer.GetURL }}"{{ end }} class="govuk-link">
-                      {{ .GetClient.FeePayer.DisplayName }}
+                      {{ .GetClient.FeePayer.DisplayName }} <br>{{ if  $.App.SelectedTeam.IsPro }} {{.GetClient.FeePayer.Firm.Name}}{{ end }}
                   </a>
                 </td>
             {{ end }}
