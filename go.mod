@@ -5,9 +5,9 @@ go 1.22
 require (
 	github.com/ministryofjustice/opg-go-common v1.18.0
 	github.com/stretchr/testify v1.9.0
-	go.opentelemetry.io/contrib/detectors/aws/ecs v1.30.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.55.0
-	go.opentelemetry.io/contrib/propagators/aws v1.30.0
+	go.opentelemetry.io/contrib/detectors/aws/ecs v1.31.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.56.0
+	go.opentelemetry.io/contrib/propagators/aws v1.31.0
 	go.opentelemetry.io/otel v1.31.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.31.0
 	go.opentelemetry.io/otel/sdk v1.31.0
