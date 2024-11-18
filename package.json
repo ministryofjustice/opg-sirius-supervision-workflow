@@ -17,7 +17,7 @@
     "watch": "yarn build:js --watch=forever"
   },
   "dependencies": {
-    "@ministryofjustice/frontend": "^2.1.0",
+    "@ministryofjustice/frontend": "^3.0.0",
     "govuk-frontend": "^5.0.0",
     "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.24.0"
   },
