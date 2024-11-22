@@ -5,7 +5,7 @@ go 1.22.7
 toolchain go1.23.3
 
 require (
-	github.com/ministryofjustice/opg-go-common v1.34.0
+	github.com/ministryofjustice/opg-go-common v1.36.0
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/contrib/detectors/aws/ecs v1.32.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.57.0
