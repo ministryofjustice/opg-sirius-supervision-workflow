@@ -1,4 +1,4 @@
-FROM cypress/included:13.15.2
+FROM cypress/included:13.16.1
 
 WORKDIR /root
 
