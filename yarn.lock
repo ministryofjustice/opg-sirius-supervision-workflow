@@ -272,9 +272,9 @@
   integrity sha512-c7hNEllBlenFTHBky65mhq8WD2kbN9Q6gk0bTk8lSBvc554jpXSkST1iePudpt7+A/AQvuHs9EMqjHDXMY1lrA==
 
 "@ministryofjustice/frontend@^3.0.0":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.2.1.tgz#2ef3616132326b83a568a2ac694836fed30a4bce"
-  integrity sha512-VSux1C/s8GAENXs4ih38irzaWrhguX+89YBg1tJSDcshFjNsEtclGtdLd8xyU8Gxs2qfRsn1E2dKyffzK94lTw==
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.3.0.tgz#45bb0359fa9a466a574d44e2a78121f5544c2eeb"
+  integrity sha512-kK1+XTI8KPgL2kA3ylTkXfXqA2cirENh1oxTYnvogt6W8vg5VexGSYjynRZ5EhRUAQh6uHPmOGyr+mYXmNwReQ==
   dependencies:
     govuk-frontend "^5.0.0"
     moment "^2.27.0"
@@ -578,7 +578,7 @@ cachedir@^2.3.0:
   resolved "https://registry.yarnpkg.com/cachedir/-/cachedir-2.4.0.tgz#7fef9cf7367233d7c88068fe6e34ed0d355a610d"
   integrity sha512-9EtFOZR8g22CL7BWjJ9BUx1+A/djkofnyW3aOXZORNW2kxoUpx2h+uN2cOqwPmFhnpVmxg+KW2OjOSgChTEvsQ==
 
-call-bind-apply-helpers@^1.0.0, call-bind-apply-helpers@^1.0.1:
+call-bind-apply-helpers@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.1.tgz#32e5892e6361b29b0b545ba6f7763378daca2840"
   integrity sha512-BhYE+WDaywFg2TBWYNXAE+8B1ATnThNBqXHP5nQu0jWJdVvY2hvkpyB3qOmtmDePiS5/BDQ8wASEWGMWRG148g==
@@ -751,9 +751,9 @@ cypress-failed-log@^2.10.0:
     logdown "3.3.1"
 
 cypress@^13.6.4:
-  version "13.16.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.16.1.tgz#82e776f6ad2037ccce6b6feabed768615c476258"
-  integrity sha512-17FtCaz0cx7ssWYKXzGB0Vub8xHwpVPr+iPt2fHhLMDhVAPVrplD+rTQsZUsfb19LVBn5iwkEUFjQ1yVVJXsLA==
+  version "13.17.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.17.0.tgz#34c3d68080c4497eace0f353bd1629587a5f600d"
+  integrity sha512-5xWkaPurwkIljojFidhw8lFScyxhtiFHl/i/3zov+1Z5CmY4t9tjIdvSXfu82Y3w7wt0uR9KkucbhkVvJZLQSA==
   dependencies:
     "@cypress/request" "^3.0.6"
     "@cypress/xvfb" "^1.2.4"
@@ -848,11 +848,11 @@ detect-libc@^1.0.3:
   integrity sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==
 
 dunder-proto@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/dunder-proto/-/dunder-proto-1.0.0.tgz#c2fce098b3c8f8899554905f4377b6d85dabaa80"
-  integrity sha512-9+Sj30DIu+4KvHqMfLUGLFYL2PkURSYMVXJyXe92nFRvlYq5hBjLEhblKB+vkd/WVlUYMWigiY07T91Fkk0+4A==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/dunder-proto/-/dunder-proto-1.0.1.tgz#d7ae667e1dc83482f8b70fd0f6eefc50da30f58a"
+  integrity sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==
   dependencies:
-    call-bind-apply-helpers "^1.0.0"
+    call-bind-apply-helpers "^1.0.1"
     es-errors "^1.3.0"
     gopd "^1.2.0"
 
@@ -1539,9 +1539,9 @@ logdown@3.3.1:
     chalk "^2.3.0"
 
 math-intrinsics@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.0.0.tgz#4e04bf87c85aa51e90d078dac2252b4eb5260817"
-  integrity sha512-4MqMiKP90ybymYvsut0CH2g4XWbfLtmlCkXmtmdcDCxNB+mQcu1w/1+L/VD7vi/PSv7X2JYV7SCcR+jiPXnQtA==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
+  integrity sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==
 
 merge-stream@^2.0.0:
   version "2.0.0"
@@ -2015,17 +2015,17 @@ through@^2.3.8:
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
 
-tldts-core@^6.1.68:
-  version "6.1.68"
-  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-6.1.68.tgz#65f683a1100b3de9385184572ad68c6b8c337442"
-  integrity sha512-85TdlS/DLW/gVdf2oyyzqp3ocS30WxjaL4la85EArl9cHUR/nizifKAJPziWewSZjDZS71U517/i6ciUeqtB5Q==
+tldts-core@^6.1.69:
+  version "6.1.69"
+  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-6.1.69.tgz#079ffcac8a4407bc74567e292aecf30b943674e1"
+  integrity sha512-nygxy9n2PBUFQUtAXAc122gGo+04/j5qr5TGQFZTHafTKYvmARVXt2cA5rgero2/dnXUfkdPtiJoKmrd3T+wdA==
 
 tldts@^6.1.32:
-  version "6.1.68"
-  resolved "https://registry.yarnpkg.com/tldts/-/tldts-6.1.68.tgz#38e82b7ce9673c464c16c7952f007c3d7ab52b94"
-  integrity sha512-JKF17jROiYkjJPT73hUTEiTp2OBCf+kAlB+1novk8i6Q6dWjHsgEjw9VLiipV4KTJavazXhY1QUXyQFSem2T7w==
+  version "6.1.69"
+  resolved "https://registry.yarnpkg.com/tldts/-/tldts-6.1.69.tgz#0fe1fcb1ad09510459693e72f96062cee2411f1f"
+  integrity sha512-Oh/CqRQ1NXNY7cy9NkTPUauOWiTro0jEYZTioGbOmcQh6EC45oribyIMJp0OJO3677r13tO6SKdWoGZUx2BDFw==
   dependencies:
-    tldts-core "^6.1.68"
+    tldts-core "^6.1.69"
 
 tmp@~0.2.3:
   version "0.2.3"
