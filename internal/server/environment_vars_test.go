@@ -18,5 +18,6 @@ func TestNewEnvironmentVars(t *testing.T) {
 		DefaultWorkflowTeamID: 21,
 		DefaultPaTeamID:       "28",
 		DefaultProTeamID:      "31",
+		FinanceAdminLink:      "1",
 	}, vars)
 }
