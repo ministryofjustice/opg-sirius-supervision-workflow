@@ -2,10 +2,10 @@ module github.com/ministryofjustice/opg-sirius-workflow
 
 go 1.22.7
 
-toolchain go1.23.4
+toolchain go1.23.5
 
 require (
-	github.com/ministryofjustice/opg-go-common v1.60.0
+	github.com/ministryofjustice/opg-go-common v1.63.0
 	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/contrib/detectors/aws/ecs v1.33.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
@@ -37,7 +37,7 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241209162323-e6fa225c2576 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
-	google.golang.org/grpc v1.69.0 // indirect
+	google.golang.org/grpc v1.69.4 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
