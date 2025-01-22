@@ -19,7 +19,7 @@
   "dependencies": {
     "@ministryofjustice/frontend": "^3.0.0",
     "govuk-frontend": "^5.0.0",
-    "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.26.0"
+    "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.27.0-pfs-211-feature-flag-added-for-payments-admin.4"
   },
   "devDependencies": {
     "axe-core": "^4.8.3",
