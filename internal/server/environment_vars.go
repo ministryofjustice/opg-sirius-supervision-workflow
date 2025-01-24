@@ -33,7 +33,7 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		DefaultWorkflowTeamID: defaultTeamId,
 		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
 		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
-		FinanceAdminLink:      getEnv("FINANCE_ADMIN_LINK", "1"),
+		FinanceAdminLink:      getEnv("FINANCE_ADMIN_LINK", "0"),
 	}, nil
 }
 
