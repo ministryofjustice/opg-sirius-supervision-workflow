@@ -1,11 +1,11 @@
-FROM golang:1.23 as base
+FROM golang:1.24 as base
 WORKDIR /app
 
 ENV CGO_ENABLED=0 GOOS=linux
 
 RUN update-ca-certificates
 
-FROM node:22.13.1-alpine3.20 as asset-env
+FROM node:22.14.0-alpine3.20 as asset-env
 
 WORKDIR /app
 
