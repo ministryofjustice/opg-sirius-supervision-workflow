@@ -1,4 +1,4 @@
-all: go-lint unit-test build scan cypress down
+all: test build scan cypress down
 
 .PHONY: cypress
 
@@ -7,17 +7,23 @@ test-results:
 
 setup-directories: test-results
 
+test:
+	$(MAKE) -j 3 go-lint gosec unit-test 
+
 go-lint:
 	docker compose run --rm go-lint
 
-build:
-	docker compose build --parallel workflow
+gosec: setup-directories
+	docker compose run --rm gosec
+
+unit-test: setup-directories
+	docker compose run --rm test-runner gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
 
 build-all:
 	docker compose build --parallel workflow json-server test-runner cypress
 
-unit-test: setup-directories
-	docker compose run --rm test-runner gotestsum --junitfile test-results/unit-tests.xml -- ./... -coverprofile=test-results/test-coverage.txt
+build:
+	docker compose build workflow
 
 scan: setup-directories
 	docker compose run --rm trivy image --format table --exit-code 0 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
