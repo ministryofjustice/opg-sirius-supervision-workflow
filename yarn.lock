@@ -278,12 +278,9 @@
   integrity sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==
 
 "@ministryofjustice/frontend@^3.0.0":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.3.1.tgz#aa743b56dd31e8e1373f20a5791afb234804eaba"
-  integrity sha512-4npwkub8xkhp+YFUK9MIm8armTTs7hzkvT33Ijetxi6aI4Ezzym7XPv4XjQavYAewmv+CHv6WqbBCqtJrWwtmg==
-  dependencies:
-    govuk-frontend "^5.0.0"
-    moment "^2.27.0"
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-3.7.0.tgz#fd694f79d06f1c5a2ba581c1f5c89506810aa4a6"
+  integrity sha512-o84Sqy+1jqc1vaxIZfyG4VwJzdpDUK88O9COJFVLcFmW+Np80onlFlGAVjDUxNHYvtBdJx40w1dayq53wmtxgQ==
 
 "@parcel/watcher-android-arm64@2.5.1":
   version "2.5.1"
@@ -1617,11 +1614,6 @@ minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
-
-moment@^2.27.0:
-  version "2.30.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
-  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
 ms@2.1.2:
   version "2.1.2"
