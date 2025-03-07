@@ -2,7 +2,7 @@ module github.com/ministryofjustice/opg-sirius-workflow
 
 go 1.22.7
 
-toolchain go1.24.0
+toolchain go1.24.1
 
 require (
 	github.com/ministryofjustice/opg-go-common v1.71.0
