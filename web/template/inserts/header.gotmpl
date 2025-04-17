@@ -2,7 +2,6 @@
   <sirius-header
           {{ if eq .Error "" }}
             user-roles="{{ .App.MyDetails.GetRoles }}"
-            finance-flag="{{.App.EnvironmentVars.FinanceAdminLink}}"
           {{ end }}>
   </sirius-header>
 {{ end }}
