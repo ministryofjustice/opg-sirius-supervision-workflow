@@ -68,20 +68,20 @@ func TestApiClient_GetTaskTypes_Params(t *testing.T) {
 	}{
 		{
 			params:       TaskTypesParams{Category: "supervision"},
-			wantEndpoint: "/api/v1/tasktypes/supervision",
+			wantEndpoint: SupervisionAPIPath + "/v1/tasktypes/supervision",
 		},
 		{
 			params:       TaskTypesParams{Category: "deputy"},
-			wantEndpoint: "/api/v1/tasktypes/deputy",
+			wantEndpoint: SupervisionAPIPath + "/v1/tasktypes/deputy",
 		},
 		{
 			params:       TaskTypesParams{Category: "deputy", ProDeputy: true},
-			wantEndpoint: "/api/v1/tasktypes/deputy",
+			wantEndpoint: SupervisionAPIPath + "/v1/tasktypes/deputy",
 			wantQuery:    "pro_deputy=true",
 		},
 		{
 			params:       TaskTypesParams{Category: "deputy", PADeputy: true},
-			wantEndpoint: "/api/v1/tasktypes/deputy",
+			wantEndpoint: SupervisionAPIPath + "/v1/tasktypes/deputy",
 			wantQuery:    "pa_deputy=true",
 		},
 	}
@@ -115,7 +115,7 @@ func TestApiClient_GetTaskTypes_Returns500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/tasktypes/",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/tasktypes/",
 		Method: http.MethodGet,
 	}, err)
 }

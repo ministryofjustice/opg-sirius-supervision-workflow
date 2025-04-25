@@ -150,7 +150,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
 		Method: http.MethodGet,
 	}, err)
 }

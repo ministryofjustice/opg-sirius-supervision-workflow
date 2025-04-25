@@ -41,7 +41,7 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 	}
 
 	endpoint := fmt.Sprintf(
-		"/api/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
+		SupervisionAPIPath + "/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
 		strings.Join(teamIds, "&"),
 		params.PerPage,
 		params.Page,

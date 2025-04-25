@@ -10,7 +10,7 @@ import (
 func (c *ApiClient) GetCurrentUserDetails(ctx Context) (model.Assignee, error) {
 	var v model.Assignee
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/users/current", nil)
+	req, err := c.newRequest(ctx, http.MethodGet, SupervisionAPIPath + "/v1/users/current", nil)
 	if err != nil {
 		c.logErrorRequest(req, err)
 		return v, err

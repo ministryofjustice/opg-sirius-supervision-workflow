@@ -93,7 +93,7 @@ func TestMyDetailsReturns500Error(t *testing.T) {
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/users/current",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/users/current",
 		Method: http.MethodGet,
 	}, err)
 }

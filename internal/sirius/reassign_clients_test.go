@@ -72,7 +72,7 @@ func TestReassignClientsReturnsNewStatusError(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
-		URL:    svr.URL + "/api/v1/clients/edit/reassign",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/clients/edit/reassign",
 		Method: http.MethodPut,
 	}, err)
 }
@@ -114,7 +114,7 @@ func TestReassignClientsReturnsInternalServerError(t *testing.T) {
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/clients/edit/reassign",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/clients/edit/reassign",
 		Method: http.MethodPut,
 	}
 

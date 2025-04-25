@@ -24,7 +24,7 @@ type TaskTypesParams struct {
 }
 
 func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.TaskType, error) {
-	endpoint := fmt.Sprintf("/api/v1/tasktypes/%s", params.Category)
+	endpoint := fmt.Sprintf(SupervisionAPIPath + "/v1/tasktypes/%s", params.Category)
 	if params.ProDeputy {
 		endpoint += "?pro_deputy=true"
 	} else if params.PADeputy {

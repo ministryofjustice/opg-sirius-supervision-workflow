@@ -140,7 +140,7 @@ func TestApiClient_GetDeputyList_Returns500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
