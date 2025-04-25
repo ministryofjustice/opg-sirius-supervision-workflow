@@ -4,7 +4,7 @@ describe("Reassign Tasks", () => {
         cy.setCookie("XSRF-TOKEN", "abcde");
         cy.setCookie("success-route", "/reassign-tasks/1");
 
-        cy.intercept('api/v1/teams/21', {
+        cy.intercept('supervision-api/v1/teams/21', {
             body: {
                 "members": [
                     {
@@ -38,7 +38,7 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)')
-        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Lay Team 1 - (Supervision)')
@@ -52,7 +52,7 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
-        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
         cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
         cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
         cy.get('#assignCM').select('LayTeam1 User4');

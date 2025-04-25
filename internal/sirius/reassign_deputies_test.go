@@ -71,7 +71,7 @@ func TestReassignDeputiesReturnsNewStatusError(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
-		URL:    svr.URL + "/api/v1/deputies/reassign",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/deputies/reassign",
 		Method: http.MethodPut,
 	}, err)
 }
@@ -113,7 +113,7 @@ func TestReassignDeputiesReturnsInternalServerError(t *testing.T) {
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/deputies/reassign",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/deputies/reassign",
 		Method: http.MethodPut,
 	}
 

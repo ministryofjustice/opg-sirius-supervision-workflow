@@ -151,7 +151,7 @@ func TestGetTeamsCanReturn500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/teams",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/teams",
 		Method: http.MethodGet,
 	}, err)
 }

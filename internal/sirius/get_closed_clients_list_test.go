@@ -157,7 +157,7 @@ func TestGetClosedCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/closed-clients?limit=25&page=1&filter=",
+		URL:    svr.URL + SupervisionAPIPath + "/v1/assignees/closed-clients?limit=25&page=1&filter=",
 		Method: http.MethodGet,
 	}, err)
 }
