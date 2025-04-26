@@ -30,7 +30,7 @@ jobs:
           files: test-results/unit-tests.xml
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
+        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5.4.2
         with:
           files: test-results/test-coverage.txt
           fail_ci_if_error: false
@@ -108,7 +108,7 @@ jobs:
         run: make scan
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 # v3.28.15
+        uses: github/codeql-action/upload-sarif@28deaeda66b76a05916b6923827895f2b14ab387 # v3.28.16
         with:
           sarif_file: 'test-results/trivy.sarif'
           category: trivy-docker-workflow
