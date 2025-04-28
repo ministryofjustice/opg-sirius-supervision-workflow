@@ -81,9 +81,16 @@ jobs:
           path: cypress/logs
 
   build:
-    name: "Build & Push Containers"
+    name: Build Sirius Workflow
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@6bc0246b5cca2f4c85d06986c82a9a42643f6851 # v3.13.0
+    with:
+      image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
+      build_options: --file docker/sirius-workflow/Dockerfile
+
+  push:
+    name: "Push Images"
     runs-on: ubuntu-latest
-    needs: ['test', 'lint', 'gosec']
+    needs: ['test', 'lint', 'gosec', 'build']
     outputs:
       branch: ${{ steps.set-outputs.outputs.branch }}
       tag: ${{ steps.bump_version.outputs.tag }}
@@ -101,18 +108,6 @@ jobs:
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@e8b481e524a99f37fbd39fdc1dcb3341ab091367 # v1.0.7
 
-      - name: Build Container
-        run: make build
-
-      - name: Run Trivy vulnerability scanner
-        run: make scan
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 # v3.28.15
-        with:
-          sarif_file: 'test-results/trivy.sarif'
-          category: trivy-docker-workflow
-
       - name: Bump version
         id: bump_version
         uses: anothrNick/github-tag-action@f278d49d30cdd8775cc3e7dd00b5ee11686ee297 # 1.71.0
@@ -124,6 +119,28 @@ jobs:
           PRERELEASE_SUFFIX: ${{ env.BRANCH_NAME }}
           RELEASE_BRANCHES: main
           WITH_V: true
+
+      - name: Set up Docker
+        run: |
+          echo '{"experimental": true, "features": { "containerd-snapshotter": true }}' | sudo tee -a /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --privileged --rm tonistiigi/binfmt --install all
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          path: /tmp/images
+          name: multi-arch-image
+      - name: Load Images
+        run: |
+          docker load -i /tmp/images/multi-arch-image.tar
+
+      - name: Run Trivy vulnerability scanner
+        run: make scan
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 # v3.28.15
+        with:
+          sarif_file: 'test-results/trivy.sarif'
+          category: trivy-docker-workflow
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4.1.0
@@ -141,7 +158,7 @@ jobs:
         with:
           registries: 311462405659
 
-      - name: Push Container
+      - name: Push
         run: |
           docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ steps.bump_version.outputs.tag }}
           if [ $BRANCH_NAME == "main" ]; then
@@ -153,9 +170,26 @@ jobs:
             docker push 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ steps.bump_version.outputs.tag }}
           fi
 
+  end_of_pr_workflow:
+    name: End of PR Workflow
+    runs-on: ubuntu-latest
+    if: always()
+    needs: ['test', 'lint', 'gosec', cypress, 'build', push]
+    steps:
+      - name: End of PR Workflow
+        run: |
+          if ${{ contains(needs.*.result,'failure') }}
+          then
+            echo "Not all checks succedeed, check the previous jobs."
+            exit 1
+          else
+            echo "All checks succedeed!"
+            exit 0
+          fi
+
   push-tags:
     runs-on: ubuntu-latest
-    needs: ['build', 'cypress']
+    needs: ['push', 'end_of_pr_workflow']
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -176,7 +210,7 @@ jobs:
 
       - name: Push Tag to Parameter Store
         run: |
-          aws ssm put-parameter --name "opg-sirius-supervision-workflow-latest-green-build" --type "String" --value "${{ needs.build.outputs.tag }}" --overwrite --region=eu-west-1
+          aws ssm put-parameter --name "opg-sirius-supervision-workflow-latest-green-build" --type "String" --value "${{ needs.push.outputs.tag }}" --overwrite --region=eu-west-1
 
       - name: Trigger Dev Deploy
         shell: bash
