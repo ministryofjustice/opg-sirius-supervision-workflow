@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"go.uber.org/zap"
 )
 
 type ErrorVars struct {
@@ -41,7 +41,7 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
+func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -51,7 +51,7 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 				err = next(*vars, w, r)
 			}
 
-			logger.Infow(
+			logger.Info(
 				"Application Request",
 				"method", r.Method,
 				"uri", r.URL.RequestURI(),
@@ -74,7 +74,7 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 					return
 				}
 
-				logger.Errorw("Error handler", err)
+				logger.Error("Error handler", err)
 
 				code := http.StatusInternalServerError
 				if serverStatusError, ok := err.(StatusError); ok {
@@ -93,7 +93,7 @@ func wrapHandler(client ApiClient, logger *zap.SugaredLogger, tmplError Template
 				err = tmplError.Execute(w, errVars)
 
 				if err != nil {
-					logger.Errorw("Failed to render error template", err)
+					logger.Error("Failed to render error template", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}
