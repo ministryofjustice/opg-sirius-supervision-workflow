@@ -74,7 +74,7 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 					return
 				}
 
-				logger.Error("Error handler", err)
+				logger.Error("Error handler", "error", err)
 
 				code := http.StatusInternalServerError
 				if serverStatusError, ok := err.(StatusError); ok {
@@ -93,7 +93,7 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				err = tmplError.Execute(w, errVars)
 
 				if err != nil {
-					logger.Error("Failed to render error template", err)
+					logger.Error("Failed to render error template", "error", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}

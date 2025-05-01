@@ -28,7 +28,7 @@ import (
 func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 	resource, err := ecs.NewResourceDetector().Detect(ctx)
 	if err != nil {
-		logger.Error("Fatal error: ", err)
+		logger.Error("Fatal error: ", "error", err)
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx,
@@ -36,7 +36,7 @@ func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 		otlptracegrpc.WithEndpoint("0.0.0.0:4317"),
 	)
 	if err != nil {
-		logger.Error("Fatal error: ", err)
+		logger.Error("Fatal error: ", "error", err)
 	}
 
 	idg := xray.NewIDGenerator()
@@ -52,7 +52,7 @@ func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 
 	return func() {
 		if err := tp.Shutdown(ctx); err != nil {
-			logger.Error("Fatal error: ", err)
+			logger.Error("Fatal error: ", "error", err)
 		}
 	}
 }
@@ -99,13 +99,13 @@ func main() {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-c
-	logger.Info("signal received: ", sig)
+	logger.Info("signal received: ", "signal", sig)
 
 	tc, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(tc); err != nil {
-		logger.Info("Error returned by server.Shutdown",
+		logger.Error("Error returned by server.Shutdown",
 			"error", err,
 		)
 	}

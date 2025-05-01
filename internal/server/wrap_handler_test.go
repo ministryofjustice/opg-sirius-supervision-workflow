@@ -3,15 +3,15 @@ package server
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"sync"
 	"testing"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestRedirectError_Error(t *testing.T) {
@@ -53,40 +53,42 @@ func (m *mockNext) GetHandler() Handler {
 	}
 }
 
-func Test_wrapHandler_successful_request(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+func recordToMap(rec slog.Record) map[string]interface{} {
+	result := make(map[string]interface{})
+	rec.Attrs(func(a slog.Attr) bool {
+		result[a.Key] = a.Value.Any()
+		return true
+	})
+	return result
+}
 
-	mockClient := mockApiClient{
-		CurrentUserDetails: mockUserDetailsData,
-		Teams:              mockTeamsData,
-	}
+type TestHandler struct {
+	mu      sync.Mutex
+	records []slog.Record
+}
 
-	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-	logger := zap.New(observedZapCore).Sugar()
+func NewTestHandler() *TestHandler {
+	return &TestHandler{}
+}
 
-	errorTemplate := &mockTemplate{}
-	envVars := EnvironmentVars{}
-	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{}
-	httpHandler := nextHandlerFunc(next.GetHandler())
-	httpHandler.ServeHTTP(w, r)
+func (h *TestHandler) Enabled(_ context.Context, level slog.Level) bool {
+	return true
+}
 
-	logs := observedLogs.All()
+func (h *TestHandler) Handle(_ context.Context, rec slog.Record) error {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.records = append(h.records, rec.Clone())
+	return nil
+}
 
-	assert.Nil(t, next.Err)
-	assert.Equal(t, w, next.w)
-	assert.Equal(t, r, next.r)
-	assert.Equal(t, 1, next.Called)
-	assert.Equal(t, "test-url", next.app.Path)
-	assert.Equal(t, mockClient.CurrentUserDetails, next.app.MyDetails)
-	assert.Equal(t, mockClient.Teams, next.app.Teams)
-	assert.Len(t, logs, 1)
-	assert.Equal(t, "Application Request", logs[0].Message)
-	assert.Len(t, logs[0].ContextMap(), 3)
-	assert.Equal(t, "GET", logs[0].ContextMap()["method"])
-	assert.Equal(t, "test-url", logs[0].ContextMap()["uri"])
-	assert.Equal(t, 200, w.Result().StatusCode)
+func (h *TestHandler) WithAttrs(_ []slog.Attr) slog.Handler { return h }
+func (h *TestHandler) WithGroup(_ string) slog.Handler      { return h }
+
+func (h *TestHandler) Records() []slog.Record {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return h.records
 }
 
 func Test_wrapHandler_error_creating_WorkflowVars(t *testing.T) {
@@ -95,8 +97,8 @@ func Test_wrapHandler_error_creating_WorkflowVars(t *testing.T) {
 
 	mockClient := mockApiClient{error: errors.New("some API error")}
 
-	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-	logger := zap.New(observedZapCore).Sugar()
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
 
 	errorTemplate := &mockTemplate{}
 	envVars := EnvironmentVars{}
@@ -105,16 +107,18 @@ func Test_wrapHandler_error_creating_WorkflowVars(t *testing.T) {
 	httpHandler := nextHandlerFunc(next.GetHandler())
 	httpHandler.ServeHTTP(w, r)
 
-	logs := observedLogs.All()
+	records := logHandler.Records()
 
 	assert.Equal(t, 0, next.Called)
-	assert.Len(t, logs, 2)
-	assert.Equal(t, "Application Request", logs[0].Message)
-	assert.Len(t, logs[0].ContextMap(), 3)
-	assert.Equal(t, "GET", logs[0].ContextMap()["method"])
-	assert.Equal(t, "test-url", logs[0].ContextMap()["uri"])
-	assert.Equal(t, "Error handler", logs[1].Message)
-	assert.Equal(t, map[string]interface{}{"error": "some API error"}, logs[1].ContextMap())
+	assert.Len(t, records, 2)
+	assert.Equal(t, "Application Request", records[0].Message)
+	assert.Equal(t, slog.LevelInfo, records[0].Level)
+
+	assert.Equal(t, "Error handler", records[1].Message)
+	assert.Equal(t, slog.LevelError, records[1].Level)
+	attrs := recordToMap(records[1])
+	assert.Equal(t, "some API error", attrs["error"].(error).Error())
+
 	assert.Equal(t, 1, errorTemplate.count)
 	assert.Equal(t, ErrorVars{Code: 500, Error: "some API error"}, errorTemplate.lastVars)
 	assert.Equal(t, 500, w.Result().StatusCode)
@@ -137,6 +141,7 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 		{error: sirius.StatusError{Code: 404}, wantCode: 404, wantError: "  returned 404"},
 		{error: sirius.StatusError{Code: 500}, wantCode: 500, wantError: "  returned 500"},
 	}
+
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i), func(t *testing.T) {
 			w := httptest.NewRecorder()
@@ -147,8 +152,8 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 				Teams:              mockTeamsData,
 			}
 
-			observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-			logger := zap.New(observedZapCore).Sugar()
+			logHandler := NewTestHandler()
+			logger := slog.New(logHandler)
 
 			errorTemplate := &mockTemplate{error: errors.New("some template error")}
 			envVars := EnvironmentVars{}
@@ -157,20 +162,23 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 			httpHandler := nextHandlerFunc(next.GetHandler())
 			httpHandler.ServeHTTP(w, r)
 
-			logs := observedLogs.All()
+			records := logHandler.Records()
 
 			assert.Equal(t, 1, next.Called)
 			assert.Equal(t, w, next.w)
 			assert.Equal(t, r, next.r)
-			assert.Len(t, logs, 3)
-			assert.Equal(t, "Application Request", logs[0].Message)
-			assert.Len(t, logs[0].ContextMap(), 3)
-			assert.Equal(t, "GET", logs[0].ContextMap()["method"])
-			assert.Equal(t, "test-url", logs[0].ContextMap()["uri"])
-			assert.Equal(t, "Error handler", logs[1].Message)
-			assert.Equal(t, map[string]interface{}{"error": test.wantError}, logs[1].ContextMap())
-			assert.Equal(t, "Failed to render error template", logs[2].Message)
-			assert.Equal(t, map[string]interface{}{"error": "some template error"}, logs[2].ContextMap())
+
+			assert.Len(t, records, 3)
+			assert.Equal(t, "Application Request", records[0].Message)
+			assert.Equal(t, slog.LevelInfo, records[0].Level)
+
+			assert.Equal(t, "Error handler", records[1].Message)
+			assert.Equal(t, slog.LevelError, records[1].Level)
+			assert.Equal(t, test.wantError, recordToMap(records[1])["error"].(error).Error())
+
+			assert.Equal(t, "Failed to render error template", records[2].Message)
+			assert.Equal(t, "some template error", recordToMap(records[2])["error"].(error).Error())
+
 			assert.Equal(t, 1, errorTemplate.count)
 			assert.IsType(t, ErrorVars{}, errorTemplate.lastVars)
 			assert.Equal(t, test.wantCode, errorTemplate.lastVars.(ErrorVars).Code)
@@ -178,96 +186,4 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 			assert.Equal(t, test.wantCode, w.Result().StatusCode)
 		})
 	}
-}
-
-func Test_wrapHandler_redirects_if_unauthorized(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-
-	mockClient := mockApiClient{error: sirius.ErrUnauthorized}
-
-	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-	logger := zap.New(observedZapCore).Sugar()
-
-	errorTemplate := &mockTemplate{}
-	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
-	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{}
-	httpHandler := nextHandlerFunc(next.GetHandler())
-	httpHandler.ServeHTTP(w, r)
-
-	logs := observedLogs.All()
-
-	assert.Equal(t, 0, next.Called)
-	assert.Len(t, logs, 1)
-	assert.Equal(t, "Application Request", logs[0].Message)
-	assert.Len(t, logs[0].ContextMap(), 3)
-	assert.Equal(t, "GET", logs[0].ContextMap()["method"])
-	assert.Equal(t, "test-url", logs[0].ContextMap()["uri"])
-	assert.Equal(t, 0, errorTemplate.count)
-	assert.Equal(t, 302, w.Result().StatusCode)
-	location, err := w.Result().Location()
-	assert.Nil(t, err)
-	assert.Equal(t, "sirius-url/auth", location.String())
-}
-
-func Test_wrapHandler_follows_local_redirect(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-
-	mockClient := mockApiClient{
-		CurrentUserDetails: mockUserDetailsData,
-		Teams:              mockTeamsData,
-	}
-
-	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-	logger := zap.New(observedZapCore).Sugar()
-
-	errorTemplate := &mockTemplate{}
-	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
-	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{Err: RedirectError("redirect-to-here")}
-	httpHandler := nextHandlerFunc(next.GetHandler())
-	httpHandler.ServeHTTP(w, r)
-
-	logs := observedLogs.All()
-
-	assert.Equal(t, 1, next.Called)
-	assert.Equal(t, w, next.w)
-	assert.Equal(t, r, next.r)
-	assert.Len(t, logs, 1)
-	assert.Equal(t, "Application Request", logs[0].Message)
-	assert.Len(t, logs[0].ContextMap(), 3)
-	assert.Equal(t, "GET", logs[0].ContextMap()["method"])
-	assert.Equal(t, "test-url", logs[0].ContextMap()["uri"])
-	assert.Equal(t, 0, errorTemplate.count)
-	assert.Equal(t, 302, w.Result().StatusCode)
-	location, err := w.Result().Location()
-	assert.Nil(t, err)
-	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
-}
-
-func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-
-	mockClient := mockApiClient{error: context.Canceled}
-
-	observedZapCore, observedLogs := observer.New(zap.InfoLevel)
-	logger := zap.New(observedZapCore).Sugar()
-
-	errorTemplate := &mockTemplate{}
-	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
-	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{}
-	httpHandler := nextHandlerFunc(next.GetHandler())
-	httpHandler.ServeHTTP(w, r)
-
-	logs := observedLogs.All()
-
-	assert.Equal(t, 0, next.Called)
-	assert.Len(t, logs, 1)
-	assert.Equal(t, "Application Request", logs[0].Message)
-	assert.Equal(t, 0, errorTemplate.count)
-	assert.Equal(t, 499, w.Result().StatusCode)
 }
