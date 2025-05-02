@@ -1,14 +1,15 @@
 package server
 
 import (
+	"html/template"
+	"io"
+	"log/slog"
+	"net/http"
+	"net/url"
+
 	"github.com/ministryofjustice/opg-go-common/securityheaders"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.uber.org/zap"
-	"html/template"
-	"io"
-	"net/http"
-	"net/url"
 )
 
 type ApiClient interface {
@@ -22,7 +23,7 @@ type Template interface {
 	Execute(wr io.Writer, data any) error
 }
 
-func New(logger *zap.SugaredLogger, client ApiClient, templates map[string]*template.Template, envVars EnvironmentVars) http.Handler {
+func New(logger *slog.Logger, client ApiClient, templates map[string]*template.Template, envVars EnvironmentVars) http.Handler {
 	wrap := wrapHandler(client, logger, templates["error.gotmpl"], envVars)
 
 	mux := http.NewServeMux()
