@@ -111,7 +111,7 @@ export default class ManageReassign {
   _getCaseManagers(event) {
     const value = event.target.value.toString();
 
-    fetch(`${this.baseUrl}/api/v1/teams/${value}`, {
+    fetch(`${this.baseUrl}/supervision-api/v1/teams/${value}`, {
       method: "GET",
       credentials: "include",
       headers: {

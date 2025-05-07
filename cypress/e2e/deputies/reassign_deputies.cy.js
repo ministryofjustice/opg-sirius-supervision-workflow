@@ -6,7 +6,7 @@ describe("Reassign deputies", () => {
     });
 
     it("allows deputies to be reassigned", () => {
-        cy.intercept('api/v1/teams/27', {
+        cy.intercept('supervision-api/v1/teams/27', {
             body: {
                 "members": [
                     {
@@ -27,7 +27,7 @@ describe("Reassign deputies", () => {
         cy.get('#manage-deputy').click();
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)');
         cy.get('#assignCM').select('ProTeam1 User1');
-        cy.intercept('PATCH', 'api/v1/users/*', {statusCode: 204})
+        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have reassigned ')
