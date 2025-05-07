@@ -58,7 +58,6 @@ func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 }
 
 func main() {
-	const SupervisionAPIPath = "/supervision-api"
 
 	logger := telemetry.NewLogger("opg-sirius-workflow")
 
@@ -66,6 +65,8 @@ func main() {
 		shutdown := initTracerProvider(context.Background(), logger)
 		defer shutdown()
 	}
+
+	supervisionAPIPath := env.Get("SUPERVISION_API_PATH", "/supervision-api")
 
 	httpClient := http.DefaultClient
 	httpClient.Transport = otelhttp.NewTransport(httpClient.Transport)
@@ -75,7 +76,7 @@ func main() {
 		logger.Error("Error creating EnvironmentVars", "error", err)
 	}
 
-	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+SupervisionAPIPath, logger)
+	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+supervisionAPIPath, logger)
 	if err != nil {
 		logger.Error("Error returned by Sirius New ApiClient", "error", err)
 	}
