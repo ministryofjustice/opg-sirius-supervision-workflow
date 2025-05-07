@@ -2,14 +2,15 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetCaseloadListCanReturn200(t *testing.T) {
@@ -150,7 +151,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + SupervisionAPIPath + "/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
 		Method: http.MethodGet,
 	}, err)
 }

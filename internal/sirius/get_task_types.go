@@ -3,9 +3,10 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 const TaskTypeCategorySupervision = "supervision"
@@ -24,7 +25,7 @@ type TaskTypesParams struct {
 }
 
 func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.TaskType, error) {
-	endpoint := fmt.Sprintf(SupervisionAPIPath + "/v1/tasktypes/%s", params.Category)
+	endpoint := fmt.Sprintf("/v1/tasktypes/%s", params.Category)
 	if params.ProDeputy {
 		endpoint += "?pro_deputy=true"
 	} else if params.PADeputy {

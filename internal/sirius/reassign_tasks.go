@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ReassignTasksParams struct {
@@ -38,7 +39,7 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 	if err != nil {
 		return "", err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, SupervisionAPIPath + "/v1/reassign-tasks", &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/v1/reassign-tasks", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

@@ -3,10 +3,11 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type DeputyMetaData struct {
@@ -41,7 +42,7 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 	}
 
 	endpoint := fmt.Sprintf(
-		SupervisionAPIPath + "/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
+		"/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
 		strings.Join(teamIds, "&"),
 		params.PerPage,
 		params.Page,
@@ -60,7 +61,7 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusUnauthorized {

@@ -3,9 +3,10 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strings"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ClientListParams struct {
@@ -46,7 +47,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf(SupervisionAPIPath + "/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	endpoint := fmt.Sprintf("/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {

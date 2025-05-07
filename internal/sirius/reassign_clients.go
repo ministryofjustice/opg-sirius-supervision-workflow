@@ -42,7 +42,7 @@ func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (
 	if err != nil {
 		return "", err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, SupervisionAPIPath + "/v1/clients/edit/reassign", &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/v1/clients/edit/reassign", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

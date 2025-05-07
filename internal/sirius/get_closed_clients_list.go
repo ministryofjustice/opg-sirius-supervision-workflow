@@ -27,7 +27,7 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 	}
 
 	endpoint := fmt.Sprintf(
-		SupervisionAPIPath + "/v1/assignees/closed-clients?limit=%d&page=%d&filter=%s",
+		"/v1/assignees/closed-clients?limit=%d&page=%d&filter=%s",
 		params.PerPage,
 		params.Page,
 		filter,

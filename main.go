@@ -2,9 +2,17 @@ package main
 
 import (
 	"context"
+	"html/template"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"syscall"
+	"time"
+
 	"github.com/ministryofjustice/opg-go-common/env"
-	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-go-common/paginate"
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/util"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -13,13 +21,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.uber.org/zap"
-	"html/template"
-	"net/http"
-	"os"
-	"os/signal"
-	"path/filepath"
-	"syscall"
-	"time"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -58,6 +59,9 @@ func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 }
 
 func main() {
+
+	const SupervisionAPIPath = "/supervision-api"
+
 	logger := zap.Must(zap.NewProduction(zap.Fields(zap.String("service_name", "opg-sirius-workflow")))).Sugar()
 	apiCallLogger := telemetry.NewLogger("opg-sirius-workflow")
 
@@ -76,7 +80,8 @@ func main() {
 		logger.Fatalw("Error creating EnvironmentVars", "error", err)
 	}
 
-	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL, apiCallLogger)
+	// Change the second parameter here
+	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+SupervisionAPIPath, apiCallLogger)
 	if err != nil {
 		logger.Fatalw("Error returned by Sirius New ApiClient", "error", err)
 	}

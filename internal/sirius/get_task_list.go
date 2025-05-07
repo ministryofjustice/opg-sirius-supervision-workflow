@@ -3,11 +3,12 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type TaskMetaData struct {
@@ -51,7 +52,7 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 	}
 
 	endpoint := fmt.Sprintf(
-		SupervisionAPIPath + "/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=%s",
+		"/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=%s",
 		strings.Join(teamIds, "&"),
 		params.CreateFilter(),
 		params.PerPage,

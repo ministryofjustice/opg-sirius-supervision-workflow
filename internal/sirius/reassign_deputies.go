@@ -36,7 +36,7 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 	if err != nil {
 		return "", err
 	}
-	req, err := c.newRequest(ctx, http.MethodPut, SupervisionAPIPath + "/v1/deputies/reassign", &body)
+	req, err := c.newRequest(ctx, http.MethodPut, "/v1/deputies/reassign", &body)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

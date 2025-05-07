@@ -2,12 +2,13 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -151,7 +152,7 @@ func TestGetTeamsCanReturn500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + SupervisionAPIPath + "/v1/teams",
+		URL:    svr.URL + "/v1/teams",
 		Method: http.MethodGet,
 	}, err)
 }

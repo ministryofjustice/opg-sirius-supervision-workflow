@@ -2,13 +2,14 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
@@ -140,7 +141,7 @@ func TestApiClient_GetDeputyList_Returns500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + SupervisionAPIPath + "/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
