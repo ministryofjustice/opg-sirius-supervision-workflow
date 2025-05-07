@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +14,8 @@ import (
 	"github.com/ministryofjustice/opg-go-common/env"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-go-common/telemetry"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/util"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -20,16 +23,12 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/trace"
-	"go.uber.org/zap"
-
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/server"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
-func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
+func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 	resource, err := ecs.NewResourceDetector().Detect(ctx)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Error("Fatal error: ", "error", err)
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx,
@@ -37,7 +36,7 @@ func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 		otlptracegrpc.WithEndpoint("0.0.0.0:4317"),
 	)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Error("Fatal error: ", "error", err)
 	}
 
 	idg := xray.NewIDGenerator()
@@ -53,19 +52,15 @@ func initTracerProvider(ctx context.Context, logger *zap.SugaredLogger) func() {
 
 	return func() {
 		if err := tp.Shutdown(ctx); err != nil {
-			logger.Fatal(err)
+			logger.Error("Fatal error: ", "error", err)
 		}
 	}
 }
 
 func main() {
-
 	const SupervisionAPIPath = "/supervision-api"
 
-	logger := zap.Must(zap.NewProduction(zap.Fields(zap.String("service_name", "opg-sirius-workflow")))).Sugar()
-	apiCallLogger := telemetry.NewLogger("opg-sirius-workflow")
-
-	defer func() { _ = logger.Sync() }()
+	logger := telemetry.NewLogger("opg-sirius-workflow")
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
 		shutdown := initTracerProvider(context.Background(), logger)
@@ -77,13 +72,12 @@ func main() {
 
 	envVars, err := server.NewEnvironmentVars()
 	if err != nil {
-		logger.Fatalw("Error creating EnvironmentVars", "error", err)
+		logger.Error("Error creating EnvironmentVars", "error", err)
 	}
 
-	// Change the second parameter here
-	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+SupervisionAPIPath, apiCallLogger)
+	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+SupervisionAPIPath, logger)
 	if err != nil {
-		logger.Fatalw("Error returned by Sirius New ApiClient", "error", err)
+		logger.Error("Error returned by Sirius New ApiClient", "error", err)
 	}
 
 	templates := createTemplates(envVars)
@@ -95,26 +89,25 @@ func main() {
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logger.Infow("Error returned by server.ListenAndServe()",
+			logger.Error("Error returned by server.ListenAndServe()",
 				"error", err,
 			)
-			logger.Fatal(err)
 		}
 	}()
 
-	logger.Infow("Running at :" + envVars.Port)
+	logger.Info("Running at :" + envVars.Port)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
 	sig := <-c
-	logger.Infow("signal received: ", sig)
+	logger.Info("signal received: ", "signal", sig)
 
 	tc, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(tc); err != nil {
-		logger.Infow("Error returned by server.Shutdown",
+		logger.Error("Error returned by server.Shutdown",
 			"error", err,
 		)
 	}

@@ -36,10 +36,12 @@ WORKDIR /app
 
 COPY go.mod .
 COPY go.sum .
+COPY internal internal
+COPY web/template web/template
+COPY main.go .
+COPY main_test.go .
 
 RUN go mod download
-
-COPY . .
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
