@@ -58,6 +58,8 @@ func initTracerProvider(ctx context.Context, logger *slog.Logger) func() {
 }
 
 func main() {
+	const SupervisionAPIPath = "/supervision-api"
+
 	logger := telemetry.NewLogger("opg-sirius-workflow")
 
 	if env.Get("TRACING_ENABLED", "0") == "1" {
@@ -73,7 +75,7 @@ func main() {
 		logger.Error("Error creating EnvironmentVars", "error", err)
 	}
 
-	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL, logger)
+	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+SupervisionAPIPath, logger)
 	if err != nil {
 		logger.Error("Error returned by Sirius New ApiClient", "error", err)
 	}

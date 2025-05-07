@@ -2,12 +2,13 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -93,7 +94,7 @@ func TestMyDetailsReturns500Error(t *testing.T) {
 	_, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/users/current",
+		URL:    svr.URL + "/v1/users/current",
 		Method: http.MethodGet,
 	}, err)
 }

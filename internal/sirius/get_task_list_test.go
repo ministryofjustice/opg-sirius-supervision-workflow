@@ -2,15 +2,16 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTaskListCanReturn200(t *testing.T) {
@@ -108,12 +109,12 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 		{
 			name:         "Single Team ID requested",
 			selectedTeam: model.Team{Id: 13},
-			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
+			expectedURL:  "/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
 		},
 		{
 			name:         "Multiple Team IDs requested",
 			selectedTeam: model.Team{Id: 0, Teams: []model.Team{{Id: 12}, {Id: 13}}},
-			expectedURL:  "/api/v1/assignees/teams/tasks?teamIds[]=12&teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
+			expectedURL:  "/v1/assignees/teams/tasks?teamIds[]=12&teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
 		},
 	}
 	for _, test := range tests {

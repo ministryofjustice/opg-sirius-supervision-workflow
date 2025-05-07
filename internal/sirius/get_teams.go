@@ -2,10 +2,11 @@ package sirius
 
 import (
 	"encoding/json"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"sort"
 	"strconv"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type TeamCollection struct {
@@ -25,7 +26,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	var v []TeamCollection
 	var q []model.Team
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/api/v1/teams", nil)
+	req, err := c.newRequest(ctx, http.MethodGet, "/v1/teams", nil)
 	if err != nil {
 		return q, err
 	}
