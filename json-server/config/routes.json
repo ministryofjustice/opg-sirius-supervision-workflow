@@ -1,5 +1,5 @@
 {
-    "/api/v1/*": "/$1",
+    "/supervision-api/v1/*": "/$1",
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/tasktypes/deputy*": "/tasktypes-deputy",
     "/users/current": "/users-current",

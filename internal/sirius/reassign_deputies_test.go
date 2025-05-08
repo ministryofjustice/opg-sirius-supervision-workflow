@@ -3,13 +3,14 @@ package sirius
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateReassignDeputies(t *testing.T) {
@@ -71,7 +72,7 @@ func TestReassignDeputiesReturnsNewStatusError(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusMethodNotAllowed,
-		URL:    svr.URL + "/api/v1/deputies/reassign",
+		URL:    svr.URL + "/v1/deputies/reassign",
 		Method: http.MethodPut,
 	}, err)
 }
@@ -113,7 +114,7 @@ func TestReassignDeputiesReturnsInternalServerError(t *testing.T) {
 
 	expectedResponse := StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/deputies/reassign",
+		URL:    svr.URL + "/v1/deputies/reassign",
 		Method: http.MethodPut,
 	}
 

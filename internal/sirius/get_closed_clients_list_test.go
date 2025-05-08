@@ -2,15 +2,16 @@ package sirius
 
 import (
 	"bytes"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
@@ -157,7 +158,7 @@ func TestGetClosedCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/closed-clients?limit=25&page=1&filter=",
+		URL:    svr.URL + "/v1/assignees/closed-clients?limit=25&page=1&filter=",
 		Method: http.MethodGet,
 	}, err)
 }
