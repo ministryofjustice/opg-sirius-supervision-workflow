@@ -277,10 +277,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@ministryofjustice/frontend@^4.0.1":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-4.0.2.tgz#6cc8c1e817ba5a264773ed4ffcad37826ed387d3"
-  integrity sha512-UhzWIaIHNBcU1yhtSTAftbv8KaSmGq9+sSb+jTtXtFE/dCkhOAgojBn2glI4O2uWTjqIFPrOmN/N2DRfrx0sLA==
+"@ministryofjustice/frontend@^5.0.0":
+  version "5.1.3"
+  resolved "https://registry.yarnpkg.com/@ministryofjustice/frontend/-/frontend-5.1.3.tgz#b85a7978d4f3bd7bf1423be88077ef1578fdd6df"
+  integrity sha512-h6/riC6zDo5scevzZz1RByRo3AnX4k2ywFMTX47Irq9y7keyhalyfO5D0+VAJMpX0ADuNLg3f2tJh+cumH/PBA==
 
 "@modelcontextprotocol/sdk@^1.8.0":
   version "1.11.0"
