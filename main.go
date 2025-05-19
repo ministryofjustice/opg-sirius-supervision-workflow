@@ -84,8 +84,9 @@ func main() {
 	templates := createTemplates(envVars)
 
 	server := &http.Server{
-		Addr:    ":" + envVars.Port,
-		Handler: server.New(logger, client, templates, envVars),
+		Addr:              ":" + envVars.Port,
+		Handler:           server.New(logger, client, templates, envVars),
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	go func() {
@@ -135,7 +136,7 @@ func createTemplates(envVars server.EnvironmentVars) map[string]*template.Templa
 		"is_last": util.IsLast,
 	}
 
-	templateDirPath := envVars.WebDir + "/template"
+	templateDirPath := filepath.Join(envVars.WebDir, "/template")
 	templateDir, _ := os.Open(templateDirPath)
 	templateDirs, _ := templateDir.Readdir(0)
 	_ = templateDir.Close()
