@@ -85,7 +85,7 @@ export default class ManageFilters {
         return
       }
       if (filter.checked || filter.type !== "checkbox") {
-        url += "&" + encodeURIComponent(filter.name) + "=" + encodeURIComponent(filter.value)
+        url += "&" + filter.name + "=" + filter.value
       }
     });
     window.location.href = url;
