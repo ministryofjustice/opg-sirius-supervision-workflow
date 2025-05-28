@@ -382,9 +382,9 @@
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
 "@types/node@*":
-  version "22.15.19"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.15.19.tgz#ba9f321675243af0456d607fa82a4865931e0cef"
-  integrity sha512-3vMNr4TzNQyjHcRZadojpRaD9Ofr6LsonZAoQ+HMUa/9ORTPoxVIw0e0mpqWpdjj8xybyCM+oKOUH2vwFu/oEw==
+  version "22.15.23"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.15.23.tgz#a0b7c03f951f1ffe381a6a345c68d80e48043dd0"
+  integrity sha512-7Ec1zaFPF4RJ0eXu1YT/xgiebqwqoJz8rYPDi/O2BcZ++Wpt0Kq9cl0eg6NN6bYbPnR67ZLo7St5Q3UK0SnARw==
   dependencies:
     undici-types "~6.21.0"
 
@@ -754,9 +754,9 @@ cypress-failed-log@^2.10.0:
     logdown "3.3.1"
 
 cypress@^14.0.0:
-  version "14.3.3"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-14.3.3.tgz#cbf7fbc79fd139ba55ea51a6d1ee3d9018a59ce2"
-  integrity sha512-1Rz7zc9iqLww6BysaESqUhtIuaFHS7nL3wREovAKYsNhLTfX3TbcBWHWgEz70YimH2NkSOsm4oIcJJ9HYHOlew==
+  version "14.4.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-14.4.0.tgz#db7d108400c9481a161f047f1cc34b43b05c48f3"
+  integrity sha512-/I59Fqxo7fqdiDi3IM2QKA65gZ7+PVejXg404/I8ZSq+NOnrmw+2pnMUJzpoNyg7KABcEBmgpkfAqhV98p7wJA==
   dependencies:
     "@cypress/request" "^3.0.8"
     "@cypress/xvfb" "^1.2.4"
