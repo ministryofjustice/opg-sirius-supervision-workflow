@@ -42,7 +42,7 @@ services:
     working_dir: /go/src/app
     volumes:
       - ./:/go/src/app
-      - ./.cache/golangci-lint/v1.53.3:/root/.cache
+      - ./.cache/golangci-lint/v2.2.1:/root/.cache
     command: golangci-lint run -v --timeout 5m
 
   gosec:

@@ -99,7 +99,7 @@ func TestReassignClientsReturnsForbiddenClientError(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignClients(getContext(nil), ReassignClientsParams{AssignTeam: "10"})
-	assert.Equal(t, "Only managers can reassign client cases", err.Error())
+	assert.Equal(t, "only managers can reassign client cases", err.Error())
 }
 
 func TestReassignClientsReturnsInternalServerError(t *testing.T) {

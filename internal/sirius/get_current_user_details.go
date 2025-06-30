@@ -23,7 +23,7 @@ func (c *ApiClient) GetCurrentUserDetails(ctx Context) (model.Assignee, error) {
 		return v, err
 	}
 
-	defer resp.Body.Close()
+	unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logRequest(req, err)
