@@ -56,14 +56,14 @@ func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		return "", errors.New("Only managers can reassign client cases")
+		return "", errors.New("only managers can reassign client cases")
 	}
 
 	if resp.StatusCode != http.StatusOK {
