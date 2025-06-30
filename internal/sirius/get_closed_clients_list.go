@@ -45,7 +45,7 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 		return v, err
 	}
 
-	defer resp.Body.Close()
+	unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)

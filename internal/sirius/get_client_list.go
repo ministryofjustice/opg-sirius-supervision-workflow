@@ -60,7 +60,8 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	defer resp.Body.Close()
+
+	unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)

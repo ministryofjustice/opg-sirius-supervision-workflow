@@ -209,7 +209,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		}
 		vars.AppliedFilters = vars.GetAppliedFilters()
 
-		vars.FilterByAssignee.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
+		vars.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
 
 		return tmpl.Execute(w, vars)
 	}
