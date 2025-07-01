@@ -50,7 +50,7 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		return "", err
 	}
 
-	unchecked(resp.Body.Close)
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized

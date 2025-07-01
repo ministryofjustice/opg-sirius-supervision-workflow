@@ -37,7 +37,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		return q, err
 	}
 
-	unchecked(resp.Body.Close)
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)

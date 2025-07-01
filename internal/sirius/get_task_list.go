@@ -72,7 +72,7 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		return v, err
 	}
 
-	unchecked(resp.Body.Close)
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)

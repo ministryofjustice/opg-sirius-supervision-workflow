@@ -56,7 +56,7 @@ func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (
 		return "", err
 	}
 
-	unchecked(resp.Body.Close)
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized
