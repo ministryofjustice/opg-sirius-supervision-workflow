@@ -45,7 +45,7 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)

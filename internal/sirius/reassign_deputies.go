@@ -50,14 +50,14 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		return "", errors.New("Only managers can reassign deputy cases")
+		return "", errors.New("only managers can reassign deputy cases")
 	}
 
 	if resp.StatusCode != http.StatusOK {

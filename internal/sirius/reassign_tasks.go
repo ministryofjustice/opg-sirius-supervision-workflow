@@ -53,14 +53,14 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrUnauthorized
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		return "", errors.New("Only managers can set priority on tasks")
+		return "", errors.New("only managers can set priority on tasks")
 	}
 
 	if resp.StatusCode != http.StatusOK {

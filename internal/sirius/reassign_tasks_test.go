@@ -168,7 +168,7 @@ func TestReassignTasksReturnsForbiddenClientError(t *testing.T) {
 
 	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{AssignTeam: "10"})
-	assert.Equal(t, "Only managers can set priority on tasks", err.Error())
+	assert.Equal(t, "only managers can set priority on tasks", err.Error())
 }
 
 func TestReassignTasksReturnsInternalServerError(t *testing.T) {

@@ -36,7 +36,8 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		c.logErrorRequest(req, err)
 		return q, err
 	}
-	defer resp.Body.Close()
+
+	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)
