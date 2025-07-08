@@ -80,6 +80,10 @@ jobs:
           name: cypress-logs
           path: cypress/logs
 
+  create-tag:
+    name: Create Tags
+    uses: ./.github/workflows/create-tags.yml
+
   build:
     name: Build Sirius Workflow
     uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@6bc0246b5cca2f4c85d06986c82a9a42643f6851 # v3.13.0
@@ -90,10 +94,7 @@ jobs:
   push:
     name: "Push Images"
     runs-on: ubuntu-latest
-    needs: ['test', 'lint', 'gosec', 'build']
-    outputs:
-      branch: ${{ steps.set-outputs.outputs.branch }}
-      tag: ${{ steps.semver_tag.outputs.created_tag }}
+    needs: ['test', 'lint', 'gosec', 'create-tag', 'build']
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -107,13 +108,6 @@ jobs:
           fi
         id: extract_branch
       - uses: unfor19/install-aws-cli-action@e8b481e524a99f37fbd39fdc1dcb3341ab091367 # v1.0.7
-
-      - name: Bump Version
-        id: semver_tag
-        uses: ministryofjustice/opg-github-actions/.github/actions/semver-tag@c9c5dfb290b8f614df0884928c521165ba83d630 # v3.1.4
-        with:
-          default_bump: minor
-          releases_enabled: false
 
       - name: Set up Docker
         run: |
@@ -155,21 +149,21 @@ jobs:
 
       - name: Push
         run: |
-          docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ steps.semver_tag.outputs.created_tag }}
+          docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ needs.create-tag.outputs.tag }}
           if [ $BRANCH_NAME == "main" ]; then
-            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ steps.semver_tag.outputs.created_tag }}
-            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ steps.semver_tag.outputs.created_tag }}-$(date +"%Y%m%d%H%M%S")
+            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ needs.create-tag.outputs.tag }}
+            docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ needs.create-tag.outputs.tag }}-${{ needs.create-tag.outputs.timestamp }}
             # We want all of the tags pushed
             docker push  --all-tags 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
           else
-            docker push 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ steps.semver_tag.outputs.created_tag }}
+            docker push 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ needs.create-tag.outputs.tag }}
           fi
 
   end_of_pr_workflow:
     name: End of PR Workflow
     runs-on: ubuntu-latest
     if: always()
-    needs: ['test', 'lint', 'gosec', cypress, 'build', push]
+    needs: ['test', 'lint', 'gosec', 'cypress', 'create-tag', 'build', 'push']
     steps:
       - name: End of PR Workflow
         run: |
@@ -184,7 +178,7 @@ jobs:
 
   push-tags:
     runs-on: ubuntu-latest
-    needs: ['push', 'end_of_pr_workflow']
+    needs: ['create-tag', 'end_of_pr_workflow']
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -205,7 +199,7 @@ jobs:
 
       - name: Push Tag to Parameter Store
         run: |
-          aws ssm put-parameter --name "opg-sirius-supervision-workflow-latest-green-build" --type "String" --value "${{ needs.push.outputs.tag }}" --overwrite --region=eu-west-1
+          aws ssm put-parameter --name "opg-sirius-supervision-workflow-latest-green-build" --type "String" --value "${{ needs.create-tag.outputs.tag }}" --overwrite --region=eu-west-1
 
       - name: Trigger Dev Deploy
         shell: bash
