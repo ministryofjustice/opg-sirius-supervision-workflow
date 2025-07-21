@@ -86,7 +86,7 @@ jobs:
 
   build:
     name: Build Sirius Workflow
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@6bc0246b5cca2f4c85d06986c82a9a42643f6851 # v3.13.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@27a0f72b83c6b026fa4131230289bfbed9049cc7 # v3.15.0
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
       build_options: --file docker/sirius-workflow/Dockerfile
@@ -107,7 +107,7 @@ jobs:
             echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
           fi
         id: extract_branch
-      - uses: unfor19/install-aws-cli-action@e8b481e524a99f37fbd39fdc1dcb3341ab091367 # v1.0.7
+      - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
 
       - name: Set up Docker
         run: |
@@ -126,7 +126,7 @@ jobs:
         run: make scan
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@ff0a06e83cb2de871e5a09832bc6a81e7276941f # v3.28.18
+        uses: github/codeql-action/upload-sarif@181d5eefc20863364f96762470ba6f862bdef56b # v3.29.2
         with:
           sarif_file: 'test-results/trivy.sarif'
           category: trivy-docker-workflow
@@ -195,7 +195,7 @@ jobs:
 
       - name: Install AWS CLI
         id: install-aws-cli
-        uses: unfor19/install-aws-cli-action@e8b481e524a99f37fbd39fdc1dcb3341ab091367 # v1.0.7
+        uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
 
       - name: Push Tag to Parameter Store
         run: |
