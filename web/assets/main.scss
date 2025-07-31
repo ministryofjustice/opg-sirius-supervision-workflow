@@ -1,6 +1,7 @@
 $govuk-include-default-font-face: false;
 $govuk-moj-table-background-color: #e7f2fb;
 $moj-assets-path: "/supervision/workflow/assets/";
+$govuk-assets-path: "/supervision/workflow/assets/";
 
 @import "node_modules/govuk-frontend/dist/govuk/all";
 @import "node_modules/@ministryofjustice/frontend/moj/all";
@@ -39,4 +40,8 @@ $moj-assets-path: "/supervision/workflow/assets/";
 
 #list-of-tasks-to-filter{
     max-height: 500px;
+}
+
+#footer-background {
+  background: #f4f8fb;
 }
