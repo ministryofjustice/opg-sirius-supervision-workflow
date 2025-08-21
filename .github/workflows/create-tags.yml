@@ -21,7 +21,7 @@ jobs:
       - name: "Generate semver tag and release"
         id: semver_tag
         if: github.event_name == 'pull_request' || github.event_name == 'push'
-        uses: ministryofjustice/opg-github-actions/.github/actions/semver-tag@ea1e81f43e7593acd74cc114085930f5f54914a2 # v3.1.7
+        uses: ministryofjustice/opg-github-actions/.github/actions/semver-tag@9c80e2dfa5701930bcd444f26081c1183d951409 # v4.3.2
         with:
           releases_enabled: false
           with_v: true
@@ -29,7 +29,7 @@ jobs:
       - name: Return latest tag
         id: latest_tag
         if: github.event_name == 'workflow_dispatch'
-        uses: ministryofjustice/opg-github-actions/.github/actions/latest-tag@ea1e81f43e7593acd74cc114085930f5f54914a2 # v3.1.7
+        uses: ministryofjustice/opg-github-actions/.github/actions/latest-tag@9c80e2dfa5701930bcd444f26081c1183d951409 # v4.3.2
         with:
           branch_name: ${{ github.ref_name }}
           prerelease: false
