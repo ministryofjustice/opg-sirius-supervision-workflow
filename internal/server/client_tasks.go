@@ -91,6 +91,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 
 		params := r.URL.Query()
+
 		page := paginate.GetRequestedPage(params.Get("page"))
 		perPageOptions := []int{25, 50, 100}
 		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
@@ -138,6 +139,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
 
+		//returns the task types I asked for in the filter and counts but doesn't include counts for tasks I didn't ask for
 		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 			Team:              app.SelectedTeam,
 			Page:              page,
@@ -186,27 +188,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			PerPageOptions:  perPageOptions,
 			UrlBuilder:      vars.UrlBuilder,
 		}
-
-		if len(selectedTaskTypes) > 0 {
-			//	make another call to get original task count
-			taskList2, err := client.GetTaskList(ctx, sirius.TaskListParams{
-				Team:              app.SelectedTeam,
-				Page:              page,
-				PerPage:           tasksPerPage,
-				TaskTypes:         taskTypes,
-				SelectedTaskTypes: []string{},
-				Assignees:         selectedAssignees,
-				DueDateFrom:       selectedDueDateFrom,
-				DueDateTo:         selectedDueDateTo,
-			})
-
-			if err != nil {
-				return err
-			}
-			vars.TaskList.MetaData.TaskTypeCount = taskList2.MetaData.TaskTypeCount
-			vars.TaskList.MetaData.AssigneeCount = taskList.MetaData.AssigneeCount
-		}
-		taskList.MetaData = vars.TaskList.MetaData
 
 		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
