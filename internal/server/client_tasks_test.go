@@ -517,7 +517,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	}
 	err := clientTasks(client, template)(app, w, r)
 
-	assert.Equal(RedirectError("client-tasks?team=&page=2&per-page=25"), err)
+	assert.Equal(Redirect("client-tasks?team=&page=2&per-page=25"), err)
 	assert.Equal(getContext(r), client.lastCtx)
 	assert.Equal(2, len(client.count))
 	assert.Equal(1, client.count["GetTaskList"])

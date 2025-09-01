@@ -1,6 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.DeputiesPage*/ -}}
 {{ define "deputies-list" }}
   <section data-module="manage-reassign" class="moj-manage-list">
+    <form method="post">
 
     {{ template "deputy-reassign-panel" . }}
 
@@ -101,5 +102,6 @@
       {{ end }}
       </tbody>
     </table>
+    </form>
   </section>
 {{ end }}

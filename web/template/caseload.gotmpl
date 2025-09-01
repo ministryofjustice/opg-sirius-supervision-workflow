@@ -20,7 +20,7 @@
 
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <form method="post">
+{{/*          <form method="post">*/}}
             {{ if .App.SelectedTeam.IsLayNewOrdersTeam }}
               {{ template "caseload-list-new-orders" . }}
             {{ else if .App.SelectedTeam.IsHW }}
@@ -30,7 +30,7 @@
             {{ else }}
               {{ template "caseload-list" . }}
             {{ end }}
-          </form>
+{{/*          </form>*/}}
         </div>
       </div>
 

@@ -84,8 +84,6 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		return "", err
 	}
 
-	//get tasks again to prevent refresh issue
-
 	if params.AssignTeam != "0" {
 		switch params.IsPriority {
 		case "true":

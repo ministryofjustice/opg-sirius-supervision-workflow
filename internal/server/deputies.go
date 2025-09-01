@@ -74,7 +74,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
 		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
@@ -135,7 +135,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage))
 		}
 
 		vars.Pagination = paginate.Pagination{

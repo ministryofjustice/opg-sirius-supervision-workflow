@@ -15,13 +15,13 @@ import (
 )
 
 func TestRedirectError_Error(t *testing.T) {
-	assert.Equal(t, "redirect to ", RedirectError("").Error())
-	assert.Equal(t, "redirect to test-url", RedirectError("test-url").Error())
+	assert.Equal(t, "redirect to ", Redirect("").Error())
+	assert.Equal(t, "redirect to test-url", Redirect("test-url").Error())
 }
 
 func TestRedirectError_To(t *testing.T) {
-	assert.Equal(t, "", RedirectError("").To())
-	assert.Equal(t, "test-url", RedirectError("test-url").To())
+	assert.Equal(t, "", Redirect("").To())
+	assert.Equal(t, "test-url", Redirect("test-url").To())
 }
 
 func TestStatusError_Code(t *testing.T) {
@@ -234,7 +234,7 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	errorTemplate := &mockTemplate{}
 	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{Err: RedirectError("redirect-to-here")}
+	next := mockNext{Err: Redirect("redirect-to-here")}
 	httpHandler := nextHandlerFunc(next.GetHandler())
 	httpHandler.ServeHTTP(w, r)
 

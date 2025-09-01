@@ -8,8 +8,8 @@ import (
 	"net/url"
 
 	"github.com/ministryofjustice/opg-go-common/securityheaders"
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 type ApiClient interface {
@@ -53,7 +53,7 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 	mux.Handle("/javascript/", static)
 	mux.Handle("/stylesheets/", static)
 
-	return otelhttp.NewHandler(http.StripPrefix(envVars.Prefix, securityheaders.Use(mux)), "supervision-workflow")
+	return http.StripPrefix(envVars.Prefix, securityheaders.Use(telemetry.Middleware(logger)(mux)))
 }
 
 func getContext(r *http.Request) sirius.Context {

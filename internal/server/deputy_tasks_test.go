@@ -154,7 +154,7 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	}
 	err := deputyTasks(client, template)(app, w, r)
 
-	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
+	assert.Equal(t, Redirect("client-tasks?team=19&page=1&per-page=25"), err)
 	assert.Equal(t, 0, template.count)
 }
 
@@ -178,7 +178,7 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	}
 	err := deputyTasks(client, template)(app, w, r)
 
-	assert.Equal(t, RedirectError("deputy-tasks?team=1&page=2&per-page=25"), err)
+	assert.Equal(t, Redirect("deputy-tasks?team=1&page=2&per-page=25"), err)
 	assert.Equal(t, getContext(r), client.lastCtx)
 	assert.Equal(t, 2, len(client.count))
 	assert.Equal(t, 1, client.count["GetTaskList"])
