@@ -24,7 +24,7 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 	}
 
 	return EnvironmentVars{
-		Port:                  getEnv("PORT", "1234"),
+		Port:                  getEnv("PORT", "2345"),
 		WebDir:                getEnv("WEB_DIR", "web"),
 		SiriusURL:             getEnv("SIRIUS_URL", "http://localhost:8080"),
 		SiriusPublicURL:       getEnv("SIRIUS_PUBLIC_URL", ""),

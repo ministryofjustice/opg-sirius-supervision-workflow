@@ -67,6 +67,7 @@ func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, 
 func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
+		fmt.Println("in deputies server func")
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -80,6 +81,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
 
 		if r.Method == http.MethodPost {
+			fmt.Println("in POST DEPUTIES")
+
 			err := r.ParseForm()
 			if err != nil {
 				return err
@@ -93,7 +96,11 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
+			fmt.Println("about to reassign deputies")
+			return Redirect(fmt.Sprintf("/client-tasks?team=%d", 26))
 		}
+
+		fmt.Println("AFTER POST DEPUTIES")
 
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
@@ -151,6 +158,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.AppliedFilters = vars.GetAppliedFilters()
 
 		vars.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
+		fmt.Println("executing template deputies")
+
 		return tmpl.Execute(w, vars)
 	}
 }

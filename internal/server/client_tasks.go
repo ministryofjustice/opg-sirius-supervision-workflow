@@ -69,6 +69,8 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
+		fmt.Println("--------")
+		fmt.Println("verb coming into func"+r.Method, r.URL.Path)
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -93,38 +95,38 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 		}
 
+		var selectedTaskTypes []string
+		if params.Has("task-type") {
+			selectedTaskTypes = params["task-type"]
+		}
+
+		taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
+		if err != nil {
+			return err
+		}
+
+		selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
+		if err != nil {
+			return err
+		}
+
+		selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
+		if err != nil {
+			return err
+		}
+
+		var vars ClientTasksPage
+
+		if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
+			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
+			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
+		}
+
+		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
+
 		switch r.Method {
 		case http.MethodGet:
 			fmt.Println("GET METHOD")
-			var selectedTaskTypes []string
-			if params.Has("task-type") {
-				selectedTaskTypes = params["task-type"]
-			}
-
-			taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
-			if err != nil {
-				return err
-			}
-
-			selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
-			if err != nil {
-				return err
-			}
-
-			selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
-			if err != nil {
-				return err
-			}
-
-			var vars ClientTasksPage
-
-			if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
-				selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
-				userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
-			}
-
-			selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
-
 			//returns the task types I asked for in the filter and counts but doesn't include counts for tasks I didn't ask for
 			taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 				Team:              app.SelectedTeam,
@@ -207,16 +209,16 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				return err
+			} else {
+				fmt.Println("about to redirect")
+				//r.Form = nil
+				//r.Body = nil
+				//r.Method = http.MethodGet
+				//w.WriteHeader(http.StatusOK)
+				//redirectTo := fmt.Sprintf("/caseload?team=%d&page=%d&per-page=%d", 26, page, tasksPerPage)
+				//http.RedirectHandler(app.EnvironmentVars.Prefix+"/"+redirectTo, http.StatusFound)
+				return Redirect(fmt.Sprintf("/client-tasks?team=%d&page=%d&per-page=%d", 26, page, tasksPerPage))
 			}
-
-			fmt.Println("about to redirect")
-			//wont redirect here as might cause issues security wise
-			//r.Form = nil
-			//r.Body = nil
-			w.WriteHeader(http.StatusOK)
-			fmt.Println(app.SelectedTeam.Id)
-			return Redirect(fmt.Sprintf("/client-tasks?team=%d&page=%d&per-page=%d", app.SelectedTeam.Id, page, tasksPerPage))
-
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
 		}

@@ -71,13 +71,11 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 
 				if redirect, ok := err.(Redirect); ok {
 					fmt.Println("redirecting to", string(redirect.To()))
-					//r.Form = nil
-					//r.Body = nil
 					fmt.Println(r.Body)
 					fmt.Println(r.Form)
 					fmt.Println(r.Method)
 					fmt.Println(r.URL)
-					//r.Method = http.MethodGet
+
 					fmt.Println("updated method" + r.Method)
 
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
