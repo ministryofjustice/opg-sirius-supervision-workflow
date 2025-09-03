@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -69,6 +68,10 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
+
+		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+			return StatusError(http.StatusMethodNotAllowed)
+		}
 
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
@@ -210,8 +213,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			fmt.Println(vars.UrlBuilder.Path)
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage))
+			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
+			return RedirectError(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

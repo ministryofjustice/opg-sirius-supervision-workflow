@@ -30,7 +30,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      {{ if ne .TaskList.TotalTasks 0 }}
+    {{ if ne .TaskList.TotalTasks 0 }}
         {{ range .TaskList.Tasks }}
           <tr class="govuk-table__row{{ if .IsPriority }} priority{{ end }}">
             <td class="govuk-table__cell govuk-table__select">
