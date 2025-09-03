@@ -66,23 +66,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
-		if r.Method == http.MethodPost {
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				TaskIds:    r.Form["selected-tasks"],
-				IsPriority: r.FormValue("priority"),
-			})
-			if err != nil {
-				return err
-			}
-		}
-
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
 		perPageOptions := []int{25, 50, 100}
@@ -120,46 +103,72 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 		var vars DeputyTasksPage
 
 		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
-
-		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
-			Team:              app.SelectedTeam,
-			Page:              page,
-			PerPage:           tasksPerPage,
-			TaskTypes:         taskTypes,
-			TaskTypeCategory:  "deputy",
-			SelectedTaskTypes: selectedTaskTypes,
-			Assignees:         selectedAssignees,
-		})
-		if err != nil {
-			return err
-		}
-
-		vars.TaskList = taskList
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.App = app
-		vars.UrlBuilder = vars.CreateUrlBuilder()
 
-		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+		switch r.Method {
+		case http.MethodPost:
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				TaskIds:    r.Form["selected-tasks"],
+				IsPriority: r.FormValue("priority"),
+			})
+			if err != nil {
+				return err
+			}
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
+			return RedirectError(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
+
+		case http.MethodGet:
+
+			taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
+				Team:              app.SelectedTeam,
+				Page:              page,
+				PerPage:           tasksPerPage,
+				TaskTypes:         taskTypes,
+				TaskTypeCategory:  "deputy",
+				SelectedTaskTypes: selectedTaskTypes,
+				Assignees:         selectedAssignees,
+			})
+			if err != nil {
+				return err
+			}
+
+			vars.TaskList = taskList
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+
+			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
+				return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+			}
+
+			vars.Pagination = paginate.Pagination{
+				CurrentPage:     taskList.Pages.PageCurrent,
+				TotalPages:      taskList.Pages.PageTotal,
+				TotalElements:   taskList.TotalTasks,
+				ElementsPerPage: vars.PerPage,
+				ElementName:     "tasks",
+				PerPageOptions:  perPageOptions,
+				UrlBuilder:      vars.UrlBuilder,
+			}
+
+			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
+			vars.AppliedFilters = vars.GetAppliedFilters()
+			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
+
+			return tmpl.Execute(w, vars)
+
+		default:
+			return StatusError(http.StatusMethodNotAllowed)
 		}
-
-		vars.Pagination = paginate.Pagination{
-			CurrentPage:     taskList.Pages.PageCurrent,
-			TotalPages:      taskList.Pages.PageTotal,
-			TotalElements:   taskList.TotalTasks,
-			ElementsPerPage: vars.PerPage,
-			ElementName:     "tasks",
-			PerPageOptions:  perPageOptions,
-			UrlBuilder:      vars.UrlBuilder,
-		}
-
-		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
-		vars.AppliedFilters = vars.GetAppliedFilters()
-		vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
-
-		return tmpl.Execute(w, vars)
 	}
 }
