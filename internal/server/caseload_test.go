@@ -262,7 +262,7 @@ func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 	}
 	err := caseload(client, template)(app, w, r)
 
-	assert.Equal(t, RedirectError("client-tasks?team=19&page=1&per-page=25"), err)
+	assert.Equal(t, Redirect("client-tasks?team=19&page=1&per-page=25"), err)
 	assert.Equal(t, 0, template.count)
 }
 
@@ -279,7 +279,7 @@ func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) 
 	}
 	err := caseload(client, template)(app, w, r)
 
-	assert.Equal(t, RedirectError("client-tasks?team=lay-team&page=1&per-page=25"), err)
+	assert.Equal(t, Redirect("client-tasks?team=lay-team&page=1&per-page=25"), err)
 	assert.Equal(t, 0, template.count)
 }
 

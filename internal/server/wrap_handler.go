@@ -17,13 +17,13 @@ type ErrorVars struct {
 	EnvironmentVars
 }
 
-type RedirectError string
+type Redirect string
 
-func (e RedirectError) Error() string {
+func (e Redirect) Error() string {
 	return "redirect to " + string(e)
 }
 
-func (e RedirectError) To() string {
+func (e Redirect) To() string {
 	return string(e)
 }
 
@@ -69,7 +69,7 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 					return
 				}
 
-				if redirect, ok := err.(RedirectError); ok {
+				if redirect, ok := err.(Redirect); ok {
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}

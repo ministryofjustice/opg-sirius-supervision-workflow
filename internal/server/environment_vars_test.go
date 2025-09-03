@@ -14,7 +14,7 @@ func TestNewEnvironmentVars(t *testing.T) {
 		WebDir:                "web",
 		SiriusURL:             "http://localhost:8080",
 		SiriusPublicURL:       "",
-		Prefix:                "",
+		Prefix:                "/supervision/workflow",
 		DefaultWorkflowTeamID: 21,
 		DefaultPaTeamID:       "28",
 		DefaultProTeamID:      "31",

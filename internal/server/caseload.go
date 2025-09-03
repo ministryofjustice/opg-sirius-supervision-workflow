@@ -85,12 +85,12 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
 		if app.SelectedTeam.IsLayDeputyTeam() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
 		if r.Method == http.MethodPost {

@@ -157,7 +157,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-				return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+				return Redirect(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
 			}
 
 			vars.Pagination = paginate.Pagination{
@@ -170,25 +170,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				UrlBuilder:      vars.UrlBuilder,
 			}
 
-			if len(selectedTaskTypes) > 0 {
-				//	make another call to get original task count
-				taskList2, err := client.GetTaskList(ctx, sirius.TaskListParams{
-					Team:              app.SelectedTeam,
-					Page:              page,
-					PerPage:           tasksPerPage,
-					TaskTypes:         taskTypes,
-					SelectedTaskTypes: []string{},
-					Assignees:         selectedAssignees,
-					DueDateFrom:       selectedDueDateFrom,
-					DueDateTo:         selectedDueDateTo,
-				})
-
-				if err != nil {
-					return err
-				}
-				vars.TaskList.MetaData.TaskTypeCount = taskList2.MetaData.TaskTypeCount
-				vars.TaskList.MetaData.AssigneeCount = taskList.MetaData.AssigneeCount
-			}
 			taskList.MetaData = vars.TaskList.MetaData
 
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
@@ -214,7 +195,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

@@ -63,7 +63,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
 		params := r.URL.Query()
@@ -127,7 +127,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			}
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
 
 		case http.MethodGet:
 
@@ -148,7 +148,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-				return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+				return Redirect(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
 			}
 
 			vars.Pagination = paginate.Pagination{
