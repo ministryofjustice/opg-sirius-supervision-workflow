@@ -79,6 +79,18 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
 
+		params := r.URL.Query()
+		page := paginate.GetRequestedPage(params.Get("page"))
+		perPageOptions := []int{25, 50, 100}
+		deputiesPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
+		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "activeclients", "noncompliance", "assurance"})
+
+		var selectedECMs []string
+		if params.Has("ecm") {
+			selectedECMs = params["ecm"]
+		}
+
 		if r.Method == http.MethodPost {
 			err := r.ParseForm()
 			if err != nil {
@@ -93,18 +105,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-		}
-
-		params := r.URL.Query()
-		page := paginate.GetRequestedPage(params.Get("page"))
-		perPageOptions := []int{25, 50, 100}
-		deputiesPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
-
-		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "activeclients", "noncompliance", "assurance"})
-
-		var selectedECMs []string
-		if params.Has("ecm") {
-			selectedECMs = params["ecm"]
+			return RedirectError("/deputies")
 		}
 
 		deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
