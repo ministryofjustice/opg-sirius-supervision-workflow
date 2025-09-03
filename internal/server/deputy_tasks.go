@@ -126,8 +126,8 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 				return err
 			}
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
+			currentPage, _ := strconv.Atoi(r.FormValue("page"))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, tasksPerPage))
 
 		case http.MethodGet:
 

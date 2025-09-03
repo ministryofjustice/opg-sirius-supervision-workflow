@@ -194,8 +194,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(pageTotal, tasksPerPage))
+			currentPage, _ := strconv.Atoi(r.FormValue("page"))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, tasksPerPage))
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

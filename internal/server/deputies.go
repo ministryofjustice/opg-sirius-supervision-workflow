@@ -123,8 +123,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			}
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			pageTotal, _ := strconv.Atoi(r.FormValue("page-total"))
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(pageTotal, vars.PerPage))
+			currentPage, _ := strconv.Atoi(r.FormValue("page"))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage))
 
 		case http.MethodGet:
 
