@@ -16,15 +16,6 @@ import (
 	"time"
 )
 
-//type mockClientTasksClient struct {
-//	count                   map[string]int
-//	lastCtx                 sirius.Context
-//	lastReassignTasksParams sirius.ReassignTasksParams
-//	err                     error
-//	taskTypeData            []model.TaskType
-//	taskListData            sirius.TaskList
-//}
-
 type mockClientTasksClient struct {
 	mock.Mock
 }

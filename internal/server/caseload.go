@@ -93,22 +93,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
 		}
 
-		if r.Method == http.MethodPost {
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage, err = client.ReassignClients(ctx, sirius.ReassignClientsParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				ClientIds:  r.Form["selected-clients"],
-			})
-			if err != nil {
-				return err
-			}
-		}
-
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
 
@@ -154,6 +138,30 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			clientListParams.SupervisionLevels = selectedSupervisionLevels
 		}
 
+		vars := CaseloadPage{}
+		vars.PerPage = clientsPerPage
+		vars.AssigneeFilterName = "Case owner"
+		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedStatuses = selectedStatuses
+		vars.App = app
+
+		if r.Method == http.MethodPost {
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			app.SuccessMessage, err = client.ReassignClients(ctx, sirius.ReassignClientsParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				ClientIds:  r.Form["selected-clients"],
+			})
+			if err != nil {
+				return err
+			}
+			return Redirect(vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+		}
+
 		var clientList sirius.ClientList
 		var err error
 		if app.SelectedTeam.IsClosedCases() {
@@ -165,12 +173,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		if err != nil {
 			return err
 		}
-		vars := CaseloadPage{ClientList: clientList}
-
-		vars.PerPage = clientsPerPage
-		vars.AssigneeFilterName = "Case owner"
-		vars.SelectedUnassigned = selectedUnassigned
-		vars.SelectedStatuses = selectedStatuses
+		vars.ClientList = clientList
 		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
 		vars.SelectedAssignees = userSelectedAssignees
 
@@ -195,9 +198,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			vars.CaseTypes = getCaseTypes()
 		}
 
-		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
-
 		vars.Pagination = paginate.Pagination{
 			CurrentPage:     clientList.Pages.PageCurrent,
 			TotalPages:      clientList.Pages.PageTotal,
@@ -208,7 +209,6 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			UrlBuilder:      vars.UrlBuilder,
 		}
 		vars.AppliedFilters = vars.GetAppliedFilters()
-
 		vars.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
 
 		return tmpl.Execute(w, vars)

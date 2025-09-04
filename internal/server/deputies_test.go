@@ -6,6 +6,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -13,32 +14,17 @@ import (
 )
 
 type mockDeputiesClient struct {
-	lastCtx               sirius.Context
-	deputyList            sirius.DeputyList
-	getDeputyListError    error
-	reassignDeputiesError error
-	count                 map[string]int
-	lastDeputyListParams  sirius.DeputyListParams
+	mock.Mock
 }
 
 func (m *mockDeputiesClient) GetDeputyList(ctx sirius.Context, params sirius.DeputyListParams) (sirius.DeputyList, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetClientList"] += 1
-	m.lastCtx = ctx
-	m.lastDeputyListParams = params
-	return m.deputyList, m.getDeputyListError
+	args := m.Called(ctx)
+	return args.Get(0).(sirius.DeputyList), args.Error(1)
 }
 
-func (m *mockDeputiesClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["ReassignDeputies"] += 1
-	m.lastCtx = context
-
-	return "", m.reassignDeputiesError
+func (m *mockDeputiesClient) ReassignDeputies(ctx sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(string), args.Error(1)
 }
 
 var testDeputyList = sirius.DeputyList{
@@ -56,14 +42,14 @@ var testDeputyList = sirius.DeputyList{
 	PaProTeamSelection: []model.Team{},
 }
 
-func TestDeputies(t *testing.T) {
-	client := &mockDeputiesClient{
-		deputyList: testDeputyList,
-	}
+func TestGetDeputies(t *testing.T) {
+	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
 
+	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
+
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "/deputies?team=19&page=1&per-page=25", nil)
 
 	app := WorkflowVars{
 		Path:         "test-path",
@@ -130,12 +116,35 @@ func TestDeputies(t *testing.T) {
 	assert.Equal(t, want, template.lastVars)
 }
 
+func TestPostDeputies(t *testing.T) {
+	client := &mockDeputiesClient{}
+	template := &mockTemplate{}
+
+	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
+	client.On("ReassignDeputies", mock.Anything).Return("success reassign", nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodPost, "/deputies?team=19&page=1&per-page=25", nil)
+
+	app := WorkflowVars{
+		Path:            "test-path",
+		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
+		EnvironmentVars: EnvironmentVars{},
+	}
+	err := deputies(client, template)(app, w, r)
+
+	assert.Equal(t, Redirect("deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc"), err)
+	assert.Equal(t, 0, template.count)
+}
+
 func TestDeputies_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
 
+	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
+
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "/deputies?team=19&page=1&per-page=25", nil)
 
 	app := WorkflowVars{
 		Path:            "test-path",
@@ -176,16 +185,16 @@ func TestDeputies_MethodNotAllowed(t *testing.T) {
 }
 
 func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
-	var testDeputyList = sirius.DeputyList{
+	client := &mockDeputiesClient{}
+	template := &mockTemplate{}
+
+	client.On("GetDeputyList", mock.Anything).Return(sirius.DeputyList{
 		Deputies: []model.Deputy{{}},
 		Pages: model.PageInformation{
 			PageCurrent: 10,
 			PageTotal:   2,
 		},
-	}
-
-	client := &mockDeputiesClient{deputyList: testDeputyList}
-	template := &mockTemplate{}
+	}, nil)
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/deputies?team=&page=10&per-page=25", nil)
@@ -196,8 +205,7 @@ func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumbe
 	err := deputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect("deputies?team=1&page=2&per-page=25&order-by=deputy&sort=asc"), err)
-	assert.Equal(t, getContext(r), client.lastCtx)
-	assert.Equal(t, 10, client.lastDeputyListParams.Page)
+	assert.Equal(t, 0, template.count)
 }
 
 func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
