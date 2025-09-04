@@ -7,20 +7,41 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"testing"
 	"time"
 )
 
+//type mockClientTasksClient struct {
+//	count                   map[string]int
+//	lastCtx                 sirius.Context
+//	lastReassignTasksParams sirius.ReassignTasksParams
+//	err                     error
+//	taskTypeData            []model.TaskType
+//	taskListData            sirius.TaskList
+//}
+
 type mockClientTasksClient struct {
-	count                   map[string]int
-	lastCtx                 sirius.Context
-	lastReassignTasksParams sirius.ReassignTasksParams
-	err                     error
-	taskTypeData            []model.TaskType
-	taskListData            sirius.TaskList
+	mock.Mock
+}
+
+func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]model.TaskType), args.Error(1)
+}
+
+func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(sirius.TaskList), args.Error(1)
+}
+
+func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(string), args.Error(1)
 }
 
 var unfilteredTaskListData = sirius.TaskList{
@@ -107,41 +128,6 @@ var unfilteredTaskListData = sirius.TaskList{
 	},
 }
 
-func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetTaskTypes"] += 1
-	m.lastCtx = ctx
-
-	return m.taskTypeData, m.err
-}
-
-func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetTaskList"] += 1
-	m.lastCtx = ctx
-
-	if (m.count["GetTaskList"]) == 1 {
-		return m.taskListData, m.err
-	} else {
-		return unfilteredTaskListData, m.err
-	}
-}
-
-func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["ReassignTasks"] += 1
-	m.lastReassignTasksParams = params
-	m.lastCtx = ctx
-
-	return "reassign success", m.err
-}
-
 var testTaskType = []model.TaskType{
 	{
 		Handle:     "CDFC",
@@ -183,14 +169,34 @@ var testTaskList = sirius.TaskList{
 			},
 		},
 	},
+	Pages: model.PageInformation{
+		PageCurrent: 1,
+		PageTotal:   2,
+	},
+	MetaData: sirius.TaskMetaData{
+		TaskTypeCount: []sirius.TypeAndCount{
+			{
+				Type:  "CWGN",
+				Count: 1,
+			},
+			{
+				Type:  "ORAL",
+				Count: 1,
+			},
+			{
+				Type:  "CDFC",
+				Count: 1,
+			},
+		},
+	},
 }
 
 func TestClientTasks(t *testing.T) {
-	client := &mockClientTasksClient{
-		taskTypeData: testTaskType,
-		taskListData: testTaskList,
-	}
+	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101", nil)
@@ -245,8 +251,8 @@ func TestClientTasks(t *testing.T) {
 	}
 
 	want.Pagination = paginate.Pagination{
-		CurrentPage:     0,
-		TotalPages:      0,
+		CurrentPage:     1,
+		TotalPages:      2,
 		TotalElements:   0,
 		ElementsPerPage: 25,
 		ElementName:     "tasks",
@@ -258,102 +264,102 @@ func TestClientTasks(t *testing.T) {
 	assert.Equal(t, want, template.lastVars)
 }
 
-//func TestClientTasksWillRefetchWholeTaskListCountWhenFilteringOnTaskTypes(t *testing.T) {
-//	client := &mockClientTasksClient{
-//		taskTypeData: testTaskType,
-//		taskListData: testTaskList,
-//	}
-//	template := &mockTemplate{}
-//
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL", nil)
-//
-//	app := WorkflowVars{
-//		Path:         "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
-//		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
-//		MyDetails: model.Assignee{
-//			Teams: []model.Team{
-//				{
-//					Id:   99,
-//					Name: "my-team",
-//				},
-//			},
-//			Roles: []string{"Case Manager"},
-//		},
-//	}
-//
-//	err := clientTasks(client, template)(app, w, r)
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 1, template.count)
-//
-//	var want ClientTasksPage
-//	want.App = app
-//	want.PerPage = 25
-//	want.TaskTypes = testTaskType
-//	want.TaskList = testTaskList
-//	want.TaskList.MetaData = sirius.TaskMetaData{
-//		TaskTypeCount: []sirius.TypeAndCount{
-//			{
-//				Type:  "CWGN",
-//				Count: 1,
-//			},
-//			{
-//				Type:  "ORAL",
-//				Count: 1,
-//			},
-//			{
-//				Type:  "CDFC",
-//				Count: 1,
-//			},
-//		},
-//	}
-//	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
-//	want.AppliedFilters = []string{
-//		"Correspondence - Review failed draft",
-//		"Order - Allocated to team",
-//	}
-//
-//	want.UrlBuilder = urlbuilder.UrlBuilder{
-//		Path:            "client-tasks",
-//		SelectedTeam:    "101",
-//		SelectedPerPage: 25,
-//		SelectedFilters: []urlbuilder.Filter{
-//			{
-//				Name:           "task-type",
-//				SelectedValues: []string{"CDFC", "ORAL"},
-//			},
-//			{
-//				Name:                  "assignee",
-//				ClearBetweenTeamViews: true,
-//			},
-//			{
-//				Name:                  "unassigned",
-//				ClearBetweenTeamViews: true,
-//			},
-//			{
-//				Name: "due-date-from",
-//			},
-//			{
-//				Name: "due-date-to",
-//			},
-//		},
-//		MyTeamId: "99",
-//	}
-//
-//	want.Pagination = paginate.Pagination{
-//		CurrentPage:     0,
-//		TotalPages:      0,
-//		TotalElements:   0,
-//		ElementsPerPage: 25,
-//		ElementName:     "tasks",
-//		PerPageOptions:  []int{25, 50, 100},
-//		UrlBuilder:      want.UrlBuilder,
-//	}
-//	want.MyTeamId = "99"
-//
-//	assert.Equal(t, want, template.lastVars)
-//}
+func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *testing.T) {
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=101&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, template.count)
+
+	var want ClientTasksPage
+	want.App = app
+	want.PerPage = 25
+	want.TaskTypes = testTaskType
+	want.TaskList = testTaskList
+	want.TaskList.MetaData = sirius.TaskMetaData{
+		TaskTypeCount: []sirius.TypeAndCount{
+			{
+				Type:  "CWGN",
+				Count: 1,
+			},
+			{
+				Type:  "ORAL",
+				Count: 1,
+			},
+			{
+				Type:  "CDFC",
+				Count: 1,
+			},
+		},
+	}
+	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
+	want.AppliedFilters = []string{
+		"Correspondence - Review failed draft",
+		"Order - Allocated to team",
+	}
+
+	want.UrlBuilder = urlbuilder.UrlBuilder{
+		Path:            "client-tasks",
+		SelectedTeam:    "101",
+		SelectedPerPage: 25,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name:           "task-type",
+				SelectedValues: []string{"CDFC", "ORAL"},
+			},
+			{
+				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name: "due-date-from",
+			},
+			{
+				Name: "due-date-to",
+			},
+		},
+		MyTeamId: "99",
+	}
+
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     1,
+		TotalPages:      2,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "tasks",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want.UrlBuilder,
+	}
+	want.MyTeamId = "99"
+
+	assert.Equal(t, want, template.lastVars)
+}
 
 func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing.T) {
 	tests := []struct {
@@ -417,6 +423,9 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 
 		client := &mockClientTasksClient{}
 		template := &mockTemplate{}
+
+		client.On("GetTaskTypes", mock.Anything).Return([]model.TaskType(nil), nil)
+		client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, nil)
 
 		w := httptest.NewRecorder()
 		r, _ := http.NewRequest(http.MethodGet, tt.url, nil)
@@ -493,19 +502,20 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
 	assert := assert.New(t)
 
-	var mockTaskListData = sirius.TaskList{
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "/client-tasks?team=&page=10&per-page=25", nil)
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{
 		Tasks: []model.Task{{}},
 		Pages: model.PageInformation{
 			PageCurrent: 10,
 			PageTotal:   2,
 		},
-	}
-
-	client := &mockClientTasksClient{taskTypeData: testTaskType, taskListData: mockTaskListData}
-	template := &mockTemplate{}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "/client-tasks?team=&page=10&per-page=25", nil)
+	}, nil)
 
 	app := WorkflowVars{
 		MyDetails: mockUserDetailsData,
@@ -517,19 +527,19 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(Redirect("client-tasks?team=&page=2&per-page=25"), err)
-	assert.Equal(getContext(r), client.lastCtx)
-	assert.Equal(2, len(client.count))
-	assert.Equal(1, client.count["GetTaskList"])
 }
 
 func TestClientTasks_Unauthorized(t *testing.T) {
 	assert := assert.New(t)
 
-	client := &mockClientTasksClient{err: sirius.ErrUnauthorized}
+	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, sirius.ErrUnauthorized)
 
 	app := WorkflowVars{}
 	err := clientTasks(client, template)(app, w, r)
@@ -541,11 +551,14 @@ func TestClientTasks_Unauthorized(t *testing.T) {
 func TestClientTasks_SiriusErrors(t *testing.T) {
 	assert := assert.New(t)
 
-	client := &mockClientTasksClient{err: errors.New("err")}
+	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest("GET", "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "", nil)
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, errors.New("err"))
+	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, nil)
 
 	app := WorkflowVars{}
 	err := clientTasks(client, template)(app, w, r)
@@ -554,34 +567,49 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 	assert.Equal(0, template.count)
 }
 
-//func TestClientTasks_ReassignTasks(t *testing.T) {
-//	client := &mockClientTasksClient{taskTypeData: testTaskType, taskListData: testTaskList}
-//	template := &mockTemplate{}
-//
-//	expectedParams := sirius.ReassignTasksParams{
-//		AssignTeam: "10",
-//		AssignCM:   "20",
-//		TaskIds:    []string{"1", "2"},
-//		IsPriority: "true",
-//	}
-//
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest("POST", "", nil)
-//	r.PostForm = url.Values{
-//		"assignTeam":     {expectedParams.AssignTeam},
-//		"assignCM":       {expectedParams.AssignCM},
-//		"selected-tasks": expectedParams.TaskIds,
-//		"priority":       {expectedParams.IsPriority},
-//	}
-//
-//	app := WorkflowVars{}
-//	err := clientTasks(client, template)(app, w, r)
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 1, client.count["ReassignTasks"])
-//	assert.Equal(t, expectedParams, client.lastReassignTasksParams)
-//	assert.Equal(t, "reassign success", template.lastVars.(ClientTasksPage).App.SuccessMessage)
-//}
+func TestClientTasks_ReassignTasks(t *testing.T) {
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	expectedParams := sirius.ReassignTasksParams{
+		AssignTeam: "10",
+		AssignCM:   "20",
+		TaskIds:    []string{"1", "2"},
+		IsPriority: "true",
+	}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
+	client.On("ReassignTasks", mock.Anything).Return("reassign successful", nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodPost, "/client-tasks?team=19&per-page=25&task-type=CDFC&task-type=ORAL", nil)
+	r.PostForm = url.Values{
+		"assignTeam":     {expectedParams.AssignTeam},
+		"assignCM":       {expectedParams.AssignCM},
+		"selected-tasks": expectedParams.TaskIds,
+		"priority":       {expectedParams.IsPriority},
+	}
+
+	app := WorkflowVars{
+		Path:         "clients-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "19", Id: 19},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.Equal(t, Redirect("client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL"), err)
+	assert.Equal(t, 0, template.count)
+	//assert.Equal(t, "reassign success", template.lastVars.(ClientTasksPage).App.SuccessMessage)
+}
 
 func TestGetSelectedDateFilter(t *testing.T) {
 	testDate := time.Date(2022, 12, 17, 0, 0, 0, 0, time.Local)

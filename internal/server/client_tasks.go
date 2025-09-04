@@ -171,7 +171,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 
 			taskList.MetaData = vars.TaskList.MetaData
-
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 			vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
@@ -194,8 +193,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			currentPage, _ := strconv.Atoi(r.FormValue("page"))
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, tasksPerPage))
+			return Redirect(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage))
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)
