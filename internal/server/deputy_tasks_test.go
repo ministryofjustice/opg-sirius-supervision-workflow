@@ -6,53 +6,42 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"testing"
 )
 
 type mockDeputyTasksClient struct {
-	count                   map[string]int
-	lastCtx                 sirius.Context
-	lastReassignTasksParams sirius.ReassignTasksParams
-	err                     error
-	taskTypeData            []model.TaskType
-	taskListData            sirius.TaskList
+	mock.Mock
 }
 
 func (m *mockDeputyTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.TaskTypesParams) ([]model.TaskType, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetTaskTypes"] += 1
-	m.lastCtx = ctx
-
-	return m.taskTypeData, m.err
+	args := m.Called(ctx)
+	return args.Get(0).([]model.TaskType), args.Error(1)
 }
 
 func (m *mockDeputyTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetTaskList"] += 1
-	m.lastCtx = ctx
-
-	return m.taskListData, m.err
+	args := m.Called(ctx)
+	return args.Get(0).(sirius.TaskList), args.Error(1)
 }
 
 func (m *mockDeputyTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["ReassignTasks"] += 1
-	m.lastReassignTasksParams = params
-	m.lastCtx = ctx
-
-	return "reassign success", m.err
+	args := m.Called(ctx)
+	return args.Get(0).(string), args.Error(1)
 }
 
-var testDeputyTaskType = []model.TaskType{
+var workflowVars = WorkflowVars{
+	MyDetails: model.Assignee{
+		Id: 123,
+	},
+	Path:         "deputy-tasks",
+	SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
+}
+
+var taskType = []model.TaskType{
 	{
 		Handle:     "DEPT",
 		Incomplete: "Test incomplete name",
@@ -61,8 +50,7 @@ var testDeputyTaskType = []model.TaskType{
 		User:       true,
 	},
 }
-
-var testDeputyTaskList = sirius.TaskList{
+var taskList = sirius.TaskList{
 	Tasks: []model.Task{
 		{
 			Assignee: model.Assignee{
@@ -81,36 +69,50 @@ var testDeputyTaskList = sirius.TaskList{
 			},
 		},
 	},
+	Pages: model.PageInformation{
+		PageCurrent: 1,
+		PageTotal:   2,
+	},
 }
 
 func TestDeputyTasks(t *testing.T) {
-	client := &mockDeputyTasksClient{
-		taskTypeData: testDeputyTaskType,
-		taskListData: testDeputyTaskList,
-	}
+	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
 
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
+	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
 
-	app := WorkflowVars{
-		Path:         "test-path",
-		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
-	}
-	err := deputyTasks(client, template)(app, w, r)
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "/deputy-tasks", nil)
+
+	handler := deputyTasks(client, template)
+	err := handler(workflowVars, w, r)
 
 	assert.Nil(t, err)
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, 1, template.count)
 
-	var want DeputyTasksPage
-	want.App = app
-	want.PerPage = 25
-	want.TaskTypes = testDeputyTaskType
-	want.TaskList = testDeputyTaskList
-
+	want := DeputyTasksPage{
+		TaskList: taskList,
+		ListPage: ListPage{
+			App:     workflowVars,
+			PerPage: 25,
+			Pagination: paginate.Pagination{
+				CurrentPage:     1,
+				TotalPages:      2,
+				TotalElements:   26,
+				ElementsPerPage: 25,
+				ElementName:     "deputy-tasks",
+				PerPageOptions:  []int{25, 50, 100},
+				UrlBuilder:      nil,
+			},
+		},
+	}
+	want.TaskTypes = taskType
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "deputy-tasks",
-		SelectedTeam:    app.SelectedTeam.Selector,
+		SelectedTeam:    workflowVars.SelectedTeam.Selector,
 		SelectedPerPage: 25,
 		SelectedFilters: []urlbuilder.Filter{
 			{
@@ -126,17 +128,15 @@ func TestDeputyTasks(t *testing.T) {
 			},
 		},
 	}
-
 	want.Pagination = paginate.Pagination{
-		CurrentPage:     0,
-		TotalPages:      0,
+		CurrentPage:     1,
+		TotalPages:      2,
 		TotalElements:   0,
 		ElementsPerPage: 25,
 		ElementName:     "tasks",
 		PerPageOptions:  []int{25, 50, 100},
 		UrlBuilder:      want.UrlBuilder,
 	}
-
 	assert.Equal(t, want, template.lastVars)
 }
 
@@ -144,8 +144,11 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
 
+	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
+
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "", nil)
+	r, _ := http.NewRequest(http.MethodGet, "/deputy-tasks?team=15&page=10&per-page=25", nil)
 
 	app := WorkflowVars{
 		Path:         "test-path",
@@ -158,61 +161,47 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 }
 
 func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
-	var testDeputyTaskList = sirius.TaskList{
-		Tasks: []model.Task{{}},
-		Pages: model.PageInformation{
-			PageCurrent: 10,
-			PageTotal:   2,
-		},
-	}
-
-	client := &mockDeputyTasksClient{taskTypeData: testDeputyTaskType, taskListData: testDeputyTaskList}
+	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/deputy-tasks?team=&page=10&per-page=25", nil)
 
-	app := WorkflowVars{
-		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
-	}
-	err := deputyTasks(client, template)(app, w, r)
+	err := deputyTasks(client, template)(workflowVars, w, r)
 
 	assert.Equal(t, Redirect("deputy-tasks?team=1&page=2&per-page=25"), err)
-	assert.Equal(t, getContext(r), client.lastCtx)
-	assert.Equal(t, 2, len(client.count))
-	assert.Equal(t, 1, client.count["GetTaskList"])
+	assert.Equal(t, 0, template.count)
 }
 
-//func TestDeputyTasks_ReassignTasks(t *testing.T) {
-//	client := &mockDeputyTasksClient{taskTypeData: testDeputyTaskType, taskListData: testDeputyTaskList}
-//	template := &mockTemplate{}
-//
-//	expectedParams := sirius.ReassignTasksParams{
-//		AssignTeam: "10",
-//		AssignCM:   "20",
-//		TaskIds:    []string{"1", "2"},
-//		IsPriority: "true",
-//	}
-//
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest("POST", "", nil)
-//	r.PostForm = url.Values{
-//		"assignTeam":     {expectedParams.AssignTeam},
-//		"assignCM":       {expectedParams.AssignCM},
-//		"selected-tasks": expectedParams.TaskIds,
-//		"priority":       {expectedParams.IsPriority},
-//	}
-//
-//	app := WorkflowVars{
-//		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
-//	}
-//	err := deputyTasks(client, template)(app, w, r)
-//
-//	assert.Nil(t, err)
-//	assert.Equal(t, 1, client.count["ReassignTasks"])
-//	assert.Equal(t, expectedParams, client.lastReassignTasksParams)
-//	assert.Equal(t, "reassign success", template.lastVars.(DeputyTasksPage).App.SuccessMessage)
-//}
+func TestDeputyTasks_ReassignTasks(t *testing.T) {
+	client := &mockDeputyTasksClient{}
+	template := &mockTemplate{}
+
+	client.On("ReassignTasks", mock.Anything).Return("reassign success", nil)
+
+	expectedParams := sirius.ReassignTasksParams{
+		AssignTeam: "10",
+		AssignCM:   "20",
+		TaskIds:    []string{"1", "2"},
+		IsPriority: "true",
+	}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodPost, "/deputy-tasks?team=1&page=2&per-page=25", nil)
+	r.PostForm = url.Values{
+		"assignTeam":     {expectedParams.AssignTeam},
+		"assignCM":       {expectedParams.AssignCM},
+		"selected-tasks": expectedParams.TaskIds,
+		"priority":       {expectedParams.IsPriority},
+	}
+
+	err := deputyTasks(client, template)(workflowVars, w, r)
+	assert.Equal(t, Redirect("deputy-tasks?team=1&page=2&per-page=25"), err)
+	assert.Equal(t, 0, template.count)
+}
 
 func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
 	methods := []string{

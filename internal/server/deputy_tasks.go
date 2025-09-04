@@ -90,19 +90,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			selectedTaskTypes = params["task-type"]
 		}
 
-		taskTypesParams := sirius.TaskTypesParams{
-			Category:  sirius.TaskTypeCategoryDeputy,
-			ProDeputy: app.SelectedTeam.IsPro(),
-			PADeputy:  app.SelectedTeam.IsPA(),
-		}
-		taskTypes, err := client.GetTaskTypes(ctx, taskTypesParams)
-		if err != nil {
-			return err
-		}
-
 		var vars DeputyTasksPage
-
-		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
 		vars.SelectedAssignees = userSelectedAssignees
@@ -130,6 +118,18 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, tasksPerPage))
 
 		case http.MethodGet:
+
+			taskTypesParams := sirius.TaskTypesParams{
+				Category:  sirius.TaskTypeCategoryDeputy,
+				ProDeputy: app.SelectedTeam.IsPro(),
+				PADeputy:  app.SelectedTeam.IsPA(),
+			}
+			taskTypes, err := client.GetTaskTypes(ctx, taskTypesParams)
+			if err != nil {
+				return err
+			}
+			selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
+			vars.SelectedTaskTypes = selectedTaskTypes
 
 			taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 				Team:              app.SelectedTeam,
