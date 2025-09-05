@@ -82,18 +82,6 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 		perPageOptions := []int{25, 50, 100}
 		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
-		//getting success message
-		session, err := cookieStore.Get(r, "successMessageStore")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		val := session.Values["successMessage"]
-		successMessage := val.(string)
-		fmt.Println("value")
-		fmt.Println(val)
-		fmt.Println(session.Name())
-		//
-
 		var userSelectedAssignees []string
 		if params.Has("assignee") {
 			userSelectedAssignees = params["assignee"]
@@ -169,10 +157,16 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
+			//getting success message
+			session, err := cookieStore.Get(r, "successMessageStore")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
+
 			vars.TaskList = taskList
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			vars.App.SuccessMessage = successMessage
-			fmt.Println("is success message set? ", successMessage)
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 				return Redirect{Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage)}
@@ -234,4 +228,20 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 		return nil, err
 	}
 	return &parsed, nil
+}
+
+func getSuccessMessageAndResetCookie(session *sessions.Session, r *http.Request, w http.ResponseWriter) (string, error) {
+	successMessage := ""
+	//don't try to access if its a new session with no value
+	fmt.Println("new session? ", session.IsNew)
+	val := session.Values["successMessage"]
+	successMessage = val.(string)
+	
+	//reset cookie value back to null - it will have shown for one load of page
+	session.Values["successMessage"] = ""
+	err := session.Save(r, w)
+	if err != nil {
+		return "", err
+	}
+	return successMessage, err
 }
