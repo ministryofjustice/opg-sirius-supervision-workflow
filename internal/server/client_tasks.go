@@ -81,17 +81,15 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 		perPageOptions := []int{25, 50, 100}
 		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
-		cookies, err := cookieStore.Get(r, "successMessageSession")
-		fmt.Println(cookies.Name())
-
-		success := r.FormValue("successMessage")
-		fmt.Println("success Message" + success)
-
-		fmt.Println(r.FormValue("successMessage"))
-		fmt.Println(r.Form["successMessage"])
-
-		taskCount := params.Get("success")
-		successMessage := fmt.Sprintf("You have assigned %d task(s)", taskCount)
+		session, err := cookieStore.Get(r, "successMessageStore")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		val := session.Values["successMessage"]
+		successMessage := val.(string)
+		fmt.Println("value")
+		fmt.Println(val)
+		fmt.Println(session.Name())
 
 		var userSelectedAssignees []string
 		if params.Has("assignee") {
@@ -198,7 +196,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
-			simpleSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+			successMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				TaskIds:    r.Form["selected-tasks"],
@@ -212,7 +210,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			return Redirect{
 				Path:           fmt.Sprintf(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage)),
-				SuccessMessage: simpleSuccessMessage,
+				SuccessMessage: successMessage,
 			}
 
 		default:

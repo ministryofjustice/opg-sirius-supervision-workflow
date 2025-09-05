@@ -83,7 +83,7 @@ func main() {
 	}
 
 	templates := createTemplates(envVars)
-	cookieStore := sessions.NewCookieStore()
+	cookieStore := sessions.NewCookieStore([]byte(envVars.SuccessMessageStore))
 
 	server := &http.Server{
 		Addr:              ":" + envVars.Port,
