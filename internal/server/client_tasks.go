@@ -71,6 +71,7 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
+		fmt.Println("entering client tasks")
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -81,6 +82,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 		perPageOptions := []int{25, 50, 100}
 		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
+		//getting success message
 		session, err := cookieStore.Get(r, "successMessageStore")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -90,6 +92,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 		fmt.Println("value")
 		fmt.Println(val)
 		fmt.Println(session.Name())
+		//
 
 		var userSelectedAssignees []string
 		if params.Has("assignee") {
@@ -168,7 +171,8 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 
 			vars.TaskList = taskList
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			vars.SuccessMessage = successMessage
+			vars.App.SuccessMessage = successMessage
+			fmt.Println("is success message set? ", successMessage)
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
 				return Redirect{Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage)}
@@ -188,6 +192,8 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 			vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
+
+			fmt.Println("before executing template " + vars.SuccessMessage)
 			return tmpl.Execute(w, vars)
 
 		case http.MethodPost:
@@ -196,7 +202,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
-			successMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+			reassignSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				TaskIds:    r.Form["selected-tasks"],
@@ -210,7 +216,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			return Redirect{
 				Path:           fmt.Sprintf(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage)),
-				SuccessMessage: successMessage,
+				SuccessMessage: reassignSuccessMessage,
 			}
 
 		default:
