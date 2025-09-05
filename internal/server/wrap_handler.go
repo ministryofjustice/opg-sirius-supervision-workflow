@@ -77,6 +77,10 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 
 				if redirect, ok := err.(Redirect); ok {
 					session, err := cookieStore.Get(r, "successMessageStore")
+					if err != nil {
+						http.Error(w, err.Error(), http.StatusInternalServerError)
+						return
+					}
 					session.Values["successMessage"] = redirect.SuccessMessage
 					err = session.Save(r, w)
 					if err != nil {
