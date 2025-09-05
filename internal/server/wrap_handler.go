@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gorilla/sessions"
 	"log/slog"
 	"net/http"
 	"time"
@@ -17,15 +18,20 @@ type ErrorVars struct {
 	EnvironmentVars
 }
 
-type Redirect string
+type Redirect struct {
+	Path           string
+	SuccessMessage string
+}
 
 func (e Redirect) Error() string {
-	return "redirect to " + string(e)
+	return "redirect to " + string(e.Path)
 }
 
 func (e Redirect) To() string {
-	return string(e)
+	return string(e.Path)
 }
+
+func (e Redirect) GetHeaderMessage() string { return string(e.SuccessMessage) }
 
 type StatusError int
 
@@ -41,7 +47,7 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
+func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envVars EnvironmentVars, cookieStore sessions.CookieStore) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -70,6 +76,17 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				}
 
 				if redirect, ok := err.(Redirect); ok {
+					cookieStore, _ := cookieStore.New(r, "successMessageSession")
+					fmt.Println("cookie store " + redirect.SuccessMessage)
+					cookieStore.Values["successMessage"] = redirect.SuccessMessage
+					err := cookieStore.Save(r, w)
+					fmt.Println(cookieStore.Name())
+					fmt.Println(cookieStore.Values["successMessage"])
+
+					if err != nil {
+						http.Error(w, err.Error(), http.StatusInternalServerError)
+						return
+					}
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}

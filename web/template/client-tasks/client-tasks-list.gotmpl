@@ -30,6 +30,11 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
+    <h1> KATE {{ .UrlBuilder.GetSuccessMessage }} </h1>
+    <h1> VARS {{ $.SuccessMessage }} </h1>
+
+    <input type="hidden" name="successMessage">{{ .UrlBuilder.SuccessMessage }}</input>
+    <h1> SUCCESS {{ .UrlBuilder.SuccessMessage }} </h1>
     {{ if ne .TaskList.TotalTasks 0 }}
         {{ range .TaskList.Tasks }}
           <tr class="govuk-table__row{{ if .IsPriority }} priority{{ end }}">

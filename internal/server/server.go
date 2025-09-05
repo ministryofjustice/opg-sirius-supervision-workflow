@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gorilla/sessions"
 	"html/template"
 	"io"
 	"log/slog"
@@ -23,8 +24,8 @@ type Template interface {
 	Execute(wr io.Writer, data any) error
 }
 
-func New(logger *slog.Logger, client ApiClient, templates map[string]*template.Template, envVars EnvironmentVars) http.Handler {
-	wrap := wrapHandler(client, logger, templates["error.gotmpl"], envVars)
+func New(logger *slog.Logger, client ApiClient, templates map[string]*template.Template, envVars EnvironmentVars, cookieStore sessions.CookieStore) http.Handler {
+	wrap := wrapHandler(client, logger, templates["error.gotmpl"], envVars, cookieStore)
 
 	mux := http.NewServeMux()
 
@@ -32,19 +33,19 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 
 	mux.Handle("/client-tasks",
 		wrap(
-			clientTasks(client, templates["client-tasks.gotmpl"])))
+			clientTasks(client, templates["client-tasks.gotmpl"], cookieStore)))
 
 	mux.Handle("/caseload",
 		wrap(
-			caseload(client, templates["caseload.gotmpl"])))
+			caseload(client, templates["caseload.gotmpl"], cookieStore)))
 
 	mux.Handle("/deputy-tasks",
 		wrap(
-			deputyTasks(client, templates["deputy-tasks.gotmpl"])))
+			deputyTasks(client, templates["deputy-tasks.gotmpl"], cookieStore)))
 
 	mux.Handle("/deputies",
 		wrap(
-			deputies(client, templates["deputies.gotmpl"])))
+			deputies(client, templates["deputies.gotmpl"], cookieStore)))
 
 	mux.Handle("/health-check", healthCheck())
 

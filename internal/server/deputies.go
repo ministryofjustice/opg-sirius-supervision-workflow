@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -65,7 +66,7 @@ func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, 
 	return teamsToReturn
 }
 
-func deputies(client DeputiesClient, tmpl Template) Handler {
+func deputies(client DeputiesClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
@@ -75,7 +76,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
 		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
@@ -113,7 +114,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 				return err
 			}
 
-			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+			successMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				DeputyIds:  r.Form["selected-deputies"],
@@ -124,7 +125,10 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			currentPage, _ := strconv.Atoi(r.FormValue("page"))
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage))
+			return Redirect{
+				Path:           vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage),
+				SuccessMessage: successMessage,
+			}
 
 		case http.MethodGet:
 
@@ -144,7 +148,9 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 
 			if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
-				return Redirect(vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage))
+				return Redirect{
+					Path: vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage),
+				}
 			}
 
 			vars.Pagination = paginate.Pagination{

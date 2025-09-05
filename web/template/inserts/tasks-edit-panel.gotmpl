@@ -8,13 +8,14 @@
 
   {{ if .App.SuccessMessage }}
     {{ template "success-banner" .App.SuccessMessage }}
+    <input type="hidden" name="successMessage">{{ .UrlBuilder.SuccessMessage }}</input>
   {{ end }}
 
   <div class="govuk-width-container hide js-mt-edit-panel">
     <section class="moj-manage-list__edit-panel">
       <header>
         <div class="govuk-width-container">
-          <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks</h3>
+          <h3 class="govuk-heading-s govuk-!-margin-0">Edit tasks {{ .UrlBuilder }}</h3>
         </div>
       </header>
       <div class="govuk-width-container">

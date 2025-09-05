@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -21,8 +23,9 @@ type ClientTasksPage struct {
 	FilterByAssignee
 	FilterByDueDate
 	FilterByTaskType
-	TaskList sirius.TaskList
-	MyTeamId string
+	TaskList       sirius.TaskList
+	MyTeamId       string
+	SuccessMessage string
 }
 
 func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
@@ -65,7 +68,7 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 	return appliedFilters
 }
 
-func clientTasks(client ClientTasksClient, tmpl Template) Handler {
+func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
@@ -77,6 +80,18 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		page := paginate.GetRequestedPage(params.Get("page"))
 		perPageOptions := []int{25, 50, 100}
 		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
+		cookies, err := cookieStore.Get(r, "successMessageSession")
+		fmt.Println(cookies.Name())
+
+		success := r.FormValue("successMessage")
+		fmt.Println("success Message" + success)
+
+		fmt.Println(r.FormValue("successMessage"))
+		fmt.Println(r.Form["successMessage"])
+
+		taskCount := params.Get("success")
+		successMessage := fmt.Sprintf("You have assigned %d task(s)", taskCount)
 
 		var userSelectedAssignees []string
 		if params.Has("assignee") {
@@ -155,9 +170,10 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 			vars.TaskList = taskList
 			vars.UrlBuilder = vars.CreateUrlBuilder()
+			vars.SuccessMessage = successMessage
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-				return Redirect(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+				return Redirect{Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage)}
 			}
 
 			vars.Pagination = paginate.Pagination{
@@ -182,18 +198,22 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				return err
 			}
 
-			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+			simpleSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				TaskIds:    r.Form["selected-tasks"],
 				IsPriority: r.FormValue("priority"),
 			})
+
 			if err != nil {
 				return err
 			}
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage))
+			return Redirect{
+				Path:           fmt.Sprintf(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage)),
+				SuccessMessage: simpleSuccessMessage,
+			}
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

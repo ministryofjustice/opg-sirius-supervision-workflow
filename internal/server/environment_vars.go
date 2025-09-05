@@ -39,6 +39,5 @@ func getEnv(key, def string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
 	}
-
 	return def
 }

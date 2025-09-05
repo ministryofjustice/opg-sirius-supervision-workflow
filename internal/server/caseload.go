@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -75,7 +76,7 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 	return appliedFilters
 }
 
-func caseload(client CaseloadClient, tmpl Template) Handler {
+func caseload(client CaseloadClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
@@ -85,12 +86,12 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
 		if app.SelectedTeam.IsLayDeputyTeam() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
 		params := r.URL.Query()
@@ -159,7 +160,7 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 			if err != nil {
 				return err
 			}
-			return Redirect(vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{Path: vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
 		var clientList sirius.ClientList

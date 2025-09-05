@@ -14,6 +14,7 @@ type UrlBuilder struct {
 	SelectedFilters []Filter
 	SelectedSort    Sort
 	MyTeamId        string
+	SuccessMessage  string
 }
 
 func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort, preselectCaseManager bool) string {
@@ -49,6 +50,10 @@ func (ub UrlBuilder) GetTeamUrl(team model.Team) string {
 
 func CheckIfIsMyTeam(firstId, secondId string) bool {
 	return firstId == secondId
+}
+
+func (ub UrlBuilder) GetSuccessMessage() string {
+	return ub.SuccessMessage
 }
 
 func (ub UrlBuilder) GetPaginationUrl(page int, perPage ...int) string {

@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -53,9 +55,12 @@ func (dt DeputyTasksPage) GetAppliedFilters() []string {
 	return appliedFilters
 }
 
-func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
+func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
+
+		fmt.Println(r.FormValue("successMessage"))
+		fmt.Println(r.Form["successMessage"])
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -63,7 +68,9 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{
+				Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam),
+			}
 		}
 
 		params := r.URL.Query()
@@ -114,7 +121,11 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 				return err
 			}
 			vars.UrlBuilder = vars.CreateUrlBuilder()
-			return Redirect(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage))
+
+			return Redirect{
+				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
+				SuccessMessage: app.SuccessMessage,
+			}
 
 		case http.MethodGet:
 
@@ -147,7 +158,9 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 
 			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-				return Redirect(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+				return Redirect{
+					Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage),
+				}
 			}
 
 			vars.Pagination = paginate.Pagination{
