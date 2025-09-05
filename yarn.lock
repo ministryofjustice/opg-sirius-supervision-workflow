@@ -1636,10 +1636,9 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.50.2":
+"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.50.4":
   version "1.0.0"
-  uid f35b39daca1be45057235eddf9230f8ffcf997e5
-  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/f35b39daca1be45057235eddf9230f8ffcf997e5"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/ded370629e549bc6b6d8d937676909b2b761b0e7"
 
 optionator@^0.9.3:
   version "0.9.4"
