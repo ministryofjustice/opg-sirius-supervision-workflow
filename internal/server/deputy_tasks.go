@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -59,9 +58,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
-		fmt.Println(r.FormValue("successMessage"))
-		fmt.Println(r.Form["successMessage"])
-
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
@@ -111,7 +107,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
-			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+			reassignSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				TaskIds:    r.Form["selected-tasks"],
@@ -124,7 +120,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 
 			return Redirect{
 				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
-				SuccessMessage: app.SuccessMessage,
+				SuccessMessage: reassignSuccessMessage,
 			}
 
 		case http.MethodGet:
@@ -162,6 +158,15 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 					Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage),
 				}
 			}
+
+			//getting success message
+			session, err := cookieStore.Get(r, "successMessageStore")
+			if err != nil {
+				//not sure we want a 500 thrown here?
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
+			vars.App.SuccessMessage = successMessage
 
 			vars.Pagination = paginate.Pagination{
 				CurrentPage:     taskList.Pages.PageCurrent,

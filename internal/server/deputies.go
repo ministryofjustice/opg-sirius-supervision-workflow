@@ -114,7 +114,7 @@ func deputies(client DeputiesClient, tmpl Template, cookieStore sessions.CookieS
 				return err
 			}
 
-			successMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+			reassignSuccessMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				DeputyIds:  r.Form["selected-deputies"],
@@ -127,7 +127,7 @@ func deputies(client DeputiesClient, tmpl Template, cookieStore sessions.CookieS
 			currentPage, _ := strconv.Atoi(r.FormValue("page"))
 			return Redirect{
 				Path:           vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage),
-				SuccessMessage: successMessage,
+				SuccessMessage: reassignSuccessMessage,
 			}
 
 		case http.MethodGet:
@@ -145,6 +145,16 @@ func deputies(client DeputiesClient, tmpl Template, cookieStore sessions.CookieS
 
 			vars.DeputyList = deputyList
 			vars.DeputyList.PaProTeamSelection = paProTeamSelection
+
+			//getting success message
+			session, err := cookieStore.Get(r, "successMessageStore")
+			if err != nil {
+				//not sure we want a 500 thrown here?
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
+			vars.App.SuccessMessage = successMessage
+
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 
 			if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
