@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -208,7 +207,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
 			return Redirect{
-				Path:           fmt.Sprintf(vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage)),
+				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
 				SuccessMessage: reassignSuccessMessage,
 			}
 
