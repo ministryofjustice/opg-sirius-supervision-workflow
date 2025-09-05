@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
@@ -134,4 +135,19 @@ func (t Tab) GetURL(team model.Team) string {
 
 func (t Tab) IsSelected(app WorkflowVars) bool {
 	return strings.HasSuffix(app.Path, t.basePath)
+}
+
+func getSuccessMessageAndResetCookie(session *sessions.Session, r *http.Request, w http.ResponseWriter) (string, error) {
+	successMessage := ""
+	//don't try to access if its a new session with no value
+	val := session.Values["successMessage"]
+	successMessage = val.(string)
+
+	//reset cookie value back to null - it will have shown for one load of page
+	session.Values["successMessage"] = ""
+	err := session.Save(r, w)
+	if err != nil {
+		return "", err
+	}
+	return successMessage, err
 }

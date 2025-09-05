@@ -152,7 +152,7 @@ func caseload(client CaseloadClient, tmpl Template, cookieStore sessions.CookieS
 				return err
 			}
 
-			app.SuccessMessage, err = client.ReassignClients(ctx, sirius.ReassignClientsParams{
+			reassignSuccessMessage, err := client.ReassignClients(ctx, sirius.ReassignClientsParams{
 				AssignTeam: r.FormValue("assignTeam"),
 				AssignCM:   r.FormValue("assignCM"),
 				ClientIds:  r.Form["selected-clients"],
@@ -160,7 +160,10 @@ func caseload(client CaseloadClient, tmpl Template, cookieStore sessions.CookieS
 			if err != nil {
 				return err
 			}
-			return Redirect{Path: vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
+			return Redirect{
+				Path:           vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam),
+				SuccessMessage: reassignSuccessMessage,
+			}
 		}
 
 		var clientList sirius.ClientList
@@ -199,6 +202,14 @@ func caseload(client CaseloadClient, tmpl Template, cookieStore sessions.CookieS
 			vars.CaseTypes = getCaseTypes()
 		}
 
+		//getting success message
+		session, err := cookieStore.Get(r, "successMessageStore")
+		if err != nil {
+			//not sure we want a 500 thrown here?
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
+
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 		vars.Pagination = paginate.Pagination{
 			CurrentPage:     clientList.Pages.PageCurrent,
@@ -211,6 +222,7 @@ func caseload(client CaseloadClient, tmpl Template, cookieStore sessions.CookieS
 		}
 		vars.AppliedFilters = vars.GetAppliedFilters()
 		vars.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
+		vars.App.SuccessMessage = successMessage
 
 		return tmpl.Execute(w, vars)
 	}

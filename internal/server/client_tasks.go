@@ -71,7 +71,6 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
-		fmt.Println("entering client tasks")
 
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
 			return StatusError(http.StatusMethodNotAllowed)
@@ -160,6 +159,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 			//getting success message
 			session, err := cookieStore.Get(r, "successMessageStore")
 			if err != nil {
+				//not sure we want a 500 thrown here?
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 			successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
@@ -187,7 +187,6 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 			vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
 
-			fmt.Println("before executing template " + vars.SuccessMessage)
 			return tmpl.Execute(w, vars)
 
 		case http.MethodPost:
@@ -228,20 +227,4 @@ func getSelectedDateFilter(value string) (*time.Time, error) {
 		return nil, err
 	}
 	return &parsed, nil
-}
-
-func getSuccessMessageAndResetCookie(session *sessions.Session, r *http.Request, w http.ResponseWriter) (string, error) {
-	successMessage := ""
-	//don't try to access if its a new session with no value
-	fmt.Println("new session? ", session.IsNew)
-	val := session.Values["successMessage"]
-	successMessage = val.(string)
-	
-	//reset cookie value back to null - it will have shown for one load of page
-	session.Values["successMessage"] = ""
-	err := session.Save(r, w)
-	if err != nil {
-		return "", err
-	}
-	return successMessage, err
 }
