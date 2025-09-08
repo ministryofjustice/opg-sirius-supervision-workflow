@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -156,19 +155,10 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
-			//getting success message
-			fmt.Println("getting the success cookie")
-
-			successMessage := ""
-			session, err := cookieStore.Get(r, "successMessageStore")
-			fmt.Printf("is the cookie new %s", session.IsNew)
-
-			if session.IsNew == false {
-				if err != nil {
-					//not sure we want a 500 thrown here?
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-				}
-				successMessage, _ = getSuccessMessageAndResetCookie(session, r, w)
+			successMessage, err := getSuccessMessage(r, w, cookieStore)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
 			}
 
 			vars.TaskList = taskList

@@ -159,13 +159,11 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 				}
 			}
 
-			//getting success message
-			session, err := cookieStore.Get(r, "successMessageStore")
+			successMessage, err := getSuccessMessage(r, w, cookieStore)
 			if err != nil {
-				//not sure we want a 500 thrown here?
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
 			}
-			successMessage, _ := getSuccessMessageAndResetCookie(session, r, w)
 			vars.App.SuccessMessage = successMessage
 
 			vars.Pagination = paginate.Pagination{
