@@ -138,19 +138,23 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 	return strings.HasSuffix(app.Path, t.basePath)
 }
 
-func getSuccessMessageAndResetCookie(session *sessions.Session, r *http.Request, w http.ResponseWriter) (string, error) {
-	successMessage := ""
-	//don't try to access if its a new session with no value
-	val := session.Values["successMessage"]
-
-	decodedContent, _ := base64.StdEncoding.DecodeString(val.(string))
-	successMessage = string(decodedContent)
-
-	//reset cookie value back to null - it will have shown for one load of page
-	session.Values["successMessage"] = ""
-	err := session.Save(r, w)
+func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessions.CookieStore) (string, error) {
+	session, err := cookieStore.Get(r, "successMessageStore")
 	if err != nil {
 		return "", err
 	}
-	return successMessage, err
+
+	successMessage := ""
+	if flashes := session.Flashes(); len(flashes) > 0 {
+		successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
+		successMessage = string(successMessageAsBytes)
+		if err != nil {
+			return "", err
+		}
+		err = session.Save(r, w)
+		if err != nil {
+			return "", err
+		}
+	}
+	return successMessage, nil
 }

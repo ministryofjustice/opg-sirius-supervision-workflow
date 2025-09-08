@@ -78,21 +78,15 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 
 				if redirect, ok := err.(Redirect); ok {
 					fmt.Println("adding a new cookie")
-					//maybe I can instead make a new session here and delete it in the get request?
-					session, err := cookieStore.Get(r, "successMessageStore")
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
+
+					if redirect.SuccessMessage != "" {
+						err := createSuccessMessage(r, w, cookieStore, redirect.SuccessMessage)
+						if err != nil {
+							http.Error(w, err.Error(), http.StatusInternalServerError)
+							return
+						}
 					}
 
-					encodedContent := base64.StdEncoding.EncodeToString([]byte(redirect.SuccessMessage))
-					session.Values["successMessage"] = encodedContent
-					err = session.Save(r, w)
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
-					}
-					
 					fmt.Println("redirecting now")
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
@@ -123,4 +117,26 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 			}
 		})
 	}
+}
+
+func createSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessions.CookieStore, redirectSuccessMessage string) error {
+	session, err := cookieStore.Get(r, "successMessageStore")
+	if err != nil {
+		return err
+	}
+
+	// Get the previous flashes, if any.
+	if flashes := session.Flashes(); len(flashes) > 0 {
+		// Use the flash values. This should remove the old flash if one exists unread.
+	}
+
+	// Set a new flash.
+	encodedContent := base64.StdEncoding.EncodeToString([]byte(redirectSuccessMessage))
+	session.AddFlash(encodedContent)
+
+	err = session.Save(r, w)
+	if err != nil {
+		return err
+	}
+	return nil
 }
