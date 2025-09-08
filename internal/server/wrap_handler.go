@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/gorilla/sessions"
@@ -76,18 +77,23 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				}
 
 				if redirect, ok := err.(Redirect); ok {
+					fmt.Println("adding a new cookie")
+					//maybe I can instead make a new session here and delete it in the get request?
 					session, err := cookieStore.Get(r, "successMessageStore")
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-					session.Values["successMessage"] = redirect.SuccessMessage
+
+					encodedContent := base64.StdEncoding.EncodeToString([]byte(redirect.SuccessMessage))
+					session.Values["successMessage"] = encodedContent
 					err = session.Save(r, w)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-
+					
+					fmt.Println("redirecting now")
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}

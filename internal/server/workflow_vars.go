@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"errors"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -141,7 +142,9 @@ func getSuccessMessageAndResetCookie(session *sessions.Session, r *http.Request,
 	successMessage := ""
 	//don't try to access if its a new session with no value
 	val := session.Values["successMessage"]
-	successMessage = val.(string)
+
+	decodedContent, _ := base64.StdEncoding.DecodeString(val.(string))
+	successMessage = string(decodedContent)
 
 	//reset cookie value back to null - it will have shown for one load of page
 	session.Values["successMessage"] = ""
