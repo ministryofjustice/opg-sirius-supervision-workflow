@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/sessions"
 	"html/template"
 	"log/slog"
@@ -84,7 +83,6 @@ func main() {
 	}
 
 	templates := createTemplates(envVars)
-	fmt.Println("creating the cookie store")
 	cookieStore := sessions.NewCookieStore([]byte(envVars.SuccessMessageStore))
 
 	server := &http.Server{

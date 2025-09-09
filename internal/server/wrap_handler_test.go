@@ -192,100 +192,100 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 	}
 }
 
-//func Test_wrapHandler_redirects_if_unauthorized(t *testing.T) {
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-//
-//	mockClient := mockApiClient{error: sirius.ErrUnauthorized}
-//
-//	logHandler := NewTestHandler()
-//	logger := slog.New(logHandler)
-//
-//	errorTemplate := &mockTemplate{}
-//	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
-//	cookieStorage := sessions.CookieStore{}
-//
-//	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, cookieStorage)
-//	next := mockNext{}
-//	httpHandler := nextHandlerFunc(next.GetHandler())
-//	httpHandler.ServeHTTP(w, r)
-//
-//	records := logHandler.Records()
-//
-//	assert.Equal(t, 0, next.Called)
-//	assert.Len(t, records, 1)
-//	assert.Equal(t, "Application Request", records[0].Message)
-//	assert.Equal(t, "GET", recordToMap(records[0])["method"])
-//	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
-//	assert.Equal(t, 0, errorTemplate.count)
-//	assert.Equal(t, 302, w.Result().StatusCode)
-//
-//	location, err := w.Result().Location()
-//	assert.Nil(t, err)
-//	assert.Equal(t, "sirius-url/auth", location.String())
-//}
-//
-//func Test_wrapHandler_follows_local_redirect(t *testing.T) {
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-//
-//	mockClient := mockApiClient{
-//		CurrentUserDetails: mockUserDetailsData,
-//		Teams:              mockTeamsData,
-//	}
-//
-//	logHandler := NewTestHandler()
-//	logger := slog.New(logHandler)
-//
-//	errorTemplate := &mockTemplate{}
-//	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
-//	cookieStorage := sessions.CookieStore{}
-//
-//	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, cookieStorage)
-//	next := mockNext{Err: Redirect{Path: "redirect-to-here"}}
-//	httpHandler := nextHandlerFunc(next.GetHandler())
-//	httpHandler.ServeHTTP(w, r)
-//
-//	records := logHandler.Records()
-//
-//	assert.Equal(t, 1, next.Called)
-//	assert.Equal(t, w, next.w)
-//	assert.Equal(t, r, next.r)
-//	assert.Len(t, records, 1)
-//	assert.Equal(t, "Application Request", records[0].Message)
-//	assert.Equal(t, "GET", recordToMap(records[0])["method"])
-//	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
-//	assert.Equal(t, 0, errorTemplate.count)
-//	assert.Equal(t, 302, w.Result().StatusCode)
-//
-//	location, err := w.Result().Location()
-//	assert.Nil(t, err)
-//	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
-//}
-//
-//func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-//
-//	mockClient := mockApiClient{error: context.Canceled}
-//
-//	logHandler := NewTestHandler()
-//	logger := slog.New(logHandler)
-//
-//	errorTemplate := &mockTemplate{}
-//	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
-//	cookieStorage := sessions.CookieStore{}
-//
-//	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, cookieStorage)
-//	next := mockNext{}
-//	httpHandler := nextHandlerFunc(next.GetHandler())
-//	httpHandler.ServeHTTP(w, r)
-//
-//	records := logHandler.Records()
-//
-//	assert.Equal(t, 0, next.Called)
-//	assert.Len(t, records, 1)
-//	assert.Equal(t, "Application Request", records[0].Message)
-//	assert.Equal(t, 0, errorTemplate.count)
-//	assert.Equal(t, 499, w.Result().StatusCode)
-//}
+func Test_wrapHandler_redirects_if_unauthorized(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{error: sirius.ErrUnauthorized}
+
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
+	cookieStorage := sessions.CookieStore{}
+
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, cookieStorage)
+	next := mockNext{}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+
+	records := logHandler.Records()
+
+	assert.Equal(t, 0, next.Called)
+	assert.Len(t, records, 1)
+	assert.Equal(t, "Application Request", records[0].Message)
+	assert.Equal(t, "GET", recordToMap(records[0])["method"])
+	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
+	assert.Equal(t, 0, errorTemplate.count)
+	assert.Equal(t, 302, w.Result().StatusCode)
+
+	location, err := w.Result().Location()
+	assert.Nil(t, err)
+	assert.Equal(t, "sirius-url/auth", location.String())
+}
+
+func Test_wrapHandler_follows_local_redirect(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{
+		CurrentUserDetails: mockUserDetailsData,
+		Teams:              mockTeamsData,
+	}
+
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
+	cookieStorage := sessions.NewCookieStore([]byte("secret"))
+
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, *cookieStorage)
+	next := mockNext{Err: Redirect{Path: "redirect-to-here"}}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+
+	records := logHandler.Records()
+
+	assert.Equal(t, 1, next.Called)
+	assert.Equal(t, w, next.w)
+	assert.Equal(t, r, next.r)
+	assert.Len(t, records, 1)
+	assert.Equal(t, "Application Request", records[0].Message)
+	assert.Equal(t, "GET", recordToMap(records[0])["method"])
+	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
+	assert.Equal(t, 0, errorTemplate.count)
+	assert.Equal(t, 302, w.Result().StatusCode)
+
+	location, err := w.Result().Location()
+	assert.Nil(t, err)
+	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
+}
+
+func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{error: context.Canceled}
+
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
+	cookieStorage := sessions.NewCookieStore([]byte("secret"))
+
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, *cookieStorage)
+	next := mockNext{}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+
+	records := logHandler.Records()
+
+	assert.Equal(t, 0, next.Called)
+	assert.Len(t, records, 1)
+	assert.Equal(t, "Application Request", records[0].Message)
+	assert.Equal(t, 0, errorTemplate.count)
+	assert.Equal(t, 499, w.Result().StatusCode)
+}
