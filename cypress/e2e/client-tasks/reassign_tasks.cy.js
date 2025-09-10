@@ -42,6 +42,7 @@ describe("Reassign Tasks", () => {
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Lay Team 1 - (Supervision)')
+        cy.url().should('contain', '/client-tasks?testVar=testVal')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {

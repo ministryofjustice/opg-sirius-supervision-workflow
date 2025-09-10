@@ -38,10 +38,10 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
-//        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
-//        cy.get('#edit-save').click()
-//        cy.get("#success-banner").should('be.visible')
-//        cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision)')
+        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
+        cy.get('#edit-save').click()
+        cy.get("#success-banner").should('be.visible')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision)')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {
