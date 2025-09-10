@@ -1450,26 +1450,30 @@ module.exports = function () {
       {
         "id": 1,
         "assignee":{
-          "displayName":"Lay Team 1 - (Supervision)"
+          "displayName":"Lay Team 1 - (Supervision)",
         },
+        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
       },
       {
         "id": 2,
         "assignee":{
           "displayName":"Pro Team 1 - (Supervision)"
         },
+        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
       },
     ],
     "reassign-clients": [
       {
         "id": 1,
         "reAssignName": "LayTeam1 User4",
-      }
+        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
+        },
     ],
     "reassign-deputies": [
       {
         "id": 1,
         "reAssignName": "ProTeam1 User1",
+        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
       }
     ],
   }

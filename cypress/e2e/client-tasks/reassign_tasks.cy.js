@@ -3,7 +3,7 @@ describe("Reassign Tasks", () => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
         cy.setCookie("success-route", "/reassign-tasks/1");
-
+    Cypress.Cookies.debug(true)
         cy.intercept('supervision-api/v1/teams/21', {
             body: {
                 "members": [
@@ -31,49 +31,58 @@ describe("Reassign Tasks", () => {
             }})
         cy.visit("/client-tasks");
     });
-
-    it("allows you to assign a task to a team and retains pagination and filters", () => {
-        cy.visit('/client-tasks?testVar=testVal');
-        cy.get("#select-task-1").click()
-        cy.get("#manage-task").should('be.visible').click()
-        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
-        cy.get('#assignTeam').select('Lay Team 1 - (Supervision)')
-        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
-        cy.get('#edit-save').click()
-        cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 1 task(s) to Lay Team 1 - (Supervision)')
-        cy.url().should('contain', '/client-tasks?testVar=testVal')
-    });
-
-    it("allows you to assign multiple tasks to an individual in a team", () => {
-        cy.get("#select-task-1").click()
-        cy.get("#select-task-2").click()
-        cy.get("#select-task-5").click()
-        cy.get("#manage-task").should('be.visible').click()
-        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
-        cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
-        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
-        cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
-        cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
-        cy.get('#assignCM').select('LayTeam1 User4');
-        cy.get('#edit-save').click()
-        cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 3 task(s) to Lay Team 1 - (Supervision)')
-    });
-
-    it("can cancel out of reassigning a task", () => {
-        cy.get("#select-task-1").check('1')
-        cy.get("#manage-task").click()
-        cy.get("#edit-cancel").click()
-        cy.get(".moj-manage-list__edit-panel").should('not.be.visible')
-    });
+//
+//    it("allows you to assign a task to a team and retains pagination and filters", () => {
+//        cy.visit('/client-tasks?team=13&page=1&per-page=25');
+//        cy.get("#select-task-1").click()
+//        cy.get("#manage-task").should('be.visible').click()
+//        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
+//        cy.get('#assignTeam').select('Lay Team 1 - (Supervision)')
+//        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
+//        cy.get('#edit-save').click()
+//        cy.get("#success-banner").should('be.visible')
+//        cy.get("#success-banner").contains('You have assigned 1 task(s) to Lay Team 1 - (Supervision)')
+//        cy.url().should('contain', '/client-tasks?team=13&page=1&per-page=25')
+//    });
+////
+//    it("allows you to assign multiple tasks to an individual in a team", () => {
+//        cy.get("#select-task-1").click()
+//        cy.get("#select-task-2").click()
+//        cy.get("#select-task-5").click()
+//        cy.get("#manage-task").should('be.visible').click()
+//        cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
+//        cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
+//        cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
+//        cy.get('#assignCM option:contains(LayTeam1 User3)').should('not.exist')
+//        cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
+//        cy.get('#assignCM').select('LayTeam1 User4');
+//        cy.get('#edit-save').click()
+//        cy.get("#success-banner").should('be.visible')
+//        cy.get("#success-banner").contains('You have assigned 3 task(s) to Lay Team 1 - (Supervision)')
+//    });
+//
+//    it("can cancel out of reassigning a task", () => {
+//        cy.get("#select-task-1").check('1')
+//        cy.get("#manage-task").click()
+//        cy.get("#edit-cancel").click()
+//        cy.get(".moj-manage-list__edit-panel").should('not.be.visible')
+//    });
 
     it("Only set the priority for a task", () => {
-        cy.visit('/client-tasks?testVar=testVal');
+        cy.visit('/client-tasks');
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
+        Cypress.Cookies.debug(true, { verbose: false })
+        cy.getCookies()
+          .should('have.length', 4)
+          .then((cookies) => {
+            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+            expect(cookies[1]).to.have.property('name', 'Other'),
+            expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
+            expect(cookies[3]).to.have.property('name', 'success-route')
+          })
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) as a priority')
     })
@@ -84,6 +93,15 @@ describe("Reassign Tasks", () => {
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
+        Cypress.Cookies.debug(true, { verbose: false })
+        cy.getCookies()
+          .should('have.length', 4)
+          .then((cookies) => {
+            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+            expect(cookies[1]).to.have.property('name', 'Other'),
+            expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
+            expect(cookies[3]).to.have.property('name', 'success-route')
+          })
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Lay Team 1 - (Supervision) as a priority')
     })

@@ -57,6 +57,15 @@ it("allows you to reassign a client for normal lay team", () => {
     cy.get('#assignCM option:contains(LayTeam1 User1)').should('exist')
     cy.get('#assignCM').select('LayTeam1 User1');
     cy.get('#edit-save').click()
+    cy.getCookies()
+      .should('have.length', 4)
+      .then((cookies) => {
+        expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+        expect(cookies[1]).to.have.property('name', 'Other'),
+        expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
+        expect(cookies[3]).to.have.property('name', 'success-route')
+      })
+    cy.get("#success-banner").should('exist')
     cy.get("#success-banner").should('be.visible')
     cy.get("#success-banner").contains('You have reassigned ')
   });
@@ -73,6 +82,16 @@ it("allows you to reassign a client for normal lay team", () => {
       cy.get('#assignCM option:contains(LayTeam1 User4)').should('exist')
       cy.get('#assignCM').select('LayTeam1 User4');
       cy.get('#edit-save').click()
+      cy.getCookies()
+        .should('have.length', 4)
+        .then((cookies) => {
+          expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+          expect(cookies[0]).to.have.property('value', 'MTc1NzUxNzMyMHxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fHOuzLICRji8VovEjFjIcXm202Fm1JSUV6Rv3RoBB4wZ'),
+          expect(cookies[1]).to.have.property('name', 'Other'),
+          expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
+          expect(cookies[3]).to.have.property('name', 'success-route')
+        })
+      cy.get("#success-banner").should('exist')
       cy.get("#success-banner").should('be.visible')
       cy.get("#success-banner").contains('You have reassigned ')
   });

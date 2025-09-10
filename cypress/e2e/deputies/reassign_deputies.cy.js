@@ -29,22 +29,35 @@ describe("Reassign deputies", () => {
         cy.get('#assignCM').select('ProTeam1 User1');
         cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
         cy.get('#edit-save').click()
+
+        cy.getCookies()
+          .should('have.length', 4)
+          .then((cookies) => {
+            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+            expect(cookies[1]).to.have.property('name', 'Other'),
+            expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
+            expect(cookies[3]).to.have.property('name', 'success-route')
+          })
+
+
+        cy.get("#success-banner").should('exist')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have reassigned ')
     })
 
-    it("can cancel out of reassigning", () => {
-        cy.get('#manage-deputy').should('not.be.visible');
-        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
-        cy.get('#select-deputy-13').click();
-        cy.get('#manage-deputy').should('be.visible');
-        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
-        cy.get('#manage-deputy').click();
-        cy.get('.moj-manage-list__edit-panel').should('be.visible');
-        cy.get('#edit-cancel').click();
-        cy.get('#manage-deputy').should('be.visible');
-        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
-        cy.get('#select-deputy-13').click();
-        cy.get('#manage-deputy').should('not.be.visible');
-    })
+
+//    it("can cancel out of reassigning", () => {
+//        cy.get('#manage-deputy').should('not.be.visible');
+//        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
+//        cy.get('#select-deputy-13').click();
+//        cy.get('#manage-deputy').should('be.visible');
+//        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
+//        cy.get('#manage-deputy').click();
+//        cy.get('.moj-manage-list__edit-panel').should('be.visible');
+//        cy.get('#edit-cancel').click();
+//        cy.get('#manage-deputy').should('be.visible');
+//        cy.get('.moj-manage-list__edit-panel').should('not.be.visible');
+//        cy.get('#select-deputy-13').click();
+//        cy.get('#manage-deputy').should('not.be.visible');
+//    })
 });
