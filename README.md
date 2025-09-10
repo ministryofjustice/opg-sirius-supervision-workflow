@@ -1,4 +1,3 @@
-
 # OPG SIRIUS WORKFLOW
 
 ### Major dependencies
