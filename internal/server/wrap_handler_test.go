@@ -306,13 +306,12 @@ func Test_wrapHandler_creates_cookie_for_success_message_in_redirect(t *testing.
 	assert.Nil(t, err)
 
 	flashes := session.Flashes()
-	if len(flashes) > 0 {
-		successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
-		assert.Nil(t, err)
-		successMessage := string(successMessageAsBytes)
-		assert.Equal(t, "very successful well done", successMessage)
-	}
 	assert.Equal(t, 1, len(flashes))
+
+	successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
+	assert.Nil(t, err)
+	successMessage := string(successMessageAsBytes)
+	assert.Equal(t, "Very successful well done", successMessage)
 
 	location, err := w.Result().Location()
 	assert.Nil(t, err)
@@ -344,4 +343,24 @@ func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
 	assert.Equal(t, "Application Request", records[0].Message)
 	assert.Equal(t, 0, errorTemplate.count)
 	assert.Equal(t, 499, w.Result().StatusCode)
+}
+
+func Test_wrapHandler_create_success_message(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+	cookieStore := sessions.NewCookieStore([]byte("secret"))
+
+	err := createSuccessMessage(r, w, *cookieStore, "my success message")
+	assert.Nil(t, err)
+
+	session, err := cookieStore.Get(r, "successMessageStore")
+	assert.Nil(t, err)
+
+	flashes := session.Flashes()
+	assert.Equal(t, 1, len(flashes))
+
+	successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
+	assert.Nil(t, err)
+	successMessage := string(successMessageAsBytes)
+	assert.Equal(t, "my success message", successMessage)
 }
