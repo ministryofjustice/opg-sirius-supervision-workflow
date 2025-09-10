@@ -160,7 +160,7 @@ describe("Filters", () => {
     cy.get('.moj-filter__tag').should('contain', 'Active')
     cy.get('.moj-filter__tag').should('contain', 'Open')
     cy.get('.moj-filter__tag').should('contain', 'Duplicate')
-
+    
   it("can filter by Supervision Level on the Lay Caseload page", () => {
     cy.get('#option-select-title-supervision-level').click()
     cy.get('#list-of-supervision-levels-to-filter label').should('contain', 'General')

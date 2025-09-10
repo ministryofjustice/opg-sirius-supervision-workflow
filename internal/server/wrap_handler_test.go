@@ -263,6 +263,50 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
 }
 
+func Test_wrapHandler_creates_cookie_for_success_message_in_redirect(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{
+		CurrentUserDetails: mockUserDetailsData,
+		Teams:              mockTeamsData,
+	}
+
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
+	cookieStore := sessions.NewCookieStore([]byte("secret"))
+	sessionCookieStore := *cookieStore
+
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars, sessionCookieStore)
+	next := mockNext{Err: Redirect{
+		Path:           "redirect-to-here",
+		SuccessMessage: "Very successful well done",
+	},
+	}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+
+	records := logHandler.Records()
+
+	assert.Equal(t, 1, next.Called)
+	assert.Equal(t, w, next.w)
+	assert.Equal(t, r, next.r)
+	assert.Len(t, records, 1)
+	assert.Equal(t, "Application Request", records[0].Message)
+	assert.Equal(t, "GET", recordToMap(records[0])["method"])
+	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
+	assert.Equal(t, 0, errorTemplate.count)
+	assert.Equal(t, 302, w.Result().StatusCode)
+	assert.Equal(t, cookieStore.Get(r, "secret"), "very successful well done")
+
+	location, err := w.Result().Location()
+	assert.Nil(t, err)
+	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
+}
+
 func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
