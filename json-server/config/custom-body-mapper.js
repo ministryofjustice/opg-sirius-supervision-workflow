@@ -4,7 +4,7 @@
  * invalid data
  */
 module.exports = (req, res, next) => {
-    if (["POST", "PATCH"].includes(req.method)) {
+    if (["POST", "PATCH", "PUT"].includes(req.method)) {
         if (req.url.includes("/deputies")) {
             const { deputySubType, ...rest } = req.body;
             req.body = rest;

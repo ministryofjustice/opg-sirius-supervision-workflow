@@ -991,6 +991,46 @@ module.exports = function () {
           "total": 1
       },
     ],
+    "reassign-deputy": {"successful":[67],"error":[],"reassignName":"Pro Team 1 - (Supervision)"},
+    "reassign-tasks": {
+          "id": 191,
+          "type": "ORAL",
+          "dueDate": "24/09/2025",
+          "name": "",
+          "assignee": {
+            "id": 38,
+            "teams": [],
+            "displayName": "Complaints - (Supervision)"
+          },
+          "caseItems": [
+            {
+              "id": 85,
+              "uId": "7000-0000-1276",
+              "client": {
+                "id": 47,
+                "caseRecNumber": "58016425",
+                "uId": "7000-0000-1243",
+                "salutation": "Mr",
+                "firstname": "Luke",
+                "middlenames": "",
+                "surname": "Crete",
+                "supervisionCaseOwner": {
+                  "id": 25,
+                  "teams": [],
+                  "displayName": "Allocations - (Supervision)"
+                }
+              },
+              "caseSubtype": "hw",
+              "caseRecNumber": "56023505",
+              "caseType": "ORDER"
+            }
+          ],
+          "persons": [],
+          "clients": [],
+          "deputies": [],
+          "caseOwnerTask": false,
+          "isPriority": false
+        },
     "tasks-view-25": [
       {
         "id": 1,
@@ -1446,35 +1486,12 @@ module.exports = function () {
         ]
       }
     ],
-    "reassign-tasks": [
-      {
-        "id": 1,
-        "assignee":{
-          "displayName":"Lay Team 1 - (Supervision)",
-        },
-        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
-      },
-      {
-        "id": 2,
-        "assignee":{
-          "displayName":"Pro Team 1 - (Supervision)"
-        },
-        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
-      },
-    ],
     "reassign-clients": [
       {
         "id": 1,
         "reAssignName": "LayTeam1 User4",
         "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
-        },
-    ],
-    "reassign-deputies": [
-      {
-        "id": 1,
-        "reAssignName": "ProTeam1 User1",
-        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
-      }
+      },
     ],
   }
 }
