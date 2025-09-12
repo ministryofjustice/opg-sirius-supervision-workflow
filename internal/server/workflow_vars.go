@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -139,6 +140,8 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 }
 
 func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessions.CookieStore) (string, error) {
+	fmt.Println("getting the success message")
+
 	session, err := cookieStore.Get(r, "successMessageStore")
 	if err != nil {
 		return "", err
@@ -156,5 +159,8 @@ func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessi
 			return "", err
 		}
 	}
+	fmt.Println("returning the success message for request : " + r.Method + r.URL.Path)
+	//successMessage = "test success message"
+	fmt.Println("success message is now: " + successMessage)
 	return successMessage, nil
 }

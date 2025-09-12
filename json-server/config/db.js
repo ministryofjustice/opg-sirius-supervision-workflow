@@ -1029,7 +1029,7 @@ module.exports = function () {
           "clients": [],
           "deputies": [],
           "caseOwnerTask": false,
-          "isPriority": false
+          "isPriority": true,
         },
     "tasks-view-25": [
       {

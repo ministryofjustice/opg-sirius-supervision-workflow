@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ReassignTasksParams struct {
@@ -19,8 +17,70 @@ type ReassignTasksParams struct {
 	IsPriority string   `json:"isPriority"`
 }
 
+type returnedTask struct {
+	Case struct {
+		Id     int    `json:"id"`
+		UId    string `json:"uId"`
+		Client struct {
+			Id                   int    `json:"id"`
+			CaseRecNumber        string `json:"caseRecNumber"`
+			UId                  string `json:"uId"`
+			Salutation           string `json:"salutation"`
+			Firstname            string `json:"firstname"`
+			Middlenames          string `json:"middlenames"`
+			Surname              string `json:"surname"`
+			SupervisionCaseOwner struct {
+				Id          int           `json:"id"`
+				Teams       []interface{} `json:"teams"`
+				DisplayName string        `json:"displayName"`
+			} `json:"supervisionCaseOwner"`
+		} `json:"client"`
+		CaseSubtype   string `json:"caseSubtype"`
+		CaseRecNumber string `json:"caseRecNumber"`
+		CaseType      string `json:"caseType"`
+	} `json:"case"`
+	Id          int    `json:"id"`
+	Type        string `json:"type"`
+	Status      string `json:"status"`
+	DueDate     string `json:"dueDate"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	RagRating   int    `json:"ragRating"`
+	Assignee    struct {
+		Id    int           `json:"id"`
+		Teams []interface{} `json:"teams"`
+		Name  string        `json:"displayName"`
+	} `json:"assignee"`
+	CreatedTime string `json:"createdTime"`
+	CaseItems   []struct {
+		Id     int    `json:"id"`
+		UId    string `json:"uId"`
+		Client struct {
+			Id                   int    `json:"id"`
+			CaseRecNumber        string `json:"caseRecNumber"`
+			UId                  string `json:"uId"`
+			Salutation           string `json:"salutation"`
+			Firstname            string `json:"firstname"`
+			Middlenames          string `json:"middlenames"`
+			Surname              string `json:"surname"`
+			SupervisionCaseOwner struct {
+				Id          int           `json:"id"`
+				Teams       []interface{} `json:"teams"`
+				DisplayName string        `json:"displayName"`
+			} `json:"supervisionCaseOwner"`
+		} `json:"client"`
+		CaseSubtype   string `json:"caseSubtype"`
+		CaseRecNumber string `json:"caseRecNumber"`
+		CaseType      string `json:"caseType"`
+	} `json:"caseItems"`
+	Persons       []interface{} `json:"persons"`
+	Clients       []interface{} `json:"clients"`
+	Deputies      []interface{} `json:"deputies"`
+	CaseOwnerTask bool          `json:"caseOwnerTask"`
+}
+
 func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {
-	var u model.Task
+	var u returnedTask
 	var body bytes.Buffer
 	var err error
 
@@ -48,6 +108,7 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.http.Do(req)
+
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return "", err
@@ -79,10 +140,16 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&u)
+
+	fmt.Println(err)
+	fmt.Println("----")
+
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return "", err
 	}
+	fmt.Println("params")
+	fmt.Println(params)
 
 	if params.AssignTeam != "0" {
 		switch params.IsPriority {
@@ -100,6 +167,6 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 	case "false":
 		return fmt.Sprintf("You have removed %d task(s) as a priority", len(params.TaskIds)), nil
 	}
-
-	return "", nil
+	fmt.Println("about to return default success message")
+	return "Default success message", nil
 }

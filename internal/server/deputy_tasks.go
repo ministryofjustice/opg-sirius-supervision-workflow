@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -164,6 +165,8 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return nil
 			}
+			fmt.Println("success message in deputy tasks.go " + successMessage)
+
 			vars.App.SuccessMessage = successMessage
 
 			vars.Pagination = paginate.Pagination{
@@ -179,7 +182,7 @@ func deputyTasks(client DeputyTasksClient, tmpl Template, cookieStore sessions.C
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 			vars.AppliedFilters = vars.GetAppliedFilters()
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
-
+			fmt.Println("success VARS message in deputy tasks.go " + vars.App.SuccessMessage)
 			return tmpl.Execute(w, vars)
 
 		default:

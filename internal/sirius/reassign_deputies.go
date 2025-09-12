@@ -49,7 +49,7 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-
+	
 	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -80,6 +80,6 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		c.logResponse(req, resp, err)
 		return "", err
 	}
-
+	fmt.Println("about to return success message in reassign deputies")
 	return fmt.Sprintf("You have reassigned %d deputies(s) to %s", len(params.DeputyIds), u.ReassignName), nil
 }

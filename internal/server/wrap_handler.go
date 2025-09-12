@@ -133,10 +133,12 @@ func createSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore se
 			return err
 		}
 	}
+	fmt.Println("create message " + redirectSuccessMessage)
 
 	// Set a new flash.
 	encodedContent := base64.StdEncoding.EncodeToString([]byte(redirectSuccessMessage))
 	session.AddFlash(encodedContent)
+	fmt.Println("cookie added")
 
 	err = session.Save(r, w)
 	if err != nil {

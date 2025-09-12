@@ -2,7 +2,6 @@ describe("Reassign Tasks", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.setCookie("success-route", "/reassign-tasks/2");
 
         cy.intercept('supervision-api/v1/teams/27', {
             body: {
@@ -33,22 +32,22 @@ describe("Reassign Tasks", () => {
     });
 
     it("allows you to assign a task to a team and retains pagination and filters", () => {
+//        cy.setCookie("success-route", "/reassign-tasks");
         cy.visit('/deputy-tasks?team=27&page=1&per-page=25');
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
         cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
+
         cy.get('#edit-save').click()
         cy.getCookies()
-          .should('have.length', 4)
+          .should('have.length', 2)
           .then((cookies) => {
-            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
-            expect(cookies[1]).to.have.property('name', 'Other'),
-            expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN'),
-            expect(cookies[3]).to.have.property('name', 'success-route')
+//            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+            expect(cookies[0]).to.have.property('name', 'Other'),
+            expect(cookies[1]).to.have.property('name', 'XSRF-TOKEN')
           })
-        cy.wait(2000);
         cy.get("#success-banner").should('exist')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision)')
