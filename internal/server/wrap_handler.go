@@ -116,5 +116,4 @@ func SetCookie(w http.ResponseWriter, name string, value string) {
 	valueAsByte := []byte(value)
 	c := &http.Cookie{Name: name, Value: base64.URLEncoding.EncodeToString(valueAsByte)}
 	http.SetCookie(w, c)
-	return
 }
