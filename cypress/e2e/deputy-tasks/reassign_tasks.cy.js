@@ -42,11 +42,11 @@ describe("Reassign Tasks", () => {
 
         cy.get('#edit-save').click()
         cy.getCookies()
-          .should('have.length', 2)
+          .should('have.length', 3)
           .then((cookies) => {
-//            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
-            expect(cookies[0]).to.have.property('name', 'Other'),
-            expect(cookies[1]).to.have.property('name', 'XSRF-TOKEN')
+            expect(cookies[0]).to.have.property('name', 'successMessageStore'),
+            expect(cookies[1]).to.have.property('name', 'Other'),
+            expect(cookies[2]).to.have.property('name', 'XSRF-TOKEN')
           })
         cy.get("#success-banner").should('exist')
         cy.get("#success-banner").should('be.visible')

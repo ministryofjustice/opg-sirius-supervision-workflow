@@ -2,6 +2,7 @@ describe("Reassign deputies", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
+        cy.visit("/deputies?team=24");
     });
 
     it("allows deputies to be reassigned", () => {
@@ -24,7 +25,6 @@ describe("Reassign deputies", () => {
 
          //        when this cookie is active it stops the success message store cookie
 //        cy.setCookie("success-route", "/reassign-deputies");
-        cy.visit("/deputies?team=24");
         cy.url().should('contain', '/deputies')
         cy.get('.govuk-table__select > :nth-child(1)').first().click();
         cy.get('#manage-deputy').click();
