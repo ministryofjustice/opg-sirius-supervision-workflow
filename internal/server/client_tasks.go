@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -67,7 +66,7 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 	return appliedFilters
 }
 
-func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.CookieStore) Handler {
+func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
@@ -155,7 +154,7 @@ func clientTasks(client ClientTasksClient, tmpl Template, cookieStore sessions.C
 				return err
 			}
 
-			successMessage, err := getSuccessMessage(r, w, cookieStore)
+			successMessage, err := getSuccessMessage(r, w, "success-message")
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return nil

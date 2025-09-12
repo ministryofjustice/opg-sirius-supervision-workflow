@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/gorilla/sessions"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -83,11 +82,10 @@ func main() {
 	}
 
 	templates := createTemplates(envVars)
-	cookieStore := sessions.NewCookieStore([]byte(envVars.SuccessMessageStore))
 
 	server := &http.Server{
 		Addr:              ":" + envVars.Port,
-		Handler:           server.New(logger, client, templates, envVars, *cookieStore),
+		Handler:           server.New(logger, client, templates, envVars),
 		ReadHeaderTimeout: 2 * time.Second,
 	}
 

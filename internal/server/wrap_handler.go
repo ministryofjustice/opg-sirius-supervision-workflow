@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/gorilla/sessions"
 	"log/slog"
 	"net/http"
 	"time"
@@ -48,7 +47,7 @@ func (e StatusError) Code() int {
 
 type Handler func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error
 
-func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envVars EnvironmentVars, cookieStore sessions.CookieStore) func(next Handler) http.Handler {
+func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envVars EnvironmentVars) func(next Handler) http.Handler {
 	return func(next Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -77,14 +76,8 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				}
 
 				if redirect, ok := err.(Redirect); ok {
-					fmt.Println("adding a new cookie")
-
 					if redirect.SuccessMessage != "" {
-						err := createSuccessMessage(r, w, cookieStore, redirect.SuccessMessage)
-						if err != nil {
-							http.Error(w, err.Error(), http.StatusInternalServerError)
-							return
-						}
+						SetCookie(w, "success-message", redirect.SuccessMessage)
 					}
 
 					fmt.Println("redirecting now")
@@ -119,30 +112,9 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 	}
 }
 
-func createSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessions.CookieStore, redirectSuccessMessage string) error {
-	session, err := cookieStore.Get(r, "successMessageStore")
-	if err != nil {
-		return err
-	}
-
-	// Get the previous flashes, if any.
-	if flashes := session.Flashes(); len(flashes) > 0 {
-		// Use the flash values. This should remove the old flash if one exists unread.
-		err = session.Save(r, w)
-		if err != nil {
-			return err
-		}
-	}
-	fmt.Println("create message " + redirectSuccessMessage)
-
-	// Set a new flash.
-	encodedContent := base64.StdEncoding.EncodeToString([]byte(redirectSuccessMessage))
-	session.AddFlash(encodedContent)
-	fmt.Println("cookie added")
-
-	err = session.Save(r, w)
-	if err != nil {
-		return err
-	}
-	return nil
+func SetCookie(w http.ResponseWriter, name string, value string) {
+	valueAsByte := []byte(value)
+	c := &http.Cookie{Name: name, Value: base64.URLEncoding.EncodeToString(valueAsByte)}
+	http.SetCookie(w, c)
+	return
 }

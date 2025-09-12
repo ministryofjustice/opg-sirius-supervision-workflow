@@ -4,12 +4,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type WorkflowVars struct {
@@ -139,28 +139,24 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 	return strings.HasSuffix(app.Path, t.basePath)
 }
 
-func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieStore sessions.CookieStore) (string, error) {
+func getSuccessMessage(r *http.Request, w http.ResponseWriter, name string) (string, error) {
 	fmt.Println("getting the success message")
-
-	session, err := cookieStore.Get(r, "successMessageStore")
+	c, err := r.Cookie(name)
+	if err != nil {
+		switch err {
+		case http.ErrNoCookie:
+			return "", nil
+		default:
+			return "", err
+		}
+	}
+	value, err := base64.URLEncoding.DecodeString(c.Value)
 	if err != nil {
 		return "", err
 	}
-
-	successMessage := ""
-	if flashes := session.Flashes(); len(flashes) > 0 {
-		successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
-		successMessage = string(successMessageAsBytes)
-		if err != nil {
-			return "", err
-		}
-		err = session.Save(r, w)
-		if err != nil {
-			return "", err
-		}
-	}
-	fmt.Println("returning the success message for request : " + r.Method + r.URL.Path)
-	//successMessage = "test success message"
-	fmt.Println("success message is now: " + successMessage)
-	return successMessage, nil
+	dc := &http.Cookie{Name: name, MaxAge: -1, Expires: time.Unix(1, 0)}
+	http.SetCookie(w, dc)
+	valueAsString := string(value)
+	fmt.Println(valueAsString)
+	return valueAsString, nil
 }

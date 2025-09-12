@@ -247,7 +247,7 @@ func TestGetSuccessMessage(t *testing.T) {
 	err = session.Save(r, w)
 	assert.Nil(t, err)
 
-	returnedSuccessMessage, err := getSuccessMessage(r, w, *cookieStore)
+	returnedSuccessMessage, err := getSuccessMessage(r)
 	assert.Nil(t, err)
 	assert.Equal(t, "my success message", returnedSuccessMessage)
 }
