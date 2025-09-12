@@ -72,7 +72,6 @@ describe("Reassign Tasks", () => {
         cy.get("#manage-task").should('be.visible').click()
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
-        Cypress.Cookies.debug(true, { verbose: false })
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) as a priority')
     })
@@ -83,7 +82,6 @@ describe("Reassign Tasks", () => {
         cy.get('#assignTeam').select('Lay Team 1 - (Supervision)');
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
-        Cypress.Cookies.debug(true, { verbose: false })
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Complaints - (Supervision) as a priority')
     })
