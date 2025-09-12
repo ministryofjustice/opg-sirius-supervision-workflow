@@ -992,6 +992,7 @@ module.exports = function () {
       },
     ],
     "reassign-deputy": {"successful":[67],"error":[],"reassignName":"Pro Team 1 - (Supervision)"},
+    "reassign-client": {"successful":[47],"error":[],"reassignName":"Lay Team 2 - (Supervision)"},
     "reassign-tasks": {
           "id": 191,
           "type": "ORAL",
