@@ -1,14 +1,11 @@
 package server
 
 import (
-	"encoding/base64"
 	"errors"
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -232,22 +229,4 @@ func TestCheckIfOnMyTeamPage(t *testing.T) {
 	assert.True(t, checkIfOnMyTeamPage(15, 15))
 	assert.False(t, checkIfOnMyTeamPage(15, 98))
 	assert.False(t, checkIfOnMyTeamPage(15, 0))
-}
-
-func TestGetSuccessMessage(t *testing.T) {
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-	cookieStore := sessions.NewCookieStore([]byte("secret"))
-
-	session, err := cookieStore.Get(r, "successMessageStore")
-	assert.Nil(t, err)
-	// Set a new flash.
-	encodedContent := base64.StdEncoding.EncodeToString([]byte("my success message"))
-	session.AddFlash(encodedContent)
-	err = session.Save(r, w)
-	assert.Nil(t, err)
-
-	returnedSuccessMessage, err := getSuccessMessage(r)
-	assert.Nil(t, err)
-	assert.Equal(t, "my success message", returnedSuccessMessage)
 }

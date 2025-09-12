@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -102,7 +101,6 @@ var testTaskList = sirius.TaskList{
 func TestClientTasks(t *testing.T) {
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
 	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
@@ -123,7 +121,7 @@ func TestClientTasks(t *testing.T) {
 			Roles: []string{"Case Manager"},
 		},
 	}
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -176,7 +174,6 @@ func TestClientTasks(t *testing.T) {
 func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *testing.T) {
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
 	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
@@ -198,7 +195,7 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 		},
 	}
 
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -333,7 +330,6 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 
 		client := &mockClientTasksClient{}
 		template := &mockTemplate{}
-		mockStore := sessions.NewCookieStore([]byte("secret"))
 
 		client.On("GetTaskTypes", mock.Anything).Return([]model.TaskType(nil), nil)
 		client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, nil)
@@ -356,7 +352,7 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 				Roles: tt.myPermissions,
 			},
 		}
-		err := clientTasks(client, template, *mockStore)(app, w, r)
+		err := clientTasks(client, template)(app, w, r)
 
 		assert.Nil(t, err)
 		assert.Equal(t, 1, template.count)
@@ -415,7 +411,6 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "/client-tasks?team=&page=10&per-page=25", nil)
@@ -436,7 +431,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 			Name: "anotherTeam",
 		},
 	}
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(Redirect{
 		Path:           "client-tasks?team=&page=2&per-page=25",
@@ -449,7 +444,6 @@ func TestClientTasks_Unauthorized(t *testing.T) {
 
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -458,7 +452,7 @@ func TestClientTasks_Unauthorized(t *testing.T) {
 	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, sirius.ErrUnauthorized)
 
 	app := WorkflowVars{}
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(sirius.ErrUnauthorized, err)
 	assert.Equal(0, template.count)
@@ -469,7 +463,6 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -478,7 +471,7 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, nil)
 
 	app := WorkflowVars{}
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal("err", err.Error())
 	assert.Equal(0, template.count)
@@ -487,7 +480,6 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 func TestClientTasks_ReassignTasks(t *testing.T) {
 	client := &mockClientTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	expectedParams := sirius.ReassignTasksParams{
 		AssignTeam: "10",
@@ -522,7 +514,7 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 			Roles: []string{"Case Manager"},
 		},
 	}
-	err := clientTasks(client, template, *mockStore)(app, w, r)
+	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path:           "client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",

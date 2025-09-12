@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -46,7 +45,6 @@ var testDeputyList = sirius.DeputyList{
 func TestGetDeputies(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
 
@@ -64,7 +62,7 @@ func TestGetDeputies(t *testing.T) {
 		},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template, *mockStore)(app, w, r)
+	err := deputies(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -121,7 +119,6 @@ func TestGetDeputies(t *testing.T) {
 func TestPostDeputies(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
 	client.On("ReassignDeputies", mock.Anything).Return("success reassign", nil)
@@ -134,7 +131,7 @@ func TestPostDeputies(t *testing.T) {
 		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template, *mockStore)(app, w, r)
+	err := deputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path:           "deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc",
@@ -146,7 +143,6 @@ func TestPostDeputies(t *testing.T) {
 func TestDeputies_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
 
@@ -158,7 +154,7 @@ func TestDeputies_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template, *mockStore)(app, w, r)
+	err := deputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "client-tasks?team=19&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -178,13 +174,12 @@ func TestDeputies_MethodNotAllowed(t *testing.T) {
 		t.Run("Test "+method, func(t *testing.T) {
 			client := &mockDeputiesClient{}
 			template := &mockTemplate{}
-			mockStore := sessions.NewCookieStore([]byte("secret"))
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(method, "", nil)
 
 			app := WorkflowVars{}
-			err := deputies(client, template, *mockStore)(app, w, r)
+			err := deputies(client, template)(app, w, r)
 
 			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
 			assert.Equal(t, 0, template.count)
@@ -195,7 +190,6 @@ func TestDeputies_MethodNotAllowed(t *testing.T) {
 func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetDeputyList", mock.Anything).Return(sirius.DeputyList{
 		Deputies: []model.Deputy{{}},
@@ -211,7 +205,7 @@ func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumbe
 	app := WorkflowVars{
 		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
 	}
-	err := deputies(client, template, *mockStore)(app, w, r)
+	err := deputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputies?team=1&page=2&per-page=25&order-by=deputy&sort=asc"}, err)
 	assert.Equal(t, 0, template.count)

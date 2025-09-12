@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -79,7 +78,6 @@ var taskList = sirius.TaskList{
 func TestDeputyTasks(t *testing.T) {
 	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
 	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
@@ -87,7 +85,7 @@ func TestDeputyTasks(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "/deputy-tasks", nil)
 
-	handler := deputyTasks(client, template, *mockStore)
+	handler := deputyTasks(client, template)
 	err := handler(workflowVars, w, r)
 
 	assert.Nil(t, err)
@@ -145,7 +143,6 @@ func TestDeputyTasks(t *testing.T) {
 func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
 	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
@@ -157,7 +154,7 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "LAY", Selector: "19"},
 	}
-	err := deputyTasks(client, template, *mockStore)(app, w, r)
+	err := deputyTasks(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "client-tasks?team=19&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -166,7 +163,6 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
 	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("GetTaskTypes", mock.Anything).Return(taskType, nil)
 	client.On("GetTaskList", mock.Anything).Return(taskList, nil)
@@ -174,7 +170,7 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/deputy-tasks?team=&page=10&per-page=25", nil)
 
-	err := deputyTasks(client, template, *mockStore)(workflowVars, w, r)
+	err := deputyTasks(client, template)(workflowVars, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputy-tasks?team=1&page=2&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -183,7 +179,6 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 func TestDeputyTasks_ReassignTasks(t *testing.T) {
 	client := &mockDeputyTasksClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	client.On("ReassignTasks", mock.Anything).Return("reassign success", nil)
 
@@ -203,7 +198,7 @@ func TestDeputyTasks_ReassignTasks(t *testing.T) {
 		"priority":       {expectedParams.IsPriority},
 	}
 
-	err := deputyTasks(client, template, *mockStore)(workflowVars, w, r)
+	err := deputyTasks(client, template)(workflowVars, w, r)
 	assert.Equal(t, Redirect{
 		Path:           "deputy-tasks?team=1&page=2&per-page=25",
 		SuccessMessage: "reassign success",
@@ -225,13 +220,12 @@ func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
 		t.Run("Test "+method, func(t *testing.T) {
 			client := &mockDeputyTasksClient{}
 			template := &mockTemplate{}
-			cookieStorage := sessions.CookieStore{}
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(method, "", nil)
 
 			app := WorkflowVars{}
-			err := deputyTasks(client, template, cookieStorage)(app, w, r)
+			err := deputyTasks(client, template)(app, w, r)
 
 			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
 			assert.Equal(t, 0, template.count)
