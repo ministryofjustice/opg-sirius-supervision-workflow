@@ -237,7 +237,11 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
 
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{Err: Redirect{Path: "redirect-to-here"}}
+	next := mockNext{Err: Redirect{
+		Path:           "redirect-to-here",
+		SuccessMessage: "Test",
+	},
+	}
 	httpHandler := nextHandlerFunc(next.GetHandler())
 	httpHandler.ServeHTTP(w, r)
 
@@ -281,33 +285,21 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 //	}
 //	httpHandler := nextHandlerFunc(next.GetHandler())
 //	httpHandler.ServeHTTP(w, r)
+//	cookies, _ := getSuccessMessage(next.r, next.w, "success-message")
+//	assert.Equal(t, 1, len(cookies))
 //
-//	records := logHandler.Records()
+//	//records := logHandler.Records()
 //
-//	assert.Equal(t, 1, next.Called)
-//	assert.Equal(t, w, next.w)
-//	assert.Equal(t, r, next.r)
-//	assert.Len(t, records, 1)
-//	assert.Equal(t, "Application Request", records[0].Message)
-//	assert.Equal(t, "GET", recordToMap(records[0])["method"])
-//	assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
-//	assert.Equal(t, 0, errorTemplate.count)
-//	assert.Equal(t, 302, w.Result().StatusCode)
-//
-//	session, err := cookieStore.Get(r, "successMessageStore")
-//	assert.Nil(t, err)
-//
-//	flashes := session.Flashes()
-//	assert.Equal(t, 1, len(flashes))
-//
-//	successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
-//	assert.Nil(t, err)
-//	successMessage := string(successMessageAsBytes)
-//	assert.Equal(t, "Very successful well done", successMessage)
-//
-//	location, err := w.Result().Location()
-//	assert.Nil(t, err)
-//	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
+//	//assert.Equal(t, 1, next.Called)
+//	//assert.Equal(t, w, next.w)
+//	//assert.Equal(t, r, next.r)
+//	//assert.Len(t, records, 1)
+//	//assert.Equal(t, "Application Request", records[0].Message)
+//	//assert.Equal(t, "GET", recordToMap(records[0])["method"])
+//	//assert.Equal(t, "test-url", recordToMap(records[0])["uri"])
+//	//assert.Equal(t, 0, errorTemplate.count)
+//	//assert.Equal(t, 302, w.Result().StatusCode)
+//	//assert.Equal(t, "Very successful well done", successMessage)
 //}
 
 func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {

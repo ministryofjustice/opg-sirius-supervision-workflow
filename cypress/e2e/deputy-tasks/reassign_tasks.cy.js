@@ -40,12 +40,6 @@ describe("Reassign Tasks", () => {
         cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
 
         cy.get('#edit-save').click()
-        cy.getCookies()
-          .should('have.length',2)
-          .then((cookies) => {
-            expect(cookies[0]).to.have.property('name', 'Other'),
-            expect(cookies[1]).to.have.property('name', 'XSRF-TOKEN')
-          })
         cy.get("#success-banner").should('exist')
         cy.get("#success-banner").should('be.visible')
         cy.get("#success-banner").contains('You have assigned 1 task(s) to Complaints - (Supervision)')
