@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gorilla/sessions"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -165,7 +164,6 @@ func TestCaseload(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			client := &mockCaseloadClient{}
 			template := &mockTemplate{}
-			mockStore := sessions.NewCookieStore([]byte("secret"))
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -178,7 +176,7 @@ func TestCaseload(t *testing.T) {
 				app.SelectedTeam.Name = "Supervision closed cases"
 			}
 
-			err := caseload(client, template, *mockStore)(app, w, r)
+			err := caseload(client, template)(app, w, r)
 
 			assert.Nil(t, err)
 			assert.Equal(t, 1, template.count)
@@ -254,7 +252,6 @@ func TestCaseload(t *testing.T) {
 func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 	client := &mockCaseloadClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -263,7 +260,7 @@ func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "PRO", Selector: "19"},
 	}
-	err := caseload(client, template, *mockStore)(app, w, r)
+	err := caseload(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path: "client-tasks?team=19&page=1&per-page=25",
@@ -274,7 +271,6 @@ func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) {
 	client := &mockCaseloadClient{}
 	template := &mockTemplate{}
-	mockStore := sessions.NewCookieStore([]byte("secret"))
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "", nil)
@@ -283,7 +279,7 @@ func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) 
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "LAY", Name: "Lay Deputy Team", Selector: "lay-team"},
 	}
-	err := caseload(client, template, *mockStore)(app, w, r)
+	err := caseload(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path: "client-tasks?team=lay-team&page=1&per-page=25"}, err)
@@ -304,13 +300,12 @@ func TestCaseload_MethodNotAllowed(t *testing.T) {
 		t.Run("Test "+method, func(t *testing.T) {
 			client := &mockCaseloadClient{}
 			template := &mockTemplate{}
-			mockStore := sessions.NewCookieStore([]byte("secret"))
 
 			w := httptest.NewRecorder()
 			r, _ := http.NewRequest(method, "", nil)
 
 			app := WorkflowVars{}
-			err := caseload(client, template, *mockStore)(app, w, r)
+			err := caseload(client, template)(app, w, r)
 
 			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
 			assert.Equal(t, 0, template.count)
