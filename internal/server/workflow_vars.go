@@ -139,9 +139,9 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 	return strings.HasSuffix(app.Path, t.basePath)
 }
 
-func getSuccessMessage(r *http.Request, w http.ResponseWriter, name string) (string, error) {
+func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string) (string, error) {
 	fmt.Println("getting the success message")
-	c, err := r.Cookie(name)
+	c, err := r.Cookie(cookieName)
 	if err != nil {
 		switch err {
 		case http.ErrNoCookie:
@@ -154,7 +154,7 @@ func getSuccessMessage(r *http.Request, w http.ResponseWriter, name string) (str
 	if err != nil {
 		return "", err
 	}
-	dc := &http.Cookie{Name: name, MaxAge: -1, Expires: time.Unix(1, 0)}
+	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0)}
 	http.SetCookie(w, dc)
 	valueAsString := string(value)
 	fmt.Println(valueAsString)
