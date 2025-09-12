@@ -1,11 +1,13 @@
 package server
 
 import (
+	"encoding/base64"
 	"errors"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -229,4 +231,16 @@ func TestCheckIfOnMyTeamPage(t *testing.T) {
 	assert.True(t, checkIfOnMyTeamPage(15, 15))
 	assert.False(t, checkIfOnMyTeamPage(15, 98))
 	assert.False(t, checkIfOnMyTeamPage(15, 0))
+}
+
+func TestGetSuccessMessage(t *testing.T) {
+	w := httptest.NewRecorder()
+	valueAsByte := []byte("test success message")
+	c := &http.Cookie{Name: "success-message", Value: base64.URLEncoding.EncodeToString(valueAsByte)}
+	http.SetCookie(w, c)
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	successMessage, err := getSuccessMessage(r, w, "success-message")
+	assert.Nil(t, err)
+	assert.Equal(t, "my success message", successMessage)
 }

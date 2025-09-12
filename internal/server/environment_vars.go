@@ -33,7 +33,6 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		DefaultWorkflowTeamID: defaultTeamId,
 		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
 		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
-		SuccessMessageStore:   getEnv("SUCCESS_MESSAGE_STORE_KEY", "99"),
 	}, nil
 }
 

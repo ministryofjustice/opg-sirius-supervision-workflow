@@ -77,7 +77,7 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 
 				if redirect, ok := err.(Redirect); ok {
 					if redirect.SuccessMessage != "" {
-						SetCookie(w, "success-message", redirect.SuccessMessage)
+						SetSuccessMessage(w, "success-message", redirect.SuccessMessage)
 					}
 
 					fmt.Println("redirecting now")
@@ -112,7 +112,7 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 	}
 }
 
-func SetCookie(w http.ResponseWriter, name string, value string) {
+func SetSuccessMessage(w http.ResponseWriter, name string, value string) {
 	valueAsByte := []byte(value)
 	c := &http.Cookie{Name: name, Value: base64.URLEncoding.EncodeToString(valueAsByte)}
 	http.SetCookie(w, c)
