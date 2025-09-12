@@ -319,21 +319,3 @@ func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
 	assert.Equal(t, 0, errorTemplate.count)
 	assert.Equal(t, 499, w.Result().StatusCode)
 }
-
-//func Test_wrapHandler_create_success_message(t *testing.T) {
-//	w := httptest.NewRecorder()
-//	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
-//
-//	assert.Nil(t, err)
-//
-//	session, err := cookieStore.Get(r, "successMessageStore")
-//	assert.Nil(t, err)
-//
-//	flashes := session.Flashes()
-//	assert.Equal(t, 1, len(flashes))
-//
-//	successMessageAsBytes, err := base64.StdEncoding.DecodeString(flashes[0].(string))
-//	assert.Nil(t, err)
-//	successMessage := string(successMessageAsBytes)
-//	assert.Equal(t, "my success message", successMessage)
-//}

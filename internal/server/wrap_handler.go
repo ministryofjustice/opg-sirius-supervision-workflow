@@ -76,12 +76,9 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				}
 
 				if redirect, ok := err.(Redirect); ok {
-					fmt.Println("success message not null")
 					if redirect.SuccessMessage != "" {
 						SetSuccessMessage(w, "success-message", redirect.SuccessMessage)
 					}
-
-					fmt.Println("redirecting now")
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}
