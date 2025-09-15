@@ -150,7 +150,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return nil
 			}
-			fmt.Println("success message in deputies.go " + successMessage)
 			vars.App.SuccessMessage = successMessage
 
 			vars.UrlBuilder = vars.CreateUrlBuilder()
@@ -174,8 +173,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			vars.AppliedFilters = vars.GetAppliedFilters()
 
 			vars.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
-			fmt.Println("success VARS in deputies.go " + vars.App.SuccessMessage)
-
 			return tmpl.Execute(w, vars)
 
 		default:

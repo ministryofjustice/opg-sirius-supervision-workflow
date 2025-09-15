@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
@@ -140,7 +139,6 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 }
 
 func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string) (string, error) {
-	fmt.Println("getting the success message")
 	c, err := r.Cookie(cookieName)
 	if err != nil {
 		switch err {
@@ -157,6 +155,5 @@ func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string
 	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0)}
 	http.SetCookie(w, dc)
 	valueAsString := string(value)
-	fmt.Println(valueAsString)
 	return valueAsString, nil
 }
