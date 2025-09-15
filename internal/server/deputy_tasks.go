@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
@@ -164,7 +163,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return nil
 			}
-			fmt.Println("success message in deputy tasks.go " + successMessage)
 
 			vars.App.SuccessMessage = successMessage
 
@@ -181,7 +179,6 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 			vars.AppliedFilters = vars.GetAppliedFilters()
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
-			fmt.Println("success VARS message in deputy tasks.go " + vars.App.SuccessMessage)
 			return tmpl.Execute(w, vars)
 
 		default:
