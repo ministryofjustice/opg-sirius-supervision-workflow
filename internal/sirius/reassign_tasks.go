@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
 )
@@ -18,65 +19,9 @@ type ReassignTasksParams struct {
 }
 
 type returnedTask struct {
-	Case struct {
-		Id     int    `json:"id"`
-		UId    string `json:"uId"`
-		Client struct {
-			Id                   int    `json:"id"`
-			CaseRecNumber        string `json:"caseRecNumber"`
-			UId                  string `json:"uId"`
-			Salutation           string `json:"salutation"`
-			Firstname            string `json:"firstname"`
-			Middlenames          string `json:"middlenames"`
-			Surname              string `json:"surname"`
-			SupervisionCaseOwner struct {
-				Id          int           `json:"id"`
-				Teams       []interface{} `json:"teams"`
-				DisplayName string        `json:"displayName"`
-			} `json:"supervisionCaseOwner"`
-		} `json:"client"`
-		CaseSubtype   string `json:"caseSubtype"`
-		CaseRecNumber string `json:"caseRecNumber"`
-		CaseType      string `json:"caseType"`
-	} `json:"case"`
-	Id          int    `json:"id"`
-	Type        string `json:"type"`
-	Status      string `json:"status"`
-	DueDate     string `json:"dueDate"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	RagRating   int    `json:"ragRating"`
-	Assignee    struct {
-		Id    int           `json:"id"`
-		Teams []interface{} `json:"teams"`
-		Name  string        `json:"displayName"`
-	} `json:"assignee"`
-	CreatedTime string `json:"createdTime"`
-	CaseItems   []struct {
-		Id     int    `json:"id"`
-		UId    string `json:"uId"`
-		Client struct {
-			Id                   int    `json:"id"`
-			CaseRecNumber        string `json:"caseRecNumber"`
-			UId                  string `json:"uId"`
-			Salutation           string `json:"salutation"`
-			Firstname            string `json:"firstname"`
-			Middlenames          string `json:"middlenames"`
-			Surname              string `json:"surname"`
-			SupervisionCaseOwner struct {
-				Id          int           `json:"id"`
-				Teams       []interface{} `json:"teams"`
-				DisplayName string        `json:"displayName"`
-			} `json:"supervisionCaseOwner"`
-		} `json:"client"`
-		CaseSubtype   string `json:"caseSubtype"`
-		CaseRecNumber string `json:"caseRecNumber"`
-		CaseType      string `json:"caseType"`
-	} `json:"caseItems"`
-	Persons       []interface{} `json:"persons"`
-	Clients       []interface{} `json:"clients"`
-	Deputies      []interface{} `json:"deputies"`
-	CaseOwnerTask bool          `json:"caseOwnerTask"`
+	Id            int            `json:"id"`
+	Assignee      model.Assignee `json:"assignee"`
+	CaseOwnerTask bool           `json:"caseOwnerTask"`
 }
 
 func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {

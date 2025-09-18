@@ -112,6 +112,6 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 
 func SetSuccessMessage(w http.ResponseWriter, cookieName string, cookieValue string) {
 	valueAsByte := []byte(cookieValue)
-	c := &http.Cookie{Name: cookieName, Value: base64.URLEncoding.EncodeToString(valueAsByte)}
+	c := &http.Cookie{Name: cookieName, Value: base64.URLEncoding.EncodeToString(valueAsByte), MaxAge: 3600}
 	http.SetCookie(w, c)
 }

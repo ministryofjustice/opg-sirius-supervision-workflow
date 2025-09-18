@@ -1491,7 +1491,6 @@ module.exports = function () {
       {
         "id": 1,
         "reAssignName": "LayTeam1 User4",
-        "successMessageStore": "MTc1NzUxNDc3NnxEWDhFQVFMX2dBQUJFQUVRQUFBRV80QUFBQT09fBsYIeGl7LoNvh_BsGJ3S4dgoP_ZI9K4FEoLry_GzhLW"
       },
     ],
   }
