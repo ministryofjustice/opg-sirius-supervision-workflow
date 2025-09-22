@@ -3,18 +3,18 @@ package sirius
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateReassignTasks(t *testing.T) {
-	jsonResponse := `{	
+	jsonResponse := `{
 			"id":98,
 			"type":"ORAL",
 			"status":"Not started",

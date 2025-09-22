@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -17,15 +18,20 @@ type ErrorVars struct {
 	EnvironmentVars
 }
 
-type RedirectError string
-
-func (e RedirectError) Error() string {
-	return "redirect to " + string(e)
+type Redirect struct {
+	Path           string
+	SuccessMessage string
 }
 
-func (e RedirectError) To() string {
-	return string(e)
+func (e Redirect) Error() string {
+	return "redirect to " + string(e.Path)
 }
+
+func (e Redirect) To() string {
+	return string(e.Path)
+}
+
+func (e Redirect) GetHeaderMessage() string { return string(e.SuccessMessage) }
 
 type StatusError int
 
@@ -69,7 +75,10 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 					return
 				}
 
-				if redirect, ok := err.(RedirectError); ok {
+				if redirect, ok := err.(Redirect); ok {
+					if redirect.SuccessMessage != "" {
+						SetSuccessMessage(w, "success-message", redirect.SuccessMessage)
+					}
 					http.Redirect(w, r, envVars.Prefix+"/"+redirect.To(), http.StatusFound)
 					return
 				}
@@ -99,4 +108,10 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 			}
 		})
 	}
+}
+
+func SetSuccessMessage(w http.ResponseWriter, cookieName string, cookieValue string) {
+	valueAsByte := []byte(cookieValue)
+	c := &http.Cookie{Name: cookieName, Value: base64.URLEncoding.EncodeToString(valueAsByte), MaxAge: 3600}
+	http.SetCookie(w, c)
 }

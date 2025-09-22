@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
-
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ReassignTasksParams struct {
@@ -19,8 +18,14 @@ type ReassignTasksParams struct {
 	IsPriority string   `json:"isPriority"`
 }
 
+type returnedTask struct {
+	Id            int            `json:"id"`
+	Assignee      model.Assignee `json:"assignee"`
+	CaseOwnerTask bool           `json:"caseOwnerTask"`
+}
+
 func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {
-	var u model.Task
+	var u returnedTask
 	var body bytes.Buffer
 	var err error
 

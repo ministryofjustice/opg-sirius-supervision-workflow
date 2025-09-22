@@ -7,6 +7,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"net/http"
+	"strconv"
 )
 
 type DeputiesClient interface {
@@ -74,26 +75,10 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
 			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return RedirectError(page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam))
+			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
 		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
-
-		if r.Method == http.MethodPost {
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage, err = client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				DeputyIds:  r.Form["selected-deputies"],
-			})
-			if err != nil {
-				return err
-			}
-		}
 
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
@@ -107,50 +92,91 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			selectedECMs = params["ecm"]
 		}
 
-		deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
-			Team:         app.SelectedTeam,
-			Page:         page,
-			PerPage:      deputiesPerPage,
-			Sort:         fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
-			SelectedECMs: selectedECMs,
-		})
-		if err != nil {
-			return err
-		}
-
-		vars := DeputiesPage{
-			DeputyList: deputyList,
-		}
-		vars.DeputyList.PaProTeamSelection = paProTeamSelection
+		vars := DeputiesPage{}
+		vars.PerPage = deputiesPerPage
+		vars.Sort = sort
+		vars.App = app
 		vars.SelectedECMs = selectedECMs
 		if app.SelectedTeam.IsPro() {
 			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
 		} else {
 			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultPaTeamID
 		}
-
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
-		vars.UrlBuilder = vars.CreateUrlBuilder()
 
-		if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage))
+		switch r.Method {
+		case http.MethodPost:
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			reassignSuccessMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				DeputyIds:  r.Form["selected-deputies"],
+			})
+			if err != nil {
+				return err
+			}
+
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+			currentPage, _ := strconv.Atoi(r.FormValue("page"))
+			return Redirect{
+				Path:           vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage),
+				SuccessMessage: reassignSuccessMessage,
+			}
+
+		case http.MethodGet:
+
+			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
+				Team:         app.SelectedTeam,
+				Page:         page,
+				PerPage:      deputiesPerPage,
+				Sort:         fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
+				SelectedECMs: selectedECMs,
+			})
+			if err != nil {
+				return err
+			}
+
+			vars.DeputyList = deputyList
+			vars.DeputyList.PaProTeamSelection = paProTeamSelection
+
+			successMessage, err := getSuccessMessage(r, w, "success-message")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
+			}
+			vars.App.SuccessMessage = successMessage
+
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+
+			if page > deputyList.Pages.PageTotal && deputyList.Pages.PageTotal > 0 {
+				return Redirect{
+					Path: vars.UrlBuilder.GetPaginationUrl(deputyList.Pages.PageTotal, deputiesPerPage),
+				}
+			}
+
+			vars.Pagination = paginate.Pagination{
+				CurrentPage:     deputyList.Pages.PageCurrent,
+				TotalPages:      deputyList.Pages.PageTotal,
+				TotalElements:   deputyList.TotalDeputies,
+				ElementsPerPage: vars.PerPage,
+				ElementName:     "deputies",
+				PerPageOptions:  perPageOptions,
+				UrlBuilder:      vars.UrlBuilder,
+			}
+
+			vars.AppliedFilters = vars.GetAppliedFilters()
+
+			vars.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
+			return tmpl.Execute(w, vars)
+
+		default:
+			return StatusError(http.StatusMethodNotAllowed)
 		}
-
-		vars.Pagination = paginate.Pagination{
-			CurrentPage:     deputyList.Pages.PageCurrent,
-			TotalPages:      deputyList.Pages.PageTotal,
-			TotalElements:   deputyList.TotalDeputies,
-			ElementsPerPage: vars.PerPage,
-			ElementName:     "deputies",
-			PerPageOptions:  perPageOptions,
-			UrlBuilder:      vars.UrlBuilder,
-		}
-
-		vars.AppliedFilters = vars.GetAppliedFilters()
-
-		vars.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
-		return tmpl.Execute(w, vars)
 	}
 }

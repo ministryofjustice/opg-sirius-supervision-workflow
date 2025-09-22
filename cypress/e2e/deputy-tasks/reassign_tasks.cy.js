@@ -2,7 +2,6 @@ describe("Reassign Tasks", () => {
     beforeEach(() => {
         cy.setCookie("Other", "other");
         cy.setCookie("XSRF-TOKEN", "abcde");
-        cy.setCookie("success-route", "/reassign-tasks/2");
 
         cy.intercept('supervision-api/v1/teams/27', {
             body: {
@@ -33,16 +32,18 @@ describe("Reassign Tasks", () => {
     });
 
     it("allows you to assign a task to a team and retains pagination and filters", () => {
-        cy.visit('/deputy-tasks?team=27&testVar=testVal');
+        cy.visit('/deputy-tasks?team=27&page=1&per-page=25');
         cy.get("#select-task-1").click()
         cy.get("#manage-task").should('be.visible').click()
         cy.get('.moj-manage-list__edit-panel > :nth-child(2)').should('be.visible').click()
         cy.get('#assignTeam').select('Pro Team 1 - (Supervision)')
         cy.intercept('PATCH', 'supervision-api/v1/users/*', {statusCode: 204})
+
         cy.get('#edit-save').click()
+        cy.get("#success-banner").should('exist')
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision)')
-        cy.url().should('contain', '/deputy-tasks?team=27&testVar=testVal')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to Complaints - (Supervision)')
+        cy.url().should('contain', '/deputy-tasks?team=27&page=1&per-page=25')
     });
 
     it("allows you to assign multiple tasks to an individual in a team", () => {
@@ -57,7 +58,7 @@ describe("Reassign Tasks", () => {
         cy.get('#assignCM').select('ProTeam1 User4');
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 2 task(s) to Pro Team 1 - (Supervision)')
+        cy.get("#success-banner").contains('You have assigned 2 task(s) to Complaints - (Supervision)')
     });
 
     it("can cancel out of reassigning a task", () => {
@@ -83,6 +84,6 @@ describe("Reassign Tasks", () => {
         cy.get('#priority').select('Yes')
         cy.get('#edit-save').click()
         cy.get("#success-banner").should('be.visible')
-        cy.get("#success-banner").contains('You have assigned 1 task(s) to Pro Team 1 - (Supervision) as a priority')
+        cy.get("#success-banner").contains('You have assigned 1 task(s) to Complaints - (Supervision) as a priority')
     })
 });

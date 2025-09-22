@@ -21,8 +21,9 @@ type ClientTasksPage struct {
 	FilterByAssignee
 	FilterByDueDate
 	FilterByTaskType
-	TaskList sirius.TaskList
-	MyTeamId string
+	TaskList       sirius.TaskList
+	MyTeamId       string
+	SuccessMessage string
 }
 
 func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
@@ -73,23 +74,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
-		if r.Method == http.MethodPost {
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			app.SuccessMessage, err = client.ReassignTasks(ctx, sirius.ReassignTasksParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				TaskIds:    r.Form["selected-tasks"],
-				IsPriority: r.FormValue("priority"),
-			})
-			if err != nil {
-				return err
-			}
-		}
-
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
 		perPageOptions := []int{25, 50, 100}
@@ -130,33 +114,9 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 
 		var vars ClientTasksPage
-
-		if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
-			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
-			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
-		}
-
-		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
-
-		taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
-			Team:              app.SelectedTeam,
-			Page:              page,
-			PerPage:           tasksPerPage,
-			TaskTypes:         taskTypes,
-			SelectedTaskTypes: selectedTaskTypes,
-			Assignees:         selectedAssignees,
-			DueDateFrom:       selectedDueDateFrom,
-			DueDateTo:         selectedDueDateTo,
-		})
-		if err != nil {
-			return err
-		}
-
-		vars.TaskList = taskList
 		vars.PerPage = tasksPerPage
 		vars.SelectedTaskTypes = selectedTaskTypes
-		vars.SelectedAssignees = userSelectedAssignees
-		vars.SelectedUnassigned = selectedUnassigned
+		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
 
 		if selectedDueDateFrom != nil {
 			vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
@@ -166,52 +126,91 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 
 		vars.App = app
-
 		if len(vars.App.MyDetails.Teams) >= 1 {
 			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
 		}
 
-		vars.UrlBuilder = vars.CreateUrlBuilder()
-
-		if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
-			return RedirectError(vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage))
+		if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
+			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
+			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
 		}
+		vars.SelectedAssignees = userSelectedAssignees
+		vars.SelectedUnassigned = selectedUnassigned
 
-		vars.Pagination = paginate.Pagination{
-			CurrentPage:     taskList.Pages.PageCurrent,
-			TotalPages:      taskList.Pages.PageTotal,
-			TotalElements:   taskList.TotalTasks,
-			ElementsPerPage: vars.PerPage,
-			ElementName:     "tasks",
-			PerPageOptions:  perPageOptions,
-			UrlBuilder:      vars.UrlBuilder,
-		}
+		switch r.Method {
+		case http.MethodGet:
 
-		if len(selectedTaskTypes) > 0 {
-			//	make another call to get original task count
-			taskList2, err := client.GetTaskList(ctx, sirius.TaskListParams{
+			taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 				Team:              app.SelectedTeam,
 				Page:              page,
 				PerPage:           tasksPerPage,
 				TaskTypes:         taskTypes,
-				SelectedTaskTypes: []string{},
+				SelectedTaskTypes: selectedTaskTypes,
 				Assignees:         selectedAssignees,
 				DueDateFrom:       selectedDueDateFrom,
 				DueDateTo:         selectedDueDateTo,
+			})
+			if err != nil {
+				return err
+			}
+
+			successMessage, err := getSuccessMessage(r, w, "success-message")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
+			}
+
+			vars.TaskList = taskList
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+			vars.App.SuccessMessage = successMessage
+
+			if page > taskList.Pages.PageTotal && taskList.Pages.PageTotal > 0 {
+				return Redirect{Path: vars.UrlBuilder.GetPaginationUrl(taskList.Pages.PageTotal, tasksPerPage)}
+			}
+
+			vars.Pagination = paginate.Pagination{
+				CurrentPage:     taskList.Pages.PageCurrent,
+				TotalPages:      taskList.Pages.PageTotal,
+				TotalElements:   taskList.TotalTasks,
+				ElementsPerPage: vars.PerPage,
+				ElementName:     "tasks",
+				PerPageOptions:  perPageOptions,
+				UrlBuilder:      vars.UrlBuilder,
+			}
+
+			taskList.MetaData = vars.TaskList.MetaData
+			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
+			vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
+			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
+
+			return tmpl.Execute(w, vars)
+
+		case http.MethodPost:
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			reassignSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				TaskIds:    r.Form["selected-tasks"],
+				IsPriority: r.FormValue("priority"),
 			})
 
 			if err != nil {
 				return err
 			}
-			vars.TaskList.MetaData.TaskTypeCount = taskList2.MetaData.TaskTypeCount
-			vars.TaskList.MetaData.AssigneeCount = taskList.MetaData.AssigneeCount
-		}
-		taskList.MetaData = vars.TaskList.MetaData
 
-		vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
-		vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
-		vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
-		return tmpl.Execute(w, vars)
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+			return Redirect{
+				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
+				SuccessMessage: reassignSuccessMessage,
+			}
+
+		default:
+			return StatusError(http.StatusMethodNotAllowed)
+		}
 	}
 }
 

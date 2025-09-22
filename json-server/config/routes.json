@@ -8,13 +8,11 @@
 
     "/assignees/teams/tasks\\?teamIds[]=21&filter=status\\:Not+started&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks/21",
     "/assignees/teams/tasks\\?teamIds[]=22&filter=status\\:Not+started&limit=25&page=:pageNumber&sort=dueDate\\:asc*": "/tasks/22",
-
+    "/deputies/reassign": "/reassign-deputy",
+    "/edit/reassign" : "/reassign-client",
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*task_type_category:deputy": "/deputy-tasks/:teamId",
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager",
-
     "/assignees/teams/tasks\\?teamIds[]=13&filter=status\\:Not+started&limit=:limit&page=:pageNumber&*": "/tasks-view-:limit/:pageNumber",
-
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*": "/tasks/:teamId",
-
     "/assignees/teams/deputies\\?teamIds[]=:teamId&*": "/deputies/:teamId"
 }

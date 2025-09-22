@@ -28,7 +28,7 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		WebDir:                getEnv("WEB_DIR", "web"),
 		SiriusURL:             getEnv("SIRIUS_URL", "http://localhost:8080"),
 		SiriusPublicURL:       getEnv("SIRIUS_PUBLIC_URL", ""),
-		Prefix:                getEnv("PREFIX", ""),
+		Prefix:                getEnv("PREFIX", "/supervision/workflow"),
 		DefaultWorkflowTeamID: defaultTeamId,
 		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
 		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
@@ -39,6 +39,5 @@ func getEnv(key, def string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
 	}
-
 	return def
 }

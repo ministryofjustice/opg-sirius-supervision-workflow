@@ -59,7 +59,7 @@ describe("Reassign clients", () => {
       cy.get('#assignCM').select('LayTeam1 User4');
       cy.get('#edit-save').click()
       cy.get("#success-banner").should('be.visible')
-      cy.get("#success-banner").contains('You have reassigned ')
+      cy.get("#success-banner").contains('You have reassigned 1 client(s)')
     })
   });
 })

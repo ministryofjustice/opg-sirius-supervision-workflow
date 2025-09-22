@@ -1,12 +1,14 @@
 package server
 
 import (
+	"encoding/base64"
 	"errors"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type WorkflowVars struct {
@@ -134,4 +136,24 @@ func (t Tab) GetURL(team model.Team) string {
 
 func (t Tab) IsSelected(app WorkflowVars) bool {
 	return strings.HasSuffix(app.Path, t.basePath)
+}
+
+func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string) (string, error) {
+	c, err := r.Cookie(cookieName)
+	if err != nil {
+		switch err {
+		case http.ErrNoCookie:
+			return "", nil
+		default:
+			return "", err
+		}
+	}
+	value, err := base64.URLEncoding.DecodeString(c.Value)
+	if err != nil {
+		return "", err
+	}
+	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0)}
+	http.SetCookie(w, dc)
+	valueAsString := string(value)
+	return valueAsString, nil
 }
