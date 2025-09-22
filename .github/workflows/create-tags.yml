@@ -20,36 +20,15 @@ jobs:
 
       - name: "Generate semver tag and release"
         id: semver_tag
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        uses: ministryofjustice/opg-github-actions/.github/actions/semver-tag@ea1e81f43e7593acd74cc114085930f5f54914a2 # v3.1.7
+        uses: ministryofjustice/opg-github-actions/actions/semver@9c80e2dfa5701930bcd444f26081c1183d951409 # v4.3.2
         with:
-          releases_enabled: false
-          with_v: true
+          create_release: false
+          default_bump: ${{ github.event_name == 'workflow_dispatch' && 'none' || 'minor' }}
+          prerelease: ${{ github.ref_name == 'main' && 'false' || 'true' }}
 
-      - name: Return latest tag
-        id: latest_tag
-        if: github.event_name == 'workflow_dispatch'
-        uses: ministryofjustice/opg-github-actions/.github/actions/latest-tag@ea1e81f43e7593acd74cc114085930f5f54914a2 # v3.1.7
-        with:
-          branch_name: ${{ github.ref_name }}
-          prerelease: false
-
-      - name: Post tag to summary
-        id: post_tag
-        shell: bash
-        run: |
-          if [ ${{ github.event_name }} == "workflow_dispatch" ]
-          then
-            tag=${{ steps.latest_tag.outputs.last_release }}
-            echo "tag=$tag" >> $GITHUB_OUTPUT
-          else
-            tag=${{ steps.semver_tag.outputs.created_tag }}
-            echo "tag=$tag" >> $GITHUB_OUTPUT
-          fi
-          echo "Tag: $tag" >> $GITHUB_STEP_SUMMARY
       - name: Set Timestamp
         id: timestamp
         run: echo "timestamp=$(date +"%Y%m%d%H%M%S")" >> "$GITHUB_OUTPUT"
     outputs:
-      tag: ${{ steps.post_tag.outputs.tag }}
+      tag: ${{ steps.semver_tag.outputs.tag }}
       timestamp: ${{ steps.timestamp.outputs.timestamp }}

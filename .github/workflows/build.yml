@@ -99,14 +99,6 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: '0'
-      - name: Extract branch name
-        run: |
-          if [ "${{ github.head_ref }}" == "" ]; then
-            echo BRANCH_NAME=main >> $GITHUB_ENV
-          else
-            echo BRANCH_NAME=${{ github.head_ref }} >> $GITHUB_ENV
-          fi
-        id: extract_branch
       - uses: unfor19/install-aws-cli-action@f5b46b7f32cf5e7ebd652656c5036bf83dd1e60c # 1.0.8
 
       - name: Set up Docker
@@ -150,7 +142,8 @@ jobs:
       - name: Push
         run: |
           docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:${{ needs.create-tag.outputs.tag }}
-          if [ $BRANCH_NAME == "main" ]; then
+          if ${{ github.ref_name == 'main' }}
+          then
             docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ needs.create-tag.outputs.tag }}
             docker tag 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:main-${{ needs.create-tag.outputs.tag }}-${{ needs.create-tag.outputs.timestamp }}
             # We want all of the tags pushed
