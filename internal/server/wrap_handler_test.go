@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -14,14 +15,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRedirectError_Error(t *testing.T) {
-	assert.Equal(t, "redirect to ", RedirectError("").Error())
-	assert.Equal(t, "redirect to test-url", RedirectError("test-url").Error())
+func TestRedirect_Error(t *testing.T) {
+	assert.Equal(t, "redirect to ", Redirect{Path: ""}.Error())
+	assert.Equal(t, "redirect to test-url", Redirect{Path: "test-url"}.Error())
 }
 
-func TestRedirectError_To(t *testing.T) {
-	assert.Equal(t, "", RedirectError("").To())
-	assert.Equal(t, "test-url", RedirectError("test-url").To())
+func TestRedirect_To(t *testing.T) {
+	assert.Equal(t, "", Redirect{Path: ""}.To())
+	assert.Equal(t, "test-url", Redirect{Path: "test-url"}.To())
 }
 
 func TestStatusError_Code(t *testing.T) {
@@ -157,6 +158,7 @@ func Test_wrapHandler_status_error_handling(t *testing.T) {
 
 			errorTemplate := &mockTemplate{error: errors.New("some template error")}
 			envVars := EnvironmentVars{}
+
 			nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
 			next := mockNext{Err: test.error}
 			httpHandler := nextHandlerFunc(next.GetHandler())
@@ -199,6 +201,7 @@ func Test_wrapHandler_redirects_if_unauthorized(t *testing.T) {
 
 	errorTemplate := &mockTemplate{}
 	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
+
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
 	next := mockNext{}
 	httpHandler := nextHandlerFunc(next.GetHandler())
@@ -233,8 +236,13 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 
 	errorTemplate := &mockTemplate{}
 	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
+
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
-	next := mockNext{Err: RedirectError("redirect-to-here")}
+	next := mockNext{Err: Redirect{
+		Path:           "redirect-to-here",
+		SuccessMessage: "Test",
+	},
+	}
 	httpHandler := nextHandlerFunc(next.GetHandler())
 	httpHandler.ServeHTTP(w, r)
 
@@ -255,6 +263,37 @@ func Test_wrapHandler_follows_local_redirect(t *testing.T) {
 	assert.Equal(t, "/workflow-prefix/redirect-to-here", location.String())
 }
 
+func Test_wrapHandler_creates_cookie_for_success_message_in_redirect(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
+
+	mockClient := mockApiClient{
+		CurrentUserDetails: mockUserDetailsData,
+		Teams:              mockTeamsData,
+	}
+
+	logHandler := NewTestHandler()
+	logger := slog.New(logHandler)
+
+	errorTemplate := &mockTemplate{}
+	envVars := EnvironmentVars{Prefix: "/workflow-prefix"}
+
+	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
+	next := mockNext{Err: Redirect{
+		Path:           "redirect-to-here",
+		SuccessMessage: "Very successful well done",
+	},
+	}
+	httpHandler := nextHandlerFunc(next.GetHandler())
+	httpHandler.ServeHTTP(w, r)
+	assert.Equal(t, 1, len(w.Result().Cookies()))
+
+	valueToDecode := w.Result().Cookies()[0].Value
+	value, err := base64.URLEncoding.DecodeString(valueToDecode)
+	assert.Nil(t, err)
+	assert.Equal(t, "Very successful well done", string(value))
+}
+
 func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
@@ -266,6 +305,7 @@ func Test_wrapHandler_leaves_canceled_context_early(t *testing.T) {
 
 	errorTemplate := &mockTemplate{}
 	envVars := EnvironmentVars{SiriusURL: "sirius-url"}
+
 	nextHandlerFunc := wrapHandler(mockClient, logger, errorTemplate, envVars)
 	next := mockNext{}
 	httpHandler := nextHandlerFunc(next.GetHandler())
