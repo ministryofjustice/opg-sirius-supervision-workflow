@@ -97,11 +97,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.Sort = sort
 		vars.App = app
 		vars.SelectedECMs = selectedECMs
-		if app.SelectedTeam.IsPro() {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
-		} else {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultPaTeamID
-		}
+		vars.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
