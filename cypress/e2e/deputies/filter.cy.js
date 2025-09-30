@@ -17,6 +17,11 @@ describe("Filters", () => {
 
     cy.url().should('include', 'ecm=96');
     cy.get('.moj-filter__selected').should('contain','Executive Case Manager');
+
+    cy.get('[data-filter-name="moj-filter-name-ecm"]')
+      .find('label:contains("PROTeam1 User1")').click();
+    cy.get('[data-module=apply-filters]').click();
+    cy.get('.moj-filter__selected').should('contain','No filters selected');
   });
 
   it("includes the ecm count", () => {
@@ -33,5 +38,10 @@ describe("Filters", () => {
 
     cy.url().should('include', 'ecm=27');
     cy.get('.moj-filter__selected').should('contain','Not Assigned');
+
+    cy.get('[data-filter-name="moj-filter-name-ecm"]')
+      .find('label:contains("Not Assigned")').click();
+    cy.get('[data-module=apply-filters]').click();
+    cy.get('.moj-filter__selected').should('contain','No filters selected');
   });
 });
