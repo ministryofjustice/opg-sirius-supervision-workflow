@@ -24,4 +24,14 @@ describe("Filters", () => {
       cy.contains('PROTeam1 User1').should('contain', '(1)');
       cy.contains('PROTeam1 User2').should('contain', '(1)');
   });
+
+  it("applies and removes the non-assigned ecm filter", () => {
+    cy.get('[data-filter-name="moj-filter-name-ecm"]').click();
+    cy.get('[data-filter-name="moj-filter-name-ecm"]')
+      .find('label:contains("Not Assigned")').click();
+    cy.get('[data-module=apply-filters]').click();
+
+    cy.url().should('include', 'ecm=27');
+    cy.get('.moj-filter__selected').should('contain','Not Assigned');
+  });
 });
