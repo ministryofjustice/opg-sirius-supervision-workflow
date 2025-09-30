@@ -44,7 +44,7 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedSort:    dp.Sort,
 		SelectedFilters: []urlbuilder.Filter{
 			urlbuilder.CreateFilter("ecm", dp.SelectedECMs, true),
-// 			urlbuilder.CreateFilter("unassigned_ecm", dp.SelectedUnassigned, true),
+			// 			urlbuilder.CreateFilter("unassigned_ecm", dp.SelectedUnassigned, true),
 		},
 	}
 }
@@ -98,11 +98,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.Sort = sort
 		vars.App = app
 		vars.SelectedECMs = selectedECMs
-		if app.SelectedTeam.IsPro() {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
-		} else {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultPaTeamID
-		}
+		vars.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
@@ -132,8 +128,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		case http.MethodGet:
 
-//             fmt.Print("TEST")
-//             fmt.Print(selectedECMs)
+			//             fmt.Print("TEST")
+			//             fmt.Print(selectedECMs)
 
 			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
 				Team:         app.SelectedTeam,
