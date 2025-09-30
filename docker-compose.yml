@@ -60,7 +60,7 @@ services:
       - ./test-results:/test-results
 
   yarn:
-    image: node:22.16.0-alpine3.20
+    image: node:20.2.0-alpine3.16
     working_dir: /home/node/app
     entrypoint: yarn
     volumes:
