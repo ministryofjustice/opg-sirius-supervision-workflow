@@ -13,6 +13,8 @@ type EnvironmentVars struct {
 	SiriusPublicURL       string
 	Prefix                string
 	DefaultWorkflowTeamID int
+	DefaultPaTeamID       string
+	DefaultProTeamID      string
 }
 
 func NewEnvironmentVars() (EnvironmentVars, error) {
@@ -28,6 +30,8 @@ func NewEnvironmentVars() (EnvironmentVars, error) {
 		SiriusPublicURL:       getEnv("SIRIUS_PUBLIC_URL", ""),
 		Prefix:                getEnv("PREFIX", "/supervision/workflow"),
 		DefaultWorkflowTeamID: defaultTeamId,
+		DefaultPaTeamID:       getEnv("DEFAULT_PA_ECM_TEAM", "28"),
+		DefaultProTeamID:      getEnv("DEFAULT_PRO_ECM_TEAM", "31"),
 	}, nil
 }
 
