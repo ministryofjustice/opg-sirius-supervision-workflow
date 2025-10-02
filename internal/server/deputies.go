@@ -2,12 +2,13 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"net/http"
-	"strconv"
 )
 
 type DeputiesClient interface {
@@ -37,13 +38,27 @@ func (dp DeputiesPage) GetAppliedFilters() []string {
 }
 
 func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
+
+	//added logic to set team ids for combined teams 
+	// but I don't think this is the right place as ecm params are read on line 198 before this function is called
+    var selectedAndCombinedECMs interface{}
+    if dp.SelectedECMs[0] == "0" {
+        ids := []string{}
+        for _, s := range dp.App.SelectedTeam.Teams {
+            ids = append(ids, strconv.Itoa(s.Id))
+        }
+        selectedAndCombinedECMs = ids
+    } else {
+        selectedAndCombinedECMs = dp.SelectedECMs
+    }
+
 	return urlbuilder.UrlBuilder{
 		Path:            "deputies",
 		SelectedTeam:    dp.App.SelectedTeam.Selector,
 		SelectedPerPage: dp.PerPage,
 		SelectedSort:    dp.Sort,
 		SelectedFilters: []urlbuilder.Filter{
-			urlbuilder.CreateFilter("ecm", dp.SelectedECMs, true),
+			urlbuilder.CreateFilter("ecm", selectedAndCombinedECMs, true),
 		},
 	}
 }
