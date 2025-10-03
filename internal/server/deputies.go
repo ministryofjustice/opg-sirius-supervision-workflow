@@ -38,27 +38,13 @@ func (dp DeputiesPage) GetAppliedFilters() []string {
 }
 
 func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
-
-	//added logic to set team ids for combined teams 
-	// but I don't think this is the right place as ecm params are read on line 198 before this function is called
-    var selectedAndCombinedECMs interface{}
-    if dp.SelectedECMs[0] == "0" {
-        ids := []string{}
-        for _, s := range dp.App.SelectedTeam.Teams {
-            ids = append(ids, strconv.Itoa(s.Id))
-        }
-        selectedAndCombinedECMs = ids
-    } else {
-        selectedAndCombinedECMs = dp.SelectedECMs
-    }
-
 	return urlbuilder.UrlBuilder{
 		Path:            "deputies",
 		SelectedTeam:    dp.App.SelectedTeam.Selector,
 		SelectedPerPage: dp.PerPage,
 		SelectedSort:    dp.Sort,
 		SelectedFilters: []urlbuilder.Filter{
-			urlbuilder.CreateFilter("ecm", selectedAndCombinedECMs, true),
+			urlbuilder.CreateFilter("ecm", dp.SelectedECMs, true),
 		},
 	}
 }
@@ -78,6 +64,18 @@ func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, 
 		}
 	}
 	return teamsToReturn
+}
+
+func getProTeamIdsAsString(allTeamIds []model.Team) []string {
+	teamIdsToReturn := []string{}
+
+	for _, tt := range allTeamIds {
+		if tt.Type == "PRO" {
+			teamIdsToReturn = append(teamIdsToReturn, strconv.Itoa(tt.Id))
+		}
+	}
+	fmt.Println("team ids", teamIdsToReturn)
+	return teamIdsToReturn
 }
 
 func deputies(client DeputiesClient, tmpl Template) Handler {
@@ -104,19 +102,33 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		var selectedECMs []string
 		if params.Has("ecm") {
+			fmt.Println("params ecm")
+			fmt.Println(params["ecm"])
 			selectedECMs = params["ecm"]
+			if app.SelectedTeam.IsProDeputyTeam() {
+				if params["ecm"][0] == "0" {
+					selectedECMs = getProTeamIdsAsString(app.Teams)
+					fmt.Println("proTeamIds")
+					fmt.Println(selectedECMs)
+				}
+			}
+			fmt.Println("selectedECMs: ", selectedECMs)
 		}
+		fmt.Println("did i set selected ecms properly", selectedECMs)
+
+		//ids := []string{}
+		//for _, s := range dp.App.SelectedTeam.Teams {
+		//	ids = append(ids, strconv.Itoa(s.Id))
+		//}
+		//selectedAndCombinedECMs = ids
 
 		vars := DeputiesPage{}
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
 		vars.SelectedECMs = selectedECMs
-		if app.SelectedTeam.IsPro() {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultProTeamID
-		} else {
-			vars.NotAssignedTeamID = app.EnvironmentVars.DefaultPaTeamID
-		}
+		vars.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
+
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
@@ -145,7 +157,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			}
 
 		case http.MethodGet:
-
+			fmt.Println("selected ecms in the get", selectedECMs)
 			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
 				Team:         app.SelectedTeam,
 				Page:         page,
