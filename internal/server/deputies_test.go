@@ -89,7 +89,8 @@ func TestGetDeputies(t *testing.T) {
 		},
 	}
 	want.Sort = urlbuilder.Sort{OrderBy: "deputy"}
-
+	want.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
+	
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:            "deputies",
 		SelectedTeam:    app.SelectedTeam.Selector,

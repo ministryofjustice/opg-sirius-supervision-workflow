@@ -2,13 +2,13 @@ package server
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
+	"net/http"
+	"slices"
+	"strconv"
 )
 
 type DeputiesClient interface {
@@ -68,13 +68,11 @@ func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, 
 
 func getProTeamIdsAsString(allTeamIds []model.Team) []string {
 	teamIdsToReturn := []string{}
-
 	for _, tt := range allTeamIds {
 		if tt.Type == "PRO" {
 			teamIdsToReturn = append(teamIdsToReturn, strconv.Itoa(tt.Id))
 		}
 	}
-	fmt.Println("team ids", teamIdsToReturn)
 	return teamIdsToReturn
 }
 
@@ -102,25 +100,17 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		var selectedECMs []string
 		if params.Has("ecm") {
-			fmt.Println("params ecm")
-			fmt.Println(params["ecm"])
 			selectedECMs = params["ecm"]
+			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
 			if app.SelectedTeam.IsProDeputyTeam() {
-				if params["ecm"][0] == "0" {
-					selectedECMs = getProTeamIdsAsString(app.Teams)
-					fmt.Println("proTeamIds")
-					fmt.Println(selectedECMs)
+				if slices.Contains(params["ecm"], "0") {
+					proDeputyIds := getProTeamIdsAsString(app.Teams)
+					for _, proDeputyId := range proDeputyIds {
+						selectedECMs = append(selectedECMs, proDeputyId)
+					}
 				}
 			}
-			fmt.Println("selectedECMs: ", selectedECMs)
 		}
-		fmt.Println("did i set selected ecms properly", selectedECMs)
-
-		//ids := []string{}
-		//for _, s := range dp.App.SelectedTeam.Teams {
-		//	ids = append(ids, strconv.Itoa(s.Id))
-		//}
-		//selectedAndCombinedECMs = ids
 
 		vars := DeputiesPage{}
 		vars.PerPage = deputiesPerPage
@@ -157,7 +147,6 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			}
 
 		case http.MethodGet:
-			fmt.Println("selected ecms in the get", selectedECMs)
 			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
 				Team:         app.SelectedTeam,
 				Page:         page,
