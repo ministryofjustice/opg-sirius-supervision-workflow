@@ -49,7 +49,7 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 	}
 }
 
-func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
+func listTeamsAndMembers(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
 	teamsToReturn := []model.Team{}
 
 	for _, tt := range requiredTeamTypes {
@@ -66,10 +66,10 @@ func listPaAndProDeputyTeams(allTeams []model.Team, requiredTeamTypes []string, 
 	return teamsToReturn
 }
 
-func getProTeamIdsAsString(allTeamIds []model.Team) []string {
+func getTeamIdsAsString(allTeamIds []model.Team, teamType string) []string {
 	teamIdsToReturn := []string{}
 	for _, tt := range allTeamIds {
-		if tt.Type == "PRO" {
+		if tt.Type == teamType {
 			teamIdsToReturn = append(teamIdsToReturn, strconv.Itoa(tt.Id))
 		}
 	}
@@ -89,7 +89,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
 		}
 
-		paProTeamSelection := listPaAndProDeputyTeams(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
+		paProTeamSelection := listTeamsAndMembers(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
 
 		params := r.URL.Query()
 		page := paginate.GetRequestedPage(params.Get("page"))
@@ -104,7 +104,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
 			if app.SelectedTeam.IsProDeputyTeam() {
 				if slices.Contains(params["ecm"], "0") {
-					proDeputyIds := getProTeamIdsAsString(app.Teams)
+					proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
 					for _, proDeputyId := range proDeputyIds {
 						selectedECMs = append(selectedECMs, proDeputyId)
 					}
