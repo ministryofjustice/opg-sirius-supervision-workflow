@@ -76,6 +76,10 @@ func getTeamIdsAsString(allTeamIds []model.Team, teamType string) []string {
 	return teamIdsToReturn
 }
 
+func isUnassignedECMSelected(ECMParams []string) bool {
+	return slices.Contains(ECMParams, "0")
+}
+
 func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
@@ -103,7 +107,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 			selectedECMs = params["ecm"]
 			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
 			if app.SelectedTeam.IsProDeputyTeam() {
-				if slices.Contains(params["ecm"], "0") {
+				if isUnassignedECMSelected(params["ecm"]) == true {
 					proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
 					selectedECMs = append(selectedECMs, proDeputyIds...)
 				}
