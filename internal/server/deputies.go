@@ -106,8 +106,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		if params.Has("ecm") {
 			selectedECMs = params["ecm"]
 			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
-			if app.SelectedTeam.IsProDeputyTeam() {
-				if isUnassignedECMSelected(params["ecm"]) == true {
+			if app.SelectedTeam.IsProDeputyTeam(){
+				if isUnassignedECMSelected(params["ecm"]) {
 					proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
 					selectedECMs = append(selectedECMs, proDeputyIds...)
 				}
