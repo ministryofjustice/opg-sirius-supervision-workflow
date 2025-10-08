@@ -258,7 +258,7 @@ func TestDeputiesPage_CreateUrlBuilder(t *testing.T) {
 	}
 }
 
-func TestListPaAndProDeputyTeams(t *testing.T) {
+func TestListTeamsAndMembers(t *testing.T) {
 	allTeams := []model.Team{
 		{Id: 29, Type: "PA"},
 		{Id: 13, Type: "PRO"},
@@ -312,7 +312,63 @@ func TestListPaAndProDeputyTeams(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			response := listPaAndProDeputyTeams(allTeams, test.requiredTeamTypes, test.currentSelectedTeam)
+			response := listTeamsAndMembers(allTeams, test.requiredTeamTypes, test.currentSelectedTeam)
+			assert.Equal(t, test.expectedResponse, response)
+		})
+	}
+}
+
+func TestDeputies_getProTeamIdsAsString(t *testing.T) {
+	tests := []struct {
+		name             string
+		allTeams         []model.Team
+		teamType         string
+		expectedResponse []string
+	}{
+		{
+			name: "Can filter on multiple team types and return pro",
+			allTeams: []model.Team{
+				{Type: "PRO", Id: 55},
+				{Type: "PA", Id: 29},
+				{Type: "PA", Id: 30},
+				{Type: "LAY", Id: 5},
+				{Type: "PRO", Id: 13},
+			},
+			teamType:         "PRO",
+			expectedResponse: []string{"55", "13"},
+		},
+		{
+			name:             "Can filter on no team types",
+			allTeams:         []model.Team{},
+			teamType:         "PRO",
+			expectedResponse: []string{},
+		},
+		{
+			name: "Can filter on no team types",
+			allTeams: []model.Team{
+				{Type: "PA", Id: 29},
+				{Type: "PA", Id: 30},
+				{Type: "LAY", Id: 5},
+			},
+			teamType:         "PRO",
+			expectedResponse: []string{},
+		},
+		{
+			name: "Can filter on multiple team types and return PA",
+			allTeams: []model.Team{
+				{Type: "PRO", Id: 55},
+				{Type: "PA", Id: 29},
+				{Type: "PA", Id: 30},
+				{Type: "LAY", Id: 5},
+				{Type: "PRO", Id: 13},
+			},
+			teamType:         "PA",
+			expectedResponse: []string{"29", "30"},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			response := getTeamIdsAsString(test.allTeams, test.teamType)
 			assert.Equal(t, test.expectedResponse, response)
 		})
 	}
