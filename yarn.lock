@@ -1614,10 +1614,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.5":
+"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.6":
   version "1.0.0"
-  uid "817d84fe0af9d15f8333006ca018b2e51c16ec75"
-  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/817d84fe0af9d15f8333006ca018b2e51c16ec75"
+  uid "3ed74d110f09861eefb1519b18c1ae1ae4ec8646"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/3ed74d110f09861eefb1519b18c1ae1ae4ec8646"
 
 optionator@^0.9.3:
   version "0.9.4"
