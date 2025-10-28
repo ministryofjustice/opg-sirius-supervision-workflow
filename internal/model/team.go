@@ -79,6 +79,10 @@ func (t Team) HasTeam(id int) bool {
 	return false
 }
 
+func (t Team) IsAllocationsTeam() bool {
+	return t.Type == "ALLOCATIONS"
+}
+
 func (t Team) IsFullLayTeam() bool {
 	return t.Selector == "lay-team"
 }

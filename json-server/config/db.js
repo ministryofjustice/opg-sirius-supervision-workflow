@@ -991,6 +991,38 @@ module.exports = function () {
           "total": 1
       },
     ],
+    "bonds-without-orders": [
+      {
+        "id": 1,
+        "caseReferenceNumber": "12345678",
+        "clientFirstName": "John",
+        "clientLastName": "Smith",
+        "companyName": "Marsh",
+        "bondReferenceNumber": "BOND-001",
+        "bondAmount": 100.00,
+        "bondIssuedDate": "01/01/2024"
+      },
+      {
+        "id": 2,
+        "caseReferenceNumber": "23456789",
+        "clientFirstName": "Jane",
+        "clientLastName": "Doe",
+        "companyName": "Willis",
+        "bondReferenceNumber": "BOND-002",
+        "bondAmount": 75.50,
+        "bondIssuedDate": "15/02/2024"
+      },
+      {
+        "id": 3,
+        "caseReferenceNumber": "34567890",
+        "clientFirstName": "Robert",
+        "clientLastName": "Johnson",
+        "companyName": "Aon",
+        "bondReferenceNumber": "BOND-003",
+        "bondAmount": 125000,
+        "bondIssuedDate": "10/03/2024"
+      },
+    ],
     "reassign-deputy": {"successful":[67],"error":[],"reassignName":"Pro Team 1 - (Supervision)"},
     "reassign-client": {"successful":[47],"error":[],"reassignName":"Lay Team 2 - (Supervision)"},
     "reassign-tasks": {
