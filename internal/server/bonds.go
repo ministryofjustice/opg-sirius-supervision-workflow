@@ -28,7 +28,7 @@ func bonds(client BondsClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
 
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
+		if r.Method != http.MethodGet {
 			return StatusError(http.StatusMethodNotAllowed)
 		}
 
