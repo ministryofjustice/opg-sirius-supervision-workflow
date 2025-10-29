@@ -1007,7 +1007,7 @@ module.exports = function () {
         "caseReferenceNumber": "23456789",
         "clientFirstName": "Jane",
         "clientLastName": "Doe",
-        "companyName": "Willis",
+        "companyName": "Howden",
         "bondReferenceNumber": "BOND-002",
         "bondAmount": 75.50,
         "bondIssuedDate": "15/02/2024"
@@ -1017,9 +1017,9 @@ module.exports = function () {
         "caseReferenceNumber": "34567890",
         "clientFirstName": "Robert",
         "clientLastName": "Johnson",
-        "companyName": "Aon",
+        "companyName": "BondComp",
         "bondReferenceNumber": "BOND-003",
-        "bondAmount": 125000,
+        "bondAmount": 1250,
         "bondIssuedDate": "10/03/2024"
       },
     ],
