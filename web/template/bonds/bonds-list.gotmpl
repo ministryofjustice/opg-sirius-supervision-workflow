@@ -1,0 +1,43 @@
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.BondsPage*/ -}}
+{{ define "bonds-list" }}
+  <section data-module="manage-reassign" class="moj-manage-list">
+    <table id="workflow-deputies" class="govuk-table"  data-module="moj-sortable-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Order number</th>
+          <th scope="col" class="govuk-table__header">Client name</th>
+          <th scope="col" class="govuk-table__header">Bond company</th>
+          <th scope="col" class="govuk-table__header">Bond amount</th>
+          <th scope="col" class="govuk-table__header">Bond reference</th>
+          <th scope="col" class="govuk-table__header">Date issued</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+      {{ if ne (len .BondList.Bonds) 0 }}
+          {{ range .BondList.Bonds }}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                {{ .CourtRef }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .FirstName }} {{ .LastName }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .CompanyName }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .GetBondAmount }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .BondReferenceNumber }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .BondIssuedDate }}
+              </td>
+            </tr>
+          {{ end }}
+      {{ end }}
+      </tbody>
+    </table>
+  </section>
+{{ end }}

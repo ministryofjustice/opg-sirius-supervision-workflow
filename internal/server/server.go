@@ -17,6 +17,7 @@ type ApiClient interface {
 	ClientTasksClient
 	CaseloadClient
 	DeputiesClient
+	BondsClient
 }
 
 type Template interface {
@@ -45,6 +46,10 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 	mux.Handle("/deputies",
 		wrap(
 			deputies(client, templates["deputies.gotmpl"])))
+
+	mux.Handle("/bonds",
+		wrap(
+			bonds(client, templates["bonds.gotmpl"])))
 
 	mux.Handle("/health-check", healthCheck())
 

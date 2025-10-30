@@ -3,6 +3,7 @@
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/tasktypes/deputy*": "/tasktypes-deputy",
     "/users/current": "/users-current",
+    "/bonds/without-orders": "/bonds-without-orders",
     "/assignees/:id/clients?*": "/caseload/:id",
     "/assignees/closed-clients?*": "/caseload/40",
 
