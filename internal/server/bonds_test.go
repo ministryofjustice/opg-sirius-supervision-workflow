@@ -30,7 +30,7 @@ var testBondList = sirius.BondList{
 			LastName:            "Smith",
 			CompanyName:         "Howden",
 			BondReferenceNumber: "BOND1",
-			BondAmount:          1.01,
+			BondAmount:          101,
 			BondIssuedDate:      model.Date{Time: time.Now()},
 		},
 	},

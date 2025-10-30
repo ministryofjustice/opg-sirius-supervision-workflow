@@ -25,7 +25,7 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 			"clientLastName": "Smith",
 			"companyName": "Company Ltd",
 			"bondReferenceNumber": "BOND-1",
-			"bondAmount": 1.1,
+			"bondAmount": 101,
 			"bondIssuedDate" : "2025-01-01T00:00:00+00:00"
 		}
 	]`
@@ -52,7 +52,7 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 				LastName:            "Smith",
 				CompanyName:         "Company Ltd",
 				BondReferenceNumber: "BOND-1",
-				BondAmount:          1.1,
+				BondAmount:          101,
 				BondIssuedDate:      model.NewDate("01/01/2025"),
 			},
 		},

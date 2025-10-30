@@ -999,7 +999,7 @@ module.exports = function () {
         "clientLastName": "Smith",
         "companyName": "Marsh",
         "bondReferenceNumber": "BOND-001",
-        "bondAmount": 100.00,
+        "bondAmount": 10000,
         "bondIssuedDate": "01/01/2024"
       },
       {
@@ -1009,7 +1009,7 @@ module.exports = function () {
         "clientLastName": "Doe",
         "companyName": "Howden",
         "bondReferenceNumber": "BOND-002",
-        "bondAmount": 75.50,
+        "bondAmount": 7550,
         "bondIssuedDate": "15/02/2024"
       },
       {
