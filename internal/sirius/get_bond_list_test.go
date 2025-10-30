@@ -85,7 +85,7 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/v1/bonds-without-orders",
+		URL:    svr.URL + "/v1/bonds/without-orders",
 		Method: http.MethodGet,
 	}, err)
 }

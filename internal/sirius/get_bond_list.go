@@ -21,7 +21,7 @@ type BondListParams struct {
 func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, error) {
 	var v BondList
 
-	req, err := c.newRequest(ctx, http.MethodGet, "/v1/bonds-without-orders", nil)
+	req, err := c.newRequest(ctx, http.MethodGet, "/v1/bonds/without-orders", nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

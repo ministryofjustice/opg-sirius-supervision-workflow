@@ -41,21 +41,15 @@ func bonds(client BondsClient, tmpl Template) Handler {
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
-		switch r.Method {
-		case http.MethodGet:
-			bondList, err := client.GetBondList(ctx, sirius.BondListParams{
-				Team: app.SelectedTeam,
-			})
-			if err != nil {
-				return err
-			}
-
-			vars.BondList = bondList
-
-			return tmpl.Execute(w, vars)
-
-		default:
-			return StatusError(http.StatusMethodNotAllowed)
+		bondList, err := client.GetBondList(ctx, sirius.BondListParams{
+			Team: app.SelectedTeam,
+		})
+		if err != nil {
+			return err
 		}
+
+		vars.BondList = bondList
+
+		return tmpl.Execute(w, vars)
 	}
 }
