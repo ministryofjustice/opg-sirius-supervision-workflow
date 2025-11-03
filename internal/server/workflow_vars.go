@@ -94,7 +94,7 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 			})
 	}
 
-	if selectedTeam.IsAllocationsTeam() {
+	if selectedTeam.IsAllocationsTeam() && envVars.ShowBondsWithoutOrders {
 		vars.Tabs = append(vars.Tabs,
 			Tab{
 				Title:    "Bonds",
