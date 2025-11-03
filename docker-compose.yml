@@ -39,7 +39,7 @@ services:
       - json-server
 
   go-lint:
-    image: golangci/golangci-lint:v2.5.0
+    image: golangci/golangci-lint:v2.6.0
     working_dir: /go/src/app
     volumes:
       - ./:/go/src/app
@@ -61,7 +61,7 @@ services:
       - ./test-results:/test-results
 
   yarn:
-    image: node:22.16.0-alpine3.20
+    image: node:24.1.0-alpine3.20
     working_dir: /home/node/app
     entrypoint: yarn
     volumes:
