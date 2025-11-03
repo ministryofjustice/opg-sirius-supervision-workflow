@@ -62,6 +62,10 @@ func (m mockApiClient) GetDeputyList(context sirius.Context, params sirius.Deput
 	panic("implement me")
 }
 
+func (m mockApiClient) GetBondList(context sirius.Context, params sirius.BondListParams) (sirius.BondList, error) {
+	return sirius.BondList{}, nil
+}
+
 func (m mockApiClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
 	return "", nil
 }
