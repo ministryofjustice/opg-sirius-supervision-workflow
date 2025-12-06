@@ -727,9 +727,9 @@ cypress-failed-log@^2.10.0:
     logdown "3.3.1"
 
 cypress@^15.0.0:
-  version "15.7.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.7.0.tgz#4d2a317766360232920f63c7d11ea8f5d83bc358"
-  integrity sha512-1C81zKxnQckYm2XGi37rPV4rN0bzUoWhydhKdOyshJn5gJKszEx5as9VLSZI0jp0ye49QxmnbU4TtMpcD+OmGQ==
+  version "15.7.1"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.7.1.tgz#5ff5101a07b2627809adbaba86a66ff0dc499e88"
+  integrity sha512-U3sYnJ+Cnpgr6IPycxsznTg//mGVXfPGeGV+om7VQCyp5XyVkhG4oPr3X3hTq1+OB0Om0O5DxusYmt7cbvwqMQ==
   dependencies:
     "@cypress/request" "^3.0.9"
     "@cypress/xvfb" "^1.2.4"
@@ -1613,10 +1613,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.8":
+"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.9":
   version "1.0.0"
-  uid "52910375a563fadb860f87e4ebeffdb7e98363e3"
-  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/52910375a563fadb860f87e4ebeffdb7e98363e3"
+  uid "4655042faeaaa9a5f97404cc823cae88388b53a4"
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/4655042faeaaa9a5f97404cc823cae88388b53a4"
 
 optionator@^0.9.3:
   version "0.9.4"
@@ -1699,9 +1699,9 @@ prelude-ls@^1.2.1:
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
 prettier@^3.0.0:
-  version "3.7.3"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.7.3.tgz#99a8891f6c990cfa54bcff2a0d276e6f845e59ab"
-  integrity sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.7.4.tgz#d2f8335d4b1cec47e1c8098645411b0c9dff9c0f"
+  integrity sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==
 
 pretty-bytes@^5.6.0:
   version "5.6.0"
