@@ -50,6 +50,8 @@ github.com/ministryofjustice/opg-go-common v1.143.0 h1:WgsNBxFvD/rvLlN/RuEokbLdg
 github.com/ministryofjustice/opg-go-common v1.143.0/go.mod h1:vObdegUVV7fmfSkv4U7e6s4dD2fKi7tCAo+S2FPsVgQ=
 github.com/ministryofjustice/opg-go-common v1.144.0 h1:LfpFWPhXhenycREErL1GbEyqQRuDtIR5CNoxJZlsWGg=
 github.com/ministryofjustice/opg-go-common v1.144.0/go.mod h1:LCDlzix4J8L+cXxuffqyXbdPeodBLuUtlOylpniH+oQ=
+github.com/ministryofjustice/opg-go-common v1.145.0 h1:iP+Pcs4AC0oOH+v131UWJoINveMd4zV4Ona616bIuCk=
+github.com/ministryofjustice/opg-go-common v1.145.0/go.mod h1:vObdegUVV7fmfSkv4U7e6s4dD2fKi7tCAo+S2FPsVgQ=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.13.1 h1:KvO1DLK/DRN07sQ1LQKScxyZJuNnedQ5/wKSR38lUII=
