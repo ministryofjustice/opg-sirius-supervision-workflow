@@ -28,12 +28,13 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/v1/teams", nil)
 	if err != nil {
+		c.logErrorRequest(req, err)
 		return q, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		c.logErrorRequest(req, err)
+		c.logResponse(req, resp, err)
 		return q, err
 	}
 
