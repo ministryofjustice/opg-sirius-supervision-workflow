@@ -54,9 +54,10 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
   -------------------------------------------------------------------
 ## Run *one* Cypress test headless (i.e. not in UI)
-`docker compose run --build cypress --spec cypress/e2e/bonds/bonds_list.cy.js` <br>
-or <br>
-`docker compose run --build cypress --spec cypress/e2e/bonds`
+`make cypress-single SPEC=bonds/bonds_list.cy.js`
+
+## Run *a suite* of Cypress tests headless e.g. bonds subfolder
+`make cypress-single SPEC=bonds/`
 
 ## Run *all* the Cypress tests headless
 `make build-all` (optional) <br>
@@ -68,11 +69,9 @@ To see the UI output you can still run
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests
-
 `make unit-test`
 
 -------------------------------------------------------------------
 ## Run Trivy scanning
-
 `make scan`
 
