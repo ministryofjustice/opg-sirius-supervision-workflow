@@ -53,15 +53,17 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 `{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.WorkflowVars*/ -}}`
 
   -------------------------------------------------------------------
-## Run Cypress tests
-
-`make cypress`
-
+## Run *one* Cypress test headless (i.e. not in UI)
+`docker compose run --build cypress --spec cypress/e2e/bonds/bonds_list.cy.js` <br>
+or <br>
 `docker compose run --build cypress --spec cypress/e2e/bonds`
+
+## Run *all* the Cypress tests headless
+`make build-all` (optional) <br>
+`make cypress`
 
 
 To see the UI output you can still run 
-
 `make up && yarn cypress`
 
 -------------------------------------------------------------------
