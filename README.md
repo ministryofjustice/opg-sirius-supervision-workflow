@@ -55,7 +55,8 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
   -------------------------------------------------------------------
 ## Run *one* Cypress test headless (i.e. not in UI)
 `docker compose run --build cypress --spec cypress/e2e/bonds/bonds_list.cy.js` <br>
-or <br>
+
+## Run *a suite* of Cypress tests headless e.g. bonds subfolder
 `docker compose run --build cypress --spec cypress/e2e/bonds`
 
 ## Run *all* the Cypress tests headless
