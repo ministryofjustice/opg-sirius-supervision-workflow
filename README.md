@@ -57,6 +57,9 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
 `make cypress`
 
+`docker compose run --build cypress --spec cypress/e2e/bonds`
+
+
 To see the UI output you can still run 
 
 `make up && yarn cypress`
