@@ -14,13 +14,13 @@ jobs:
   create_tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: '0'
 
       - name: "Generate semver tag and release"
         id: semver_tag
-        uses: ministryofjustice/opg-github-actions/actions/semver@4f345be3f706950d1fdc05bc86383967a149bd99 # v4.3.4
+        uses: ministryofjustice/opg-github-actions/actions/semver@82323da6c533ab565c1652a590230ff2f0acc942 # v4.3.8
         with:
           create_release: false
           default_bump: ${{ github.event_name == 'workflow_dispatch' && 'none' || 'minor' }}
