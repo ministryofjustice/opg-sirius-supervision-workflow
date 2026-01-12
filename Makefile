@@ -47,4 +47,3 @@ dev-up:
 
 down:
 	docker compose down
-#	docker compose run --rm cypress run --spec cypress/e2e/bonds/page_redirect.cy.js
