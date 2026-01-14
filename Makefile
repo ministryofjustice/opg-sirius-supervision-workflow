@@ -33,6 +33,10 @@ cypress: setup-directories
 	docker compose up -d --wait workflow json-server
 	docker compose run --build --rm cypress
 
+cypress-single: setup-directories
+	docker compose up -d --wait workflow json-server
+	docker compose run --rm cypress run --spec cypress/e2e/$(SPEC)
+
 up:
 	docker compose up --build -d workflow
 
