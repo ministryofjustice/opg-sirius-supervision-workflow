@@ -10,6 +10,7 @@
           <th scope="col" class="govuk-table__header">Bond amount</th>
           <th scope="col" class="govuk-table__header">Bond reference</th>
           <th scope="col" class="govuk-table__header">Date issued</th>
+          <th scope="col" class="govuk-table__header">Status</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -20,7 +21,13 @@
                 {{ .CourtRef }}
               </td>
               <td class="govuk-table__cell">
-                {{ .FirstName }} {{ .LastName }}
+                 {{ if and (.BondClient) (ne .BondClient.Id 0) }}
+                      <a href="{{ sirius .GetURL }}" class="govuk-link">
+                        {{ .FirstName }} {{ .LastName }}
+                      </a>
+                  {{ else }}
+                    {{ .FirstName }} {{ .LastName }}
+                {{ end }}
               </td>
               <td class="govuk-table__cell">
                 {{ .CompanyName }}
@@ -33,6 +40,9 @@
               </td>
               <td class="govuk-table__cell">
                 {{ .BondIssuedDate }}
+              </td>
+              <td class="govuk-table__cell">
+                {{ .BondStatus.Label }}
               </td>
             </tr>
           {{ end }}

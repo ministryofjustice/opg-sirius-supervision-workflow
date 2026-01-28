@@ -2,8 +2,9 @@ package sirius
 
 import (
 	"encoding/json"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type BondMetaData struct {
@@ -34,7 +35,6 @@ func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, e
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-
 	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
@@ -46,7 +46,7 @@ func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, e
 		c.logResponse(req, resp, err)
 		return v, newStatusError(resp)
 	}
-
+	
 	var bonds []model.Bond
 	if err = json.NewDecoder(resp.Body).Decode(&bonds); err != nil {
 		c.logResponse(req, resp, err)
