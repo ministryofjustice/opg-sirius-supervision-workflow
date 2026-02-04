@@ -79,18 +79,18 @@ export default class ManageFilters {
   }
 
   _applyFilters() {
-    const baseHref = this.clearFilters.getAttribute("href");
-    const url = new URL(baseHref, window.location.href);
+    let query = this.clearFilters.getAttribute("href");
 
     this.filters.forEach((filter) => {
       if (!filter.value) {
         return;
       }
       if (filter.checked || filter.type !== "checkbox") {
-        url.searchParams.set(filter.name, filter.value);
+        query += "&" + filter.name + "=" + filter.value;
       }
     });
 
+    const url = new URL(query, window.location.href);
     window.location.href = url.href;
   }
 }
