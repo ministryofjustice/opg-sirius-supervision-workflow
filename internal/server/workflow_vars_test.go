@@ -236,7 +236,7 @@ func TestCheckIfOnMyTeamPage(t *testing.T) {
 func TestGetSuccessMessage(t *testing.T) {
 	w := httptest.NewRecorder()
 	valueAsByte := []byte("test success message")
-	c := &http.Cookie{Name: "success-message", Value: base64.URLEncoding.EncodeToString(valueAsByte), Secure: true}
+	c := &http.Cookie{Name: "success-message", Value: base64.URLEncoding.EncodeToString(valueAsByte)}
 	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
 	r.AddCookie(c)
 

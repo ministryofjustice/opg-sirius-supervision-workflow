@@ -150,19 +150,15 @@ func (t Tab) IsSelected(app WorkflowVars) bool {
 func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string) (string, error) {
 	c, err := r.Cookie(cookieName)
 	if err != nil {
-		switch err {
-		case http.ErrNoCookie:
+		switch {
+		case errors.Is(err, http.ErrNoCookie):
 			return "", nil
 		default:
 			return "", err
 		}
 	}
-	value, err := base64.URLEncoding.DecodeString(c.Value)
-	if err != nil {
-		return "", err
-	}
 	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0), Secure: true}
 	http.SetCookie(w, dc)
-	valueAsString := string(value)
-	return valueAsString, nil
+	value, err := base64.URLEncoding.DecodeString(c.Value)
+	return string(value), err
 }
