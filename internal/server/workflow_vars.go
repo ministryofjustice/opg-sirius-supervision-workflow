@@ -3,12 +3,13 @@ package server
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 )
 
 type WorkflowVars struct {
@@ -160,7 +161,7 @@ func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string
 	if err != nil {
 		return "", err
 	}
-	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0)}
+	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0), Secure: true}
 	http.SetCookie(w, dc)
 	valueAsString := string(value)
 	return valueAsString, nil

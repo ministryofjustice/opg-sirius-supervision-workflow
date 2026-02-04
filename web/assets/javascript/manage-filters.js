@@ -79,15 +79,19 @@ export default class ManageFilters {
   }
 
   _applyFilters() {
-    let url = this.clearFilters.getAttribute("href");
-    this.filters.forEach(function (filter) {
+    const baseHref = this.clearFilters.getAttribute("href");
+    const url = new URL(baseHref, window.location.href);
+
+    this.filters.forEach((filter) => {
       if (!filter.value) {
-        return
+        return;
       }
       if (filter.checked || filter.type !== "checkbox") {
-        url += "&" + filter.name + "=" + filter.value
+        url.searchParams.set(filter.name, filter.value);
       }
     });
-    window.location.href = url;
+
+    window.location.href = url.href;
   }
 }
+

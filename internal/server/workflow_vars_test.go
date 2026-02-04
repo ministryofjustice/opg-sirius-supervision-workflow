@@ -159,7 +159,7 @@ func TestGetSelectedTeam(t *testing.T) {
 		expectedError  error
 	}{
 		{
-			name:           "Select team from URL parameter",
+			name:           "SELECT team FROM url parameter",
 			url:            "?team=13",
 			loggedInTeamId: 1,
 			defaultTeamId:  2,
@@ -236,7 +236,7 @@ func TestCheckIfOnMyTeamPage(t *testing.T) {
 func TestGetSuccessMessage(t *testing.T) {
 	w := httptest.NewRecorder()
 	valueAsByte := []byte("test success message")
-	c := &http.Cookie{Name: "success-message", Value: base64.URLEncoding.EncodeToString(valueAsByte)}
+	c := &http.Cookie{Name: "success-message", Value: base64.URLEncoding.EncodeToString(valueAsByte), Secure: true}
 	r, _ := http.NewRequest(http.MethodGet, "test-url", nil)
 	r.AddCookie(c)
 
