@@ -360,9 +360,9 @@
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
 "@types/node@*":
-  version "25.0.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.0.10.tgz#4864459c3c9459376b8b75fd051315071c8213e7"
-  integrity sha512-zWW5KPngR/yvakJgGOmZ5vTBemDoSqF3AcV/LrO5u5wTWyEAVVh+IT39G4gtyAkh3CtTZs8aX/yRM82OfzHJRg==
+  version "25.2.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.2.1.tgz#378021f9e765bb65ba36de16f3c3a8622c1fa03d"
+  integrity sha512-CPrnr8voK8vC6eEtyRzvMpgp3VyVRhgclonE7qYi6P9sXwYb59ucfrnmFBTaP0yUi8Gk4yZg/LlTJULGxvTNsg==
   dependencies:
     undici-types "~7.16.0"
 
@@ -603,9 +603,9 @@ chokidar@^4.0.0:
     readdirp "^4.0.1"
 
 ci-info@^4.1.0:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-4.3.1.tgz#355ad571920810b5623e11d40232f443f16f1daa"
-  integrity sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-4.4.0.tgz#7d54eff9f54b45b62401c26032696eb59c8bd18c"
+  integrity sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==
 
 clean-stack@^2.0.0:
   version "2.2.0"
@@ -720,9 +720,9 @@ cypress-failed-log@^2.10.0:
     logdown "3.3.1"
 
 cypress@^15.0.0:
-  version "15.9.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.9.0.tgz#9bcbbfbf3923d8aca7d06990cb174d5ba67e4084"
-  integrity sha512-Ks6Bdilz3TtkLZtTQyqYaqtL/WT3X3APKaSLhTV96TmTyudzSjc6EJsJCHmBb7DxO+3R12q3Jkbjgm/iPgmwfg==
+  version "15.10.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.10.0.tgz#06bed98a690fad1b98a21010613f9c8c7fa9f639"
+  integrity sha512-OtUh7OMrfEjKoXydlAD1CfG2BvKxIqgWGY4/RMjrqQ3BKGBo5JFKoYNH+Tpcj4xKxWH4XK0Xri+9y8WkxhYbqQ==
   dependencies:
     "@cypress/request" "^3.0.10"
     "@cypress/xvfb" "^1.2.4"
@@ -752,7 +752,7 @@ cypress@^15.0.0:
     hasha "5.2.2"
     is-installed-globally "~0.4.0"
     listr2 "^3.8.3"
-    lodash "^4.17.21"
+    lodash "^4.17.23"
     log-symbols "^4.0.0"
     minimist "^1.2.8"
     ospath "^1.2.2"
@@ -1471,7 +1471,7 @@ lodash.once@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==
 
-lodash@^4.17.21:
+lodash@^4.17.23:
   version "4.17.23"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
   integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
@@ -1586,10 +1586,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.11":
+"opg-sirius-header@ministryofjustice/opg-sirius-header#semver:v0.52.12":
   version "1.0.0"
-  uid "42f65af417d2ed07841057b50d672b2a1318c4c0"
-  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/42f65af417d2ed07841057b50d672b2a1318c4c0"
+  uid b06a4aa6f39d1bae06b610338c6ed839d659c479
+  resolved "https://codeload.github.com/ministryofjustice/opg-sirius-header/tar.gz/b06a4aa6f39d1bae06b610338c6ed839d659c479"
 
 optionator@^0.9.3:
   version "0.9.4"
@@ -1912,9 +1912,9 @@ supports-color@^8.1.1:
     has-flag "^4.0.0"
 
 systeminformation@^5.27.14:
-  version "5.30.6"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.30.6.tgz#c100cb632bbb955fc44ba033f624da22c3a6a5be"
-  integrity sha512-LEIyK1aEv5P3BhAPW3swdlIyCihxwEq/Gki+kcONieU4PIeRCSLDuGkk0Va/56PSBgjVgEksOM88dmY6YqOyfQ==
+  version "5.30.7"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.30.7.tgz#7708ac4680a90c183dfb7342d1577045a1d6cc08"
+  integrity sha512-33B/cftpaWdpvH+Ho9U1b08ss8GQuLxrWHelbJT1yw4M48Taj8W3ezcPuaLoIHZz5V6tVHuQPr5BprEfnBLBMw==
 
 throttleit@^1.0.0:
   version "1.0.1"
