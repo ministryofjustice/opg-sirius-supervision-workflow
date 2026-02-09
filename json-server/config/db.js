@@ -1000,7 +1000,8 @@ module.exports = function () {
         "companyName": "Marsh",
         "bondReferenceNumber": "BOND-001",
         "bondAmount": 10000,
-        "bondIssuedDate": "01/01/2024"
+        "bondIssuedDate": "01/01/2024",
+        "bondStatus":{"handle":"NO_ORDER","label":"No order"}
       },
       {
         "id": 2,
@@ -1010,7 +1011,9 @@ module.exports = function () {
         "companyName": "Howden",
         "bondReferenceNumber": "BOND-002",
         "bondAmount": 7550,
-        "bondIssuedDate": "15/02/2024"
+        "bondIssuedDate": "15/02/2024",
+        "client":{"id":63},
+        "bondStatus":{"handle":"MATCH","label":"Match"}
       },
       {
         "id": 3,
@@ -1020,7 +1023,8 @@ module.exports = function () {
         "companyName": "BondComp",
         "bondReferenceNumber": "BOND-003",
         "bondAmount": 1250,
-        "bondIssuedDate": "10/03/2024"
+        "bondIssuedDate": "10/03/2024",
+        "bondStatus":{"handle":"NO_ORDER","label":"No order"}
       },
     ],
     "reassign-deputy": {"successful":[67],"error":[],"reassignName":"Pro Team 1 - (Supervision)"},

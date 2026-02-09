@@ -12,6 +12,7 @@ describe("Bonds list", () => {
         cy.get("th:nth-child(4)").should("contain", "Bond amount");
         cy.get("th:nth-child(5)").should("contain", "Bond reference");
         cy.get("th:nth-child(6)").should("contain", "Date issued");
+        cy.get("th:nth-child(7)").should("contain", "Status");
     })
 
     it("has column values", () => {
@@ -22,6 +23,19 @@ describe("Bonds list", () => {
             cy.get("td:nth-child(4)").should("contain.text", "£100.00")
             cy.get("td:nth-child(5)").should("contain.text", "BOND-001")
             cy.get("td:nth-child(6)").should("contain.text", "01/01/2024")
+            cy.get("td:nth-child(7)").should("contain.text", "No order")
+        })
+    })
+
+    it("has a hyperlink when a client is matched", () => {
+        cy.get(".govuk-table__body .govuk-table__row:nth-child(1)").within(() => {
+            cy.get("td:nth-child(2)").should('not.have.attr', 'href')
+        })
+        cy.get(".govuk-table__body .govuk-table__row:nth-child(2)").within(() => {
+            cy.get("td:nth-child(2) > a").should('have.attr', 'href')
+                .then(href => {
+                    expect(href).to.contains("/supervision/#/clients/63");
+                })
         })
     })
 });

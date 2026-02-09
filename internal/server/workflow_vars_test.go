@@ -159,7 +159,7 @@ func TestGetSelectedTeam(t *testing.T) {
 		expectedError  error
 	}{
 		{
-			name:           "Select team from URL parameter",
+			name:           "SELECT team FROM url parameter",
 			url:            "?team=13",
 			loggedInTeamId: 1,
 			defaultTeamId:  2,
