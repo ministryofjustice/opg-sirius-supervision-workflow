@@ -1,6 +1,10 @@
 package model
 
-import "fmt"
+import (
+    "fmt"
+    "golang.org/x/text/language"
+    "golang.org/x/text/message"
+)
 
 type Bond struct {
 	Id                  int     `json:"id"`
@@ -16,7 +20,9 @@ type Bond struct {
 }
 
 func (b Bond) GetBondAmount() string {
-	return "£" + fmt.Sprintf("%.2f", float64(b.BondAmount)/100)
+    pounds := float64(b.BondAmount)/100
+	p := message.NewPrinter(language.BritishEnglish)
+	return p.Sprintf("£%.2f", pounds)
 }
 func (b Bond) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", b.BondClient.Id)
