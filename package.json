@@ -22,12 +22,15 @@
     "opg-sirius-header": "ministryofjustice/opg-sirius-header#semver:v0.52.13"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^10.0.1",
     "axe-core": "^4.8.3",
     "cypress": "^15.0.0",
     "cypress-axe": "^1.5.0",
     "cypress-failed-log": "^2.10.0",
     "esbuild": "^0.27.0",
     "eslint": "^10.0.0",
+    "globals": "^17.3.0",
     "prettier": "^3.0.0",
     "sass": "^1.70.0"
   },
