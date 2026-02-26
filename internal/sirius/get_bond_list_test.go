@@ -17,20 +17,27 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
-	[
-		{
-			"id": 13,
-			"caseReferenceNumber": "12345678",
-			"clientFirstName": "Joseph",
-			"clientLastName": "Smith",
-			"companyName": "Company Ltd",
-			"bondReferenceNumber": "BOND-1",
-			"bondAmount": 101,
-			"bondIssuedDate" : "2025-01-01T00:00:00+00:00",
-			"client":{"id":63},
-			"bondStatus":{"handle":"MATCH","label":"Match"}
-		}
-	]`
+	{
+		"pages": {
+			"current": 1,
+			"total": 2
+		},
+		"total": 26,
+		"bonds": [
+			{
+				"id": 13,
+				"caseReferenceNumber": "12345678",
+				"clientFirstName": "Joseph",
+				"clientLastName": "Smith",
+				"companyName": "Company Ltd",
+				"bondReferenceNumber": "BOND-1",
+				"bondAmount": 101,
+				"bondIssuedDate" : "2025-01-01T00:00:00+00:00",
+				"client":{"id":63},
+				"bondStatus":{"handle":"MATCH","label":"Match"}
+			}
+		]
+	}`
 
 	params := BondListParams{
 		Team: model.Team{Id: 13},
@@ -65,6 +72,11 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 				},
 			},
 		},
+		Pages: model.PageInformation{
+			PageCurrent: 1,
+			PageTotal:   2,
+		},
+		TotalBonds: 26,
 	}
 
 	bondList, err := client.GetBondList(getContext(nil), params)
@@ -87,7 +99,9 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 	})
 
 	expectedResponse := BondList{
-		Bonds: nil,
+		Bonds:      nil,
+		Pages:      model.PageInformation{},
+		TotalBonds: 0,
 	}
 
 	assert.Equal(t, expectedResponse, bondList)

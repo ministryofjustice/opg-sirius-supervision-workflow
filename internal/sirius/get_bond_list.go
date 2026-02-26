@@ -12,7 +12,9 @@ type BondMetaData struct {
 }
 
 type BondList struct {
-	Bonds []model.Bond `json:"bonds"`
+	Bonds      []model.Bond          `json:"bonds"`
+	Pages      model.PageInformation `json:"pages"`
+	TotalBonds int                   `json:"total"`
 }
 
 type BondListParams struct {
@@ -47,12 +49,10 @@ func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, e
 		return v, newStatusError(resp)
 	}
 
-	var bonds []model.Bond
-	if err = json.NewDecoder(resp.Body).Decode(&bonds); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
 	}
-	v.Bonds = bonds
 
 	return v, nil
 }

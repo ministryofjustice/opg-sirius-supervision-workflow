@@ -1,9 +1,11 @@
 package server
 
 import (
+	"net/http"
+
+	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"net/http"
 )
 
 type BondsClient interface {
@@ -41,6 +43,10 @@ func bonds(client BondsClient, tmpl Template) Handler {
 		vars.App = app
 		vars.UrlBuilder = vars.CreateUrlBuilder()
 
+		params := r.URL.Query()
+		perPageOptions := []int{25, 50, 100}
+		vars.PerPage = paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
 		bondList, err := client.GetBondList(ctx, sirius.BondListParams{
 			Team: app.SelectedTeam,
 		})
@@ -49,6 +55,16 @@ func bonds(client BondsClient, tmpl Template) Handler {
 		}
 
 		vars.BondList = bondList
+
+		vars.Pagination = paginate.Pagination{
+			CurrentPage:     bondList.Pages.PageCurrent,
+			TotalPages:      bondList.Pages.PageTotal,
+			TotalElements:   bondList.TotalBonds,
+			ElementsPerPage: vars.PerPage,
+			ElementName:     "bonds",
+			PerPageOptions:  perPageOptions,
+			UrlBuilder:      vars.UrlBuilder,
+		}
 
 		return tmpl.Execute(w, vars)
 	}

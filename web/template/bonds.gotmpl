@@ -4,11 +4,24 @@
 {{ define "title" }}Bonds{{ end }}
 
 {{ define "tab-content" }}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <form method="post">
-        {{ template "bonds-list" . }}
-      </form>
+
+    <div class="govuk-grid-row">
+      <nav id="top-pagination" aria-label="Top pagination">
+        {{ template "pagination" .Pagination }}
+      </nav>
     </div>
-  </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <form method="post">
+          {{ template "bonds-list" . }}
+        </form>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <nav id="bottom-pagination" aria-label="Bottom pagination">
+            {{ template "pagination" .Pagination }}
+        </nav>
+    </div>
 {{ end }}
