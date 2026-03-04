@@ -28,7 +28,8 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 			"bondAmount": 101,
 			"bondIssuedDate" : "2025-01-01T00:00:00+00:00",
 			"client":{"id":63},
-			"bondStatus":{"handle":"MATCH","label":"Match"}
+			"bondStatus":{"handle":"MATCH","label":"Match"},
+			"deputies": {"deputy1": "Angela White", "deputy2": "Gary Black"}
 		}
 	]`
 
@@ -62,6 +63,10 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 				BondStatus: model.RefData{
 					Label:  "Match",
 					Handle: "MATCH",
+				},
+				Deputies: map[string]string{
+					"deputy1": "Angela White",
+					"deputy2": "Gary Black",
 				},
 			},
 		},

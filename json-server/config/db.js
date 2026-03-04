@@ -1001,7 +1001,8 @@ module.exports = function () {
         "bondReferenceNumber": "BOND-001",
         "bondAmount": 10000,
         "bondIssuedDate": "01/01/2024",
-        "bondStatus":{"handle":"NO_ORDER","label":"No order"}
+        "bondStatus":{"handle":"NO_ORDER","label":"No order"},
+        "deputies": {"deputy1": "Tom Smith", "deputy2": "Monica Lane"}
       },
       {
         "id": 2,
@@ -1013,7 +1014,8 @@ module.exports = function () {
         "bondAmount": 7550,
         "bondIssuedDate": "15/02/2024",
         "client":{"id":63},
-        "bondStatus":{"handle":"MATCH","label":"Match"}
+        "bondStatus":{"handle":"MATCH","label":"Match"},
+        "deputies": {"deputy1": "June Joy"}
       },
       {
         "id": 3,
@@ -1024,7 +1026,8 @@ module.exports = function () {
         "bondReferenceNumber": "BOND-003",
         "bondAmount": 1250,
         "bondIssuedDate": "10/03/2024",
-        "bondStatus":{"handle":"NO_ORDER","label":"No order"}
+        "bondStatus":{"handle":"NO_ORDER","label":"No order"},
+        "deputies": {"deputy1": "Angela White", "deputy2": "Gary Black", "deputy3": "Emily Green"}
       },
     ],
     "reassign-deputy": {"successful":[67],"error":[],"reassignName":"Pro Team 1 - (Supervision)"},
