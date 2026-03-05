@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 )
 
 type Bond struct {
@@ -16,17 +13,11 @@ type Bond struct {
 	LastName            string            `json:"clientLastName"`
 	CompanyName         string            `json:"companyName"`
 	BondReferenceNumber string            `json:"bondReferenceNumber"`
-	BondAmount          int               `json:"bondAmount"`
+	BondAmount          int               `json:"bondAmount"` // amount in pounds
 	BondIssuedDate      Date              `json:"bondIssuedDate"`
 	BondClient          Client            `json:"client"`
 	BondStatus          RefData           `json:"bondStatus"`
 	Deputies          []string            `json:"deputyNames"`
-}
-
-func (b Bond) GetBondAmount() string {
-	pounds := float64(b.BondAmount) / 100
-	p := message.NewPrinter(language.BritishEnglish)
-	return p.Sprintf("£%.2f", pounds)
 }
 
 func (b Bond) GetURL() string {
