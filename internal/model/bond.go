@@ -1,9 +1,7 @@
 package model
 
 import (
-    "fmt"
-    "golang.org/x/text/language"
-    "golang.org/x/text/message"
+	"fmt"
 )
 
 type Bond struct {
@@ -13,17 +11,12 @@ type Bond struct {
 	LastName            string  `json:"clientLastName"`
 	CompanyName         string  `json:"companyName"`
 	BondReferenceNumber string  `json:"bondReferenceNumber"`
-	BondAmount          int     `json:"bondAmount"`
+	BondAmount          int     `json:"bondAmount"` // amount in pounds
 	BondIssuedDate      Date    `json:"bondIssuedDate"`
 	BondClient          Client  `json:"client"`
 	BondStatus          RefData `json:"bondStatus"`
 }
 
-func (b Bond) GetBondAmount() string {
-    pounds := float64(b.BondAmount)/100
-	p := message.NewPrinter(language.BritishEnglish)
-	return p.Sprintf("£%.2f", pounds)
-}
 func (b Bond) GetURL() string {
 	return fmt.Sprintf("/supervision/#/clients/%d", b.BondClient.Id)
 }
