@@ -1,15 +1,17 @@
 package server
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
+	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 type mockBondsClient struct {
@@ -38,6 +40,11 @@ var testBondList = sirius.BondList{
 			},
 		},
 	},
+	Pages: model.PageInformation{
+		PageCurrent: 1,
+		PageTotal:   2,
+	},
+	TotalBonds: 26,
 }
 
 func TestGetBonds(t *testing.T) {
@@ -72,6 +79,20 @@ func TestGetBonds(t *testing.T) {
 	want.UrlBuilder = urlbuilder.UrlBuilder{
 		Path:         "bonds",
 		SelectedTeam: app.SelectedTeam.Selector,
+	}
+
+	want.PerPage = 25
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     1,
+		TotalPages:      2,
+		TotalElements:   26,
+		ElementsPerPage: 25,
+		ElementName:     "bonds",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder: urlbuilder.UrlBuilder{
+			Path:         "bonds",
+			SelectedTeam: app.SelectedTeam.Selector,
+		},
 	}
 
 	assert.Equal(t, want, template.lastVars)
