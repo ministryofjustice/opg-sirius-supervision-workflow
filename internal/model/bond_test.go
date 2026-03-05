@@ -13,7 +13,7 @@ func TestBond_GetBondAmount(t *testing.T) {
 }
 
 func TestBond_GetDeputyName(t *testing.T) {
-	assert.Equal(t, "Angela White, Gary Black", Bond{Deputies: map[string]string{"deputy1": "Angela White", "deputy2": "Gary Black"}}.GetDeputiesList())
-	assert.Equal(t, "Jo Jane", Bond{Deputies: map[string]string{"deputy1": "", "deputy2": "Jo Jane"}}.GetDeputiesList())
-	assert.Equal(t, "Amy Samuel, Zoe William", Bond{Deputies: map[string]string{"deputy1": "Zoe William", "deputy2": "", "deputy3": "Amy Samuel"}}.GetDeputiesList())
+	assert.Equal(t, "Angela White, Gary Black", Bond{Deputies: []string{"Angela White", "Gary Black"}}.GetDeputiesList())
+	assert.Equal(t, "Jo Jane", Bond{Deputies: []string{"", "Jo Jane"}}.GetDeputiesList())
+	assert.Equal(t, "Amy Samuel, Zoe William", Bond{Deputies: []string{"Zoe William", "", "Amy Samuel"}}.GetDeputiesList())
 }

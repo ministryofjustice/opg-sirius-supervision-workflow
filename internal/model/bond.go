@@ -20,7 +20,7 @@ type Bond struct {
 	BondIssuedDate      Date              `json:"bondIssuedDate"`
 	BondClient          Client            `json:"client"`
 	BondStatus          RefData           `json:"bondStatus"`
-	Deputies            map[string]string `json:"deputies"`
+	Deputies            []string           `json:"deputies"`
 }
 
 func (b Bond) GetBondAmount() string {
