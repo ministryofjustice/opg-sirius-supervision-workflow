@@ -1008,7 +1008,7 @@ module.exports = function () {
           "bondAmount": 10000,
           "bondIssuedDate": "01/01/2024",
           "bondStatus":{"handle":"NO_ORDER","label":"No order"},
-          "deputies": ["Tom Smith", "Monica Lane"]
+          "deputyNames": ["Tom Smith", "Monica Lane"]
         },
         {
           "id": 2,
@@ -1021,7 +1021,7 @@ module.exports = function () {
           "bondIssuedDate": "15/02/2024",
           "client":{"id":63},
           "bondStatus":{"handle":"MATCH","label":"Match"},
-          "deputies": ["June Joy"]
+          "deputyNames": ["June Joy"]
         },
         {
           "id": 3,
@@ -1033,7 +1033,7 @@ module.exports = function () {
           "bondAmount": 1250,
           "bondIssuedDate": "10/03/2024",
           "bondStatus":{"handle":"NO_ORDER","label":"No order"},
-          "deputies": ["Angela White", "Emily Green", "Gary Black"]
+          "deputyNames": ["Angela White", "Emily Green", "Gary Black"]
         }
       ]
     },

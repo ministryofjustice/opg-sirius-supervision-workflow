@@ -35,7 +35,7 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
                 "bondIssuedDate" : "2025-01-01T00:00:00+00:00",
                 "client":{"id":63},
                 "bondStatus":{"handle":"MATCH","label":"Match"},
-                "deputies": ["Angela White", "Gary Black"]
+                "deputyNames": ["Angela White", "Gary Black"]
             }
         ]
     }`
