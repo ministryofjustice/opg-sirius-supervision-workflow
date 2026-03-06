@@ -1033,7 +1033,7 @@ module.exports = function () {
           "bondAmount": 1250,
           "bondIssuedDate": "10/03/2024",
           "bondStatus":{"handle":"NO_ORDER","label":"No order"},
-          "deputies": ["Angela White", "Gary Black", "Emily Green"]
+          "deputies": ["Angela White", "Emily Green", "Gary Black"]
         }
       ]
     },
