@@ -18,26 +18,27 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 
 	json := `
 	{
-		"pages": {
-			"current": 1,
-			"total": 2
-		},
-		"total": 26,
-		"bonds": [
-			{
-				"id": 13,
-				"caseReferenceNumber": "12345678",
-				"clientFirstName": "Joseph",
-				"clientLastName": "Smith",
-				"companyName": "Company Ltd",
-				"bondReferenceNumber": "BOND-1",
-				"bondAmount": 101,
-				"bondIssuedDate" : "2025-01-01T00:00:00+00:00",
-				"client":{"id":63},
-				"bondStatus":{"handle":"MATCH","label":"Match"}
-			}
-		]
-	}`
+        "pages": {
+            "current": 1,
+            "total": 2
+        },
+        "total": 26,
+        "bonds": [
+            {
+                "id": 13,
+                "caseReferenceNumber": "12345678",
+                "clientFirstName": "Joseph",
+                "clientLastName": "Smith",
+                "companyName": "Company Ltd",
+                "bondReferenceNumber": "BOND-1",
+                "bondAmount": 101,
+                "bondIssuedDate" : "2025-01-01T00:00:00+00:00",
+                "client":{"id":63},
+                "bondStatus":{"handle":"MATCH","label":"Match"},
+                "deputyNames": ["Angela White", "Gary Black"]
+            }
+        ]
+    }`
 
 	params := BondListParams{
 		Team:    model.Team{Id: 13},
@@ -72,6 +73,7 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 					Label:  "Match",
 					Handle: "MATCH",
 				},
+				Deputies: []string{"Angela White","Gary Black"},
 			},
 		},
 		Pages: model.PageInformation{

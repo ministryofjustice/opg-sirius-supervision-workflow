@@ -34,6 +34,7 @@ var testBondList = sirius.BondList{
 			BondReferenceNumber: "BOND1",
 			BondAmount:          101,
 			BondIssuedDate:      model.Date{Time: time.Now()},
+			Deputies:            []string{"Angela White", "Gary Black"},
 		},
 	},
 	Pages: model.PageInformation{
