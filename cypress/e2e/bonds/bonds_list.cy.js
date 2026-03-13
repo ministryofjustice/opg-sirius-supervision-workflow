@@ -21,7 +21,7 @@ describe("Bonds list", () => {
             cy.get("td:nth-child(1)").should("contain.text", "12345678")
             cy.get("td:nth-child(2)").should("contain.text", "John Smith")
             cy.get("td:nth-child(3)").should("contain.text", "Marsh")
-            cy.get("td:nth-child(4)").should("contain.text", "£100.00")
+            cy.get("td:nth-child(4)").should("contain.text", "£10000")
             cy.get("td:nth-child(5)").should("contain.text", "BOND-001")
             cy.get("td:nth-child(6)").should("contain.text", "Monica Lane, Tom Smith")
             cy.get("td:nth-child(7)").should("contain.text", "01/01/2024")
