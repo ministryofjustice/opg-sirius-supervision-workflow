@@ -67,7 +67,7 @@ jobs:
         run: make gosec
       - name: Upload GoSec results to GitHub Security tab
         if: ${{ always() }}
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/upload-sarif@b1bff81932f5cdfc8695c7752dcee935dcd061c8 # v4.33.0
         with:
           sarif_file: 'test-results/gosec.sarif'
           category: gosec
@@ -99,7 +99,7 @@ jobs:
 
   build:
     name: Build Sirius Workflow
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@361d19a6d7b291dab5d46f04765239341a4ca86b # v3.16.0
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@775636910c06dbeb813ab4d83b55142d1bb94d28 # v3.17.0
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
       build_options: --file docker/sirius-workflow/Dockerfile
@@ -131,7 +131,7 @@ jobs:
         run: make scan
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        uses: github/codeql-action/upload-sarif@b1bff81932f5cdfc8695c7752dcee935dcd061c8 # v4.33.0
         with:
           sarif_file: 'test-results/trivy.sarif'
           category: trivy-docker-workflow
@@ -146,7 +146,7 @@ jobs:
 
       - name: ECR Login
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1
+        uses: aws-actions/amazon-ecr-login@c962da2960ed15f492addc26fffa274485265950 # v2.0.2
         with:
           registries: 311462405659
 
