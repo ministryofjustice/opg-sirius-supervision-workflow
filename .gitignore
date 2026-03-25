@@ -17,7 +17,6 @@ docker/tmp
 web/static
 test-results
 .cache
-.trivy-cache
 
 # Cypress cli run artifact folders
 cypress/logs
