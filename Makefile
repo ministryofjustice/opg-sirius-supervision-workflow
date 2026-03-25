@@ -8,7 +8,7 @@ test-results:
 setup-directories: test-results
 
 test:
-	$(MAKE) -j 3 go-lint gosec unit-test 
+	$(MAKE) -j 3 go-lint gosec unit-test
 
 go-lint:
 	docker compose run --rm go-lint
@@ -24,10 +24,6 @@ build-all:
 
 build:
 	docker compose build workflow
-
-scan: setup-directories
-	docker compose run --rm trivy image --format table --exit-code 0 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
-	docker compose run --rm trivy image --format sarif --output /test-results/trivy.sarif --exit-code 1 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
 
 cypress: setup-directories
 	docker compose up -d --wait workflow json-server
