@@ -1,5 +1,5 @@
 # OPG SIRIUS WORKFLOW
-
+trigger workflow
 ### Major dependencies
 
 - [Go](https://golang.org/) (>= 1.19)
@@ -70,4 +70,3 @@ To see the UI output you can still run
 -------------------------------------------------------------------
 ## Run the unit/functional tests
 `make unit-test`
-
