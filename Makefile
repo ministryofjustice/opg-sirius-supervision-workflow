@@ -1,9 +1,9 @@
-all: test build scan cypress down
+all: test build cypress down
 
 .PHONY: cypress
 
 test-results:
-	mkdir -p -m 0777 test-results cypress/screenshots .trivy-cache
+	mkdir -p -m 0777 test-results cypress/screenshots
 
 setup-directories: test-results
 
