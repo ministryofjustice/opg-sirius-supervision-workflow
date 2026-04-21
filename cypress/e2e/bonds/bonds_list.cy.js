@@ -11,8 +11,9 @@ describe("Bonds list", () => {
         cy.get("th:nth-child(3)").should("contain", "Bond company");
         cy.get("th:nth-child(4)").should("contain", "Bond amount");
         cy.get("th:nth-child(5)").should("contain", "Bond reference");
-        cy.get("th:nth-child(6)").should("contain", "Date issued");
-        cy.get("th:nth-child(7)").should("contain", "Status");
+        cy.get("th:nth-child(6)").should("contain", "Deputies");
+        cy.get("th:nth-child(7)").should("contain", "Date issued");
+        cy.get("th:nth-child(8)").should("contain", "Status");
     })
 
     it("has column values", () => {
@@ -20,10 +21,11 @@ describe("Bonds list", () => {
             cy.get("td:nth-child(1)").should("contain.text", "12345678")
             cy.get("td:nth-child(2)").should("contain.text", "John Smith")
             cy.get("td:nth-child(3)").should("contain.text", "Marsh")
-            cy.get("td:nth-child(4)").should("contain.text", "£100.00")
+            cy.get("td:nth-child(4)").should("contain.text", "£10000")
             cy.get("td:nth-child(5)").should("contain.text", "BOND-001")
-            cy.get("td:nth-child(6)").should("contain.text", "01/01/2024")
-            cy.get("td:nth-child(7)").should("contain.text", "No order")
+            cy.get("td:nth-child(6)").should("contain.text", "Monica Lane, Tom Smith")
+            cy.get("td:nth-child(7)").should("contain.text", "01/01/2024")
+            cy.get("td:nth-child(8)").should("contain.text", "No order")
         })
     })
 

@@ -15,7 +15,7 @@ COPY web/assets web/assets
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn install
+RUN yarn install --frozen-lockfile --ignore-scripts
 RUN yarn build
 
 ### Development with hot reload and debugger
@@ -54,7 +54,7 @@ RUN apk --update --no-cache add \
     tzdata
 
 # Patch vulnerabilities
-RUN apk upgrade --no-cache busybox libcrypto3 libssl3
+RUN apk upgrade --no-cache busybox libcrypto3 libssl3 zlib
 
 COPY --from=build-env /go/bin/opg-sirius-workflow opg-sirius-workflow
 COPY --from=build-env /app/web/template web/template

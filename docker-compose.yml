@@ -39,7 +39,7 @@ services:
       - json-server
 
   go-lint:
-    image: golangci/golangci-lint:v2.10.1
+    image: golangci/golangci-lint:v2.11.4
     working_dir: /go/src/app
     volumes:
       - ./:/go/src/app
@@ -52,13 +52,6 @@ services:
     volumes:
       - .:/app
     command: -exclude-dir=.gocache -fmt=sarif -out=/app/test-results/gosec.sarif -stdout -verbose=text /app/...
-
-  trivy:
-    image: aquasec/trivy:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./.trivy-cache:/root/.cache
-      - ./test-results:/test-results
 
   yarn:
     image: node:24.1.0-alpine3.20

@@ -9,6 +9,7 @@
           <th scope="col" class="govuk-table__header">Bond company</th>
           <th scope="col" class="govuk-table__header">Bond amount</th>
           <th scope="col" class="govuk-table__header">Bond reference</th>
+          <th scope="col" class="govuk-table__header">Deputies</th>
           <th scope="col" class="govuk-table__header">Date issued</th>
           <th scope="col" class="govuk-table__header">Status</th>
         </tr>
@@ -33,10 +34,13 @@
                 {{ .CompanyName }}
               </td>
               <td class="govuk-table__cell">
-                {{ .GetBondAmount }}
+                £{{ .BondAmount }}
               </td>
               <td class="govuk-table__cell">
                 {{ .BondReferenceNumber }}
+              </td>
+               <td class="govuk-table__cell">
+                {{ .GetDeputiesList }}
               </td>
               <td class="govuk-table__cell">
                 {{ .BondIssuedDate }}
