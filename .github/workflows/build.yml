@@ -60,7 +60,7 @@ jobs:
         run: make gosec
       - name: Upload GoSec results to GitHub Security tab
         if: ${{ always() }}
-        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
+        uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         with:
           sarif_file: "test-results/gosec.sarif"
           category: gosec
@@ -92,7 +92,7 @@ jobs:
 
   build:
     name: Build Sirius Workflow
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@0610a5d3a977a0d82b92b1b3a3e9e38976dbc14e # v3.19.4
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@17ca444d0b23a0f9f6c612f1bfb8dc9be358f235 # v3.19.6
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
       build_options: --file docker/sirius-workflow/Dockerfile
@@ -129,18 +129,18 @@ jobs:
 
       - name: ECR Login
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a # v2.1.3
+        uses: aws-actions/amazon-ecr-login@19d944daaa35f0fa1d3f7f8af1d3f2e5de25c5b7 # v2.1.4
         with:
           registries: 311462405659
 
       - name: Snyk Scan
-        uses: ministryofjustice/opg-github-actions/actions/snyk-scan@2186f4ee10b7f2839e0c795dcd01c729e6d1d4c0 # v4.8.1
+        uses: ministryofjustice/opg-github-actions/actions/snyk-scan@9e8b7c2fb29c11e77b12913f74459fa48b11829f # v4.8.2
         with:
           SNYK_TEST_IMAGE: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
           SNYK_TOKEN: ${{ secrets.SNYK_OPG_ORG_TOKEN }}
 
       - name: Upload Snyk scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
+        uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         if: always()
         with:
           sarif_file: "test-results/snyk.sarif"
