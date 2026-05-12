@@ -1,13 +1,14 @@
 package server
 
 import (
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 type ClientTasksClient interface {
@@ -137,6 +138,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
 
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
 		switch r.Method {
 		case http.MethodGet:
 
@@ -184,7 +187,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
 
 			return tmpl.Execute(w, vars)
-
 		case http.MethodPost:
 			err := r.ParseForm()
 			if err != nil {
