@@ -2,13 +2,14 @@ package server
 
 import (
 	"fmt"
+	"net/http"
+	"slices"
+	"strconv"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"net/http"
-	"slices"
-	"strconv"
 )
 
 type DeputiesClient interface {
@@ -106,7 +107,7 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		if params.Has("ecm") {
 			selectedECMs = params["ecm"]
 			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
-			if app.SelectedTeam.IsProDeputyTeam(){
+			if app.SelectedTeam.IsProDeputyTeam() {
 				if isUnassignedECMSelected(params["ecm"]) {
 					proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
 					selectedECMs = append(selectedECMs, proDeputyIds...)
@@ -124,6 +125,8 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 		vars.PerPage = deputiesPerPage
 		vars.Sort = sort
 		vars.App = app
+
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 		switch r.Method {
 		case http.MethodPost:

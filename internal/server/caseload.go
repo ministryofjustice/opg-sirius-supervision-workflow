@@ -1,13 +1,14 @@
 package server
 
 import (
+	"net/http"
+	"net/url"
+	"strconv"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"net/http"
-	"net/url"
-	"strconv"
 )
 
 type CaseloadClient interface {
@@ -144,6 +145,8 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 		vars.SelectedUnassigned = selectedUnassigned
 		vars.SelectedStatuses = selectedStatuses
 		vars.App = app
+
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 		if r.Method == http.MethodPost {
 			err := r.ParseForm()
