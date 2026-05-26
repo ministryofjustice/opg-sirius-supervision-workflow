@@ -355,6 +355,25 @@ module.exports = function () {
             "email": "pa1@opgtest.com"
           }
         ],
+        "deputies": [
+          {
+            "id": 13,
+            "deputyNumber": 123456,
+            "displayName": "Mr Fee-paying Deputy",
+            "deputyType": {
+              "handle": "PRO",
+              "label": "Professional"
+            },
+            "deputyAddress": {
+              "town": "Derby"
+            },
+            "firm": {
+              "id": 78745361,
+              "firmName": "Krusty Krabs",
+              "firmNumber": 789456123
+            },
+          }
+        ],
         "teamType": {
           "handle": "PA",
           "label": "PA",

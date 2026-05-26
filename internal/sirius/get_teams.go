@@ -16,6 +16,10 @@ type TeamCollection struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
 	} `json:"members"`
+	Deputies []struct {
+		ID          int    `json:"id"`
+		DisplayName string `json:"displayName"`
+	}
 	TeamType *struct {
 		Handle string `json:"handle"`
 		Label  string `json:"label"`
@@ -87,6 +91,15 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			team.Members = append(team.Members, model.Assignee{
 				Id:   m.ID,
 				Name: m.DisplayName,
+			})
+		}
+
+		deputies, _ := c.GetDeputyList(ctx, DeputyListParams{Team: team})
+
+		for _, d := range deputies.Deputies {
+			team.Deputies = append(team.Deputies, model.Deputy{
+				Id:          d.Id,
+				DisplayName: d.DisplayName,
 			})
 		}
 

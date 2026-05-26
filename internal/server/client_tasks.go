@@ -20,6 +20,7 @@ type ClientTasksClient interface {
 type ClientTasksPage struct {
 	ListPage
 	FilterByAssignee
+	FilterByDeputy
 	FilterByDueDate
 	FilterByTaskType
 	TaskList       sirius.TaskList

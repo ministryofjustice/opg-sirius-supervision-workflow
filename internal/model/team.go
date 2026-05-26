@@ -10,6 +10,7 @@ type Team struct {
 	Id        int    `json:"id"`
 	Name      string `json:"displayName"`
 	Members   []Assignee
+	Deputies  []Deputy
 	Type      string
 	TypeLabel string
 	Selector  string
@@ -33,6 +34,10 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 		return deduped[i].Name < deduped[j].Name
 	})
 	return deduped
+}
+
+func (t Team) GetDeputiesForFilter() []Deputy {
+	return t.Deputies
 }
 
 func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {
