@@ -32,8 +32,8 @@
                       id="deputy_{{ .Id }}"
                       name="deputy"
                       type="checkbox"
-                      value="{{ .Id }}" />
-{{/*                      data-module="filter" {{ if .IsSelected $.SelectedDeputies }}checked{{ end }} />*/}}
+                      value="{{ .Id }}"
+                      data-module="filter" {{ if .IsSelected $.SelectedDeputies }}checked{{ end }} />
                   <label class="govuk-label govuk-checkboxes__label"
                   for="deputy_{{ .Id }}">
                   {{ .DisplayName }}

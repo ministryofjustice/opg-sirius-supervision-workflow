@@ -29,6 +29,16 @@ type Deputy struct {
 	Firm                          Firm                       `json:"firm"`
 }
 
+func (d Deputy) IsSelected(selectedDeputies []string) bool {
+	for _, a := range selectedDeputies {
+		id, _ := strconv.Atoi(a)
+		if d.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
 func (d Deputy) GetURL() string {
 	url := "/supervision/deputies/%d"
 	if d.Type.Handle == "LAY" {

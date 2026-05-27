@@ -144,6 +144,10 @@ func TestClientTasks(t *testing.T) {
 				ClearBetweenTeamViews: true,
 			},
 			{
+				Name:                  "deputy",
+				ClearBetweenTeamViews: true,
+			},
+			{
 				Name:                  "unassigned",
 				ClearBetweenTeamViews: true,
 			},
@@ -238,6 +242,10 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 			},
 			{
 				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "deputy",
 				ClearBetweenTeamViews: true,
 			},
 			{
@@ -372,6 +380,10 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 					Name:                  "assignee",
 					ClearBetweenTeamViews: true,
 					SelectedValues:        tt.wantSelectedAssignees,
+				},
+				{
+					Name:                  "deputy",
+					ClearBetweenTeamViews: true,
 				},
 				{
 					Name:                  "unassigned",
@@ -574,6 +586,7 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	wantFilters := []urlbuilder.Filter{
 		{Name: "task-type"},
 		{Name: "assignee", ClearBetweenTeamViews: true},
+		{Name: "deputy", ClearBetweenTeamViews: true},
 		{Name: "unassigned", ClearBetweenTeamViews: true},
 		{Name: "due-date-from"},
 		{Name: "due-date-to"},
@@ -621,6 +634,9 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 					SelectedAssignees:  []string{"user1", "user2"},
 					SelectedUnassigned: "test-unassigned",
 				},
+				FilterByDeputy: FilterByDeputy{
+					SelectedDeputies: []string{"deputy1", "deputy2"},
+				},
 				FilterByDueDate: FilterByDueDate{
 					SelectedDueDateFrom: "2010-10-10",
 					SelectedDueDateTo:   "2020-10-10",
@@ -635,6 +651,11 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 				{
 					Name:                  "assignee",
 					SelectedValues:        []string{"user1", "user2"},
+					ClearBetweenTeamViews: true,
+				},
+				{
+					Name:                  "deputy",
+					SelectedValues:        []string{"deputy1", "deputy2"},
 					ClearBetweenTeamViews: true,
 				},
 				{

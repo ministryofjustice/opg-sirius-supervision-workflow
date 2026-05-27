@@ -36,6 +36,7 @@ func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedFilters: []urlbuilder.Filter{
 			urlbuilder.CreateFilter("task-type", ctp.SelectedTaskTypes),
 			urlbuilder.CreateFilter("assignee", ctp.SelectedAssignees, true),
+			urlbuilder.CreateFilter("deputy", ctp.SelectedDeputies, true),
 			urlbuilder.CreateFilter("unassigned", ctp.SelectedUnassigned, true),
 			urlbuilder.CreateFilter("due-date-from", ctp.SelectedDueDateFrom),
 			urlbuilder.CreateFilter("due-date-to", ctp.SelectedDueDateTo),
@@ -95,6 +96,11 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			}
 		}
 
+		var selectedDeputies []string
+		if params.Has("deputy") {
+			selectedDeputies = params["deputy"]
+		}
+
 		var selectedTaskTypes []string
 		if params.Has("task-type") {
 			selectedTaskTypes = params["task-type"]
@@ -138,6 +144,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedDeputies = selectedDeputies
 
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
