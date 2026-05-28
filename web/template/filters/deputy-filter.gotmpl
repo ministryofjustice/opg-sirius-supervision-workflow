@@ -1,4 +1,4 @@
-{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByDeputyType*/ -}}
+{{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByDeputy*/ -}}
 {{ define "deputy-filter" }}
   {{ if eq .App.SelectedTeam.IsClosedCases false }}
     <div class="moj-filter__options" data-filter-name="moj-filter-name-deputy">
@@ -36,9 +36,9 @@
                       data-module="filter" {{ if .IsSelected $.SelectedDeputies }}checked{{ end }} />
                   <label class="govuk-label govuk-checkboxes__label"
                   for="deputy_{{ .Id }}">
-                  {{ .DisplayName }}
-                  {{ .GetCountAsString $.DeputyCount $.UrlBuilder.Path}}
-                   </label>
+                   {{ .DisplayName }}
+                   {{ .GetCountAsString $.DeputyCount $.UrlBuilder.Path }}
+                  </label>
                 </div>
               </div>
             {{ end }}

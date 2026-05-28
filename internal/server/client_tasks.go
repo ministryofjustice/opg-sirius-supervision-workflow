@@ -60,6 +60,11 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 			appliedFilters = append(appliedFilters, u.Name)
 		}
 	}
+	for _, d := range ctp.App.SelectedTeam.GetDeputiesForFilter() {
+		if d.IsSelected(ctp.SelectedDeputies) {
+			appliedFilters = append(appliedFilters, d.DisplayName)
+		}
+	}
 	if dueDateFrom != nil {
 		appliedFilters = append(appliedFilters, "Due date from "+dueDateFrom.Format("02/01/2006")+" (inclusive)")
 	}
@@ -158,6 +163,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				TaskTypes:         taskTypes,
 				SelectedTaskTypes: selectedTaskTypes,
 				Assignees:         selectedAssignees,
+				Deputies:          selectedDeputies,
 				DueDateFrom:       selectedDueDateFrom,
 				DueDateTo:         selectedDueDateTo,
 			})
@@ -193,6 +199,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.TaskTypes = taskList.CalculateTaskTypeCounts(taskTypes)
 			vars.AppliedFilters = vars.GetAppliedFilters(selectedDueDateFrom, selectedDueDateTo)
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
+			vars.DeputyCount = vars.TaskList.MetaData.DeputyCount
 
 			return tmpl.Execute(w, vars)
 		case http.MethodPost:
