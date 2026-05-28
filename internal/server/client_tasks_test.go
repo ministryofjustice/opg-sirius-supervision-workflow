@@ -750,7 +750,7 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			selectedUnassigned: "lay-team",
 			dueDateFrom:        &dueDateFrom,
 			dueDateTo:          &dueDateTo,
-			want:               []string{"TaskType1", "Lay team", "User 1", "Joseph Smith", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
+			want:               []string{"TaskType1", "Lay team", "User 1", "John Smith", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
 		},
 	}
 	for i, test := range tests {
