@@ -223,10 +223,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/object-schema/-/object-schema-3.0.5.tgz#88e9bf4d11d2b19c082e78ebe7ce88724a5eb091"
   integrity sha512-vqTaUEgxzm+YDSdElad6PiRoX4t8VGDjCtt05zn4nU810UIx/uNEV7/lZJ6KwFThKZOzOxzXy48da+No7HZaMw==
 
-"@eslint/plugin-kit@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@eslint/plugin-kit/-/plugin-kit-0.7.1.tgz#c4125fd015eceeb09b793109fdbcd4dd0a02d346"
-  integrity sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==
+"@eslint/plugin-kit@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@eslint/plugin-kit/-/plugin-kit-0.7.2.tgz#4b0962f3f2c7ce8bc98b3ecfe34525c09d2cb729"
+  integrity sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==
   dependencies:
     "@eslint/core" "^1.2.1"
     levn "^0.4.1"
@@ -485,9 +485,9 @@ aws4@^1.8.0:
   integrity sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw==
 
 axe-core@^4.8.3:
-  version "4.11.4"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.4.tgz#5b535e381ff1e61ffdd615e5483d16186d3b46a5"
-  integrity sha512-KunSNx+TVpkAw/6ULfhnx+HWRecjqZGTOyquAoWHYLRSdK1tB5Ihce1ZW+UY3fj33bYAFWPu7W/GRSmmrCGuxA==
+  version "4.12.0"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.12.0.tgz#16dc230cc0a8a2732e723ce76a0395df9ba7a788"
+  integrity sha512-FTavr/7Ba0IptwGOPxnQvdyW2tAsdLBMTBXz7rKH6xJ2skpyxpBxyHkDdBs4lf69yRqYpkqCdfhnwS8YULGOmg==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -522,9 +522,9 @@ bluebird@^3.7.2:
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
 
 brace-expansion@^1.1.7:
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.14.tgz#d9de602370d91347cd9ddad1224d4fd701eb348b"
-  integrity sha512-MWPGfDxnyzKU7rNOW9SP/c50vi3xrmrua/+6hfPbCS2ABNWfx24vPidzvC7krjU/RTo235sV776ymlsMtGKj8g==
+  version "1.1.15"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.15.tgz#a6d90d54067236e5f42570a3b7378d594d9b7738"
+  integrity sha512-EwOCDEex4quD37XhqM3omwtMoJjr//isUZz1JopUNWms+4Z2ViyM/k1YIRePpoVNnQhENnxtFjLaxNHrT7xIUg==
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
@@ -938,16 +938,16 @@ eslint-visitor-keys@^5.0.1:
   integrity sha512-tD40eHxA35h0PEIZNeIjkHoDR4YjjJp34biM0mDvplBe//mB+IHCqHDGV7pxF+7MklTvighcCPPZC7ynWyjdTA==
 
 eslint@^10.0.0:
-  version "10.4.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-10.4.0.tgz#d86b6c405de0f19f3318c47139b8cb6771b3f592"
-  integrity sha512-loXy6bWOoP3EP6JA7jo6p5jMpBJmHmsNZM5SFRHLdh1MGOPurMnNBj4ZlAbaqUAaQWbCr7jHV4P7gzAyryZWkQ==
+  version "10.4.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-10.4.1.tgz#f6640b176e0912246d9ddbf8fcfa5e8b7f02445a"
+  integrity sha512-AyIKhnOBuOAdueD7RB3xB+YeAWScb9jHsJBgH2Hcde8InP5JYhqrRR6iTMHyTEwgENK54Cp44e4v8BwNhsuHuw==
   dependencies:
     "@eslint-community/eslint-utils" "^4.8.0"
     "@eslint-community/regexpp" "^4.12.2"
     "@eslint/config-array" "^0.23.5"
     "@eslint/config-helpers" "^0.6.0"
     "@eslint/core" "^1.2.1"
-    "@eslint/plugin-kit" "^0.7.1"
+    "@eslint/plugin-kit" "^0.7.2"
     "@humanfs/node" "^0.16.6"
     "@humanwhocodes/module-importer" "^1.0.1"
     "@humanwhocodes/retry" "^0.4.2"
@@ -1365,9 +1365,9 @@ isstream@~0.1.2:
   integrity sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==
 
 js-yaml@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.1.tgz#854c292467705b699476e1a2decc0c8a3458806b"
-  integrity sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.2.0.tgz#2bd9e85682dd91bd469afb809d816043b3d49524"
+  integrity sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==
   dependencies:
     argparse "^2.0.1"
 
