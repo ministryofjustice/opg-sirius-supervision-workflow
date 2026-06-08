@@ -1,5 +1,6 @@
 {
     "/supervision-api/v1/*": "/$1",
+    "/supervision-api/api/v1/*": "/$1",
     "/tasktypes/supervision": "/tasktypes-supervision",
     "/tasktypes/deputy*": "/tasktypes-deputy",
     "/users/current": "/users-current",
@@ -15,5 +16,6 @@
     "/users/:id/tasks/:id": "/assign-tasks-to-casemanager",
     "/assignees/teams/tasks\\?teamIds[]=13&filter=status\\:Not+started&limit=:limit&page=:pageNumber&*": "/tasks-view-:limit/:pageNumber",
     "/assignees/teams/tasks\\?teamIds[]=:teamId&*": "/tasks/:teamId",
-    "/assignees/teams/deputies\\?teamIds[]=:teamId&*": "/deputies/:teamId"
+    "/assignees/teams/deputies\\?teamIds[]=:teamId&*": "/deputies/:teamId",
+    "/assignees/pa-deputies": "/pa-deputies"
 }

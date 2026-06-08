@@ -454,6 +454,14 @@ module.exports = function () {
         }
       },
     ],
+    "pa-deputies": {
+      "deputies": [
+        {
+          "id": 13,
+          "displayName": "Mr Fee-paying Deputy"
+        }
+      ]
+    },
     "tasktypes-supervision": {
       "task_types": {
         "CWGN": {
