@@ -94,7 +94,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			})
 		}
 
-		deputies, _ := c.GetDeputyList(ctx, DeputyListParams{Team: team})
+		deputies, _ := c.GetDeputyList(ctx, DeputyListParams{Team: team, IncludeAllPaTeams: true})
 
 		for _, d := range deputies.Deputies {
 			team.Deputies = append(team.Deputies, model.Deputy{

@@ -153,11 +153,12 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 		case http.MethodGet:
 			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
-				Team:         app.SelectedTeam,
-				Page:         page,
-				PerPage:      deputiesPerPage,
-				Sort:         fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
-				SelectedECMs: selectedECMs,
+				Team:              app.SelectedTeam,
+				Page:              page,
+				PerPage:           deputiesPerPage,
+				Sort:              fmt.Sprintf("%s:%s", sort.OrderBy, sort.GetDirection()),
+				SelectedECMs:      selectedECMs,
+				IncludeAllPaTeams: false,
 			})
 			if err != nil {
 				return err
