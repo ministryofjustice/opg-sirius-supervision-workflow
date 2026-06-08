@@ -173,12 +173,10 @@ func TestGetTeamsFetchesPADeputiesForPATeam(t *testing.T) {
 					}
 				}
 			]`))
-		case "/api/v1/assignees/pa-deputies":
-			_, _ = w.Write([]byte(`{
-				"deputies": [
-					{"id": 13, "displayName": "Mr Fee-paying Deputy"}
-				]
-			}`))
+		case "/v1/assignees/pa-deputies":
+			_, _ = w.Write([]byte(`[
+				{"id": 13, "displayName": "Mr Fee-paying Deputy"}
+			]`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}

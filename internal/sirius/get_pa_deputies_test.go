@@ -17,23 +17,21 @@ func TestApiClient_GetPADeputies_Returns200(t *testing.T) {
 	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
-	{
-		"deputies": [
-			{
-				"id": 13,
-				"displayName": "Mr Fee-paying Deputy"
-			},
-			{
-				"id": 14,
-				"displayName": "Ms Another Deputy"
-			}
-		]
-	}`
+	[
+		{
+			"id": 13,
+			"displayName": "Mr Fee-paying Deputy"
+		},
+		{
+			"id": 14,
+			"displayName": "Ms Another Deputy"
+		}
+	]`
 
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/v1/assignees/pa-deputies", rq.URL.Path)
+		assert.Equal(t, "/v1/assignees/pa-deputies", rq.URL.Path)
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -63,7 +61,7 @@ func TestApiClient_GetPADeputies_Returns500(t *testing.T) {
 	assert.Nil(t, paDeputies)
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/api/v1/assignees/pa-deputies",
+		URL:    svr.URL + "/v1/assignees/pa-deputies",
 		Method: http.MethodGet,
 	}, err)
 }
