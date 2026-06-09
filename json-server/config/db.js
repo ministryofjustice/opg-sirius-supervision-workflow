@@ -454,14 +454,12 @@ module.exports = function () {
         }
       },
     ],
-    "pa-deputies": {
-      "deputies": [
-        {
-          "id": 13,
-          "displayName": "Blompton County Council"
-        }
-      ]
-    },
+    "pa-deputies": [
+      {
+        "id": 13,
+        "displayName": "Blompton County Council"
+      }
+    ],
     "tasktypes-supervision": {
       "task_types": {
         "CWGN": {
