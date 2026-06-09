@@ -20,11 +20,11 @@ func TestApiClient_GetPADeputies_Returns200(t *testing.T) {
 	[
 		{
 			"id": 13,
-			"displayName": "Mr Fee-paying Deputy"
+			"displayName": "Plompton County Council"
 		},
 		{
 			"id": 14,
-			"displayName": "Ms Another Deputy"
+			"displayName": "Balamory County Council"
 		}
 	]`
 
@@ -42,8 +42,8 @@ func TestApiClient_GetPADeputies_Returns200(t *testing.T) {
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []model.Deputy{
-		{Id: 13, DisplayName: "Mr Fee-paying Deputy"},
-		{Id: 14, DisplayName: "Ms Another Deputy"},
+		{Id: 13, DisplayName: "Plompton County Council"},
+		{Id: 14, DisplayName: "Balamory County Council"},
 	}, paDeputies)
 }
 

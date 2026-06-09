@@ -36,10 +36,6 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 	return deduped
 }
 
-func (t Team) GetDeputiesForFilter() []Deputy {
-	return t.Deputies
-}
-
 func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {
 	for _, a := range selectedAssignees {
 		if t.Id == a.AssigneeId {

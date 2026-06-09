@@ -175,7 +175,7 @@ func TestGetTeamsFetchesPADeputiesForPATeam(t *testing.T) {
 			]`))
 		case "/v1/assignees/pa-deputies":
 			_, _ = w.Write([]byte(`[
-				{"id": 13, "displayName": "Mr Fee-paying Deputy"}
+				{"id": 13, "displayName": "Blompton County Council"}
 			]`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
@@ -196,5 +196,5 @@ func TestGetTeamsFetchesPADeputiesForPATeam(t *testing.T) {
 		}
 	}
 
-	assert.Equal(t, []model.Deputy{{Id: 13, DisplayName: "Mr Fee-paying Deputy"}}, paTeam.Deputies)
+	assert.Equal(t, []model.Deputy{{Id: 13, DisplayName: "Blompton County Council"}}, paTeam.Deputies)
 }

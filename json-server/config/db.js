@@ -458,7 +458,7 @@ module.exports = function () {
       "deputies": [
         {
           "id": 13,
-          "displayName": "Mr Fee-paying Deputy"
+          "displayName": "Blompton County Council"
         }
       ]
     },
@@ -1009,7 +1009,7 @@ module.exports = function () {
             {
                "id": 13,
               "deputyNumber": 123456,
-              "displayName": "Mr Fee-paying Deputy",
+              "displayName": "Blompton County Council",
               "deputyType": {
                 "handle": "PA",
                 "label": "Public authority"

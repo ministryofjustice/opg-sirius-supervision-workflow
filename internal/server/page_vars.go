@@ -28,11 +28,9 @@ type FilterByAssignee struct {
 
 type FilterByDeputy struct {
 	ListPage
-	DeputyFilterName         string
-	SelectedDeputies         []string
-	SelectedDeputyUnassigned string
-	DeputyCount              []model.DeputyAndCount
-	DeputyTasks              bool
+	DeputyFilterName string
+	SelectedDeputies []string
+	DeputyCount      []model.DeputyAndCount
 }
 
 type FilterByTaskType struct {
