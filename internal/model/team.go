@@ -37,11 +37,7 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 }
 
 func (t Team) GetDeputiesForFilter() []Deputy {
-	deputies := append([]Deputy(nil), t.Deputies...)
-	sort.Slice(deputies, func(i, j int) bool {
-		return deputies[i].DisplayName < deputies[j].DisplayName
-	})
-	return deputies
+	return t.Deputies
 }
 
 func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {

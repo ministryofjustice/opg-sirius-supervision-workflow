@@ -60,7 +60,7 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 			appliedFilters = append(appliedFilters, u.Name)
 		}
 	}
-	for _, d := range ctp.App.SelectedTeam.GetDeputiesForFilter() {
+	for _, d := range ctp.App.SelectedTeam.Deputies {
 		if d.IsSelected(ctp.SelectedDeputies) {
 			appliedFilters = append(appliedFilters, d.DisplayName)
 		}

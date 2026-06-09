@@ -7,7 +7,7 @@
       {{ if .SelectedUnassigned }}
         <li><a href="{{ .UrlBuilder.GetRemoveFilterUrl "unassigned" .SelectedUnassigned }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> Not Assigned</a></li>
       {{ end }}
-      {{ range .App.SelectedTeam.GetDeputiesForFilter }}
+      {{ range .App.SelectedTeam.Deputies }}
           {{ if .IsSelected $.SelectedDeputies }}
             <li><a href="{{ $.UrlBuilder.GetRemoveFilterUrl "deputy" .Id }}" class="moj-filter__tag"><span class="govuk-visually-hidden">Remove this filter</span> {{ .DisplayName }}</a></li>
           {{ end }}

@@ -37,29 +37,6 @@ func TestTeam_GetAssigneesForFilter(t *testing.T) {
 	assert.Equal(t, expected, team.GetAssigneesForFilter())
 }
 
-func TestTeam_GetDeputiesForFilter(t *testing.T) {
-	team := Team{
-		Deputies: []Deputy{
-			{Id: 2, DisplayName: "Zoe Zebra"},
-			{Id: 3, DisplayName: "Adam Able"},
-			{Id: 1, DisplayName: "Mary Major"},
-		},
-	}
-
-	expected := []Deputy{
-		{Id: 3, DisplayName: "Adam Able"},
-		{Id: 1, DisplayName: "Mary Major"},
-		{Id: 2, DisplayName: "Zoe Zebra"},
-	}
-
-	assert.Equal(t, expected, team.GetDeputiesForFilter())
-	assert.Equal(t, []Deputy{
-		{Id: 2, DisplayName: "Zoe Zebra"},
-		{Id: 3, DisplayName: "Adam Able"},
-		{Id: 1, DisplayName: "Mary Major"},
-	}, team.Deputies)
-}
-
 func TestTeam_HasTeam(t *testing.T) {
 	team := Team{
 		Id: 10,

@@ -19,7 +19,7 @@
         <div class="app-c-option-select__container-inner js-auto-height-inner">
           <fieldset class="govuk-fieldset" aria-label="Assigned">
             <legend class="hide">Deputies</legend>
-            {{ range .App.SelectedTeam.GetDeputiesForFilter }}
+            {{ range .App.SelectedTeam.Deputies }}
               <div class="govuk-checkboxes govuk-checkboxes--small">
                 <div class="govuk-checkboxes__item filter__checkbox">
                   <input class="govuk-checkboxes__input"
