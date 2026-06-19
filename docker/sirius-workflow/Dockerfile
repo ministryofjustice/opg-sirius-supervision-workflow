@@ -1,11 +1,11 @@
-FROM golang:1.26 AS base
+FROM golang:1.26-alpine@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648 AS base
 WORKDIR /app
 
 ENV CGO_ENABLED=0 GOOS=linux
 
 RUN update-ca-certificates
 
-FROM node:24.1.0-alpine3.20 AS asset-env
+FROM node:lts-alpine3.24@sha256:5fa278c599dbba0c8f873d8717d50ecbb57c5ae6a53b7ab240c25135e0b65995 AS asset-env
 
 WORKDIR /app
 
@@ -45,7 +45,7 @@ RUN go mod download
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3
+FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
 WORKDIR /go/bin
 
