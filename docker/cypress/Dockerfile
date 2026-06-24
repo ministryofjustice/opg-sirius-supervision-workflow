@@ -1,10 +1,11 @@
-FROM cypress/included:15.16.0
+FROM cypress/included:15.17.0@sha256:9378699679f7d6ddb63c572866d4f11ec822abacb099345e89f5b86381efd53f
 
 WORKDIR /root
 
-RUN npm install "cypress-failed-log@2.9.2"
-RUN npm install axe-core
-RUN npm install cypress-axe
+COPY yarn.lock yarn.lock
+COPY package.json package.json
+RUN yarn install --frozen-lockfile --ignore-scripts
+
 
 ENV CYPRESS_VIDEO=false
 ENV CYPRESS_baseUrl=http://workflow:8888/supervision/workflow
