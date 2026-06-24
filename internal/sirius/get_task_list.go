@@ -14,6 +14,7 @@ import (
 type TaskMetaData struct {
 	TaskTypeCount []TypeAndCount           `json:"taskTypeCount"`
 	AssigneeCount []model.AssigneeAndCount `json:"assigneeTaskCount"`
+	DeputyCount   []model.DeputyAndCount   `json:"deputyTaskCount"`
 }
 
 type TypeAndCount struct {
@@ -36,6 +37,7 @@ type TaskListParams struct {
 	TaskTypeCategory  string
 	SelectedTaskTypes []string
 	Assignees         []string
+	Deputies          []string
 	DueDateFrom       *time.Time
 	DueDateTo         *time.Time
 }
@@ -106,6 +108,9 @@ func (p TaskListParams) CreateFilter() string {
 	}
 	for _, a := range p.Assignees {
 		filter += "assigneeid_or_null:" + a + ","
+	}
+	for _, d := range p.Deputies {
+		filter += "deputyid:" + d + ","
 	}
 	if p.DueDateFrom != nil {
 		filter += "due_date_from:" + p.DueDateFrom.Format("2006-01-02") + ","

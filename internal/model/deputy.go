@@ -3,10 +3,16 @@ package model
 import (
 	"fmt"
 	"math"
+	"strconv"
 )
 
 type DeputyImportantInformation struct {
 	PanelDeputy bool `json:"panelDeputy"`
+}
+
+type DeputyAndCount struct {
+	DeputyId int `json:"deputy"`
+	Count    int `json:"count"`
 }
 
 type Deputy struct {
@@ -21,6 +27,16 @@ type Deputy struct {
 	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
 	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
 	Firm                          Firm                       `json:"firm"`
+}
+
+func (d Deputy) IsSelected(selectedDeputies []string) bool {
+	for _, a := range selectedDeputies {
+		id, _ := strconv.Atoi(a)
+		if d.Id == id {
+			return true
+		}
+	}
+	return false
 }
 
 func (d Deputy) GetURL() string {
@@ -45,4 +61,14 @@ func (d Deputy) CalculateNonCompliance() string {
 	}
 	percentage := (float64(d.ActiveNonCompliantClientCount) / float64(d.ActiveClientCount)) * 100
 	return fmt.Sprintf("%.f%%", math.Round(percentage))
+}
+
+func (d Deputy) GetCountAsString(selectedDeputies []DeputyAndCount, urlPath string) string {
+	for _, sd := range selectedDeputies {
+		if d.Id == sd.DeputyId {
+			stringValue := strconv.Itoa(sd.Count)
+			return "(" + stringValue + ")"
+		}
+	}
+	return "(0)"
 }

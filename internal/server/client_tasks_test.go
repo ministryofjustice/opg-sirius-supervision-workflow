@@ -95,6 +95,12 @@ var testTaskList = sirius.TaskList{
 				Count: 1,
 			},
 		},
+		DeputyCount: []model.DeputyAndCount{
+			{
+				DeputyId: 3333,
+				Count:    1,
+			},
+		},
 	},
 }
 
@@ -144,6 +150,10 @@ func TestClientTasks(t *testing.T) {
 				ClearBetweenTeamViews: true,
 			},
 			{
+				Name:                  "deputy",
+				ClearBetweenTeamViews: true,
+			},
+			{
 				Name:                  "unassigned",
 				ClearBetweenTeamViews: true,
 			},
@@ -167,6 +177,7 @@ func TestClientTasks(t *testing.T) {
 		UrlBuilder:      want.UrlBuilder,
 	}
 	want.MyTeamId = "99"
+	want.DeputyCount = testTaskList.MetaData.DeputyCount
 
 	assert.Equal(t, want, template.lastVars)
 }
@@ -220,6 +231,12 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 				Count: 1,
 			},
 		},
+		DeputyCount: []model.DeputyAndCount{
+			{
+				DeputyId: 3333,
+				Count:    1,
+			},
+		},
 	}
 	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
 	want.AppliedFilters = []string{
@@ -238,6 +255,10 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 			},
 			{
 				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "deputy",
 				ClearBetweenTeamViews: true,
 			},
 			{
@@ -264,6 +285,7 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 		UrlBuilder:      want.UrlBuilder,
 	}
 	want.MyTeamId = "99"
+	want.DeputyCount = testTaskList.MetaData.DeputyCount
 
 	assert.Equal(t, want, template.lastVars)
 }
@@ -372,6 +394,10 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 					Name:                  "assignee",
 					ClearBetweenTeamViews: true,
 					SelectedValues:        tt.wantSelectedAssignees,
+				},
+				{
+					Name:                  "deputy",
+					ClearBetweenTeamViews: true,
 				},
 				{
 					Name:                  "unassigned",
@@ -574,6 +600,7 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 	wantFilters := []urlbuilder.Filter{
 		{Name: "task-type"},
 		{Name: "assignee", ClearBetweenTeamViews: true},
+		{Name: "deputy", ClearBetweenTeamViews: true},
 		{Name: "unassigned", ClearBetweenTeamViews: true},
 		{Name: "due-date-from"},
 		{Name: "due-date-to"},
@@ -621,6 +648,9 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 					SelectedAssignees:  []string{"user1", "user2"},
 					SelectedUnassigned: "test-unassigned",
 				},
+				FilterByDeputy: FilterByDeputy{
+					SelectedDeputies: []string{"deputy1", "deputy2"},
+				},
 				FilterByDueDate: FilterByDueDate{
 					SelectedDueDateFrom: "2010-10-10",
 					SelectedDueDateTo:   "2020-10-10",
@@ -635,6 +665,11 @@ func TestClientTasksVars_CreateUrlBuilder(t *testing.T) {
 				{
 					Name:                  "assignee",
 					SelectedValues:        []string{"user1", "user2"},
+					ClearBetweenTeamViews: true,
+				},
+				{
+					Name:                  "deputy",
+					SelectedValues:        []string{"deputy1", "deputy2"},
 					ClearBetweenTeamViews: true,
 				},
 				{
@@ -669,6 +704,7 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 		taskTypes          []model.TaskType
 		selectedTaskTypes  []string
 		selectedAssignees  []string
+		selectedDeputies   []string
 		selectedUnassigned string
 		dueDateFrom        *time.Time
 		dueDateTo          *time.Time
@@ -691,6 +727,10 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			want:              []string{"User 2"},
 		},
 		{
+			selectedDeputies: []string{"13"},
+			want:             []string{"John Smith"},
+		},
+		{
 			selectedUnassigned: "lay-team",
 			want:               []string{"Lay team"},
 		},
@@ -706,10 +746,11 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			taskTypes:          []model.TaskType{{Incomplete: "TaskType1", Handle: "TT1"}},
 			selectedTaskTypes:  []string{"TT1"},
 			selectedAssignees:  []string{"1"},
+			selectedDeputies:   []string{"13"},
 			selectedUnassigned: "lay-team",
 			dueDateFrom:        &dueDateFrom,
 			dueDateTo:          &dueDateTo,
-			want:               []string{"TaskType1", "Lay team", "User 1", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
+			want:               []string{"TaskType1", "Lay team", "User 1", "John Smith", "Due date from 17/12/2022 (inclusive)", "Due date to 18/12/2022 (inclusive)"},
 		},
 	}
 	for i, test := range tests {
@@ -718,6 +759,16 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			page.App.SelectedTeam = model.Team{
 				Name:     "Lay team",
 				Selector: "lay-team",
+				Deputies: []model.Deputy{
+					{
+						Id:          13,
+						DisplayName: "John Smith",
+					},
+					{
+						Id:          14,
+						DisplayName: "Diana Prince",
+					},
+				},
 				Members: []model.Assignee{
 					{
 						Id:   1,
@@ -732,6 +783,7 @@ func TestClientTasksPage_GetAppliedFilters(t *testing.T) {
 			page.TaskTypes = test.taskTypes
 			page.SelectedTaskTypes = test.selectedTaskTypes
 			page.SelectedAssignees = test.selectedAssignees
+			page.SelectedDeputies = test.selectedDeputies
 			page.SelectedUnassigned = test.selectedUnassigned
 
 			assert.Equal(t, test.want, page.GetAppliedFilters(test.dueDateFrom, test.dueDateTo))
