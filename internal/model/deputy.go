@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"math"
-	"strconv"
 )
 
 type DeputyImportantInformation struct {
@@ -22,16 +21,6 @@ type Deputy struct {
 	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
 	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
 	Firm                          Firm                       `json:"firm"`
-}
-
-func (d Deputy) IsSelected(selectedDeputies []string) bool {
-	for _, a := range selectedDeputies {
-		id, _ := strconv.Atoi(a)
-		if d.Id == id {
-			return true
-		}
-	}
-	return false
 }
 
 func (d Deputy) GetURL() string {
