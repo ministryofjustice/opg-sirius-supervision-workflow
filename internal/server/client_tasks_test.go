@@ -95,12 +95,6 @@ var testTaskList = sirius.TaskList{
 				Count: 1,
 			},
 		},
-		DeputyCount: []model.DeputyAndCount{
-			{
-				DeputyId: 3333,
-				Count:    1,
-			},
-		},
 	},
 }
 
@@ -177,7 +171,6 @@ func TestClientTasks(t *testing.T) {
 		UrlBuilder:      want.UrlBuilder,
 	}
 	want.MyTeamId = "99"
-	want.DeputyCount = testTaskList.MetaData.DeputyCount
 
 	assert.Equal(t, want, template.lastVars)
 }
@@ -231,12 +224,6 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 				Count: 1,
 			},
 		},
-		DeputyCount: []model.DeputyAndCount{
-			{
-				DeputyId: 3333,
-				Count:    1,
-			},
-		},
 	}
 	want.SelectedTaskTypes = []string{"CDFC", "ORAL"}
 	want.AppliedFilters = []string{
@@ -285,7 +272,6 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 		UrlBuilder:      want.UrlBuilder,
 	}
 	want.MyTeamId = "99"
-	want.DeputyCount = testTaskList.MetaData.DeputyCount
 
 	assert.Equal(t, want, template.lastVars)
 }

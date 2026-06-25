@@ -91,7 +91,6 @@ func TestGetTaskListCanReturn200(t *testing.T) {
 		MetaData: TaskMetaData{
 			TaskTypeCount: []TypeAndCount{{Type: "FCC", Count: 14}},
 			AssigneeCount: []model.AssigneeAndCount(nil),
-			DeputyCount:   []model.DeputyAndCount{{DeputyId: 61, Count: 3}},
 		},
 	}
 

@@ -30,7 +30,6 @@ type FilterByDeputy struct {
 	ListPage
 	DeputyFilterName string
 	SelectedDeputies []string
-	DeputyCount      []model.DeputyAndCount
 }
 
 type FilterByTaskType struct {
