@@ -16,6 +16,10 @@ type TeamCollection struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
 	} `json:"members"`
+	Deputies []struct {
+		ID          int    `json:"id"`
+		DisplayName string `json:"displayName"`
+	}
 	TeamType *struct {
 		Handle string `json:"handle"`
 		Label  string `json:"label"`
@@ -88,6 +92,11 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 				Id:   m.ID,
 				Name: m.DisplayName,
 			})
+		}
+
+		if team.IsPA() {
+			paDeputies, _ := c.GetPADeputies(ctx)
+			team.Deputies = paDeputies
 		}
 
 		if team.IsLay() {
