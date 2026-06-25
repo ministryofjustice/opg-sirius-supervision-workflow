@@ -102,10 +102,10 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				}
 			}
 
-			var selectedDeputies []string
-			if params.Has("deputy") {
-				selectedDeputies = params["deputy"]
-			}
+		var selectedDeputies []string
+		if params.Has("deputy") {
+			selectedDeputies = params["deputy"]
+		}
 
 			var selectedTaskTypes []string
 			if params.Has("task-type") {

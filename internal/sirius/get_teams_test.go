@@ -156,3 +156,45 @@ func TestGetTeamsCanReturn500(t *testing.T) {
 		Method: http.MethodGet,
 	}, err)
 }
+
+func TestGetTeamsFetchesPADeputiesForPATeam(t *testing.T) {
+	logger, _ := SetUpTest()
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/v1/teams":
+			_, _ = w.Write([]byte(`[
+				{
+					"id":24,
+					"displayName":"PA Team 1",
+					"members":[],
+					"teamType":{
+						"handle":"PA",
+						"label":"PA Team"
+					}
+				}
+			]`))
+		case "/v1/assignees/pa-deputies":
+			_, _ = w.Write([]byte(`[
+				{"id": 13, "displayName": "Blompton County Council"}
+			]`))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer svr.Close()
+
+	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+
+	teams, err := client.GetTeams(getContext(nil))
+	assert.Nil(t, err)
+
+	var paTeam model.Team
+	for _, team := range teams {
+		if team.Id == 24 {
+			paTeam = team
+			break
+		}
+	}
+
+	assert.Equal(t, []model.Deputy{{Id: 13, DisplayName: "Blompton County Council"}}, paTeam.Deputies)
+}
