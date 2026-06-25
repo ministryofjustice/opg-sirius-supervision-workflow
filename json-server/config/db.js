@@ -355,6 +355,25 @@ module.exports = function () {
             "email": "pa1@opgtest.com"
           }
         ],
+        "deputies": [
+          {
+            "id": 13,
+            "deputyNumber": 123456,
+            "displayName": "Mr Fee-paying Deputy",
+            "deputyType": {
+              "handle": "PRO",
+              "label": "Professional"
+            },
+            "deputyAddress": {
+              "town": "Derby"
+            },
+            "firm": {
+              "id": 78745361,
+              "firmName": "Krusty Krabs",
+              "firmNumber": 789456123
+            },
+          }
+        ],
         "teamType": {
           "handle": "PA",
           "label": "PA",
@@ -434,6 +453,12 @@ module.exports = function () {
           "deprecated": null
         }
       },
+    ],
+    "pa-deputies": [
+      {
+        "id": 13,
+        "displayName": "Blompton County Council"
+      }
     ],
     "tasktypes-supervision": {
       "task_types": {
@@ -598,6 +623,10 @@ module.exports = function () {
             "assigneeTaskCount":[
                 {"assignee":72,"count":12},
                 {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+                {"deputy":13,"count":12},
+                {"deputy":14,"count":8}
             ]
         },
         "pages": {
@@ -615,7 +644,8 @@ module.exports = function () {
         },
         "metadata":{
             "taskTypeCount":[],
-            "assigneeTaskCount":[]
+            "assigneeTaskCount":[],
+            "deputyTaskCount":[]
         },
         "tasks": [],
         "total": 0
@@ -632,7 +662,8 @@ module.exports = function () {
             ],
             "assigneeTaskCount":[
                 {"assignee":86,"count":1}
-            ]
+            ],
+            "deputyTaskCount":[]
         },
         "tasks": [
           {
@@ -672,6 +703,9 @@ module.exports = function () {
             ],
             "assigneeTaskCount":[
                 {"assignee":86,"count":1}
+            ],
+            "deputyTaskCount":[
+                {"deputy":13,"count":1}
             ]
         },
         "tasks": [
@@ -690,7 +724,7 @@ module.exports = function () {
                     "displayName": "Lay Team 2 - (Supervision)"
                   },
                   "feePayer": {
-                    "id": 12,
+                    "id": 13,
                     "displayName": "Mr Fee-paying Deputy",
                     "deputyType": {
                       "handle": "PA",
@@ -716,7 +750,8 @@ module.exports = function () {
         },
         "metadata":{
             "taskTypeCount":[],
-            "assigneeTaskCount":[]
+            "assigneeTaskCount":[],
+            "deputyTaskCount":[]
         },
         "tasks": [],
         "total": 0
@@ -729,7 +764,8 @@ module.exports = function () {
         },
         "metadata":{
             "taskTypeCount":[],
-            "assigneeTaskCount":[]
+            "assigneeTaskCount":[],
+            "deputyTaskCount":[]
         },
         "tasks": [],
         "total": 0
@@ -969,9 +1005,9 @@ module.exports = function () {
           },
           "persons": [
             {
-               "id": 14,
-              "deputyNumber": 654321,
-              "displayName": "Mr PA Deputy",
+               "id": 13,
+              "deputyNumber": 123456,
+              "displayName": "Blompton County Council",
               "deputyType": {
                 "handle": "PA",
                 "label": "Public authority"
@@ -1102,6 +1138,10 @@ module.exports = function () {
             "assigneeTaskCount":[
               {"assignee":72,"count":12},
               {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+              {"deputy":13,"count":12},
+              {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1130,6 +1170,10 @@ module.exports = function () {
              "assigneeTaskCount":[
                    {"assignee":72,"count":12},
                    {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+                   {"deputy":13,"count":12},
+                   {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1158,6 +1202,10 @@ module.exports = function () {
             "assigneeTaskCount":[
               {"assignee":72,"count":12},
               {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+              {"deputy":13,"count":12},
+              {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1186,6 +1234,10 @@ module.exports = function () {
             "assigneeTaskCount":[
               {"assignee":72,"count":12},
               {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+              {"deputy":13,"count":12},
+              {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1214,6 +1266,10 @@ module.exports = function () {
             "assigneeTaskCount":[
               {"assignee":72,"count":12},
               {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+              {"deputy":13,"count":12},
+              {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(25),
@@ -1244,6 +1300,10 @@ module.exports = function () {
             "assigneeTaskCount":[
               {"assignee":72,"count":12},
               {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+              {"deputy":13,"count":12},
+              {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(50),
@@ -1272,6 +1332,10 @@ module.exports = function () {
             "assigneeTaskCount":[
                {"assignee":72,"count":12},
                {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+               {"deputy":13,"count":12},
+               {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(1),
@@ -1302,6 +1366,10 @@ module.exports = function () {
             "assigneeTaskCount":[
                {"assignee":72,"count":12},
                {"assignee":73,"count":8}
+            ],
+            "deputyTaskCount":[
+               {"deputy":13,"count":12},
+               {"deputy":14,"count":8}
             ]
         },
         "tasks": generateTasks(10),

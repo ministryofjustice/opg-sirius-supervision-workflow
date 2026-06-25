@@ -10,6 +10,7 @@ type Team struct {
 	Id        int    `json:"id"`
 	Name      string `json:"displayName"`
 	Members   []Assignee
+	Deputies  []Deputy
 	Type      string
 	TypeLabel string
 	Selector  string
