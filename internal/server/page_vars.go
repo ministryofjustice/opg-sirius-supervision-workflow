@@ -26,12 +26,6 @@ type FilterByAssignee struct {
 	DeputyTasks        bool
 }
 
-type FilterByDeputy struct {
-	ListPage
-	DeputyFilterName string
-	SelectedDeputies []string
-}
-
 type FilterByTaskType struct {
 	ListPage
 	TaskTypes         []model.TaskType
@@ -79,7 +73,6 @@ type FilterBySupervisionLevel struct {
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 	filters := map[string]interface{}{
 		"assignee":          FilterByAssignee{},
-		"deputy":            FilterByDeputy{},
 		"due-date":          FilterByDueDate{},
 		"status":            FilterByStatus{},
 		"task-type":         FilterByTaskType{},
