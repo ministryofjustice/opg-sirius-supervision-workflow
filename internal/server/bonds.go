@@ -41,11 +41,11 @@ func bonds(client BondsClient, tmpl Template) Handler {
 
 		vars := BondsPage{}
 		vars.App = app
-		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		params := r.URL.Query()
 		perPageOptions := []int{25, 50, 100}
 		vars.PerPage = paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+		vars.UrlBuilder = vars.CreateUrlBuilder()
 
 		page := paginate.GetRequestedPage(params.Get("page"))
 
