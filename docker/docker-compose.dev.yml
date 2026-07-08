@@ -1,10 +1,11 @@
-version: "3.6"
 services:
   workflow:
     build:
       target: dev
     ports:
       - '2345:2345'
+    privileged: false
+    user: root
     volumes:
       - ./.air.toml:/app/.air.toml
       - ./go.mod:/app/go.mod
