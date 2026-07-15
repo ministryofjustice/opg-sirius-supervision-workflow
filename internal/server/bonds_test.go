@@ -74,8 +74,9 @@ func TestGetBonds(t *testing.T) {
 	want.BondList = testBondList
 
 	want.UrlBuilder = urlbuilder.UrlBuilder{
-		Path:         "bonds",
-		SelectedTeam: app.SelectedTeam.Selector,
+		Path:            "bonds",
+		SelectedTeam:    app.SelectedTeam.Selector,
+		SelectedPerPage: 25,
 	}
 
 	want.PerPage = 25
@@ -87,12 +88,37 @@ func TestGetBonds(t *testing.T) {
 		ElementName:     "bonds",
 		PerPageOptions:  []int{25, 50, 100},
 		UrlBuilder: urlbuilder.UrlBuilder{
-			Path:         "bonds",
-			SelectedTeam: app.SelectedTeam.Selector,
+			Path:            "bonds",
+			SelectedTeam:    app.SelectedTeam.Selector,
+			SelectedPerPage: 25,
 		},
 	}
 
 	assert.Equal(t, want, template.lastVars)
+}
+
+func TestGetBonds_PerPageIsRetainedInUrlBuilder(t *testing.T) {
+	client := &mockBondsClient{}
+	template := &mockTemplate{}
+
+	client.On("GetBondList", mock.Anything).Return(testBondList, nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "/bonds?per-page=50&page=2", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path",
+		SelectedTeam: model.Team{Id: 123, Type: "ALLOCATIONS", Selector: "1"},
+		EnvironmentVars: EnvironmentVars{},
+	}
+	err := bonds(client, template)(app, w, r)
+
+	assert.Nil(t, err)
+
+	page := template.lastVars.(BondsPage)
+	assert.Equal(t, 50, page.PerPage)
+	assert.Equal(t, 50, page.UrlBuilder.SelectedPerPage)
+	assert.Equal(t, 50, page.Pagination.ElementsPerPage)
 }
 
 func TestBonds_RedirectsToClientTasksForNonAllocationsTeam(t *testing.T) {

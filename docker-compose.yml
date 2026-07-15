@@ -4,8 +4,11 @@ services:
     build:
       dockerfile: docker/sirius-workflow/Dockerfile
     ports: [ "8888:8888" ]
+    privileged: false
+    user: app
     environment:
       PORT: 8888
+      HEALTHCHECK: "/supervision/workflow/health-check"
       SIRIUS_URL: http://json-server:3000
       SIRIUS_PUBLIC_URL: http://localhost:8080
       SHOW_BONDS_WITHOUT_ORDERS: 1

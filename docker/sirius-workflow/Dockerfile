@@ -1,7 +1,19 @@
 FROM golang:1.26-alpine@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648 AS base
-WORKDIR /app
 
 ENV CGO_ENABLED=0 GOOS=linux
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid 65532 \
+    app
+
+RUN apk --update --no-cache add \
+    ca-certificates \
+    tzdata
 
 RUN update-ca-certificates
 
@@ -21,7 +33,6 @@ RUN yarn build
 ### Development with hot reload and debugger
 FROM base AS dev
 WORKDIR /app
-
 COPY --from=asset-env /app/web/static web/static
 
 RUN go install github.com/cosmtrek/air@v1.52.1 && go install github.com/go-delve/delve/cmd/dlv@latest
@@ -45,18 +56,30 @@ RUN go mod download
 
 RUN go build -a -installsuffix cgo -o /go/bin/opg-sirius-workflow
 
-FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+FROM base AS healthcheck-build
+WORKDIR /app
+
+COPY healthcheck healthcheck
+
+WORKDIR /app/healthcheck
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/healthcheck
+
+FROM scratch
 
 WORKDIR /go/bin
 
-RUN apk --update --no-cache add \
-    ca-certificates \
-    tzdata
-
-# Patch vulnerabilities
-RUN apk upgrade --no-cache busybox libcrypto3 libssl3 zlib
+COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=base /etc/passwd /etc/passwd
+COPY --from=base /etc/group /etc/group
 
 COPY --from=build-env /go/bin/opg-sirius-workflow opg-sirius-workflow
+COPY --from=healthcheck-build /go/bin/healthcheck healthcheck
 COPY --from=build-env /app/web/template web/template
 COPY --from=asset-env /app/web/static web/static
+
+USER app
+
+HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD [ "/go/bin/healthcheck" ]
+
 ENTRYPOINT ["./opg-sirius-workflow"]
