@@ -20,6 +20,7 @@ type ClientTasksClient interface {
 type ClientTasksPage struct {
 	ListPage
 	FilterByAssignee
+	FilterByDeputy
 	FilterByDueDate
 	FilterByTaskType
 	TaskList       sirius.TaskList
@@ -35,6 +36,7 @@ func (ctp ClientTasksPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 		SelectedFilters: []urlbuilder.Filter{
 			urlbuilder.CreateFilter("task-type", ctp.SelectedTaskTypes),
 			urlbuilder.CreateFilter("assignee", ctp.SelectedAssignees, true),
+			urlbuilder.CreateFilter("deputy", ctp.SelectedDeputies, true),
 			urlbuilder.CreateFilter("unassigned", ctp.SelectedUnassigned, true),
 			urlbuilder.CreateFilter("due-date-from", ctp.SelectedDueDateFrom),
 			urlbuilder.CreateFilter("due-date-to", ctp.SelectedDueDateTo),
@@ -56,6 +58,11 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 	for _, u := range ctp.App.SelectedTeam.GetAssigneesForFilter() {
 		if u.IsSelected(ctp.SelectedAssignees) {
 			appliedFilters = append(appliedFilters, u.Name)
+		}
+	}
+	for _, d := range ctp.App.SelectedTeam.Deputies {
+		if d.IsSelected(ctp.SelectedDeputies) {
+			appliedFilters = append(appliedFilters, d.DisplayName)
 		}
 	}
 	if dueDateFrom != nil {
@@ -92,6 +99,11 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			for _, t := range app.SelectedTeam.Teams {
 				selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
 			}
+		}
+
+		var selectedDeputies []string
+		if params.Has("deputy") {
+			selectedDeputies = params["deputy"]
 		}
 
 		var selectedTaskTypes []string
@@ -137,6 +149,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 		}
 		vars.SelectedAssignees = userSelectedAssignees
 		vars.SelectedUnassigned = selectedUnassigned
+		vars.SelectedDeputies = selectedDeputies
 
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
@@ -150,6 +163,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				TaskTypes:         taskTypes,
 				SelectedTaskTypes: selectedTaskTypes,
 				Assignees:         selectedAssignees,
+				Deputies:          selectedDeputies,
 				DueDateFrom:       selectedDueDateFrom,
 				DueDateTo:         selectedDueDateTo,
 			})
