@@ -15,7 +15,7 @@ describe("PA Deputies list", () => {
 
     it("has column values", () => {
         cy.get(".govuk-table__body .govuk-table__row:nth-child(1)").within(() => {
-            cy.get("td:nth-child(2)").should("contain.text", "Blompton County Council")
+            cy.get("td:nth-child(2)").should("contain.text", "Mr PA Deputy")
             cy.get("td:nth-child(3)").should("contain.text", "PA Team 1 - (Supervision)")
             cy.get("td:nth-child(4)").should("contain.text", "81")
             cy.get("td:nth-child(5)").should("contain.text", "34 (42%)")
