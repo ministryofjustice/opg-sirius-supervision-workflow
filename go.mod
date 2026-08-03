@@ -3,7 +3,7 @@ module github.com/ministryofjustice/opg-sirius-workflow
 go 1.26.2
 
 require (
-	github.com/ministryofjustice/opg-go-common v1.165.13
+	github.com/ministryofjustice/opg-go-common v1.165.22
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/detectors/aws/ecs v1.44.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.69.0
