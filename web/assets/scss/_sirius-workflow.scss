@@ -55,16 +55,10 @@ $moj-assets-path: "/supervision/workflow/assets/" !default;
   }
 }
 
-&.priority {
-  background: govuk-functional-colour("body-background");
-
-  td {
-    span.priority {
-      font-weight: bold;
-      color: govuk-colour(red) !important;
-      background: url("#{$moj-assets-path}images/flag.svg") no-repeat 3px 3px;
-      padding-left: 20px;
-      line-height: normal !important;
-    }
-  }
+table tr.priority td span.priority {
+  font-weight: bold;
+  color: #d4351c !important;
+  background: url("#{$moj-assets-path}images/flag.svg") no-repeat 3px 3px;
+  padding-left: 20px;
+  line-height: normal !important;
 }

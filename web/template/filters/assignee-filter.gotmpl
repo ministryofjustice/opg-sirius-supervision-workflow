@@ -1,7 +1,7 @@
 {{- /*gotype: github.com/ministryofjustice/opg-sirius-workflow/internal/server.FilterByAssignee*/ -}}
 {{ define "assignee-filter" }}
   {{ if eq .App.SelectedTeam.IsClosedCases false }}
-    <div class="moj-filter__options" data-filter-name="moj-filter-name-assignee">
+    <div class="moj-filter__options" data-filter-name="moj-filter-name-assignee" id="moj-filter-name-assignee">
 
       <div class="supervision-filter">
         <div class="supervision-filter__heading js-container-heading filter-toggle-button">

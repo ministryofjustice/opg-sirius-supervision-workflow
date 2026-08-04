@@ -6,4 +6,24 @@
 @forward "./scss/sirius-workflow";
 @forward "./scss/task-table";
 
+.moj-header__container {
+  max-width: 98%;
+}
+
+.hide {
+  display: none;
+}
+
+.data-description {
+  font-weight: 400;
+}
+
+#list-of-tasks-to-filter{
+  max-height: 500px;
+}
+
+#footer-background {
+  background: #f4f8fb;
+}
+
 
