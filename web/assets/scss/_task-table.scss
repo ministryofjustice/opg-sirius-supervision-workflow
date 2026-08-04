@@ -1,3 +1,6 @@
+@use "node_modules/@ministryofjustice/frontend/moj/all";
+@use "node_modules/govuk-frontend/dist/govuk" as *;
+
 table {
   tr {
     td, th {
@@ -19,7 +22,7 @@ table {
       }
 
       span.due {
-        border-left: 5px solid govuk-colour(turquoise);
+        border-left: 5px solid govuk-colour("teal", $variant: "primary");
         padding-left: 5px;
         font-weight: bold;
       }
@@ -36,17 +39,9 @@ table {
     }
 
     &.priority {
-      background: #fffbe3;
+      background: govuk-functional-colour("body-background");
 
       td {
-        span.priority {
-          font-weight: bold;
-          color: govuk-colour(red) !important;
-          background: url("#{$moj-assets-path}images/flag.svg") no-repeat 3px 3px;
-          padding-left: 20px;
-          line-height: normal !important;
-        }
-
         &:first-child {
           border-left: 5px solid govuk-colour(red) !important;
         }
@@ -58,7 +53,7 @@ table {
     }
 
     &.selected {
-      background: #E7F2FB;
+      background: govuk-functional-colour("body-background");
 
       td {
         &:first-child {
