@@ -57,8 +57,34 @@ $moj-assets-path: "/supervision/workflow/assets/" !default;
 
 table tr.priority td span.priority {
   font-weight: bold;
-  color: #d4351c !important;
-  background: url("#{$moj-assets-path}images/flag.svg") no-repeat 3px 3px;
+  color: govuk-colour(red) !important;
+  background: url("#{$moj-assets-path}images/flag.svg") no-repeat 2px 2px;
   padding-left: 20px;
   line-height: normal !important;
+}
+
+.sortable-ascending {
+  margin-right: 5px;
+  vertical-align: middle;
+  background: url("#{$moj-assets-path}images/sort-down.svg") no-repeat 2px 2px;
+  line-height: normal !important;
+  padding-left: 30px
+}
+.sortable-descending {
+  margin-right: 5px;
+  vertical-align: middle;
+  background: url("#{$moj-assets-path}images/sort-up.svg") no-repeat 2px 2px;
+  line-height: normal !important;
+  padding-left: 30px
+}
+.sortable-none {
+  margin-right: 5px;
+  vertical-align: middle;
+  background: url("#{$moj-assets-path}images/sort.svg") no-repeat 2px 2px;
+  line-height: normal !important;
+  padding-left: 30px
+}
+
+#footer-background {
+  background: govuk-functional-colour("template-background");
 }

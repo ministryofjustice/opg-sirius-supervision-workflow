@@ -4,7 +4,7 @@
 .moj-manage-list {
   .govuk-table {
     .govuk-table__row.selected {
-      background: #e7f2fb;
+      background: govuk-functional-colour("body-background");
       .govuk-table__cell {
         &:first-child {
           border-left: govuk-spacing(1) solid govuk-colour("blue") !important;
