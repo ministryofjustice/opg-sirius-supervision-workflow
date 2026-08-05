@@ -63,28 +63,6 @@ table tr.priority td span.priority {
   line-height: normal !important;
 }
 
-.sortable-ascending {
-  margin-right: 5px;
-  vertical-align: middle;
-  background: url("#{$moj-assets-path}images/sort-down.svg") no-repeat 2px 2px;
-  line-height: normal !important;
-  padding-left: 30px
-}
-.sortable-descending {
-  margin-right: 5px;
-  vertical-align: middle;
-  background: url("#{$moj-assets-path}images/sort-up.svg") no-repeat 2px 2px;
-  line-height: normal !important;
-  padding-left: 30px
-}
-.sortable-none {
-  margin-right: 5px;
-  vertical-align: middle;
-  background: url("#{$moj-assets-path}images/sort.svg") no-repeat 2px 2px;
-  line-height: normal !important;
-  padding-left: 30px
-}
-
 #footer-background {
   background: govuk-functional-colour("template-background");
 }
