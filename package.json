@@ -19,7 +19,7 @@
   "dependencies": {
     "@ministryofjustice/frontend": "^9.0.0",
     "govuk-frontend": "^6.0.0",
-    "opg-sirius-header": "ministryofjustice/opg-sirius-header#5c5151248e13b09f62ebce408e0346cae92e07a4"
+    "opg-sirius-header": "ministryofjustice/opg-sirius-header#1bbd33d8fe89643d3c485fc6f27ac4f0ec87287e"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
