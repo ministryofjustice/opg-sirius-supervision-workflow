@@ -16,8 +16,8 @@ services:
       - ./web/static/javascript:/app/web/static/javascript
       - ./web/template:/app/web/template
 
-  yarn:
-    command: watch
+  watch-assets:
+    command: -lc "apk add --no-cache git && npm ci --ignore-scripts && npm run watch"
 
   json-server:
     build:

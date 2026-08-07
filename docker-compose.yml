@@ -55,9 +55,13 @@ services:
       - .:/app
     command: -exclude-dir=.gocache -fmt=sarif -out=/app/test-results/gosec.sarif -stdout -verbose=text /app/...
 
-  yarn:
-    image: node:24.1.0-alpine3.20@sha256:8fe019e0d57dbdce5f5c27c0b63d2775cf34b00e3755a7dea969802d7e0c2b25
+  watch-assets:
+    image: node:24-alpine3.23@sha256:595398b0081eacda8e1c4c5b97b76cd1020e4d58a8ebcb4843b9bca1e79e7436
     working_dir: /home/node/app
-    entrypoint: yarn
+    entrypoint: ["sh"]
     volumes:
       - ./:/home/node/app
+      - watch-assets-node-modules:/home/node/app/node_modules
+
+volumes:
+  watch-assets-node-modules:
