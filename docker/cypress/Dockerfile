@@ -2,9 +2,9 @@ FROM cypress/included:15.18.1@sha256:9d3e6ac7d4a725e802080fb45f4c8d08d1a0eb78b39
 
 WORKDIR /root
 
-COPY yarn.lock yarn.lock
+COPY package-lock.json package-lock.json
 COPY package.json package.json
-RUN yarn install --frozen-lockfile --ignore-scripts
+RUN npm ci --ignore-scripts
 
 
 ENV CYPRESS_VIDEO=false

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "serve": "concurrently --kill-others \"yarn start:server\" \"yarn watch:update\"",
+        "serve": "concurrently --kill-others \"npm run start:server\" \"npm run watch:update\"",
         "start:server": "json-server -H 0.0.0.0 --watch config/db.js -m config/patcher.js -m config/error-rerouter.js config/success-rerouter.js -m config/custom-body-mapper.js -r config/routes.json",
         "watch:update": "onchange 'config/*.js' -- touch config/routes.json"
     },

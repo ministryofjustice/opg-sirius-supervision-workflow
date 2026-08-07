@@ -7,7 +7,6 @@ EXPOSE 3000
 
 COPY json-server .
 
-RUN yarn install --frozen-lockfile --ignore-scripts
+RUN npm ci --ignore-scripts
 
-
-ENTRYPOINT ["yarn", "serve"]
+ENTRYPOINT ["npm", "run", "serve"]
