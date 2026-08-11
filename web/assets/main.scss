@@ -1,18 +1,10 @@
-$govuk-include-default-font-face: false;
-$govuk-moj-table-background-color: #e7f2fb;
-$moj-assets-path: "/supervision/workflow/assets/";
-$govuk-assets-path: "/supervision/workflow/assets/";
-
-@import "node_modules/govuk-frontend/dist/govuk/all";
-@import "node_modules/@ministryofjustice/frontend/moj/all";
-@import "node_modules/opg-sirius-header/sass/sirius-header";
-@import "./scss/app-c-option-select";
-@import "./scss/moj-filter";
-@import "./scss/moj-manage-list";
-@import "./scss/moj-sub-navigation";
-@import "./scss/moj-team-banner";
-@import "./scss/sirius-workflow";
-@import "./scss/task-table";
+@forward "node_modules/opg-sirius-header/sass/main";
+@forward "./scss/supervision-filter";
+@forward "./scss/moj-filter";
+@forward "./scss/moj-manage-list";
+@forward "./scss/moj-team-banner";
+@forward "./scss/sirius-workflow";
+@forward "./scss/task-table";
 
 .moj-header__container {
   max-width: 98%;
@@ -26,22 +18,8 @@ $govuk-assets-path: "/supervision/workflow/assets/";
   font-weight: 400;
 }
 
-.current {
-  @include govuk-typography-weight-bold;
-  outline: 1px solid transparent !important;
-  color: #fff !important;
-}
-
-.moj-button {
-  all: unset;
-  color: govuk-colour("blue");
-  text-decoration: underline;
-}
-
 #list-of-tasks-to-filter{
-    max-height: 500px;
+  max-height: 500px;
 }
 
-#footer-background {
-  background: #f4f8fb;
-}
+

@@ -1,5 +1,12 @@
-.app-c-option-select {
+@use "node_modules/@ministryofjustice/frontend/moj/all";
+@use "node_modules/govuk-frontend/dist/govuk" as *;
+
+.supervision-filter {
   position: relative;
+
+  .hide {
+    display: none;
+  }
 
   &__heading {
     position: relative;
@@ -34,11 +41,11 @@
     height: 40px;
     fill: govuk-colour("black");
 
-    [aria-expanded="true"] ~ .app-c-option-select--up {
+    [aria-expanded="true"] ~ .supervision-filter--up {
       display: block;
     }
 
-    [aria-expanded="false"] ~ .app-c-option-select--down {
+    [aria-expanded="false"] ~ .supervision-filter--down {
       display: block;
     }
   }
@@ -50,7 +57,7 @@
 
   &__filter {
     position: relative;
-    background: govuk-colour("white");
+    background: govuk-functional-colour("body-background");
     padding: 13px 13px 10px 13px;
 
     &-input {
@@ -61,7 +68,7 @@
       font-size: 16px;
       line-height: 1.25;
       padding-left: 33px;
-      background: url("/public/images/icon-search.svg") govuk-colour("white")
+      background: url("/public/images/icon-search.svg") govuk-functional-colour("body-background")
         no-repeat -5px -3px;
     }
   }
@@ -71,7 +78,7 @@
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: govuk-colour("white");
+    background-color: govuk-functional-colour("body-background");
 
     &-inner {
       padding-top: govuk-spacing(2);

@@ -17,14 +17,38 @@
               </div>
             </div>
           </th>
-          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "deputy" }}"><a href="{{ .UrlBuilder.GetSortUrl "deputy" }}"><button type="button">Deputy</button></a></th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "deputy" }}">
+            <a href="{{ .UrlBuilder.GetSortUrl "deputy" }}">
+              <button type="button"> Deputy
+                {{ template "sort-arrow" .Sort.GetAriaSort "deputy" }}
+              </button>
+            </a>
+          </th>
           {{ if $.App.SelectedTeam.IsPro }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Firm</th>
           {{ end }}
           <th scope="col" class="govuk-table__header" aria-sort="none">Executive case manager</th>
-          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "activeclients" }}"><a href="{{ .UrlBuilder.GetSortUrl "activeclients" }}"><button type="button">Active clients</button></a></th>
-          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "noncompliance" }}"><a href="{{ .UrlBuilder.GetSortUrl "noncompliance" }}"><button type="button">Non-compliance</button></a></th>
-          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "assurance" }}"><a href="{{ .UrlBuilder.GetSortUrl "assurance" }}"><button type="button">Assurance visits</button></a></th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "activeclients" }}">
+            <a href="{{ .UrlBuilder.GetSortUrl "activeclients" }}">
+              <button type="button">Active clients
+                {{ template "sort-arrow" .Sort.GetAriaSort "activeclients" }}
+              </button>
+            </a>
+          </th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "noncompliance" }}">
+            <a href="{{ .UrlBuilder.GetSortUrl "noncompliance" }}">
+              <button type="button">Non-compliance
+                {{ template "sort-arrow" .Sort.GetAriaSort "noncompliance" }}
+              </button>
+            </a>
+          </th>
+          <th scope="col" class="govuk-table__header" aria-sort="{{ .Sort.GetAriaSort "assurance" }}">
+            <a href="{{ .UrlBuilder.GetSortUrl "assurance" }}">
+              <button type="button">Assurance visits
+                {{ template "sort-arrow" .Sort.GetAriaSort "assurance" }}
+              </button>
+            </a>
+          </th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
