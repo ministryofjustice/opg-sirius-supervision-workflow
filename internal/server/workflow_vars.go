@@ -10,6 +10,7 @@ import (
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"golang.org/x/sync/errgroup"
 )
 
 type WorkflowVars struct {
@@ -37,14 +38,32 @@ type WorkflowVarsClient interface {
 
 func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars EnvironmentVars) (*WorkflowVars, error) {
 	ctx := getContext(r)
+	group, groupCtx := errgroup.WithContext(ctx.Context)
+	ctx.Context = groupCtx
 
-	myDetails, err := client.GetCurrentUserDetails(ctx)
-	if err != nil {
-		return nil, err
-	}
+	var (
+		myDetails model.Assignee
+		teams     []model.Team
+	)
 
-	teams, err := client.GetTeams(ctx)
-	if err != nil {
+	group.Go(func() error {
+		md, err := client.GetCurrentUserDetails(ctx)
+		if err != nil {
+			return err
+		}
+		myDetails = md
+		return nil
+	})
+	group.Go(func() error {
+		t, err := client.GetTeams(ctx)
+		if err != nil {
+			return err
+		}
+		teams = t
+		return nil
+	})
+
+	if err := group.Wait(); err != nil {
 		return nil, err
 	}
 
@@ -109,9 +128,9 @@ func NewWorkflowVars(client WorkflowVarsClient, r *http.Request, envVars Environ
 func getLoggedInTeamId(myDetails model.Assignee, defaultTeamId int) int {
 	if len(myDetails.Teams) < 1 {
 		return defaultTeamId
-	} else {
-		return myDetails.Teams[0].Id
 	}
+
+	return myDetails.Teams[0].Id
 }
 
 func getSelectedTeam(r *http.Request, loggedInTeamId int, defaultTeamId int, teams []model.Team) (model.Team, error) {
