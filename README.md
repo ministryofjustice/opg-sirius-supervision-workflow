@@ -8,7 +8,7 @@
 #### Installing dependencies locally:
 (This is only necessary if dunning without docker)
 
-- `yarn install`
+- `npm install`
 - `go mod download`
 ---
 
@@ -41,7 +41,7 @@ make dev-up
 
 Alternatively to set it up not using Docker use below. This hosts it on `localhost:1234`
 
-- `yarn install && yarn build `
+- `npm install && npm run build`
 - `go build main.go `
 - `./main `
 
@@ -65,9 +65,8 @@ Define the type of `{{ . }}` in the context of your template by adding a line li
 
 
 To see the UI output you can still run
-`make up && yarn cypress`
+`make up && npm run cypress`
 
 -------------------------------------------------------------------
 ## Run the unit/functional tests
 `make unit-test`
-
