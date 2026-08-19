@@ -3,39 +3,26 @@ package server
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/stretchr/testify/assert"
 )
 
 type mockWorkflowVarsClient struct {
-	count     map[string]int
-	lastCtx   sirius.Context
 	err       error
 	userData  model.Assignee
 	teamsData []model.Team
 }
 
 func (m *mockWorkflowVarsClient) GetCurrentUserDetails(ctx sirius.Context) (model.Assignee, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetCurrentUserDetails"] += 1
-	m.lastCtx = ctx
-
 	return m.userData, m.err
 }
 
 func (m *mockWorkflowVarsClient) GetTeams(ctx sirius.Context) ([]model.Team, error) {
-	if m.count == nil {
-		m.count = make(map[string]int)
-	}
-	m.count["GetTeams"] += 1
-	m.lastCtx = ctx
-
 	return m.teamsData, m.err
 }
 
