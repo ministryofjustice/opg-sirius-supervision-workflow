@@ -1,19 +1,16 @@
-FROM golang:1.26-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2 AS base
-
-ENV CGO_ENABLED=0 GOOS=linux
+FROM golang:1.26@sha256:3aff6657219a4d9c14e27fb1d8976c49c29fddb70ba835014f477e1c70636647 AS base
 
 RUN adduser \
     --disabled-password \
     --gecos "" \
-    --home "/nonexistent" \
+    --home "/home/app" \
     --shell "/sbin/nologin" \
-    --no-create-home \
     --uid 65532 \
     app
 
-RUN apk --update --no-cache add \
-    ca-certificates \
-    tzdata
+WORKDIR /app
+
+ENV CGO_ENABLED=0 GOOS=linux
 
 RUN update-ca-certificates
 
@@ -36,7 +33,13 @@ FROM base AS dev
 WORKDIR /app
 COPY --from=asset-env /app/web/static web/static
 
-RUN go install github.com/cosmtrek/air@v1.52.1 && go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/air-verse/air@latest && go install github.com/go-delve/delve/cmd/dlv@latest
+
+RUN mkdir -p /app/tmp && chown -R app:app /app
+ENV HOME=/home/app
+ENV GOCACHE=/tmp/.cache/go-build
+ENV GOMODCACHE=/tmp/.cache/go-mod
+
 EXPOSE 8080
 EXPOSE 2345
 
@@ -69,8 +72,8 @@ FROM scratch
 
 WORKDIR /go/bin
 
-COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /etc/group /etc/group
 
@@ -79,7 +82,7 @@ COPY --from=healthcheck-build /go/bin/healthcheck healthcheck
 COPY --from=build-env /app/web/template web/template
 COPY --from=asset-env /app/web/static web/static
 
-USER app
+USER app:app
 
 HEALTHCHECK --interval=5s --timeout=5s --start-period=5s --retries=3 CMD [ "/go/bin/healthcheck" ]
 

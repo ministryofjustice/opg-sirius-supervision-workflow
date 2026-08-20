@@ -3,6 +3,7 @@ package urlbuilder
 import (
 	"fmt"
 	"net/url"
+	"slices"
 )
 
 type Sort struct {
@@ -18,10 +19,8 @@ func CreateSortFromURL(values url.Values, validOptions []string) Sort {
 		OrderBy:    values.Get("order-by"),
 		Descending: values.Get("sort") == "desc",
 	}
-	for _, validSort := range validOptions {
-		if sort.OrderBy == validSort {
-			return sort
-		}
+	if slices.Contains(validOptions, sort.OrderBy) {
+		return sort
 	}
 	return Sort{OrderBy: validOptions[0]}
 }

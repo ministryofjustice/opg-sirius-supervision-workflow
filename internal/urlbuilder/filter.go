@@ -6,7 +6,7 @@ type Filter struct {
 	ClearBetweenTeamViews bool
 }
 
-func CreateFilter(name string, selectedValues interface{}, clearBetweenTeamViews ...bool) Filter {
+func CreateFilter(name string, selectedValues any, clearBetweenTeamViews ...bool) Filter {
 	filter := Filter{
 		Name: name,
 	}

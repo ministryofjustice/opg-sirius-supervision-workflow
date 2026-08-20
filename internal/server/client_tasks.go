@@ -77,85 +77,78 @@ func (ctp ClientTasksPage) GetAppliedFilters(dueDateFrom *time.Time, dueDateTo *
 func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
-
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
-
-		params := r.URL.Query()
-		page := paginate.GetRequestedPage(params.Get("page"))
-		perPageOptions := []int{25, 50, 100}
-		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
-
-		var userSelectedAssignees []string
-		if params.Has("assignee") {
-			userSelectedAssignees = params["assignee"]
-		}
-		selectedAssignees := userSelectedAssignees
-		selectedUnassigned := params.Get("unassigned")
-
-		if selectedUnassigned == app.SelectedTeam.Selector {
-			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
-			for _, t := range app.SelectedTeam.Teams {
-				selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
-			}
-		}
-
-		var selectedDeputies []string
-		if params.Has("deputy") {
-			selectedDeputies = params["deputy"]
-		}
-
-		var selectedTaskTypes []string
-		if params.Has("task-type") {
-			selectedTaskTypes = params["task-type"]
-		}
-
-		taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
-		if err != nil {
-			return err
-		}
-
-		selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
-		if err != nil {
-			return err
-		}
-
-		selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
-		if err != nil {
-			return err
-		}
-
-		var vars ClientTasksPage
-		vars.PerPage = tasksPerPage
-		vars.SelectedTaskTypes = selectedTaskTypes
-		selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
-
-		if selectedDueDateFrom != nil {
-			vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
-		}
-		if selectedDueDateTo != nil {
-			vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
-		}
-
-		vars.App = app
-		if len(vars.App.MyDetails.Teams) >= 1 {
-			vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
-		}
-
-		if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
-			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
-			userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
-		}
-		vars.SelectedAssignees = userSelectedAssignees
-		vars.SelectedUnassigned = selectedUnassigned
-		vars.SelectedDeputies = selectedDeputies
-
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 		switch r.Method {
 		case http.MethodGet:
+			params := r.URL.Query()
+			page := paginate.GetRequestedPage(params.Get("page"))
+			perPageOptions := []int{25, 50, 100}
+			tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
 
+			var userSelectedAssignees []string
+			if params.Has("assignee") {
+				userSelectedAssignees = params["assignee"]
+			}
+			selectedAssignees := userSelectedAssignees
+			selectedUnassigned := params.Get("unassigned")
+
+			if selectedUnassigned == app.SelectedTeam.Selector {
+				selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
+				for _, t := range app.SelectedTeam.Teams {
+					selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
+				}
+			}
+
+			var selectedDeputies []string
+			if params.Has("deputy") {
+				selectedDeputies = params["deputy"]
+			}
+
+			var selectedTaskTypes []string
+			if params.Has("task-type") {
+				selectedTaskTypes = params["task-type"]
+			}
+
+			taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
+			if err != nil {
+				return err
+			}
+
+			selectedDueDateFrom, err := getSelectedDateFilter(params.Get("due-date-from"))
+			if err != nil {
+				return err
+			}
+
+			selectedDueDateTo, err := getSelectedDateFilter(params.Get("due-date-to"))
+			if err != nil {
+				return err
+			}
+
+			var vars ClientTasksPage
+			vars.PerPage = tasksPerPage
+			vars.SelectedTaskTypes = selectedTaskTypes
+			selectedTaskTypes = vars.ValidateSelectedTaskTypes(selectedTaskTypes, taskTypes)
+
+			if selectedDueDateFrom != nil {
+				vars.SelectedDueDateFrom = selectedDueDateFrom.Format("2006-01-02")
+			}
+			if selectedDueDateTo != nil {
+				vars.SelectedDueDateTo = selectedDueDateTo.Format("2006-01-02")
+			}
+
+			vars.App = app
+			if len(vars.App.MyDetails.Teams) >= 1 {
+				vars.MyTeamId = strconv.Itoa(vars.App.MyDetails.Teams[0].Id)
+			}
+
+			if app.MyDetails.IsOnlyCaseManager() && (!params.Has("team") || params.Has("preselect")) {
+				selectedAssignees = append(selectedAssignees, strconv.Itoa(app.MyDetails.Id))
+				userSelectedAssignees = append(userSelectedAssignees, strconv.Itoa(app.MyDetails.Id))
+			}
+			vars.SelectedAssignees = userSelectedAssignees
+			vars.SelectedUnassigned = selectedUnassigned
+			vars.SelectedDeputies = selectedDeputies
 			taskList, err := client.GetTaskList(ctx, sirius.TaskListParams{
 				Team:              app.SelectedTeam,
 				Page:              page,
@@ -201,6 +194,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
 
 			return tmpl.Execute(w, vars)
+
 		case http.MethodPost:
 			err := r.ParseForm()
 			if err != nil {
@@ -218,9 +212,8 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				return err
 			}
 
-			vars.UrlBuilder = vars.CreateUrlBuilder()
 			return Redirect{
-				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
+				Path:           r.URL.RequestURI(),
 				SuccessMessage: reassignSuccessMessage,
 			}
 

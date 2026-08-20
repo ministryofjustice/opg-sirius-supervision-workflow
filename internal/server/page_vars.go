@@ -1,10 +1,11 @@
 package server
 
 import (
+	"reflect"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"reflect"
 )
 
 type ListPage struct {
