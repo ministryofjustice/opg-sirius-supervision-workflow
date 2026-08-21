@@ -6,6 +6,7 @@ services:
       - '2345:2345'
     privileged: false
     user: root
+    read_only: false
     volumes:
       - ./.air.toml:/app/.air.toml
       - ./go.mod:/app/go.mod

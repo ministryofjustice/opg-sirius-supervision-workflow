@@ -79,76 +79,131 @@ func (cv CaseloadPage) GetAppliedFilters() []string {
 func caseload(client CaseloadClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
-
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
-
-		if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
-			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
-		}
-
-		if app.SelectedTeam.IsLayDeputyTeam() {
-			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
-		}
-
-		params := r.URL.Query()
-		page := paginate.GetRequestedPage(params.Get("page"))
-
-		perPageOptions := []int{25, 50, 100}
-		clientsPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
-
-		var userSelectedAssignees []string
-		if params.Has("assignee") {
-			userSelectedAssignees = params["assignee"]
-		}
-		selectedAssignees := userSelectedAssignees
-		selectedUnassigned := params.Get("unassigned")
-
-		if selectedUnassigned == app.SelectedTeam.Selector {
-			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
-			for _, t := range app.SelectedTeam.Teams {
-				selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
-			}
-		}
-
-		selectedStatuses, selectedDeputyTypes, selectedCaseTypes := getParams(r.URL.Query())
-
-		var selectedSupervisionLevels []string
-		if params.Has("supervision-level") {
-			selectedSupervisionLevels = params["supervision-level"]
-		}
-
-		clientListParams := sirius.ClientListParams{
-			Team:          app.SelectedTeam,
-			Page:          page,
-			PerPage:       clientsPerPage,
-			CaseOwners:    selectedAssignees,
-			OrderStatuses: selectedStatuses,
-		}
-
-		if app.SelectedTeam.IsHW() {
-			clientListParams.SubType = "hw"
-			clientListParams.DeputyTypes = selectedDeputyTypes
-			clientListParams.CaseTypes = selectedCaseTypes
-		}
-
-		if app.SelectedTeam.IsLay() {
-			clientListParams.SupervisionLevels = selectedSupervisionLevels
-		}
-
-		vars := CaseloadPage{}
-		vars.PerPage = clientsPerPage
-		vars.AssigneeFilterName = "Case owner"
-		vars.SelectedUnassigned = selectedUnassigned
-		vars.SelectedStatuses = selectedStatuses
-		vars.App = app
-
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
-		if r.Method == http.MethodPost {
+		switch r.Method {
+		case http.MethodGet:
+			if !app.SelectedTeam.IsLay() && !app.SelectedTeam.IsHW() && !app.SelectedTeam.IsClosedCases() {
+				page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
+				return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
+			}
+
+			if app.SelectedTeam.IsLayDeputyTeam() {
+				page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
+				return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
+			}
+
+			params := r.URL.Query()
+			page := paginate.GetRequestedPage(params.Get("page"))
+
+			perPageOptions := []int{25, 50, 100}
+			clientsPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
+			var userSelectedAssignees []string
+			if params.Has("assignee") {
+				userSelectedAssignees = params["assignee"]
+			}
+			selectedAssignees := userSelectedAssignees
+			selectedUnassigned := params.Get("unassigned")
+
+			if selectedUnassigned == app.SelectedTeam.Selector {
+				selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
+				for _, t := range app.SelectedTeam.Teams {
+					selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
+				}
+			}
+
+			selectedStatuses, selectedDeputyTypes, selectedCaseTypes := getParams(r.URL.Query())
+
+			var selectedSupervisionLevels []string
+			if params.Has("supervision-level") {
+				selectedSupervisionLevels = params["supervision-level"]
+			}
+
+			clientListParams := sirius.ClientListParams{
+				Team:          app.SelectedTeam,
+				Page:          page,
+				PerPage:       clientsPerPage,
+				CaseOwners:    selectedAssignees,
+				OrderStatuses: selectedStatuses,
+			}
+
+			if app.SelectedTeam.IsHW() {
+				clientListParams.SubType = "hw"
+				clientListParams.DeputyTypes = selectedDeputyTypes
+				clientListParams.CaseTypes = selectedCaseTypes
+			}
+
+			if app.SelectedTeam.IsLay() {
+				clientListParams.SupervisionLevels = selectedSupervisionLevels
+			}
+
+			vars := CaseloadPage{}
+			vars.PerPage = clientsPerPage
+			vars.AssigneeFilterName = "Case owner"
+			vars.SelectedUnassigned = selectedUnassigned
+			vars.SelectedStatuses = selectedStatuses
+			vars.App = app
+
+			var clientList sirius.ClientList
+			var err error
+			if app.SelectedTeam.IsClosedCases() {
+				clientList, err = client.GetClosedClientList(ctx, clientListParams)
+			} else {
+				clientList, err = client.GetClientList(ctx, clientListParams)
+			}
+
+			if err != nil {
+				return err
+			}
+			vars.ClientList = clientList
+			vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
+			vars.SelectedAssignees = userSelectedAssignees
+
+			if app.SelectedTeam.IsLay() {
+				vars.SelectedSupervisionLevels = selectedSupervisionLevels
+				vars.SupervisionLevels = []model.RefData{
+					{
+						Handle: "GENERAL",
+						Label:  "General",
+					},
+					{
+						Handle: "MINIMAL",
+						Label:  "Minimal",
+					},
+				}
+			}
+
+			if app.SelectedTeam.IsHW() {
+				vars.SelectedDeputyTypes = selectedDeputyTypes
+				vars.DeputyTypes = getDeputyTypes()
+				vars.SelectedCaseTypes = selectedCaseTypes
+				vars.CaseTypes = getCaseTypes()
+			}
+
+			successMessage, err := getSuccessMessage(r, w, "success-message")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return nil
+			}
+
+			vars.UrlBuilder = vars.CreateUrlBuilder()
+			vars.Pagination = paginate.Pagination{
+				CurrentPage:     clientList.Pages.PageCurrent,
+				TotalPages:      clientList.Pages.PageTotal,
+				TotalElements:   clientList.TotalClients,
+				ElementsPerPage: vars.PerPage,
+				ElementName:     "clients",
+				PerPageOptions:  perPageOptions,
+				UrlBuilder:      vars.UrlBuilder,
+			}
+			vars.AppliedFilters = vars.GetAppliedFilters()
+			vars.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
+			vars.App.SuccessMessage = successMessage
+
+			return tmpl.Execute(w, vars)
+
+		case http.MethodPost:
 			err := r.ParseForm()
 			if err != nil {
 				return err
@@ -163,68 +218,13 @@ func caseload(client CaseloadClient, tmpl Template) Handler {
 				return err
 			}
 			return Redirect{
-				Path:           vars.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam),
+				Path:           r.URL.RequestURI(),
 				SuccessMessage: reassignSuccessMessage,
 			}
-		}
 
-		var clientList sirius.ClientList
-		var err error
-		if app.SelectedTeam.IsClosedCases() {
-			clientList, err = client.GetClosedClientList(ctx, clientListParams)
-		} else {
-			clientList, err = client.GetClientList(ctx, clientListParams)
+		default:
+			return StatusError(http.StatusMethodNotAllowed)
 		}
-
-		if err != nil {
-			return err
-		}
-		vars.ClientList = clientList
-		vars.StatusOptions = getOrderStatusOptions(app.SelectedTeam.IsClosedCases())
-		vars.SelectedAssignees = userSelectedAssignees
-
-		if app.SelectedTeam.IsLay() {
-			vars.SelectedSupervisionLevels = selectedSupervisionLevels
-			vars.SupervisionLevels = []model.RefData{
-				{
-					Handle: "GENERAL",
-					Label:  "General",
-				},
-				{
-					Handle: "MINIMAL",
-					Label:  "Minimal",
-				},
-			}
-		}
-
-		if app.SelectedTeam.IsHW() {
-			vars.SelectedDeputyTypes = selectedDeputyTypes
-			vars.DeputyTypes = getDeputyTypes()
-			vars.SelectedCaseTypes = selectedCaseTypes
-			vars.CaseTypes = getCaseTypes()
-		}
-
-		successMessage, err := getSuccessMessage(r, w, "success-message")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
-		}
-
-		vars.UrlBuilder = vars.CreateUrlBuilder()
-		vars.Pagination = paginate.Pagination{
-			CurrentPage:     clientList.Pages.PageCurrent,
-			TotalPages:      clientList.Pages.PageTotal,
-			TotalElements:   clientList.TotalClients,
-			ElementsPerPage: vars.PerPage,
-			ElementName:     "clients",
-			PerPageOptions:  perPageOptions,
-			UrlBuilder:      vars.UrlBuilder,
-		}
-		vars.AppliedFilters = vars.GetAppliedFilters()
-		vars.AssigneeCount = vars.ClientList.MetaData.AssigneeCount
-		vars.App.SuccessMessage = successMessage
-
-		return tmpl.Execute(w, vars)
 	}
 }
 

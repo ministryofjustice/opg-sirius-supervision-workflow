@@ -51,7 +51,7 @@ func (e StatusError) Title() string {
 	return "unexpected response from Sirius"
 }
 
-func (e StatusError) Data() interface{} {
+func (e StatusError) Data() any {
 	return e
 }
 
@@ -123,7 +123,7 @@ func (c *ApiClient) logResponse(req *http.Request, resp *http.Response, err erro
 
 type ExpandedError interface {
 	Title() string
-	Data() interface{}
+	Data() any
 }
 
 func (c *ApiClient) logRequest(r *http.Request, err error) {

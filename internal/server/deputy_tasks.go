@@ -57,75 +57,47 @@ func (dt DeputyTasksPage) GetAppliedFilters() []string {
 func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
-
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
-
-		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
-			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect{
-				Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam),
-			}
-		}
-
-		params := r.URL.Query()
-		page := paginate.GetRequestedPage(params.Get("page"))
-		perPageOptions := []int{25, 50, 100}
-		tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
-
-		var userSelectedAssignees []string
-		if params.Has("assignee") {
-			userSelectedAssignees = params["assignee"]
-		}
-		selectedAssignees := userSelectedAssignees
-		selectedUnassigned := params.Get("unassigned")
-
-		if selectedUnassigned == app.SelectedTeam.Selector {
-			selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
-			for _, t := range app.SelectedTeam.Teams {
-				selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
-			}
-		}
-
-		var selectedTaskTypes []string
-		if params.Has("task-type") {
-			selectedTaskTypes = params["task-type"]
-		}
-
-		var vars DeputyTasksPage
-		vars.PerPage = tasksPerPage
-		vars.SelectedTaskTypes = selectedTaskTypes
-		vars.SelectedAssignees = userSelectedAssignees
-		vars.SelectedUnassigned = selectedUnassigned
-		vars.App = app
-
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 		switch r.Method {
-		case http.MethodPost:
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			reassignSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				TaskIds:    r.Form["selected-tasks"],
-				IsPriority: r.FormValue("priority"),
-			})
-			if err != nil {
-				return err
-			}
-			vars.UrlBuilder = vars.CreateUrlBuilder()
-
-			return Redirect{
-				Path:           vars.UrlBuilder.GetPaginationUrl(page, tasksPerPage),
-				SuccessMessage: reassignSuccessMessage,
-			}
-
 		case http.MethodGet:
+			if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
+				page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
+				return Redirect{
+					Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam),
+				}
+			}
+
+			params := r.URL.Query()
+			page := paginate.GetRequestedPage(params.Get("page"))
+			perPageOptions := []int{25, 50, 100}
+			tasksPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
+			var userSelectedAssignees []string
+			if params.Has("assignee") {
+				userSelectedAssignees = params["assignee"]
+			}
+			selectedAssignees := userSelectedAssignees
+			selectedUnassigned := params.Get("unassigned")
+
+			if selectedUnassigned == app.SelectedTeam.Selector {
+				selectedAssignees = append(selectedAssignees, strconv.Itoa(app.SelectedTeam.Id))
+				for _, t := range app.SelectedTeam.Teams {
+					selectedAssignees = append(selectedAssignees, strconv.Itoa(t.Id))
+				}
+			}
+
+			var selectedTaskTypes []string
+			if params.Has("task-type") {
+				selectedTaskTypes = params["task-type"]
+			}
+
+			var vars DeputyTasksPage
+			vars.PerPage = tasksPerPage
+			vars.SelectedTaskTypes = selectedTaskTypes
+			vars.SelectedAssignees = userSelectedAssignees
+			vars.SelectedUnassigned = selectedUnassigned
+			vars.App = app
 
 			taskTypesParams := sirius.TaskTypesParams{
 				Category:  sirius.TaskTypeCategoryDeputy,
@@ -183,6 +155,27 @@ func deputyTasks(client DeputyTasksClient, tmpl Template) Handler {
 			vars.AppliedFilters = vars.GetAppliedFilters()
 			vars.AssigneeCount = vars.TaskList.MetaData.AssigneeCount
 			return tmpl.Execute(w, vars)
+
+		case http.MethodPost:
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			reassignSuccessMessage, err := client.ReassignTasks(ctx, sirius.ReassignTasksParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				TaskIds:    r.Form["selected-tasks"],
+				IsPriority: r.FormValue("priority"),
+			})
+			if err != nil {
+				return err
+			}
+
+			return Redirect{
+				Path:           r.URL.RequestURI(),
+				SuccessMessage: reassignSuccessMessage,
+			}
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

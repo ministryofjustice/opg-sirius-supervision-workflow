@@ -16,6 +16,10 @@ type TeamCollection struct {
 		ID          int    `json:"id"`
 		DisplayName string `json:"displayName"`
 	} `json:"members"`
+	Deputies []struct {
+		ID          int    `json:"id"`
+		DisplayName string `json:"displayName"`
+	}
 	TeamType *struct {
 		Handle string `json:"handle"`
 		Label  string `json:"label"`
