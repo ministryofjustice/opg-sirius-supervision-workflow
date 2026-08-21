@@ -9,12 +9,14 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
+	"golang.org/x/sync/errgroup"
 )
 
 type ClientTasksClient interface {
 	GetTaskTypes(sirius.Context, sirius.TaskTypesParams) ([]model.TaskType, error)
 	GetTaskList(sirius.Context, sirius.TaskListParams) (sirius.TaskList, error)
 	ReassignTasks(sirius.Context, sirius.ReassignTasksParams) (string, error)
+	GetPADeputies(ctx sirius.Context) ([]model.Deputy, error)
 }
 
 type ClientTasksPage struct {
@@ -81,6 +83,9 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		switch r.Method {
 		case http.MethodGet:
+			group, groupCtx := errgroup.WithContext(ctx.Context)
+			ctx.Context = groupCtx
+
 			params := r.URL.Query()
 			page := paginate.GetRequestedPage(params.Get("page"))
 			perPageOptions := []int{25, 50, 100}
@@ -110,8 +115,28 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 				selectedTaskTypes = params["task-type"]
 			}
 
-			taskTypes, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
-			if err != nil {
+			var taskTypes []model.TaskType
+
+			group.Go(func() error {
+				tt, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
+				if err != nil {
+					return err
+				}
+				taskTypes = tt
+				return nil
+			})
+			group.Go(func() error {
+				if app.SelectedTeam.IsPA() {
+					paDeputies, err := client.GetPADeputies(ctx)
+					if err != nil {
+						return err
+					}
+					app.SelectedTeam.Deputies = paDeputies
+				}
+				return nil
+			})
+
+			if err := group.Wait(); err != nil {
 				return err
 			}
 

@@ -2,18 +2,19 @@ package server
 
 import (
 	"errors"
-	"github.com/ministryofjustice/opg-go-common/paginate"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/ministryofjustice/opg-go-common/paginate"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 type mockClientTasksClient struct {
@@ -33,6 +34,11 @@ func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.Ta
 func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(string), args.Error(1)
+}
+
+func (m *mockClientTasksClient) GetPADeputies(ctx sirius.Context) ([]model.Deputy, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]model.Deputy), args.Error(1)
 }
 
 var testTaskType = []model.TaskType{
@@ -276,6 +282,205 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 	assert.Equal(t, want, template.lastVars)
 }
 
+func TestClientTasks_FetchesPADeputiesForPATeams(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetPADeputies", mock.Anything).Return([]model.Deputy{
+		{
+			Id:          13,
+			DisplayName: "John Smith",
+		},
+	}, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=201&deputy=13", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=201&deputy=13",
+		SelectedTeam: model.Team{Type: "PA", Selector: "201", Id: 201},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.NoError(err)
+	assert.Equal(1, template.count)
+
+	var want ClientTasksPage
+	want.App = app
+	want.App.SelectedTeam.Deputies = []model.Deputy{
+		{
+			Id:          13,
+			DisplayName: "John Smith",
+		},
+	}
+	want.PerPage = 25
+	want.SelectedDeputies = []string{"13"}
+	want.TaskTypes = testTaskType
+	want.TaskList = testTaskList
+	want.UrlBuilder = urlbuilder.UrlBuilder{
+		Path:            "client-tasks",
+		SelectedTeam:    "201",
+		SelectedPerPage: 25,
+		SelectedFilters: []urlbuilder.Filter{
+			{
+				Name: "task-type",
+			},
+			{
+				Name:                  "assignee",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name:                  "deputy",
+				ClearBetweenTeamViews: true,
+				SelectedValues:        []string{"13"},
+			},
+			{
+				Name:                  "unassigned",
+				ClearBetweenTeamViews: true,
+			},
+			{
+				Name: "due-date-from",
+			},
+			{
+				Name: "due-date-to",
+			},
+		},
+		MyTeamId: "99",
+	}
+	want.Pagination = paginate.Pagination{
+		CurrentPage:     1,
+		TotalPages:      2,
+		TotalElements:   0,
+		ElementsPerPage: 25,
+		ElementName:     "tasks",
+		PerPageOptions:  []int{25, 50, 100},
+		UrlBuilder:      want.UrlBuilder,
+	}
+	want.MyTeamId = "99"
+	want.AppliedFilters = []string{"John Smith"}
+
+	assert.Equal(want, template.lastVars)
+	client.AssertExpectations(t)
+}
+
+func TestClientTasks_DoesNotFetchPADeputiesForNonPATeams(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101&deputy=13", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=101&deputy=13",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.NoError(err)
+	client.AssertNotCalled(t, "GetPADeputies", mock.Anything)
+	client.AssertExpectations(t)
+}
+
+func TestClientTasks_FetchesTaskTypesAndPADeputiesConcurrently(t *testing.T) {
+	assert := assert.New(t)
+
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	taskTypesStarted := make(chan struct{}, 1)
+	paDeputiesStarted := make(chan struct{}, 1)
+	release := make(chan struct{})
+	done := make(chan error, 1)
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil).Run(func(mock.Arguments) {
+		taskTypesStarted <- struct{}{}
+		<-release
+	})
+	client.On("GetPADeputies", mock.Anything).Return([]model.Deputy{
+		{
+			Id:          13,
+			DisplayName: "John Smith",
+		},
+	}, nil).Run(func(mock.Arguments) {
+		paDeputiesStarted <- struct{}{}
+		<-release
+	})
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=201", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=201",
+		SelectedTeam: model.Team{Type: "PA", Selector: "201", Id: 201},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	go func() {
+		done <- clientTasks(client, template)(app, w, r)
+	}()
+
+	select {
+	case <-taskTypesStarted:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for task types fetch to start")
+	}
+
+	select {
+	case <-paDeputiesStarted:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for PA deputies fetch to start")
+	}
+
+	close(release)
+
+	select {
+	case err := <-done:
+		assert.NoError(err)
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for client tasks handler to finish")
+	}
+
+	client.AssertExpectations(t)
+}
+
 func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing.T) {
 	tests := []struct {
 		testName              string
@@ -505,7 +710,7 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 	client.On("ReassignTasks", mock.Anything).Return("reassign successful", nil)
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/client-tasks?team=19&per-page=25&task-type=CDFC&task-type=ORAL", nil)
+	r, _ := http.NewRequest(http.MethodPost, "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL", nil)
 	r.PostForm = url.Values{
 		"assignTeam":     {expectedParams.AssignTeam},
 		"assignCM":       {expectedParams.AssignCM},
@@ -514,7 +719,7 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 	}
 
 	app := WorkflowVars{
-		Path:         "clients-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
+		Path:         "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
 		SelectedTeam: model.Team{Type: "LAY", Selector: "19", Id: 19},
 		MyDetails: model.Assignee{
 			Teams: []model.Team{
@@ -529,7 +734,7 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 	err := clientTasks(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
-		Path:           "client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
+		Path:           "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
 		SuccessMessage: "reassign successful",
 	}, err)
 	assert.Equal(t, 0, template.count)
