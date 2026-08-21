@@ -83,9 +83,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		switch r.Method {
 		case http.MethodGet:
-			group, groupCtx := errgroup.WithContext(ctx.Context)
-			ctx.Context = groupCtx
-
 			params := r.URL.Query()
 			page := paginate.GetRequestedPage(params.Get("page"))
 			perPageOptions := []int{25, 50, 100}
