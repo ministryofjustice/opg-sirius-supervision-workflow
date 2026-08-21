@@ -128,7 +128,7 @@ func TestClientTasks(t *testing.T) {
 			Roles: []string{"Case Manager"},
 		},
 	}
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -206,7 +206,7 @@ func TestClientTasksWillReFetchWholeTaskListCountWhenFilteringOnTaskTypes(t *tes
 		},
 	}
 
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -315,7 +315,7 @@ func TestClientTasks_FetchesPADeputiesForPATeams(t *testing.T) {
 		},
 	}
 
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.NoError(err)
 	assert.Equal(1, template.count)
@@ -404,7 +404,7 @@ func TestClientTasks_DoesNotFetchPADeputiesForNonPATeams(t *testing.T) {
 		},
 	}
 
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.NoError(err)
 	client.AssertNotCalled(t, "GetPADeputies", mock.Anything)
@@ -455,7 +455,7 @@ func TestClientTasks_FetchesTaskTypesAndPADeputiesConcurrently(t *testing.T) {
 	}
 
 	go func() {
-		done <- clientTasks(client, template)(app, w, r)
+		done <- getClientTasks(client, template)(app, w, r)
 	}()
 
 	select {
@@ -509,7 +509,7 @@ func TestClientTasks_KeepsRequestContextForTaskListFetch(t *testing.T) {
 		},
 	}
 
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.NoError(t, err)
 	client.AssertCalled(t, "GetTaskList", mock.MatchedBy(func(ctx sirius.Context) bool {
@@ -602,7 +602,7 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 				Roles: tt.myPermissions,
 			},
 		}
-		err := clientTasks(client, template)(app, w, r)
+		err := getClientTasks(client, template)(app, w, r)
 
 		assert.Nil(t, err)
 		assert.Equal(t, 1, template.count)
@@ -685,7 +685,7 @@ func TestClientTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 			Name: "anotherTeam",
 		},
 	}
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.Equal(Redirect{
 		Path:           "client-tasks?team=&page=2&per-page=25",
@@ -706,7 +706,7 @@ func TestClientTasks_Unauthorized(t *testing.T) {
 	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, sirius.ErrUnauthorized)
 
 	app := WorkflowVars{}
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.Equal(sirius.ErrUnauthorized, err)
 	assert.Equal(0, template.count)
@@ -725,7 +725,7 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 	client.On("GetTaskList", mock.Anything).Return(sirius.TaskList{}, nil)
 
 	app := WorkflowVars{}
-	err := clientTasks(client, template)(app, w, r)
+	err := getClientTasks(client, template)(app, w, r)
 
 	assert.Equal("err", err.Error())
 	assert.Equal(0, template.count)
@@ -742,8 +742,6 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 		IsPriority: "true",
 	}
 
-	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
-	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil)
 	client.On("ReassignTasks", mock.Anything).Return("reassign successful", nil)
 
 	w := httptest.NewRecorder()
@@ -768,7 +766,7 @@ func TestClientTasks_ReassignTasks(t *testing.T) {
 			Roles: []string{"Case Manager"},
 		},
 	}
-	err := clientTasks(client, template)(app, w, r)
+	err := reassignClientTasks(client)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path:           "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
