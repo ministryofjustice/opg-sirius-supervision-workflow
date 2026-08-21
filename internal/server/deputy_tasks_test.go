@@ -86,7 +86,7 @@ func TestDeputyTasks(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "/deputy-tasks", nil)
 
-	handler := deputyTasks(client, template)
+	handler := getDeputyTasks(client, template)
 	err := handler(workflowVars, w, r)
 
 	assert.Nil(t, err)
@@ -155,7 +155,7 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "LAY", Selector: "19"},
 	}
-	err := deputyTasks(client, template)(app, w, r)
+	err := getDeputyTasks(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "client-tasks?team=19&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -171,7 +171,7 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/deputy-tasks?team=&page=10&per-page=25", nil)
 
-	err := deputyTasks(client, template)(workflowVars, w, r)
+	err := getDeputyTasks(client, template)(workflowVars, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputy-tasks?team=1&page=2&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -199,39 +199,12 @@ func TestDeputyTasks_ReassignTasks(t *testing.T) {
 		"priority":       {expectedParams.IsPriority},
 	}
 
-	err := deputyTasks(client, template)(workflowVars, w, r)
+	err := reassignDeputyTasks(client)(workflowVars, w, r)
 	assert.Equal(t, Redirect{
 		Path:           "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc",
 		SuccessMessage: "reassign success",
 	}, err)
 	assert.Equal(t, 0, template.count)
-}
-
-func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
-	methods := []string{
-		http.MethodConnect,
-		http.MethodDelete,
-		http.MethodHead,
-		http.MethodOptions,
-		http.MethodPatch,
-		http.MethodPut,
-		http.MethodTrace,
-	}
-	for _, method := range methods {
-		t.Run("Test "+method, func(t *testing.T) {
-			client := &mockDeputyTasksClient{}
-			template := &mockTemplate{}
-
-			w := httptest.NewRecorder()
-			r, _ := http.NewRequest(method, "", nil)
-
-			app := WorkflowVars{}
-			err := deputyTasks(client, template)(app, w, r)
-
-			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
-			assert.Equal(t, 0, template.count)
-		})
-	}
 }
 
 func TestDeputyTasksPage_CreateUrlBuilder(t *testing.T) {
