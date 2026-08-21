@@ -83,9 +83,6 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 		switch r.Method {
 		case http.MethodGet:
-			group, groupCtx := errgroup.WithContext(ctx.Context)
-			ctx.Context = groupCtx
-
 			params := r.URL.Query()
 			page := paginate.GetRequestedPage(params.Get("page"))
 			perPageOptions := []int{25, 50, 100}
@@ -117,8 +114,11 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 
 			var taskTypes []model.TaskType
 
+			group, groupCtx := errgroup.WithContext(ctx.Context)
+			gctx := ctx.With(groupCtx)
+
 			group.Go(func() error {
-				tt, err := client.GetTaskTypes(ctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
+				tt, err := client.GetTaskTypes(gctx, sirius.TaskTypesParams{Category: sirius.TaskTypeCategorySupervision})
 				if err != nil {
 					return err
 				}
@@ -127,7 +127,7 @@ func clientTasks(client ClientTasksClient, tmpl Template) Handler {
 			})
 			group.Go(func() error {
 				if app.SelectedTeam.IsPA() {
-					paDeputies, err := client.GetPADeputies(ctx)
+					paDeputies, err := client.GetPADeputies(gctx)
 					if err != nil {
 						return err
 					}

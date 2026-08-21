@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -478,6 +479,42 @@ func TestClientTasks_FetchesTaskTypesAndPADeputiesConcurrently(t *testing.T) {
 		t.Fatal("timed out waiting for client tasks handler to finish")
 	}
 
+	client.AssertExpectations(t)
+}
+
+func TestClientTasks_KeepsRequestContextForTaskListFetch(t *testing.T) {
+	client := &mockClientTasksClient{}
+	template := &mockTemplate{}
+
+	client.On("GetTaskTypes", mock.Anything).Return(testTaskType, nil)
+	client.On("GetTaskList", mock.Anything).Return(testTaskList, nil).Run(func(args mock.Arguments) {
+		ctx := args.Get(0).(sirius.Context)
+		assert.NoError(t, ctx.Context.Err())
+	})
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "test-path?team=101", nil)
+
+	app := WorkflowVars{
+		Path:         "test-path?team=101",
+		SelectedTeam: model.Team{Type: "LAY", Selector: "101", Id: 101},
+		MyDetails: model.Assignee{
+			Teams: []model.Team{
+				{
+					Id:   99,
+					Name: "my-team",
+				},
+			},
+			Roles: []string{"Case Manager"},
+		},
+	}
+
+	err := clientTasks(client, template)(app, w, r)
+
+	assert.NoError(t, err)
+	client.AssertCalled(t, "GetTaskList", mock.MatchedBy(func(ctx sirius.Context) bool {
+		return !errors.Is(ctx.Context.Err(), context.Canceled)
+	}))
 	client.AssertExpectations(t)
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -96,11 +97,8 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 func (p TaskListParams) CreateFilter() string {
 	filter := "status:Not+started,"
 
-	for _, t := range p.SelectedTaskTypes {
-		if t == TaskTypeEcmHandle {
-			p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)
-			break
-		}
+	if slices.Contains(p.SelectedTaskTypes, TaskTypeEcmHandle) {
+		p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)
 	}
 	for _, t := range p.SelectedTaskTypes {
 		filter += "type:" + t + ","
