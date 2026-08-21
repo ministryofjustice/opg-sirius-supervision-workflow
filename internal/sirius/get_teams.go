@@ -94,11 +94,6 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			})
 		}
 
-		if team.IsPA() {
-			paDeputies, _ := c.GetPADeputies(ctx)
-			team.Deputies = paDeputies
-		}
-
 		if team.IsLay() {
 			layTeam.Members = append(layTeam.Members, team.Members...)
 			layTeam.Teams = append(layTeam.Teams, team)
