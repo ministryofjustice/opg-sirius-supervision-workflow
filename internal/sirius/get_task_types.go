@@ -9,10 +9,14 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
-const TaskTypeCategorySupervision = "supervision"
-const TaskTypeCategoryDeputy = "deputy"
-const TaskTypeEcmHandle = "ECM_TASKS"
-const TaskTypeEcmLabel = "ECM Tasks"
+const (
+	TaskTypeCategorySupervision = "supervision"
+	TaskTypeCategoryDeputy = "deputy"
+	TaskTypeSubCategoryPa  = "pa"
+	TaskTypeSubCategoryPro = "pro"
+	TaskTypeEcmHandle      = "ECM_TASKS"
+	TaskTypeEcmLabel            = "ECM Tasks"
+)
 
 type TaskTypesList struct {
 	TaskTypes map[string]model.TaskType `json:"task_types"`
@@ -25,6 +29,14 @@ type TaskTypesParams struct {
 }
 
 func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.TaskType, error) {
+	cacheKey := getTaskTypeCacheKey(params)
+
+	types, found := c.caches.getTaskTypes(cacheKey)
+
+	if found {
+		return types, nil
+	}
+
 	endpoint := fmt.Sprintf("/v1/tasktypes/%s", params.Category)
 	if params.ProDeputy {
 		endpoint += "?pro_deputy=true"
@@ -81,5 +93,16 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 		}, taskTypes...)
 	}
 
+	c.caches.updateTaskTypes(cacheKey, taskTypes)
+
 	return taskTypes, nil
+}
+
+func getTaskTypeCacheKey(params TaskTypesParams) string {
+	if params.ProDeputy {
+		return TaskTypeSubCategoryPro
+	} else if params.PADeputy {
+		return TaskTypeSubCategoryPa
+	}
+	return TaskTypeCategorySupervision
 }

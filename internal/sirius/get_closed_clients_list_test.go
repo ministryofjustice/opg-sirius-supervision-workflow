@@ -16,7 +16,7 @@ import (
 
 func TestGetClosedCaseloadListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 {
@@ -140,7 +140,7 @@ func TestGetClosedCaseloadListCanThrow500Error(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
 		Team:    model.Team{Id: 13},

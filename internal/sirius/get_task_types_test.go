@@ -16,7 +16,7 @@ import (
 
 func TestApiClient_GetTaskTypes(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `{
 		"task_types":{
@@ -89,7 +89,7 @@ func TestApiClient_GetTaskTypes_Params(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i), func(t *testing.T) {
 			logger, mockClient := SetUpTest()
-			client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+			client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 			mocks.GetDoFunc = func(req *http.Request) (*http.Response, error) {
 				assert.Equal(t, test.wantEndpoint, req.URL.Path)
@@ -110,7 +110,7 @@ func TestApiClient_GetTaskTypes_Returns500Error(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.GetTaskTypes(getContext(nil), TaskTypesParams{})
 
@@ -119,4 +119,34 @@ func TestApiClient_GetTaskTypes_Returns500Error(t *testing.T) {
 		URL:    svr.URL + "/v1/tasktypes/",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestApiClient_GetTaskTypes_CachesResponse(t *testing.T) {
+	logger, mockClient := SetUpTest()
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
+
+	requests := 0
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		requests++
+		body := io.NopCloser(bytes.NewReader([]byte(`{
+			"task_types":{
+				"CWGN":{"handle":"CWGN","incomplete":"Casework - General","complete":"Casework - General","user":true,"category":"supervision"}
+			}
+		}`)))
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       body,
+		}, nil
+	}
+
+	params := TaskTypesParams{Category: TaskTypeCategorySupervision}
+
+	first, err := client.GetTaskTypes(getContext(nil), params)
+	assert.Nil(t, err)
+
+	second, err := client.GetTaskTypes(getContext(nil), params)
+	assert.Nil(t, err)
+
+	assert.Equal(t, first, second)
+	assert.Equal(t, 1, requests)
 }

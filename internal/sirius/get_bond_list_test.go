@@ -14,7 +14,7 @@ import (
 
 func TestApiClient_GetBondList_Returns200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 	{
@@ -73,7 +73,7 @@ func TestApiClient_GetBondList_Returns200(t *testing.T) {
 					Label:  "Match",
 					Handle: "MATCH",
 				},
-				Deputies: []string{"Angela White","Gary Black"},
+				Deputies: []string{"Angela White", "Gary Black"},
 			},
 		},
 		Pages: model.PageInformation{
@@ -96,7 +96,7 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	bondList, err := client.GetBondList(getContext(nil), BondListParams{
 		Team:    model.Team{Id: 13},

@@ -15,7 +15,7 @@ import (
 
 func TestGetCaseloadListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 {
@@ -133,7 +133,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	clientList, err := client.GetClientList(getContext(nil), ClientListParams{
 		Team:    model.Team{Id: 13},
@@ -158,7 +158,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "", logger)
+	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
 		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
@@ -181,7 +181,7 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 
 func TestGetCaseloadListSortedByReportDueDateForLayTeam(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "", logger)
+	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
 		assert.Contains(t, r.URL.RawQuery, "sort=report_due_date:asc")
