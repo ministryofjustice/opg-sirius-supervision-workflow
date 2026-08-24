@@ -27,36 +27,40 @@ type TeamCollection struct {
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
-	var v []TeamCollection
-	var q []model.Team
+	var teams []model.Team
+
+	if teams, found := c.caches.getTeams(); found {
+		return teams, nil
+	}
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/v1/teams", nil)
 	if err != nil {
 		c.logErrorRequest(req, err)
-		return q, err
+		return teams, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logResponse(req, resp, err)
-		return q, err
+		return teams, err
 	}
 
 	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logResponse(req, resp, err)
-		return q, ErrUnauthorized
+		return teams, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		c.logResponse(req, resp, err)
-		return q, newStatusError(resp)
+		return teams, newStatusError(resp)
 	}
 
+	var v []TeamCollection
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
-		return q, err
+		return teams, err
 	}
 
 	layTeam := model.Team{
@@ -102,14 +106,16 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			proTeam.Teams = append(proTeam.Teams, team)
 		}
 
-		q = append(q, team)
+		teams = append(teams, team)
 	}
 
-	q = append(q, layTeam, proTeam)
+	teams = append(teams, layTeam, proTeam)
 
-	sort.Slice(q, func(i, j int) bool {
-		return q[i].Name < q[j].Name
+	sort.Slice(teams, func(i, j int) bool {
+		return teams[i].Name < teams[j].Name
 	})
 
-	return q, err
+	c.caches.updateTeams(teams)
+
+	return teams, err
 }

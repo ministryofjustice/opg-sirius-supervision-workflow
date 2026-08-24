@@ -35,7 +35,7 @@ func TestUpdateReassignClients(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i), func(t *testing.T) {
 			logger, mockClient := SetUpTest()
-			client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+			client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
@@ -67,7 +67,7 @@ func TestReassignClientsReturnsNewStatusError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.ReassignClients(getContext(nil), ReassignClientsParams{AssignTeam: "10"})
 
@@ -85,7 +85,7 @@ func TestReassignClientsReturnsUnauthorisedClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignClients(getContext(nil), ReassignClientsParams{AssignTeam: "10"})
 	assert.Equal(t, ErrUnauthorized, err)
 }
@@ -97,7 +97,7 @@ func TestReassignClientsReturnsForbiddenClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignClients(getContext(nil), ReassignClientsParams{AssignTeam: "10"})
 	assert.Equal(t, "only managers can reassign client cases", err.Error())
 }
@@ -110,7 +110,7 @@ func TestReassignClientsReturnsInternalServerError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignClients(getContext(nil), ReassignClientsParams{AssignTeam: "10"})
 
 	expectedResponse := StatusError{

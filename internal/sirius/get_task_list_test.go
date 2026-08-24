@@ -16,7 +16,7 @@ import (
 
 func TestGetTaskListCanReturn200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 	{
@@ -131,7 +131,7 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 			}))
 			defer svr.Close()
 
-			client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+			client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 			assigneeTeams, err := client.GetTaskList(getContext(nil), TaskListParams{
 				Team:    test.selectedTeam,

@@ -14,7 +14,7 @@ import (
 
 func TestApiClient_GetPADeputies_Returns200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 	[
@@ -54,7 +54,7 @@ func TestApiClient_GetPADeputies_Returns500(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	paDeputies, err := client.GetPADeputies(getContext(nil))
 
