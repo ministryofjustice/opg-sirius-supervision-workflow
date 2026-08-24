@@ -76,10 +76,7 @@ func main() {
 		logger.Error("Error creating EnvironmentVars", "error", err)
 	}
 
-	client, err := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+supervisionAPIPath, logger)
-	if err != nil {
-		logger.Error("Error returned by Sirius New ApiClient", "error", err)
-	}
+	client := sirius.NewApiClient(http.DefaultClient, envVars.SiriusURL+supervisionAPIPath, logger)
 
 	templates := createTemplates(envVars)
 

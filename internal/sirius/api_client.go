@@ -69,12 +69,13 @@ func (ctx Context) With(c context.Context) Context {
 	}
 }
 
-func NewApiClient(httpClient HTTPClient, baseURL string, logger *slog.Logger) (*ApiClient, error) {
+func NewApiClient(httpClient HTTPClient, baseURL string, logger *slog.Logger) *ApiClient {
 	return &ApiClient{
 		http:    httpClient,
 		baseURL: baseURL,
 		logger:  logger,
-	}, nil
+		caches:  *newCaches(),
+	}
 }
 
 type HTTPClient interface {
@@ -85,6 +86,7 @@ type ApiClient struct {
 	http    HTTPClient
 	baseURL string
 	logger  *slog.Logger
+	caches  Caches
 }
 
 func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader) (*http.Request, error) {

@@ -15,7 +15,7 @@ import (
 
 func TestGetTeams(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `[
 		{
@@ -146,7 +146,7 @@ func TestGetTeamsCanReturn500(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.GetTeams(getContext(nil))
 
@@ -155,4 +155,38 @@ func TestGetTeamsCanReturn500(t *testing.T) {
 		URL:    svr.URL + "/v1/teams",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetTeams_CachesResponse(t *testing.T) {
+	logger, mockClient := SetUpTest()
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
+
+	requests := 0
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		requests++
+		body := io.NopCloser(bytes.NewReader([]byte(`[
+			{
+				"id":22,
+				"displayName":"Lay Team 1",
+				"members":[],
+				"teamType":{
+					"handle":"LAY",
+					"label":"Lay Team"
+				}
+			}
+		]`)))
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       body,
+		}, nil
+	}
+
+	first, err := client.GetTeams(getContext(nil))
+	assert.Nil(t, err)
+
+	second, err := client.GetTeams(getContext(nil))
+	assert.Nil(t, err)
+
+	assert.Equal(t, first, second)
+	assert.Equal(t, 1, requests)
 }

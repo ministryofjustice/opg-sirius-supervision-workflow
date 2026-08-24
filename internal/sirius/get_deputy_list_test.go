@@ -14,7 +14,7 @@ import (
 
 func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
 	logger, mockClient := SetUpTest()
-	client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 	json := `
 {
@@ -123,7 +123,7 @@ func TestApiClient_GetDeputyList_Returns500(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	deputyList, err := client.GetDeputyList(getContext(nil), DeputyListParams{
 		Team:    model.Team{Id: 13},

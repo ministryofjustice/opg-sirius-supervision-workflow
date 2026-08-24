@@ -104,7 +104,7 @@ func TestUpdateReassignTasks(t *testing.T) {
 	for i, test := range tests {
 		t.Run("Scenario "+strconv.Itoa(i), func(t *testing.T) {
 			logger, mockClient := SetUpTest()
-			client, _ := NewApiClient(mockClient, "http://localhost:3000", logger)
+			client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
@@ -136,7 +136,7 @@ func TestReassignTasksReturnsNewStatusError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 
 	_, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{AssignTeam: "10"})
 
@@ -154,7 +154,7 @@ func TestReassignTasksReturnsUnauthorisedClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{AssignTeam: "10"})
 	assert.Equal(t, ErrUnauthorized, err)
 }
@@ -166,7 +166,7 @@ func TestReassignTasksReturnsForbiddenClientError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{AssignTeam: "10"})
 	assert.Equal(t, "only managers can set priority on tasks", err.Error())
 }
@@ -179,7 +179,7 @@ func TestReassignTasksReturnsInternalServerError(t *testing.T) {
 	}))
 	defer svr.Close()
 
-	client, _ := NewApiClient(http.DefaultClient, svr.URL, logger)
+	client := NewApiClient(http.DefaultClient, svr.URL, logger)
 	_, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{AssignTeam: "10"})
 
 	expectedResponse := StatusError{

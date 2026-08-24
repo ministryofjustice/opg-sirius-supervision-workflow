@@ -9,32 +9,32 @@ import (
 )
 
 func (c *ApiClient) GetCurrentUserDetails(ctx Context) (model.Assignee, error) {
-	var v model.Assignee
+	var user model.Assignee
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/v1/users/current", nil)
 	if err != nil {
 		c.logErrorRequest(req, err)
-		return v, err
+		return user, err
 	}
 
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.logRequest(req, err)
-		return v, err
+		return user, err
 	}
 
 	defer unchecked(resp.Body.Close)
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		c.logRequest(req, err)
-		return v, ErrUnauthorized
+		return user, ErrUnauthorized
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		c.logRequest(req, err)
-		return v, newStatusError(resp)
+		return user, newStatusError(resp)
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&v)
-	return v, err
+	err = json.NewDecoder(resp.Body).Decode(&user)
+	return user, err
 }
