@@ -51,7 +51,7 @@ func (dp DeputiesPage) CreateUrlBuilder() urlbuilder.UrlBuilder {
 }
 
 func listTeamsAndMembers(allTeams []model.Team, requiredTeamTypes []string, currentSelectedTeam model.Team) []model.Team {
-	teamsToReturn := []model.Team{}
+	var teamsToReturn []model.Team
 
 	for _, tt := range requiredTeamTypes {
 		//show current team page as first in list
@@ -68,7 +68,7 @@ func listTeamsAndMembers(allTeams []model.Team, requiredTeamTypes []string, curr
 }
 
 func getTeamIdsAsString(allTeamIds []model.Team, teamType string) []string {
-	teamIdsToReturn := []string{}
+	var teamIdsToReturn []string
 	for _, tt := range allTeamIds {
 		if tt.Type == teamType {
 			teamIdsToReturn = append(teamIdsToReturn, strconv.Itoa(tt.Id))
@@ -84,74 +84,48 @@ func isUnassignedECMSelected(ECMParams []string) bool {
 func deputies(client DeputiesClient, tmpl Template) Handler {
 	return func(app WorkflowVars, w http.ResponseWriter, r *http.Request) error {
 		ctx := getContext(r)
-
-		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			return StatusError(http.StatusMethodNotAllowed)
-		}
-
-		if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
-			page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
-			return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
-		}
-
-		paProTeamSelection := listTeamsAndMembers(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
-
-		params := r.URL.Query()
-		page := paginate.GetRequestedPage(params.Get("page"))
-		perPageOptions := []int{25, 50, 100}
-		deputiesPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
-
-		sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "activeclients", "noncompliance", "assurance"})
-
-		var selectedECMs []string
-		if params.Has("ecm") {
-			selectedECMs = params["ecm"]
-			//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
-			if app.SelectedTeam.IsProDeputyTeam() {
-				if isUnassignedECMSelected(params["ecm"]) {
-					proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
-					selectedECMs = append(selectedECMs, proDeputyIds...)
-				}
-			}
-		}
-
-		vars := DeputiesPage{}
-		vars.PerPage = deputiesPerPage
-		vars.Sort = sort
-		vars.App = app
-		vars.SelectedECMs = selectedECMs
-		vars.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
-
-		vars.PerPage = deputiesPerPage
-		vars.Sort = sort
-		vars.App = app
-
 		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
 		switch r.Method {
-		case http.MethodPost:
-			err := r.ParseForm()
-			if err != nil {
-				return err
-			}
-
-			reassignSuccessMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
-				AssignTeam: r.FormValue("assignTeam"),
-				AssignCM:   r.FormValue("assignCM"),
-				DeputyIds:  r.Form["selected-deputies"],
-			})
-			if err != nil {
-				return err
-			}
-
-			vars.UrlBuilder = vars.CreateUrlBuilder()
-			currentPage, _ := strconv.Atoi(r.FormValue("page"))
-			return Redirect{
-				Path:           vars.UrlBuilder.GetPaginationUrl(currentPage, vars.PerPage),
-				SuccessMessage: reassignSuccessMessage,
-			}
-
 		case http.MethodGet:
+
+			if !app.SelectedTeam.IsPro() && !app.SelectedTeam.IsPA() {
+				page := ClientTasksPage{ListPage: ListPage{PerPage: 25}}
+				return Redirect{Path: page.CreateUrlBuilder().GetTeamUrl(app.SelectedTeam)}
+			}
+
+			paProTeamSelection := listTeamsAndMembers(app.Teams, []string{"PA", "PRO"}, app.SelectedTeam)
+
+			params := r.URL.Query()
+			page := paginate.GetRequestedPage(params.Get("page"))
+			perPageOptions := []int{25, 50, 100}
+			deputiesPerPage := paginate.GetRequestedElementsPerPage(params.Get("per-page"), perPageOptions)
+
+			sort := urlbuilder.CreateSortFromURL(params, []string{"deputy", "activeclients", "noncompliance", "assurance"})
+
+			var selectedECMs []string
+			if params.Has("ecm") {
+				selectedECMs = params["ecm"]
+				//for the pro deputy team we need to fetch the ecms from all other pro teams to show their unassigned deputies
+				if app.SelectedTeam.IsProDeputyTeam() {
+					if isUnassignedECMSelected(params["ecm"]) {
+						proDeputyIds := getTeamIdsAsString(app.Teams, "PRO")
+						selectedECMs = append(selectedECMs, proDeputyIds...)
+					}
+				}
+			}
+
+			vars := DeputiesPage{}
+			vars.PerPage = deputiesPerPage
+			vars.Sort = sort
+			vars.App = app
+			vars.SelectedECMs = selectedECMs
+			vars.NotAssignedTeamID = strconv.Itoa(app.SelectedTeam.Id)
+
+			vars.PerPage = deputiesPerPage
+			vars.Sort = sort
+			vars.App = app
+
 			deputyList, err := client.GetDeputyList(ctx, sirius.DeputyListParams{
 				Team:         app.SelectedTeam,
 				Page:         page,
@@ -195,6 +169,26 @@ func deputies(client DeputiesClient, tmpl Template) Handler {
 
 			vars.EcmCount = vars.DeputyList.MetaData.DeputyMetaData
 			return tmpl.Execute(w, vars)
+
+		case http.MethodPost:
+			err := r.ParseForm()
+			if err != nil {
+				return err
+			}
+
+			reassignSuccessMessage, err := client.ReassignDeputies(ctx, sirius.ReassignDeputiesParams{
+				AssignTeam: r.FormValue("assignTeam"),
+				AssignCM:   r.FormValue("assignCM"),
+				DeputyIds:  r.Form["selected-deputies"],
+			})
+			if err != nil {
+				return err
+			}
+
+			return Redirect{
+				Path:           r.URL.RequestURI(),
+				SuccessMessage: reassignSuccessMessage,
+			}
 
 		default:
 			return StatusError(http.StatusMethodNotAllowed)

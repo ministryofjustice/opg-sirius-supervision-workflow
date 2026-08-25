@@ -1,9 +1,10 @@
 package server
 
 import (
+	"io"
+
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
-	"io"
 )
 
 type mockTemplate struct {
@@ -68,4 +69,8 @@ func (m mockApiClient) GetBondList(context sirius.Context, params sirius.BondLis
 
 func (m mockApiClient) ReassignDeputies(context sirius.Context, params sirius.ReassignDeputiesParams) (string, error) {
 	return "", nil
+}
+
+func (m mockApiClient) GetPADeputies(ctx sirius.Context) ([]model.Deputy, error) {
+	panic("implement me")
 }

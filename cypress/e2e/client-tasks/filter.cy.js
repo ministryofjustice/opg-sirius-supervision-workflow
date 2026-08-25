@@ -113,4 +113,40 @@ describe("Filters", () => {
     cy.url().should('include', 'task-type=ECM_TASKS')
     cy.get('.moj-filter__tag').eq(0).should('contain', 'ECM Tasks')
   })
+
+  it("shows deputy filter only for PA teams", () => {
+    cy.get('#option-select-title-deputy').should('not.exist')
+
+    cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('PA Team 1 - (Supervision)')
+    cy.get('#option-select-title-deputy').should('be.visible')
+  })
+
+  it("can apply the deputy filter for PA teams", () => {
+    cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('PA Team 1 - (Supervision)')
+
+    cy.get('#option-select-title-deputy').click()
+    cy.get('[data-filter-name="moj-filter-name-deputy"]').within(() => {
+      cy.get('label:contains("Blompton County Council")').click()
+    })
+
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'deputy=13')
+    cy.get('.moj-filter__tag').should('contain', 'Blompton County Council')
+  })
+
+  it("can clear deputy filter for PA teams", () => {
+    cy.get('.moj-team-banner__container > .govuk-form-group > .govuk-select').select('PA Team 1 - (Supervision)')
+
+    cy.get('#option-select-title-deputy').click()
+    cy.get('[data-filter-name="moj-filter-name-deputy"]').within(() => {
+      cy.get('label:contains("Blompton County Council")').click()
+    })
+
+    cy.get('[data-module=apply-filters]').click()
+    cy.url().should('include', 'deputy=13')
+    cy.get('[data-module=clear-filters]').click()
+    cy.url().should('not.include', 'deputy=13')
+    cy.get('body').find('.moj-filter__tag').should('not.exist')
+    cy.get('.moj-filter__selected').should('contain', 'No filters selected')
+  })
 })

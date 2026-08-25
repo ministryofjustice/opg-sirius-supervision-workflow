@@ -1,16 +1,17 @@
 package server
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"testing"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"strconv"
-	"testing"
 )
 
 type mockDeputiesClient struct {
@@ -125,7 +126,7 @@ func TestPostDeputies(t *testing.T) {
 	client.On("ReassignDeputies", mock.Anything).Return("success reassign", nil)
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/deputies?team=19&page=1&per-page=25", nil)
+	r, _ := http.NewRequest(http.MethodPost, "/deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc", nil)
 
 	app := WorkflowVars{
 		Path:            "test-path",
@@ -135,7 +136,7 @@ func TestPostDeputies(t *testing.T) {
 	err := deputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
-		Path:           "deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc",
+		Path:           "/deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc",
 		SuccessMessage: "success reassign",
 	}, err)
 	assert.Equal(t, 0, template.count)
@@ -313,6 +314,10 @@ func TestListTeamsAndMembers(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			response := listTeamsAndMembers(allTeams, test.requiredTeamTypes, test.currentSelectedTeam)
+			if len(test.expectedResponse) == 0 {
+				assert.Empty(t, response)
+				return
+			}
 			assert.Equal(t, test.expectedResponse, response)
 		})
 	}
@@ -369,6 +374,10 @@ func TestDeputies_getProTeamIdsAsString(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			response := getTeamIdsAsString(test.allTeams, test.teamType)
+			if len(test.expectedResponse) == 0 {
+				assert.Empty(t, response)
+				return
+			}
 			assert.Equal(t, test.expectedResponse, response)
 		})
 	}

@@ -24,14 +24,14 @@ type Redirect struct {
 }
 
 func (e Redirect) Error() string {
-	return "redirect to " + string(e.Path)
+	return "redirect to " + e.Path
 }
 
 func (e Redirect) To() string {
-	return string(e.Path)
+	return e.Path
 }
 
-func (e Redirect) GetHeaderMessage() string { return string(e.SuccessMessage) }
+func (e Redirect) GetHeaderMessage() string { return e.SuccessMessage }
 
 type StatusError int
 
@@ -70,12 +70,13 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 					return
 				}
 
-				if err == sirius.ErrUnauthorized {
+				if errors.Is(err, sirius.ErrUnauthorized) {
 					http.Redirect(w, r, envVars.SiriusURL+"/auth", http.StatusFound)
 					return
 				}
 
-				if redirect, ok := err.(Redirect); ok {
+				var redirect Redirect
+				if errors.As(err, &redirect) {
 					if redirect.SuccessMessage != "" {
 						SetSuccessMessage(w, "success-message", redirect.SuccessMessage)
 					}
@@ -86,10 +87,12 @@ func wrapHandler(client ApiClient, logger *slog.Logger, tmplError Template, envV
 				logger.Error("Error handler", "error", err)
 
 				code := http.StatusInternalServerError
-				if serverStatusError, ok := err.(StatusError); ok {
+				var serverStatusError StatusError
+				if errors.As(err, &serverStatusError) {
 					code = serverStatusError.Code()
 				}
-				if siriusStatusError, ok := err.(sirius.StatusError); ok {
+				var siriusStatusError sirius.StatusError
+				if errors.As(err, &siriusStatusError) {
 					code = siriusStatusError.Code
 				}
 

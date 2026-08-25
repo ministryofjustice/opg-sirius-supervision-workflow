@@ -1,17 +1,18 @@
 package server
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strconv"
+	"testing"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"strconv"
-	"testing"
 )
 
 type mockDeputyTasksClient struct {
@@ -190,7 +191,7 @@ func TestDeputyTasks_ReassignTasks(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/deputy-tasks?team=1&page=2&per-page=25", nil)
+	r, _ := http.NewRequest(http.MethodPost, "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc", nil)
 	r.PostForm = url.Values{
 		"assignTeam":     {expectedParams.AssignTeam},
 		"assignCM":       {expectedParams.AssignCM},
@@ -200,7 +201,7 @@ func TestDeputyTasks_ReassignTasks(t *testing.T) {
 
 	err := deputyTasks(client, template)(workflowVars, w, r)
 	assert.Equal(t, Redirect{
-		Path:           "deputy-tasks?team=1&page=2&per-page=25",
+		Path:           "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc",
 		SuccessMessage: "reassign success",
 	}, err)
 	assert.Equal(t, 0, template.count)

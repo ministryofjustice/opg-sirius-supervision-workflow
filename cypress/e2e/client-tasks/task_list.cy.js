@@ -52,7 +52,7 @@ describe("Task list", () => {
     cy.get("#workflow-tasks tbody > tr > td:nth-child(4)").should("contain", "Mr Fee-paying Deputy")
     cy.get("#workflow-tasks tbody > tr > td:nth-child(4) > a").should('have.attr', 'href')
         .then(href => {
-          expect(href).to.contains("/supervision/deputies/12");
+          expect(href).to.contains("/supervision/deputies/13");
         })
   })
 });

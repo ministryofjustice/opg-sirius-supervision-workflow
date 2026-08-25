@@ -1,10 +1,11 @@
 package server
 
 import (
+	"reflect"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
-	"reflect"
 )
 
 type ListPage struct {
@@ -24,6 +25,12 @@ type FilterByAssignee struct {
 	SelectedUnassigned string
 	AssigneeCount      []model.AssigneeAndCount
 	DeputyTasks        bool
+}
+
+type FilterByDeputy struct {
+	ListPage
+	DeputyFilterName string
+	SelectedDeputies []string
 }
 
 type FilterByTaskType struct {
@@ -73,6 +80,7 @@ type FilterBySupervisionLevel struct {
 func (lp ListPage) HasFilterBy(page interface{}, filter string) bool {
 	filters := map[string]interface{}{
 		"assignee":          FilterByAssignee{},
+		"deputy":            FilterByDeputy{},
 		"due-date":          FilterByDueDate{},
 		"status":            FilterByStatus{},
 		"task-type":         FilterByTaskType{},
