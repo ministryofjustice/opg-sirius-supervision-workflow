@@ -124,7 +124,7 @@ export default class ManageReassign {
         return response.json();
       })
       .then((data) => {
-        let str = "<option value=''selected>Select a case manager</option>";
+        let str = "<option value='' selected>Select a case manager</option>";
         let sortedAlphabetically = data.members.sort(function (a, b) {
           if (a.name < b.name) {
             return -1;
