@@ -8,7 +8,7 @@ RUN npm ci --ignore-scripts
 
 
 ENV CYPRESS_VIDEO=false
-ENV CYPRESS_baseUrl=http://workflow:8888/supervision/workflow
+ENV CYPRESS_baseUrl=http://local-proxy/supervision/workflow
 
 COPY cypress.config.js .
 COPY cypress cypress

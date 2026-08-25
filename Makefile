@@ -26,19 +26,20 @@ build:
 	docker compose build workflow
 
 cypress: setup-directories
-	docker compose up -d --wait workflow json-server
 	docker compose run --build --rm cypress
 
 cypress-single: setup-directories
-	docker compose up -d --wait workflow json-server
 	docker compose run --rm cypress run --spec cypress/e2e/$(SPEC)
 
 up:
-	docker compose up --build -d workflow
+	docker compose -f docker-compose.yml up --build -d local-proxy
 
 dev-up:
 	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml build workflow
-	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml up workflow watch-assets
+	docker compose -f docker-compose.yml -f docker/docker-compose.dev.yml up workflow watch-assets local-proxy
+
+sirius-up:
+	docker compose -f docker-compose.yml -f docker/docker-compose.standalone.yml up --build -d workflow
 
 down:
 	docker compose down

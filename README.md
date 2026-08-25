@@ -16,9 +16,6 @@
 
 The application ran through Docker can be accessed on `localhost:8888/supervision/workflow/`.
 
-**Note: Sirius is required to be running in order to authenticate. However, it also runs its own version of Workflow on port `8080`.
-Ensure that after logging in, you redirect back to the correct port (`8888`)**
-
 To enable debugging and hot-reloading of Go files:
 
 `make dev-up`
@@ -29,7 +26,8 @@ You will then be able to use breakpoints to stop and inspect the application.
 Additionally, hot-reloading is provided by Air, so any changes to the Go code (including templates)
 will rebuild and restart the application without requiring manually stopping and restarting the compose stack.
 
-To run your changes in the context of your local sirius environment:
+Note that the `local-proxy` service is required to allow for both the front and back ends to access json-server as a mock
+API. It also handily logs all requests to the console.
 
 ```
 make build
@@ -37,13 +35,11 @@ make build
 make dev-up
 ```
 
-### Without docker
+### With Sirius
 
-Alternatively to set it up not using Docker use below. This hosts it on `localhost:1234`
-
-- `npm install && npm run build`
-- `go build main.go `
-- `./main `
+If you want to run Workflow locally against a local Sirius instance, you can use `make sirius-up`. As this will not use
+json-server as a mock, you will first need to log into Sirius in order for the user to have a valid session and then
+redirect back to Workflow using the correct port (`8888`).
 
 ### Enabling code completion in .gotmpl files in GoLand
 
