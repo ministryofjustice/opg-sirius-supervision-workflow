@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strconv"
 	"testing"
 
@@ -27,11 +26,6 @@ func (m *mockDeputyTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.T
 func (m *mockDeputyTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(sirius.TaskList), args.Error(1)
-}
-
-func (m *mockDeputyTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(string), args.Error(1)
 }
 
 var workflowVars = WorkflowVars{
@@ -174,36 +168,6 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	err := getDeputyTasks(client, template)(workflowVars, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputy-tasks?team=1&page=2&per-page=25"}, err)
-	assert.Equal(t, 0, template.count)
-}
-
-func TestDeputyTasks_ReassignTasks(t *testing.T) {
-	client := &mockDeputyTasksClient{}
-	template := &mockTemplate{}
-
-	client.On("ReassignTasks", mock.Anything).Return("reassign success", nil)
-
-	expectedParams := sirius.ReassignTasksParams{
-		AssignTeam: "10",
-		AssignCM:   "20",
-		TaskIds:    []string{"1", "2"},
-		IsPriority: "true",
-	}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc", nil)
-	r.PostForm = url.Values{
-		"assignTeam":     {expectedParams.AssignTeam},
-		"assignCM":       {expectedParams.AssignCM},
-		"selected-tasks": expectedParams.TaskIds,
-		"priority":       {expectedParams.IsPriority},
-	}
-
-	err := reassignDeputyTasks(client)(workflowVars, w, r)
-	assert.Equal(t, Redirect{
-		Path:           "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc",
-		SuccessMessage: "reassign success",
-	}, err)
 	assert.Equal(t, 0, template.count)
 }
 

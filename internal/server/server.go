@@ -18,6 +18,7 @@ type ApiClient interface {
 	CaseloadClient
 	DeputiesClient
 	BondsClient
+	ReassignTasksClient
 }
 
 type Template interface {
@@ -37,7 +38,7 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 
 	mux.Handle("POST /client-tasks",
 		wrap(
-			reassignClientTasks(client)))
+			reassignTasks(client)))
 
 	mux.Handle("GET /caseload",
 		wrap(
@@ -53,7 +54,7 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 
 	mux.Handle("POST /deputy-tasks",
 		wrap(
-			reassignDeputyTasks(client)))
+			reassignTasks(client)))
 
 	mux.Handle("GET /deputies",
 		wrap(

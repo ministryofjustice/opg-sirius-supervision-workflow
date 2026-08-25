@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strconv"
 	"testing"
 	"time"
@@ -30,11 +29,6 @@ func (m *mockClientTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.T
 func (m *mockClientTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(sirius.TaskList), args.Error(1)
-}
-
-func (m *mockClientTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(string), args.Error(1)
 }
 
 func (m *mockClientTasksClient) GetPADeputies(ctx sirius.Context) ([]model.Deputy, error) {
@@ -729,50 +723,6 @@ func TestClientTasks_SiriusErrors(t *testing.T) {
 
 	assert.Equal("err", err.Error())
 	assert.Equal(0, template.count)
-}
-
-func TestClientTasks_ReassignTasks(t *testing.T) {
-	client := &mockClientTasksClient{}
-	template := &mockTemplate{}
-
-	expectedParams := sirius.ReassignTasksParams{
-		AssignTeam: "10",
-		AssignCM:   "20",
-		TaskIds:    []string{"1", "2"},
-		IsPriority: "true",
-	}
-
-	client.On("ReassignTasks", mock.Anything).Return("reassign successful", nil)
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL", nil)
-	r.PostForm = url.Values{
-		"assignTeam":     {expectedParams.AssignTeam},
-		"assignCM":       {expectedParams.AssignCM},
-		"selected-tasks": expectedParams.TaskIds,
-		"priority":       {expectedParams.IsPriority},
-	}
-
-	app := WorkflowVars{
-		Path:         "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
-		SelectedTeam: model.Team{Type: "LAY", Selector: "19", Id: 19},
-		MyDetails: model.Assignee{
-			Teams: []model.Team{
-				{
-					Id:   99,
-					Name: "my-team",
-				},
-			},
-			Roles: []string{"Case Manager"},
-		},
-	}
-	err := reassignClientTasks(client)(app, w, r)
-
-	assert.Equal(t, Redirect{
-		Path:           "/client-tasks?team=19&page=1&per-page=25&task-type=CDFC&task-type=ORAL",
-		SuccessMessage: "reassign successful",
-	}, err)
-	assert.Equal(t, 0, template.count)
 }
 
 func TestGetSelectedDateFilter(t *testing.T) {
