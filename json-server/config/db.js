@@ -1607,5 +1607,36 @@ module.exports = function () {
         "reAssignName": "LayTeam1 User4",
       },
     ],
+    "team": {
+      "id": 13,
+      "name": "Allocations - (Supervision)",
+      "phoneNumber": "0123456789",
+      "displayName": "Allocations - (Supervision)",
+      "deleted": false,
+      "email": "allocations.team@opgtest.com",
+      "members": [
+        {
+          "id": 72,
+          "name": "Allocations",
+          "phoneNumber": "12345678",
+          "displayName": "Allocations User1",
+          "deleted": false,
+          "email": "allocations@opgtest.com"
+        },
+        {
+          "id": 73,
+          "name": "Allocations",
+          "phoneNumber": "12345678",
+          "displayName": "Allocations User2",
+          "deleted": false,
+          "email": "allocations2@opgtest.com"
+        }
+      ],
+      "teamType": {
+        "handle": "ALLOCATIONS",
+        "label": "Allocations",
+        "deprecated": null
+      }
+    }
   }
 }
