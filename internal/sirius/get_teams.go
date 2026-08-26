@@ -30,8 +30,10 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	var teams []model.Team
 
 	if teams, found := c.caches.getTeams(); found {
+		c.logger.Debug("Teams cache hit")
 		return teams, nil
 	}
+	c.logger.Debug("Teams cache expired. Refreshing...")
 
 	req, err := c.newRequest(ctx, http.MethodGet, "/v1/teams", nil)
 	if err != nil {
@@ -116,6 +118,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	})
 
 	c.caches.updateTeams(teams)
+	c.logger.Debug("Teams cache updated")
 
 	return teams, err
 }
