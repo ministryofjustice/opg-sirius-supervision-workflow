@@ -31,11 +31,11 @@ type TaskTypesParams struct {
 func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.TaskType, error) {
 	cacheKey := getTaskTypeCacheKey(params)
 
-	types, found := c.caches.getTaskTypes(cacheKey)
-
-	if found {
+	if types, found := c.caches.getTaskTypes(cacheKey); found {
+		c.logger.Debug("Task types cache hit")
 		return types, nil
 	}
+	c.logger.Debug("Task types cache expired. Refreshing...")
 
 	endpoint := fmt.Sprintf("/v1/tasktypes/%s", params.Category)
 	if params.ProDeputy {
@@ -94,6 +94,7 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 	}
 
 	c.caches.updateTaskTypes(cacheKey, taskTypes)
+	c.logger.Debug("Task types cache updated")
 
 	return taskTypes, nil
 }
