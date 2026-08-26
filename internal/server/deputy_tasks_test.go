@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strconv"
 	"testing"
 
@@ -27,11 +26,6 @@ func (m *mockDeputyTasksClient) GetTaskTypes(ctx sirius.Context, params sirius.T
 func (m *mockDeputyTasksClient) GetTaskList(ctx sirius.Context, params sirius.TaskListParams) (sirius.TaskList, error) {
 	args := m.Called(ctx)
 	return args.Get(0).(sirius.TaskList), args.Error(1)
-}
-
-func (m *mockDeputyTasksClient) ReassignTasks(ctx sirius.Context, params sirius.ReassignTasksParams) (string, error) {
-	args := m.Called(ctx)
-	return args.Get(0).(string), args.Error(1)
 }
 
 var workflowVars = WorkflowVars{
@@ -86,7 +80,7 @@ func TestDeputyTasks(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest(http.MethodGet, "/deputy-tasks", nil)
 
-	handler := deputyTasks(client, template)
+	handler := getDeputyTasks(client, template)
 	err := handler(workflowVars, w, r)
 
 	assert.Nil(t, err)
@@ -155,7 +149,7 @@ func TestDeputyTasks_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "LAY", Selector: "19"},
 	}
-	err := deputyTasks(client, template)(app, w, r)
+	err := getDeputyTasks(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "client-tasks?team=19&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
@@ -171,67 +165,10 @@ func TestDeputyTasks_NonExistentPageNumberWillRedirectToTheHighestExistingPageNu
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/deputy-tasks?team=&page=10&per-page=25", nil)
 
-	err := deputyTasks(client, template)(workflowVars, w, r)
+	err := getDeputyTasks(client, template)(workflowVars, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputy-tasks?team=1&page=2&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
-}
-
-func TestDeputyTasks_ReassignTasks(t *testing.T) {
-	client := &mockDeputyTasksClient{}
-	template := &mockTemplate{}
-
-	client.On("ReassignTasks", mock.Anything).Return("reassign success", nil)
-
-	expectedParams := sirius.ReassignTasksParams{
-		AssignTeam: "10",
-		AssignCM:   "20",
-		TaskIds:    []string{"1", "2"},
-		IsPriority: "true",
-	}
-
-	w := httptest.NewRecorder()
-	r, _ := http.NewRequest(http.MethodPost, "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc", nil)
-	r.PostForm = url.Values{
-		"assignTeam":     {expectedParams.AssignTeam},
-		"assignCM":       {expectedParams.AssignCM},
-		"selected-tasks": expectedParams.TaskIds,
-		"priority":       {expectedParams.IsPriority},
-	}
-
-	err := deputyTasks(client, template)(workflowVars, w, r)
-	assert.Equal(t, Redirect{
-		Path:           "/deputy-tasks?team=1&page=2&per-page=25&order-by=deputy&sort=asc",
-		SuccessMessage: "reassign success",
-	}, err)
-	assert.Equal(t, 0, template.count)
-}
-
-func TestDeputyTasks_MethodNotAllowed(t *testing.T) {
-	methods := []string{
-		http.MethodConnect,
-		http.MethodDelete,
-		http.MethodHead,
-		http.MethodOptions,
-		http.MethodPatch,
-		http.MethodPut,
-		http.MethodTrace,
-	}
-	for _, method := range methods {
-		t.Run("Test "+method, func(t *testing.T) {
-			client := &mockDeputyTasksClient{}
-			template := &mockTemplate{}
-
-			w := httptest.NewRecorder()
-			r, _ := http.NewRequest(method, "", nil)
-
-			app := WorkflowVars{}
-			err := deputyTasks(client, template)(app, w, r)
-
-			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
-			assert.Equal(t, 0, template.count)
-		})
-	}
 }
 
 func TestDeputyTasksPage_CreateUrlBuilder(t *testing.T) {

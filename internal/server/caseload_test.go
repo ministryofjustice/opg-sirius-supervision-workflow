@@ -1,15 +1,16 @@
 package server
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"testing"
+
 	"github.com/ministryofjustice/opg-go-common/paginate"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/sirius"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/urlbuilder"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
-	"strconv"
-	"testing"
 )
 
 type mockCaseloadClient struct {
@@ -176,7 +177,7 @@ func TestCaseload(t *testing.T) {
 				app.SelectedTeam.Name = "Supervision closed cases"
 			}
 
-			err := caseload(client, template)(app, w, r)
+			err := getCaseload(client, template)(app, w, r)
 
 			assert.Nil(t, err)
 			assert.Equal(t, 1, template.count)
@@ -260,7 +261,7 @@ func TestCaseload_RedirectsToClientTasksForNonLayNonHWTeams(t *testing.T) {
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "PRO", Selector: "19"},
 	}
-	err := caseload(client, template)(app, w, r)
+	err := getCaseload(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path: "client-tasks?team=19&page=1&per-page=25",
@@ -279,38 +280,32 @@ func TestCaseload_RedirectsToClientTasksForLayNewDeputyOrdersTeam(t *testing.T) 
 		Path:         "test-path",
 		SelectedTeam: model.Team{Type: "LAY", Name: "Lay Deputy Team", Selector: "lay-team"},
 	}
-	err := caseload(client, template)(app, w, r)
+	err := getCaseload(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path: "client-tasks?team=lay-team&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
 }
 
-func TestCaseload_MethodNotAllowed(t *testing.T) {
-	methods := []string{
-		http.MethodConnect,
-		http.MethodDelete,
-		http.MethodHead,
-		http.MethodOptions,
-		http.MethodPatch,
-		http.MethodPut,
-		http.MethodTrace,
+func TestCaseload_ReassignClients(t *testing.T) {
+	client := &mockCaseloadClient{}
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodPost, "/caseload?team=19&page=1&per-page=25", nil)
+	r.PostForm = map[string][]string{
+		"assignTeam":       {"10"},
+		"assignCM":         {"20"},
+		"selected-clients": {"1", "2"},
 	}
-	for _, method := range methods {
-		t.Run("Test "+method, func(t *testing.T) {
-			client := &mockCaseloadClient{}
-			template := &mockTemplate{}
 
-			w := httptest.NewRecorder()
-			r, _ := http.NewRequest(method, "", nil)
+	app := WorkflowVars{}
+	err := reassignClients(client)(app, w, r)
 
-			app := WorkflowVars{}
-			err := caseload(client, template)(app, w, r)
-
-			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
-			assert.Equal(t, 0, template.count)
-		})
-	}
+	assert.Equal(t, Redirect{
+		Path:           "/caseload?team=19&page=1&per-page=25",
+		SuccessMessage: "",
+	}, err)
+	assert.Equal(t, 1, client.count["ReassignClients"])
 }
 
 func TestCaseloadPage_CreateUrlBuilder(t *testing.T) {

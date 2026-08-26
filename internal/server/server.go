@@ -18,6 +18,7 @@ type ApiClient interface {
 	CaseloadClient
 	DeputiesClient
 	BondsClient
+	ReassignTasksClient
 }
 
 type Template interface {
@@ -31,27 +32,43 @@ func New(logger *slog.Logger, client ApiClient, templates map[string]*template.T
 
 	mux.Handle("/", http.RedirectHandler(envVars.Prefix+"/client-tasks", http.StatusFound))
 
-	mux.Handle("/client-tasks",
+	mux.Handle("GET /client-tasks",
 		wrap(
-			clientTasks(client, templates["client-tasks.gotmpl"])))
+			getClientTasks(client, templates["client-tasks.gotmpl"])))
 
-	mux.Handle("/caseload",
+	mux.Handle("POST /client-tasks",
 		wrap(
-			caseload(client, templates["caseload.gotmpl"])))
+			reassignTasks(client)))
 
-	mux.Handle("/deputy-tasks",
+	mux.Handle("GET /caseload",
 		wrap(
-			deputyTasks(client, templates["deputy-tasks.gotmpl"])))
+			getCaseload(client, templates["caseload.gotmpl"])))
 
-	mux.Handle("/deputies",
+	mux.Handle("POST /caseload",
 		wrap(
-			deputies(client, templates["deputies.gotmpl"])))
+			reassignClients(client)))
 
-	mux.Handle("/bonds",
+	mux.Handle("GET /deputy-tasks",
+		wrap(
+			getDeputyTasks(client, templates["deputy-tasks.gotmpl"])))
+
+	mux.Handle("POST /deputy-tasks",
+		wrap(
+			reassignTasks(client)))
+
+	mux.Handle("GET /deputies",
+		wrap(
+			getDeputies(client, templates["deputies.gotmpl"])))
+
+	mux.Handle("POST /deputies",
+		wrap(
+			reassignDeputies(client)))
+
+	mux.Handle("GET /bonds",
 		wrap(
 			bonds(client, templates["bonds.gotmpl"])))
 
-	mux.Handle("/health-check", healthCheck())
+	mux.Handle("GET /health-check", healthCheck())
 
 	static := http.FileServer(http.Dir(envVars.WebDir + "/static"))
 	mux.Handle("/assets/", static)

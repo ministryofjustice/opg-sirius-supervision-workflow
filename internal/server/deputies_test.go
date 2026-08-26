@@ -63,7 +63,7 @@ func TestGetDeputies(t *testing.T) {
 		},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template)(app, w, r)
+	err := getDeputies(client, template)(app, w, r)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 1, template.count)
@@ -122,7 +122,6 @@ func TestPostDeputies(t *testing.T) {
 	client := &mockDeputiesClient{}
 	template := &mockTemplate{}
 
-	client.On("GetDeputyList", mock.Anything).Return(testDeputyList, nil)
 	client.On("ReassignDeputies", mock.Anything).Return("success reassign", nil)
 
 	w := httptest.NewRecorder()
@@ -133,7 +132,7 @@ func TestPostDeputies(t *testing.T) {
 		SelectedTeam:    model.Team{Type: "PRO", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template)(app, w, r)
+	err := reassignDeputies(client)(app, w, r)
 
 	assert.Equal(t, Redirect{
 		Path:           "/deputies?team=19&page=1&per-page=25&order-by=deputy&sort=asc",
@@ -156,37 +155,10 @@ func TestDeputies_RedirectsToClientTasksForLayDeputies(t *testing.T) {
 		SelectedTeam:    model.Team{Type: "LAY", Selector: "19"},
 		EnvironmentVars: EnvironmentVars{},
 	}
-	err := deputies(client, template)(app, w, r)
+	err := getDeputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "client-tasks?team=19&page=1&per-page=25"}, err)
 	assert.Equal(t, 0, template.count)
-}
-
-func TestDeputies_MethodNotAllowed(t *testing.T) {
-	methods := []string{
-		http.MethodConnect,
-		http.MethodDelete,
-		http.MethodHead,
-		http.MethodOptions,
-		http.MethodPatch,
-		http.MethodPut,
-		http.MethodTrace,
-	}
-	for _, method := range methods {
-		t.Run("Test "+method, func(t *testing.T) {
-			client := &mockDeputiesClient{}
-			template := &mockTemplate{}
-
-			w := httptest.NewRecorder()
-			r, _ := http.NewRequest(method, "", nil)
-
-			app := WorkflowVars{}
-			err := deputies(client, template)(app, w, r)
-
-			assert.Equal(t, StatusError(http.StatusMethodNotAllowed), err)
-			assert.Equal(t, 0, template.count)
-		})
-	}
 }
 
 func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumber(t *testing.T) {
@@ -207,7 +179,7 @@ func TestDeputies_NonExistentPageNumberWillRedirectToTheHighestExistingPageNumbe
 	app := WorkflowVars{
 		SelectedTeam: model.Team{Type: "PRO", Selector: "1"},
 	}
-	err := deputies(client, template)(app, w, r)
+	err := getDeputies(client, template)(app, w, r)
 
 	assert.Equal(t, Redirect{Path: "deputies?team=1&page=2&per-page=25&order-by=deputy&sort=asc"}, err)
 	assert.Equal(t, 0, template.count)
