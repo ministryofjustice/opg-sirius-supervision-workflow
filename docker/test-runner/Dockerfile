@@ -1,3 +1,6 @@
 FROM golang:1.26-alpine@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2
 
 RUN go install gotest.tools/gotestsum@latest
+
+RUN go install github.com/pact-foundation/pact-go/v2@v2.7.1
+RUN pact-go -l DEBUG install

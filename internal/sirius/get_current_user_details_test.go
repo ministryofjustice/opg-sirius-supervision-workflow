@@ -2,13 +2,18 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -82,7 +87,7 @@ func TestGetCurrentUserDetailsReturnsUnauthorisedClientError(t *testing.T) {
 	assert.Equal(t, ErrUnauthorized, err)
 }
 
-func TestMyDetailsReturns500Error(t *testing.T) {
+func TestGetCurrentUserDetailsReturns500Error(t *testing.T) {
 	logger, _ := SetUpTest()
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -99,7 +104,7 @@ func TestMyDetailsReturns500Error(t *testing.T) {
 	}, err)
 }
 
-func TestMyDetailsReturns200(t *testing.T) {
+func TestGetCurrentUserDetailsReturns200(t *testing.T) {
 	logger, mockClient := SetUpTest()
 	client := NewApiClient(mockClient, "http://localhost:3000", logger)
 
@@ -147,4 +152,46 @@ func TestMyDetailsReturns200(t *testing.T) {
 	user, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, err, nil)
 	assert.Equal(t, user, expectedResponse)
+}
+
+func TestGetCurrentUserDetails_contract(t *testing.T) {
+	pact, err := consumer.NewV2Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../../logs",
+		PactDir:  "../../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("User exists").
+		UponReceiving("A request for the current user").
+		WithRequest("GET", "/supervision-api/v1/users/current", func(b *consumer.V2RequestBuilder) {
+			b.Header("Accept", matchers.S("application/json"))
+		}).
+		WillRespondWith(200, func(b *consumer.V2ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			// we only use the below subset of fields for user details, so we only include those in the contract;
+			// if more fields are needed in the future, they should be added to the test
+			b.JSONBody(matchers.MapMatcher{
+				"id":    matchers.Like(1),
+				"roles": matchers.EachLike("Case Manager", 1),
+				"teams": matchers.EachLike(matchers.MapMatcher{"id": matchers.Like(1)}, 0),
+			})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			user, _ := client.GetCurrentUserDetails(getContext(nil))
+
+			assert.EqualValues(t, &model.Assignee{
+				Id:    1,
+				Roles: []string{"Case Manager"},
+				Teams: []model.Team{{Id: 1}},
+			}, user)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }
