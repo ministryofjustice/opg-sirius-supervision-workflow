@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,8 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -202,4 +206,91 @@ func TestCreateMemberIdArray(t *testing.T) {
 			assert.Equal(t, test.want, CreateMemberIdArray(test.params))
 		})
 	}
+}
+
+func TestGetClosedClientList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../../logs",
+		PactDir:  "../../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("Closed clients exist for requested teams").
+		UponReceiving("A request for the closed client list").
+		WithRequest("GET", "/supervision-api/v1/assignees/closed-clients", func(b *consumer.V4RequestBuilder) {
+			b.Header("Accept", matchers.S("application/json"))
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+			b.Query("filter", matchers.S(""))
+			b.JSONBody(matchers.StructMatcher{
+				"teamIds": matchers.EachLike("40", 1),
+			})
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.JSONBody(matchers.StructMatcher{
+				"pages": matchers.StructMatcher{
+					"current": matchers.Like(1),
+					"total":   matchers.Like(1),
+				},
+				"total": matchers.Like(1),
+				"metadata": matchers.StructMatcher{
+					"assigneeClientCount": matchers.EachLike(matchers.StructMatcher{
+						"assignee": matchers.Like(1),
+						"count":    matchers.Like(14),
+					}, 1),
+				},
+				"clients": matchers.EachLike(matchers.StructMatcher{
+					"id":            matchers.Like(63),
+					"caseRecNumber": matchers.Like("42687883"),
+					"firstname":     matchers.Like("Ro"),
+					"surname":       matchers.Like("Bot"),
+					"cases": matchers.EachLike(matchers.StructMatcher{
+						"id":            matchers.Like(92),
+						"caseRecNumber": matchers.Like("33594483"),
+						"latestAnnualReport": matchers.StructMatcher{
+							"dueDate": matchers.Like("21/12/2023"),
+						},
+						"orderStatus": matchers.StructMatcher{
+							"handle": matchers.Like("CLOSED"),
+							"label":  matchers.Like("Closed"),
+						},
+						"madeActiveDate":         matchers.Like("01/06/2023"),
+						"introductoryTargetDate": matchers.Like("20/06/2023"),
+						"howDeputyAppointed": matchers.StructMatcher{
+							"handle": matchers.Like("SOLE"),
+							"label":  matchers.Like("Sole"),
+						},
+					}, 1),
+					"supervisionLevel": matchers.StructMatcher{
+						"handle": matchers.Like("MINIMAL"),
+						"label":  matchers.Like("Minimal"),
+					},
+					"cachedDebtTotal": matchers.Like(10010),
+					"lastActionDate":  matchers.Like("2023-12-12T12:35:56+00:00"),
+					"closedOnDate":    matchers.Like("2022-02-02T12:35:56+00:00"),
+				}, 1),
+			})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
+				Team:    model.Team{Id: 40, Name: "Supervision closed cases"},
+				Page:    1,
+				PerPage: 25,
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, clientList.TotalClients)
+			assert.EqualValues(t, 1, len(clientList.Clients))
+			assert.EqualValues(t, "Bot", clientList.Clients[0].Surname)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

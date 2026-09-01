@@ -155,7 +155,7 @@ func TestGetCurrentUserDetailsReturns200(t *testing.T) {
 }
 
 func TestGetCurrentUserDetails_contract(t *testing.T) {
-	pact, err := consumer.NewV2Pact(consumer.MockHTTPProviderConfig{
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
 		LogDir:   "../../../logs",
@@ -167,10 +167,10 @@ func TestGetCurrentUserDetails_contract(t *testing.T) {
 		AddInteraction().
 		Given("User exists").
 		UponReceiving("A request for the current user").
-		WithRequest("GET", "/supervision-api/v1/users/current", func(b *consumer.V2RequestBuilder) {
+		WithRequest("GET", "/supervision-api/v1/users/current", func(b *consumer.V4RequestBuilder) {
 			b.Header("Accept", matchers.S("application/json"))
 		}).
-		WillRespondWith(200, func(b *consumer.V2ResponseBuilder) {
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			// we only use the below subset of fields for user details, so we only include those in the contract;
 			// if more fields are needed in the future, they should be added to the test

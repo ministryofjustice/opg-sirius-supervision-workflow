@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,8 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -286,4 +290,88 @@ func TestTaskList_CalculateTaskTypeCounts(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, tasks.CalculateTaskTypeCounts(taskTypes))
+}
+
+func TestGetTaskList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../../logs",
+		PactDir:  "../../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("Tasks exist for requested teams").
+		UponReceiving("A request for the task list").
+		WithRequest("GET", "/supervision-api/v1/assignees/teams/tasks", func(b *consumer.V4RequestBuilder) {
+			b.Header("Accept", matchers.S("application/json"))
+			b.Query("teamIds[]", matchers.S("13"))
+			b.Query("filter", matchers.S("status:Not+started"))
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+			b.Query("sort", matchers.S("ispriority:desc,duedate:asc,id:asc"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.JSONBody(matchers.StructMatcher{
+				"limit": matchers.Like(25),
+				"metadata": matchers.StructMatcher{
+					"taskTypeCount": matchers.EachLike(matchers.StructMatcher{
+						"type":  matchers.Like("FCC"),
+						"count": matchers.Like(14),
+					}, 1),
+					"deputyTaskCount": matchers.EachLike(matchers.StructMatcher{
+						"deputy": matchers.Like(61),
+						"count":  matchers.Like(3),
+					}, 1),
+				},
+				"pages": matchers.StructMatcher{
+					"current": matchers.Like(1),
+					"total":   matchers.Like(1),
+				},
+				"total": matchers.Like(13),
+				"tasks": matchers.EachLike(matchers.StructMatcher{
+					"id":      matchers.Like(119),
+					"type":    matchers.Like("ORAL"),
+					"status":  matchers.Like("Not started"),
+					"dueDate": matchers.Like("29/11/2022"),
+					"name":    matchers.Like(""),
+					"assignee": matchers.StructMatcher{
+						"id":          matchers.Like(0),
+						"displayName": matchers.Like("Unassigned"),
+					},
+					"clients": matchers.EachLike(matchers.StructMatcher{
+						"id":            matchers.Like(61),
+						"caseRecNumber": matchers.Like("92902877"),
+						"firstname":     matchers.Like("Antoine"),
+						"surname":       matchers.Like("Burgundy"),
+						"supervisionCaseOwner": matchers.StructMatcher{
+							"id":          matchers.Like(22),
+							"displayName": matchers.Like("Allocations - (Supervision)"),
+							"teams":       []interface{}{},
+						},
+					}, 1),
+					"caseOwnerTask": matchers.Like(true),
+				}, 1),
+			})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			taskList, err := client.GetTaskList(getContext(nil), TaskListParams{
+				Team:    model.Team{Id: 13},
+				Page:    1,
+				PerPage: 25,
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 13, taskList.TotalTasks)
+			assert.EqualValues(t, 1, len(taskList.Tasks))
+			assert.EqualValues(t, 119, taskList.Tasks[0].Id)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }
