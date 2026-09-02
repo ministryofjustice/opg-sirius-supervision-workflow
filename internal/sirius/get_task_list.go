@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -44,22 +45,21 @@ type TaskListParams struct {
 
 func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, error) {
 	var v TaskList
-	var teamIds []string
-
+	query := url.Values{}
 	if params.Team.Id != 0 {
-		teamIds = []string{"teamIds[]=" + strconv.Itoa(params.Team.Id)}
+		query.Add("teamIds[]", strconv.Itoa(params.Team.Id))
 	}
 	for _, team := range params.Team.Teams {
-		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
+		query.Add("teamIds[]", strconv.Itoa(team.Id))
 	}
+	query.Set("filter", params.CreateFilter())
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("sort", "ispriority:desc,duedate:asc,id:asc")
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=%s",
-		strings.Join(teamIds, "&"),
-		params.CreateFilter(),
-		params.PerPage,
-		params.Page,
-		"ispriority:desc,duedate:asc,id:asc",
+		"/v1/assignees/teams/tasks?%s",
+		query.Encode(),
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
@@ -95,7 +95,7 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 }
 
 func (p TaskListParams) CreateFilter() string {
-	filter := "status:Not+started,"
+	filter := "status:Not started,"
 
 	if slices.Contains(p.SelectedTaskTypes, TaskTypeEcmHandle) {
 		p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)

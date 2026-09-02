@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sort"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -37,11 +38,15 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 	}
 	c.logger.Debug("Task types cache expired. Refreshing...")
 
+	query := url.Values{}
 	endpoint := fmt.Sprintf("/v1/tasktypes/%s", params.Category)
 	if params.ProDeputy {
-		endpoint += "?pro_deputy=true"
+		query.Set("pro_deputy", "true")
 	} else if params.PADeputy {
-		endpoint += "?pa_deputy=true"
+		query.Set("pa_deputy", "true")
+	}
+	if encoded := query.Encode(); encoded != "" {
+		endpoint += "?" + encoded
 	}
 
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)

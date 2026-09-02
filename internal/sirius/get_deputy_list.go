@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -32,22 +33,22 @@ type DeputyListParams struct {
 
 func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyList, error) {
 	var v DeputyList
-	var teamIds []string
+	query := url.Values{}
 
 	if params.Team.Id != 0 {
-		teamIds = []string{"teamIds[]=" + strconv.Itoa(params.Team.Id)}
+		query.Add("teamIds[]", strconv.Itoa(params.Team.Id))
 	}
 	for _, team := range params.Team.Teams {
-		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
+		query.Add("teamIds[]", strconv.Itoa(team.Id))
 	}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("filter", params.CreateFilter())
+	query.Set("sort", params.Sort)
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
-		strings.Join(teamIds, "&"),
-		params.PerPage,
-		params.Page,
-		params.CreateFilter(),
-		params.Sort,
+		"/v1/assignees/teams/deputies?%s",
+		query.Encode(),
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 

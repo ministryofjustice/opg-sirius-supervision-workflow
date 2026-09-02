@@ -177,15 +177,15 @@ func TestGetCurrentUserDetails_contract(t *testing.T) {
 			b.JSONBody(matchers.MapMatcher{
 				"id":    matchers.Like(1),
 				"roles": matchers.EachLike("Case Manager", 1),
-				"teams": matchers.EachLike(matchers.MapMatcher{"id": matchers.Like(1)}, 0),
+				"teams": matchers.EachLike(matchers.MapMatcher{"id": matchers.Like(1)}, 1),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
-			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d", config.Host, config.Port), telemetry.NewLogger("test"))
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			user, _ := client.GetCurrentUserDetails(getContext(nil))
 
-			assert.EqualValues(t, &model.Assignee{
+			assert.EqualValues(t, model.Assignee{
 				Id:    1,
 				Roles: []string{"Case Manager"},
 				Teams: []model.Team{{Id: 1}},

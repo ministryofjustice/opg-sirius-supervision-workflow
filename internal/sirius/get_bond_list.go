@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
@@ -27,7 +29,10 @@ type BondListParams struct {
 func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, error) {
 	var v BondList
 
-	endpoint := fmt.Sprintf("/v1/bonds/without-orders?limit=%d&page=%d", params.PerPage, params.Page)
+	query := url.Values{}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	endpoint := fmt.Sprintf("/v1/bonds/without-orders?%s", query.Encode())
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {

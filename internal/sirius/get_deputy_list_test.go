@@ -74,7 +74,12 @@ func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.Contains(t, rq.URL.RawQuery, "teamIds[]=13&limit=25&page=1&filter=ecm:1,ecm:2&sort=field:direction")
+		query := rq.URL.Query()
+		assert.Equal(t, []string{"13"}, query["teamIds[]"])
+		assert.Equal(t, "25", query.Get("limit"))
+		assert.Equal(t, "1", query.Get("page"))
+		assert.Equal(t, "ecm:1,ecm:2", query.Get("filter"))
+		assert.Equal(t, "field:direction", query.Get("sort"))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -145,7 +150,7 @@ func TestApiClient_GetDeputyList_Returns500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/teams/deputies?filter=&limit=25&page=1&sort=&teamIds%5B%5D=13",
 		Method: http.MethodGet,
 	}, err)
 }

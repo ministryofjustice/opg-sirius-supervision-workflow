@@ -4,24 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
-	"strings"
 )
 
 func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
-	var teamIds []string
+	query := url.Values{}
 
 	for _, teamId := range CreateMemberIdArray(params) {
-		teamIds = append(teamIds, "teamIds[]="+teamId)
+		query.Add("teamIds[]", teamId)
 	}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("filter", params.CreateFilter())
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/closed-clients?%s&limit=%d&page=%d&filter=%s",
-		strings.Join(teamIds, "&"),
-		params.PerPage,
-		params.Page,
-		params.CreateFilter(),
+		"/v1/assignees/closed-clients?%s",
+		query.Encode(),
 	)
 
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)

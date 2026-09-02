@@ -2,6 +2,7 @@ package urlbuilder
 
 import (
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -18,24 +19,24 @@ type UrlBuilder struct {
 }
 
 func (ub UrlBuilder) buildUrl(team string, page int, perPage int, filters []Filter, sort Sort, preselectCaseManager bool) string {
-	url := ""
+	builtURL := ""
 	if preselectCaseManager {
-		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d&preselect", ub.Path, team, page, perPage)
+		builtURL = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d&preselect", ub.Path, url.QueryEscape(team), page, perPage)
 	} else {
-		url = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, team, page, perPage)
+		builtURL = fmt.Sprintf("%s?team=%s&page=%d&per-page=%d", ub.Path, url.QueryEscape(team), page, perPage)
 	}
 
 	for _, filter := range filters {
 		for _, value := range filter.SelectedValues {
 			if value != "" {
-				url += "&" + filter.Name + "=" + value
+				builtURL += "&" + filter.Name + "=" + url.QueryEscape(value)
 			}
 		}
 	}
 	if sort.ToURL() != "" {
-		url += "&" + sort.ToURL()
+		builtURL += "&" + sort.ToURL()
 	}
-	return url
+	return builtURL
 }
 
 func (ub UrlBuilder) GetTeamUrl(team model.Team) string {

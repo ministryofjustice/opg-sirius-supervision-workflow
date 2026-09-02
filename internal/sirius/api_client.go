@@ -105,6 +105,7 @@ func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader)
 
 	req.Header.Add("OPG-Bypass-Membrane", "1")
 	req.Header.Add("X-XSRF-TOKEN", ctx.XSRFToken)
+	req.Header.Add("Accept", "application/json")
 
 	return req, err
 }

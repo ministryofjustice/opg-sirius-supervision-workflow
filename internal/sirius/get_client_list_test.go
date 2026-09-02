@@ -68,8 +68,8 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.NotContains(t, rq.URL.RawQuery, "sort=made_active_date:asc")
-		assert.Contains(t, rq.URL.RawQuery, "caseowner:1")
+		assert.NotEqual(t, "made_active_date:asc", rq.URL.Query().Get("sort"))
+		assert.Contains(t, rq.URL.Query().Get("filter"), "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -155,7 +155,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/13/clients?filter=&limit=25&page=1&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
@@ -165,8 +165,8 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
-		assert.NotContains(t, r.URL.RawQuery, "caseowner:1")
+		assert.Equal(t, "made_active_date:asc", r.URL.Query().Get("sort"))
+		assert.NotContains(t, r.URL.Query().Get("filter"), "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
@@ -188,7 +188,7 @@ func TestGetCaseloadListSortedByReportDueDateForLayTeam(t *testing.T) {
 	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-		assert.Contains(t, r.URL.RawQuery, "sort=report_due_date:asc")
+		assert.Equal(t, "report_due_date:asc", r.URL.Query().Get("sort"))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
