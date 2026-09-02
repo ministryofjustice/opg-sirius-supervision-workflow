@@ -74,8 +74,8 @@ func TestGetPADeputies_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 

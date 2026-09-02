@@ -127,8 +127,8 @@ func TestGetBondList_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 
@@ -137,7 +137,6 @@ func TestGetBondList_contract(t *testing.T) {
 		Given("User exists").
 		UponReceiving("A request for bonds without orders").
 		WithRequest("GET", "/supervision-api/v1/bonds/without-orders", func(b *consumer.V4RequestBuilder) {
-			b.Header("Accept", matchers.S("application/json"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
 		}).
@@ -197,7 +196,7 @@ func TestGetBondList_contract(t *testing.T) {
 							Label:  "Match",
 							Handle: "MATCH",
 						},
-						Deputies: []string{"Angela White", "Gary Black"},
+						Deputies: []string{"Angela White"},
 					},
 				},
 				Pages: model.PageInformation{

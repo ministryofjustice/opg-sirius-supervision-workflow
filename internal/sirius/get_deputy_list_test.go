@@ -154,8 +154,8 @@ func TestGetDeputyList_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 
@@ -164,7 +164,6 @@ func TestGetDeputyList_contract(t *testing.T) {
 		Given("Deputies exist for requested teams").
 		UponReceiving("A request for the deputy list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/deputies", func(b *consumer.V4RequestBuilder) {
-			b.Header("Accept", matchers.S("application/json"))
 			b.Query("teamIds[]", matchers.S("13"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))

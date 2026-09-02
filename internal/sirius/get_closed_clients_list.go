@@ -1,39 +1,30 @@
 package sirius
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
-
-type ClosedClientsParams struct {
-	TeamIds []string `json:"teamIds"`
-}
 
 func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
-	var filter string
-	var body bytes.Buffer
-	var err error
+	var teamIds []string
 
-	filter = params.CreateFilter()
-	ClosedClientMemberIds := ClosedClientsParams{TeamIds: CreateMemberIdArray(params)}
-
-	err = json.NewEncoder(&body).Encode(ClosedClientMemberIds)
-	if err != nil {
-		return v, err
+	for _, teamId := range CreateMemberIdArray(params) {
+		teamIds = append(teamIds, "teamIds[]="+teamId)
 	}
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/closed-clients?limit=%d&page=%d&filter=%s",
+		"/v1/assignees/closed-clients?%s&limit=%d&page=%d&filter=%s",
+		strings.Join(teamIds, "&"),
 		params.PerPage,
 		params.Page,
-		filter,
+		params.CreateFilter(),
 	)
 
-	req, err := c.newRequest(ctx, http.MethodGet, endpoint, &body)
+	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)

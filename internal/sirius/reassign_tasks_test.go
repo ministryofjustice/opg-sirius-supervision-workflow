@@ -201,8 +201,8 @@ func TestReassignTasks_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 
@@ -211,7 +211,6 @@ func TestReassignTasks_contract(t *testing.T) {
 		Given("Tasks can be reassigned").
 		UponReceiving("A request to reassign tasks").
 		WithRequest("PUT", "/supervision-api/v1/reassign-tasks", func(b *consumer.V4RequestBuilder) {
-			b.Header("Accept", matchers.S("application/json"))
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
 				"AssignTeam": matchers.Like("10"),

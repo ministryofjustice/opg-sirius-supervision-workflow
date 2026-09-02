@@ -99,6 +99,10 @@ func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader)
 		req.AddCookie(c)
 	}
 
+	if method == http.MethodPost || method == http.MethodPut {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	req.Header.Add("OPG-Bypass-Membrane", "1")
 	req.Header.Add("X-XSRF-TOKEN", ctx.XSRFToken)
 

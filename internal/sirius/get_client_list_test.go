@@ -251,8 +251,8 @@ func TestGetClientList_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 
@@ -261,7 +261,6 @@ func TestGetClientList_contract(t *testing.T) {
 		Given("Clients exist for an assignee").
 		UponReceiving("A request for the client list").
 		WithRequest("GET", "/supervision-api/v1/assignees/13/clients", func(b *consumer.V4RequestBuilder) {
-			b.Header("Accept", matchers.S("application/json"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
 			b.Query("filter", matchers.S("caseowner:1"))

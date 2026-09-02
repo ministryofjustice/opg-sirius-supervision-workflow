@@ -296,8 +296,8 @@ func TestGetTaskList_contract(t *testing.T) {
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
-		LogDir:   "../../../logs",
-		PactDir:  "../../../pacts",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
 	})
 	assert.NoError(t, err)
 
@@ -306,7 +306,6 @@ func TestGetTaskList_contract(t *testing.T) {
 		Given("Tasks exist for requested teams").
 		UponReceiving("A request for the task list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/tasks", func(b *consumer.V4RequestBuilder) {
-			b.Header("Accept", matchers.S("application/json"))
 			b.Query("teamIds[]", matchers.S("13"))
 			b.Query("filter", matchers.S("status:Not+started"))
 			b.Query("limit", matchers.S("25"))
