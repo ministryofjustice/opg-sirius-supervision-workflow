@@ -258,9 +258,9 @@ func TestGetClientList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Clients exist for an assignee").
+		Given("A supervision client exists").
 		UponReceiving("A request for the client list").
-		WithRequest("GET", "/supervision-api/v1/assignees/13/clients", func(b *consumer.V4RequestBuilder) {
+		WithRequest("GET", "/supervision-api/v1/assignees/123/clients", func(b *consumer.V4RequestBuilder) {
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
 			b.Query("filter", matchers.S("caseowner:1"))
@@ -314,7 +314,7 @@ func TestGetClientList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			clientList, err := client.GetClientList(getContext(nil), ClientListParams{
-				Team:       model.Team{Id: 13},
+				Team:       model.Team{Id: 123},
 				Page:       1,
 				PerPage:    25,
 				CaseOwners: []string{"1"},

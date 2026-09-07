@@ -303,10 +303,10 @@ func TestGetTaskList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Tasks exist for requested teams").
+		Given("A caseowner task exists").
 		UponReceiving("A request for the task list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/tasks", func(b *consumer.V4RequestBuilder) {
-			b.Query("teamIds[]", matchers.S("13"))
+			b.Query("teamIds[]", matchers.S("123"))
 			b.Query("filter", matchers.S("status:Not started"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
@@ -360,7 +360,7 @@ func TestGetTaskList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			taskList, err := client.GetTaskList(getContext(nil), TaskListParams{
-				Team:    model.Team{Id: 13},
+				Team:    model.Team{Id: 123},
 				Page:    1,
 				PerPage: 25,
 			})

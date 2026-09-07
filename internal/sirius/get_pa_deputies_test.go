@@ -81,7 +81,7 @@ func TestGetPADeputies_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Public authority deputies exist").
+		Given("A public authority deputy exists").
 		UponReceiving("A request for PA deputies").
 		WithRequest("GET", "/supervision-api/v1/assignees/pa-deputies", func(b *consumer.V4RequestBuilder) {
 			b.Header("Accept", matchers.S("application/json"))
