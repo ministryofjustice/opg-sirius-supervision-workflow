@@ -219,10 +219,10 @@ func TestGetClosedClientList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Closed clients exist for requested teams").
+		Given("A closed Supervision client exists").
 		UponReceiving("A request for the closed client list").
 		WithRequest("GET", "/supervision-api/v1/assignees/closed-clients", func(b *consumer.V4RequestBuilder) {
-			b.Query("teamIds[]", matchers.S("40"))
+			b.Query("teamIds[]", matchers.S("123"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
 			b.Query("filter", matchers.S(""))
@@ -277,7 +277,7 @@ func TestGetClosedClientList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
-				Team:    model.Team{Id: 40, Name: "Supervision closed cases"},
+				Team:    model.Team{Id: 123, Name: "Supervision closed cases"},
 				Page:    1,
 				PerPage: 25,
 			})

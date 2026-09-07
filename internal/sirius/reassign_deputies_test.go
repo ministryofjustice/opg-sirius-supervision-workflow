@@ -136,21 +136,19 @@ func TestReassignDeputies_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Deputies can be reassigned").
+		Given("A deputy exists").
 		UponReceiving("A request to reassign deputies").
 		WithRequest("PUT", "/supervision-api/v1/deputies/reassign", func(b *consumer.V4RequestBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"AssignTeam": matchers.Like("10"),
-				"AssignCM":   matchers.Like(""),
-				"assigneeId": matchers.Like(10),
-				"deputyIds":  matchers.EachLike("1", 1),
+				"assigneeId": matchers.Like(123),
+				"deputyIds":  matchers.EachLike("123", 1),
 			})
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"successful":   matchers.EachLike(matchers.Like(63), 1),
+				"successful":   matchers.EachLike(matchers.Like(1), 1),
 				"error":        []interface{}{},
 				"reassignName": matchers.Like("LayTeam1 User2"),
 			})
@@ -159,8 +157,8 @@ func TestReassignDeputies_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			msg, err := client.ReassignDeputies(getContext(nil), ReassignDeputiesParams{
-				AssignTeam: "10",
-				DeputyIds:  []string{"1", "2"},
+				AssignTeam: "123",
+				DeputyIds:  []string{"123"},
 			})
 			assert.NoError(t, err)
 

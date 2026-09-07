@@ -137,15 +137,13 @@ func TestReassignClients_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Clients can be reassigned").
+		Given("A Supervision client exists").
 		UponReceiving("A request to reassign clients").
 		WithRequest("PUT", "/supervision-api/v1/clients/edit/reassign", func(b *consumer.V4RequestBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"AssignTeam": matchers.Like("10"),
-				"AssignCM":   matchers.Like(""),
-				"assigneeId": matchers.Like(10),
-				"clientIds":  matchers.EachLike("1", 1),
+				"assigneeId": matchers.Like(123),
+				"clientIds":  matchers.EachLike("123", 1),
 				"isWorkflow": matchers.Like(true),
 			})
 		}).
@@ -161,8 +159,8 @@ func TestReassignClients_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			msg, err := client.ReassignClients(getContext(nil), ReassignClientsParams{
-				AssignTeam: "10",
-				ClientIds:  []string{"1", "2"},
+				AssignTeam: "123",
+				ClientIds:  []string{"123"},
 			})
 			assert.NoError(t, err)
 

@@ -166,13 +166,13 @@ func TestGetDeputyList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Deputies exist for requested teams").
+		Given("A deputy exists").
 		UponReceiving("A request for the deputy list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/deputies", func(b *consumer.V4RequestBuilder) {
-			b.Query("teamIds[]", matchers.S("13"))
+			b.Query("teamIds[]", matchers.S("123"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
-			b.Query("filter", matchers.S("ecm:1,ecm:2"))
+			b.Query("filter", matchers.S("ecm:123"))
 			b.Query("sort", matchers.S("field:direction"))
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
@@ -224,11 +224,11 @@ func TestGetDeputyList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			deputyList, err := client.GetDeputyList(getContext(nil), DeputyListParams{
-				Team:         model.Team{Id: 13},
+				Team:         model.Team{Id: 123},
 				Page:         1,
 				PerPage:      25,
 				Sort:         "field:direction",
-				SelectedECMs: []string{"1", "2"},
+				SelectedECMs: []string{"123"},
 			})
 			assert.NoError(t, err)
 

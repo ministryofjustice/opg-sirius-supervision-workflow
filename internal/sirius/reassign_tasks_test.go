@@ -208,15 +208,13 @@ func TestReassignTasks_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Tasks can be reassigned").
+		Given("A Supervision task exists").
 		UponReceiving("A request to reassign tasks").
 		WithRequest("PUT", "/supervision-api/v1/reassign-tasks", func(b *consumer.V4RequestBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"AssignTeam": matchers.Like("10"),
-				"AssignCM":   matchers.Like("20"),
-				"assigneeId": matchers.Like(20),
-				"taskIds":    matchers.EachLike("1", 1),
+				"assigneeId": matchers.Like(123),
+				"taskIds":    matchers.EachLike("123", 1),
 				"isPriority": matchers.Like("true"),
 			})
 		}).
@@ -235,9 +233,8 @@ func TestReassignTasks_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			msg, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{
-				AssignTeam: "10",
-				AssignCM:   "20",
-				TaskIds:    []string{"1"},
+				AssignTeam: "123",
+				TaskIds:    []string{"123"},
 				IsPriority: "true",
 			})
 			assert.NoError(t, err)

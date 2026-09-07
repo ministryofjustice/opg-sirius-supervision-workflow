@@ -134,7 +134,7 @@ func TestGetBondList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("User exists").
+		Given("Bonds without orders exist").
 		UponReceiving("A request for bonds without orders").
 		WithRequest("GET", "/supervision-api/v1/bonds/without-orders", func(b *consumer.V4RequestBuilder) {
 			b.Query("limit", matchers.S("25"))
