@@ -109,7 +109,7 @@ func TestUpdateReassignTasks(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignTasksParams
+				var params ReassignTasksRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)

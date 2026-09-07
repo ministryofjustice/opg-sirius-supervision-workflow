@@ -40,7 +40,7 @@ func TestUpdateReassignClients(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignClientsParams
+				var params ReassignClientsRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
