@@ -5,14 +5,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
+
+	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ReassignTasksParams struct {
 	AssignTeam string
 	AssignCM   string
+	TaskIds    []string
+	IsPriority string
+}
+
+type ReassignTasksRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	TaskIds    []string `json:"taskIds"`
 	IsPriority string   `json:"isPriority"`
@@ -34,12 +40,16 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		assignee = params.AssignCM
 	}
 
-	params.AssigneeId, err = strconv.Atoi(assignee)
+	id, err := strconv.Atoi(assignee)
 	if err != nil {
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(params)
+	err = json.NewEncoder(&body).Encode(ReassignTasksRequest{
+		AssigneeId: id,
+		TaskIds:    params.TaskIds,
+		IsPriority: params.IsPriority,
+	})
 
 	if err != nil {
 		return "", err

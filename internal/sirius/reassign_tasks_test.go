@@ -115,7 +115,7 @@ func TestUpdateReassignTasks(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignTasksParams
+				var params ReassignTasksRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
@@ -221,9 +221,9 @@ func TestReassignTasks_contract(t *testing.T) {
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"id": matchers.Like(98),
+				"id": matchers.Like(123),
 				"assignee": matchers.StructMatcher{
-					"id":          matchers.Like(25),
+					"id":          matchers.Like(123),
 					"displayName": matchers.Like("Allocations - (Supervision)"),
 				},
 				"caseOwnerTask": matchers.Like(false),

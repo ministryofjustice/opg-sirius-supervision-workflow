@@ -44,7 +44,7 @@ func TestUpdateReassignDeputies(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignDeputiesParams
+				var params ReassignDeputiesRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
@@ -162,7 +162,7 @@ func TestReassignDeputies_contract(t *testing.T) {
 			})
 			assert.NoError(t, err)
 
-			assert.EqualValues(t, "You have reassigned 2 deputies(s) to LayTeam1 User2", msg)
+			assert.EqualValues(t, "You have reassigned 1 deputies(s) to LayTeam1 User2", msg)
 			return nil
 		})
 

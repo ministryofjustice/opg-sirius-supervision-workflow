@@ -44,7 +44,7 @@ func TestUpdateReassignClients(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignClientsParams
+				var params ReassignClientsRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
@@ -150,7 +150,7 @@ func TestReassignClients_contract(t *testing.T) {
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"successful":   matchers.EachLike(matchers.Like(63), 1),
+				"successful":   matchers.EachLike(matchers.Like(1), 1),
 				"error":        []any{},
 				"reassignName": matchers.Like("LayTeam1 User2"),
 			})
@@ -164,7 +164,7 @@ func TestReassignClients_contract(t *testing.T) {
 			})
 			assert.NoError(t, err)
 
-			assert.EqualValues(t, "You have reassigned 2 client(s) to LayTeam1 User2", msg)
+			assert.EqualValues(t, "You have reassigned 1 client(s) to LayTeam1 User2", msg)
 			return nil
 		})
 
