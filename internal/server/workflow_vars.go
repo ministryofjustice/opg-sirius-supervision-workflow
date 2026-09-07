@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -156,10 +157,11 @@ func checkIfOnMyTeamPage(loggedInTeamId, selectedTeamId int) bool {
 }
 
 func (t Tab) GetURL(team model.Team) string {
+	encodedTeam := url.QueryEscape(team.Selector)
 	if t.IsMyTeamPage {
-		return t.basePath + "?team=" + team.Selector + "&preselect"
+		return t.basePath + "?team=" + encodedTeam + "&preselect"
 	}
-	return t.basePath + "?team=" + team.Selector
+	return t.basePath + "?team=" + encodedTeam
 }
 
 func (t Tab) IsSelected(app WorkflowVars) bool {
