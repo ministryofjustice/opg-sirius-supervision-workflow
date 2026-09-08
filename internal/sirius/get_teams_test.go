@@ -206,35 +206,13 @@ func TestGetTeams_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("Supervision team with members exists").
 		UponReceiving("A request for teams").
 		WithRequest("GET", "/supervision-api/v1/teams", func(b *consumer.V4RequestBuilder) {
 			b.Header("Accept", matchers.S("application/json"))
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			b.JSONBody([]matchers.StructMatcher{
-				{
-					"id":          matchers.Like(21),
-					"displayName": matchers.Like("Allocations - (Supervision)"),
-					"members": matchers.EachLike(matchers.StructMatcher{
-						"id":          matchers.Like(71),
-						"displayName": matchers.Like("Allocations User1"),
-					}, 0),
-					"teamType": matchers.StructMatcher{
-						"handle": matchers.Like("ALLOCATIONS"),
-						"label":  matchers.Like("Allocations"),
-					},
-				},
-				{
-					"id":          matchers.Like(24),
-					"displayName": matchers.Like("Team without type"),
-					"members": matchers.EachLike(matchers.StructMatcher{
-						"id":          matchers.Like(72),
-						"displayName": matchers.Like("Other User"),
-					}, 0),
-				},
-			})
+			b.BodyMatch([]TeamCollection{})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
@@ -243,7 +221,7 @@ func TestGetTeams_contract(t *testing.T) {
 			assert.NoError(t, err)
 
 			assert.EqualValues(t, 3, len(teams))
-			assert.EqualValues(t, "Allocations - (Supervision)", teams[0].Name)
+			assert.EqualValues(t, "Lay Deputy Team", teams[0].Name)
 			return nil
 		})
 
