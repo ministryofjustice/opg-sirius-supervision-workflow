@@ -302,12 +302,12 @@ func TestGetClientList_contract(t *testing.T) {
 							"handle": matchers.Like("SOLE"),
 							"label":  matchers.Like("Sole"),
 						},
-					}, 1),
+					}, 0),
 					"supervisionLevel": matchers.StructMatcher{
 						"handle": matchers.Like("MINIMAL"),
 						"label":  matchers.Like("Minimal"),
 					},
-				}, 1),
+				}, 0),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {

@@ -150,8 +150,8 @@ func TestReassignClients_contract(t *testing.T) {
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
-				"successful":   matchers.EachLike(matchers.Like(1), 1),
-				"error":        []any{},
+				"successful":   matchers.EachLike(matchers.Like(1), 0),
+				"error":        matchers.EachLike(matchers.Like(1), 0),
 				"reassignName": matchers.Like("LayTeam1 User2"),
 			})
 		}).

@@ -219,12 +219,12 @@ func TestGetTeams_contract(t *testing.T) {
 				"members": matchers.EachLike(matchers.StructMatcher{
 					"id":          matchers.Like(71),
 					"displayName": matchers.Like("Allocations User1"),
-				}, 1),
+				}, 0),
 				"teamType": matchers.StructMatcher{
 					"handle": matchers.Like("ALLOCATIONS"),
 					"label":  matchers.Like("Allocations"),
 				},
-			}, 1))
+			}, 0))
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))

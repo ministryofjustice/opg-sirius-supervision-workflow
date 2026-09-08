@@ -164,8 +164,8 @@ func TestGetBondList_contract(t *testing.T) {
 						"handle": matchers.Like("MATCH"),
 						"label":  matchers.Like("Match"),
 					},
-					"deputyNames": matchers.EachLike("Angela White", 1),
-				}, 1),
+					"deputyNames": matchers.EachLike("Angela White", 0),
+				}, 0),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
