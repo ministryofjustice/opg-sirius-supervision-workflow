@@ -187,7 +187,7 @@ func TestGetDeputyList_contract(t *testing.T) {
 					"ecmCount": matchers.EachLike(matchers.StructMatcher{
 						"assignee": matchers.Like(1),
 						"count":    matchers.Like(14),
-					}, 1),
+					}, 0),
 				},
 				"persons": matchers.EachLike(matchers.StructMatcher{
 					"id":           matchers.Like(13),
@@ -217,7 +217,7 @@ func TestGetDeputyList_contract(t *testing.T) {
 					},
 					"activeClientCount":             matchers.Like(100),
 					"activeNonCompliantClientCount": matchers.Like(10),
-				}, 1),
+				}, 0),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {

@@ -213,18 +213,28 @@ func TestGetTeams_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			b.JSONBody(matchers.EachLike(matchers.StructMatcher{
-				"id":          matchers.Like(21),
-				"displayName": matchers.Like("Allocations - (Supervision)"),
-				"members": matchers.EachLike(matchers.StructMatcher{
-					"id":          matchers.Like(71),
-					"displayName": matchers.Like("Allocations User1"),
-				}, 1),
-				"teamType": matchers.StructMatcher{
-					"handle": matchers.Like("ALLOCATIONS"),
-					"label":  matchers.Like("Allocations"),
+			b.JSONBody([]matchers.StructMatcher{
+				{
+					"id":          matchers.Like(21),
+					"displayName": matchers.Like("Allocations - (Supervision)"),
+					"members": matchers.EachLike(matchers.StructMatcher{
+						"id":          matchers.Like(71),
+						"displayName": matchers.Like("Allocations User1"),
+					}, 0),
+					"teamType": matchers.StructMatcher{
+						"handle": matchers.Like("ALLOCATIONS"),
+						"label":  matchers.Like("Allocations"),
+					},
 				},
-			}, 1))
+				{
+					"id":          matchers.Like(24),
+					"displayName": matchers.Like("Team without type"),
+					"members": matchers.EachLike(matchers.StructMatcher{
+						"id":          matchers.Like(72),
+						"displayName": matchers.Like("Other User"),
+					}, 0),
+				},
+			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))

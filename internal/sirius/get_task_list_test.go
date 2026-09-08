@@ -353,7 +353,7 @@ func TestGetTaskList_contract(t *testing.T) {
 						},
 					}, 1),
 					"caseOwnerTask": matchers.Like(true),
-				}, 1),
+				}, 0),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {

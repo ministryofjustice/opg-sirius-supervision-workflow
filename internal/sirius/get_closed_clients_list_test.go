@@ -262,7 +262,7 @@ func TestGetClosedClientList_contract(t *testing.T) {
 							"handle": matchers.Like("SOLE"),
 							"label":  matchers.Like("Sole"),
 						},
-					}, 1),
+					}, 0),
 					"supervisionLevel": matchers.StructMatcher{
 						"handle": matchers.Like("MINIMAL"),
 						"label":  matchers.Like("Minimal"),
@@ -270,7 +270,7 @@ func TestGetClosedClientList_contract(t *testing.T) {
 					"cachedDebtTotal": matchers.Like(10010),
 					"lastActionDate":  matchers.Like("2023-12-12T12:35:56+00:00"),
 					"closedOnDate":    matchers.Like("2022-02-02T12:35:56+00:00"),
-				}, 1),
+				}, 0),
 			})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {

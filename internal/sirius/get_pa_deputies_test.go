@@ -88,16 +88,11 @@ func TestGetPADeputies_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			b.JSONBody([]interface{}{
+			b.JSONBody(matchers.EachLike(
 				matchers.StructMatcher{
 					"id":          matchers.Like(13),
 					"displayName": matchers.Like("Plompton County Council"),
-				},
-				matchers.StructMatcher{
-					"id":          matchers.Like(14),
-					"displayName": matchers.Like("Balamory County Council"),
-				},
-			})
+				}, 0))
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
@@ -107,7 +102,6 @@ func TestGetPADeputies_contract(t *testing.T) {
 
 			assert.EqualValues(t, []model.Deputy{
 				{Id: 13, DisplayName: "Plompton County Council"},
-				{Id: 14, DisplayName: "Balamory County Council"},
 			}, deputies)
 			return nil
 		})

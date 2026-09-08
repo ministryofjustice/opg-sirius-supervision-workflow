@@ -149,7 +149,7 @@ func TestReassignDeputies_contract(t *testing.T) {
 			b.Header("Content-Type", matchers.S("application/json"))
 			b.JSONBody(matchers.StructMatcher{
 				"successful":   matchers.EachLike(matchers.Like(1), 1),
-				"error":        []interface{}{},
+				"error":        matchers.EachLike(matchers.Like(1), 1),
 				"reassignName": matchers.Like("LayTeam1 User2"),
 			})
 		}).
