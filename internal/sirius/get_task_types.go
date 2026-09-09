@@ -18,8 +18,28 @@ const (
 	TaskTypeEcmLabel            = "ECM Tasks"
 )
 
-type TaskTypesList struct {
-	TaskTypes map[string]model.TaskType `json:"task_types"`
+type taskTypeResponse struct {
+	Handle     string `json:"handle"`
+	Incomplete string `json:"incomplete"`
+	Category   string `json:"category"`
+	Complete   string `json:"complete"`
+	User       bool   `json:"user"`
+	EcmTask    bool   `json:"ecmTask"`
+}
+
+func (r taskTypeResponse) model() model.TaskType {
+	return model.TaskType{
+		Handle:     r.Handle,
+		Incomplete: r.Incomplete,
+		Category:   r.Category,
+		Complete:   r.Complete,
+		User:       r.User,
+		EcmTask:    r.EcmTask,
+	}
+}
+
+type taskTypesListResponse struct {
+	TaskTypes map[string]taskTypeResponse `json:"task_types"`
 }
 
 type TaskTypesParams struct {
@@ -69,7 +89,7 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 		return nil, newStatusError(resp)
 	}
 
-	var v TaskTypesList
+	var v taskTypesListResponse
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return nil, err
@@ -77,7 +97,7 @@ func (c *ApiClient) GetTaskTypes(ctx Context, params TaskTypesParams) ([]model.T
 
 	var taskTypes []model.TaskType
 	for _, u := range v.TaskTypes {
-		taskTypes = append(taskTypes, u)
+		taskTypes = append(taskTypes, u.model())
 	}
 
 	sort.Slice(taskTypes, func(i, j int) bool {
