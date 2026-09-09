@@ -10,20 +10,11 @@ import (
 )
 
 type TeamCollection struct {
-	ID          int    `json:"id"`
-	DisplayName string `json:"displayName"`
-	Members     []struct {
-		ID          int    `json:"id"`
-		DisplayName string `json:"displayName"`
-	} `json:"members"`
-	Deputies []struct {
-		ID          int    `json:"id"`
-		DisplayName string `json:"displayName"`
-	}
-	TeamType *struct {
-		Handle string `json:"handle"`
-		Label  string `json:"label"`
-	} `json:"teamType"`
+	ID          int                `json:"id"`
+	DisplayName string             `json:"displayName"`
+	Members     []assigneeResponse `json:"members"`
+	Deputies    []assigneeResponse `json:"deputies"`
+	TeamType    *refDataResponse   `json:"teamType"`
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
@@ -94,10 +85,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		}
 
 		for _, m := range t.Members {
-			team.Members = append(team.Members, model.Assignee{
-				Id:   m.ID,
-				Name: m.DisplayName,
-			})
+			team.Members = append(team.Members, m.toAssignee())
 		}
 
 		if team.IsLay() {
