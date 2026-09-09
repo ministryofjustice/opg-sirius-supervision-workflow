@@ -32,6 +32,34 @@ type ClientList struct {
 	MetaData     ClientMetaData        `json:"metadata"`
 }
 
+type clientListResponse struct {
+	Clients      []clientResponse        `json:"clients"`
+	Pages        pageInformationResponse `json:"pages"`
+	TotalClients int                     `json:"total"`
+	MetaData     ClientMetaData          `json:"metadata"`
+}
+
+func (r clientListResponse) toClientList() (ClientList, error) {
+	var clients []model.Client
+	if r.Clients != nil {
+		clients = make([]model.Client, 0, len(r.Clients))
+		for _, client := range r.Clients {
+			mappedClient, err := client.toClient()
+			if err != nil {
+				return ClientList{}, err
+			}
+			clients = append(clients, mappedClient)
+		}
+	}
+
+	return ClientList{
+		Clients:      clients,
+		Pages:        r.Pages.toPageInformation(),
+		TotalClients: r.TotalClients,
+		MetaData:     r.MetaData,
+	}, nil
+}
+
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
 	var sort string
@@ -73,9 +101,16 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response clientListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.toClientList()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return ClientList{}, err
 	}
 
 	return v, err

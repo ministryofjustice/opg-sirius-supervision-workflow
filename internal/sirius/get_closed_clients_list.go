@@ -57,9 +57,16 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response clientListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.toClientList()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return ClientList{}, err
 	}
 
 	return v, err
