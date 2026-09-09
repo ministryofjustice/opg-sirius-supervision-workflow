@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
 type ReassignTasksParams struct {
