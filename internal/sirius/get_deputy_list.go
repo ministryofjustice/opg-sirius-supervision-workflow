@@ -30,6 +30,34 @@ type DeputyListParams struct {
 	SelectedECMs []string
 }
 
+type deputyListResponse struct {
+	Deputies      []deputyResponse        `json:"persons"`
+	Pages         pageInformationResponse `json:"pages"`
+	TotalDeputies int                     `json:"total"`
+	MetaData      DeputyMetaData          `json:"metadata"`
+}
+
+func (r deputyListResponse) toDeputyList() (DeputyList, error) {
+	var deputies []model.Deputy
+	if r.Deputies != nil {
+		deputies = make([]model.Deputy, 0, len(r.Deputies))
+		for _, deputy := range r.Deputies {
+			mappedDeputy, err := deputy.toDeputy()
+			if err != nil {
+				return DeputyList{}, err
+			}
+			deputies = append(deputies, mappedDeputy)
+		}
+	}
+
+	return DeputyList{
+		Deputies:      deputies,
+		Pages:         r.Pages.toPageInformation(),
+		TotalDeputies: r.TotalDeputies,
+		MetaData:      r.MetaData,
+	}, nil
+}
+
 func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyList, error) {
 	var v DeputyList
 	var teamIds []string
@@ -74,9 +102,16 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response deputyListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.toDeputyList()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return DeputyList{}, err
 	}
 
 	return v, nil
