@@ -42,7 +42,7 @@ type bondResponse struct {
 	Deputies            []string            `json:"deputyNames"`
 }
 
-func (r bondResponse) toBond() (model.Bond, error) {
+func (r bondResponse) model() (model.Bond, error) {
 	bondIssuedDate, err := parseModelDate(r.BondIssuedDate)
 	if err != nil {
 		return model.Bond{}, err
@@ -63,7 +63,7 @@ func (r bondResponse) toBond() (model.Bond, error) {
 		BondAmount:          r.BondAmount,
 		BondIssuedDate:      bondIssuedDate,
 		BondClient:          bondClient,
-		BondStatus:          r.BondStatus.toRefData(),
+		BondStatus:          r.BondStatus.model(),
 		Deputies:            r.Deputies,
 	}, nil
 }
@@ -74,12 +74,12 @@ type bondListResponse struct {
 	TotalBonds int                     `json:"total"`
 }
 
-func (r bondListResponse) toBondList() (BondList, error) {
+func (r bondListResponse) model() (BondList, error) {
 	var bonds []model.Bond
 	if r.Bonds != nil {
 		bonds = make([]model.Bond, 0, len(r.Bonds))
 		for _, bond := range r.Bonds {
-			mappedBond, err := bond.toBond()
+			mappedBond, err := bond.model()
 			if err != nil {
 				return BondList{}, err
 			}
@@ -89,7 +89,7 @@ func (r bondListResponse) toBondList() (BondList, error) {
 
 	return BondList{
 		Bonds:      bonds,
-		Pages:      r.Pages.toPageInformation(),
+		Pages:      r.Pages.model(),
 		TotalBonds: r.TotalBonds,
 	}, nil
 }
@@ -129,7 +129,7 @@ func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, e
 		return v, err
 	}
 
-	v, err = response.toBondList()
+	v, err = response.model()
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return BondList{}, err
