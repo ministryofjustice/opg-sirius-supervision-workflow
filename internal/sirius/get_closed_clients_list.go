@@ -19,10 +19,7 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 	query.Set("page", strconv.Itoa(params.Page))
 	query.Set("filter", params.CreateFilter())
 
-	endpoint := fmt.Sprintf(
-		"/v1/assignees/closed-clients?%s",
-		query.Encode(),
-	)
+	endpoint := fmt.Sprintf("/v1/assignees/closed-clients?%s", query.Encode())
 
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
