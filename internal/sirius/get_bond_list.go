@@ -24,6 +24,76 @@ type BondListParams struct {
 	PerPage int
 }
 
+type bondClientResponse struct {
+	ID int `json:"id"`
+}
+
+type bondResponse struct {
+	ID                  int                 `json:"id"`
+	CourtRef            string              `json:"caseReferenceNumber"`
+	FirstName           string              `json:"clientFirstName"`
+	LastName            string              `json:"clientLastName"`
+	CompanyName         string              `json:"companyName"`
+	BondReferenceNumber string              `json:"bondReferenceNumber"`
+	BondAmount          int                 `json:"bondAmount"`
+	BondIssuedDate      string              `json:"bondIssuedDate"`
+	BondClient          *bondClientResponse `json:"client,omitempty"`
+	BondStatus          *refDataResponse    `json:"bondStatus,omitempty"`
+	Deputies            []string            `json:"deputyNames"`
+}
+
+func (r bondResponse) toBond() (model.Bond, error) {
+	bondIssuedDate, err := parseModelDate(r.BondIssuedDate)
+	if err != nil {
+		return model.Bond{}, err
+	}
+
+	bondClient := model.Client{}
+	if r.BondClient != nil {
+		bondClient.Id = r.BondClient.ID
+	}
+
+	return model.Bond{
+		Id:                  r.ID,
+		CourtRef:            r.CourtRef,
+		FirstName:           r.FirstName,
+		LastName:            r.LastName,
+		CompanyName:         r.CompanyName,
+		BondReferenceNumber: r.BondReferenceNumber,
+		BondAmount:          r.BondAmount,
+		BondIssuedDate:      bondIssuedDate,
+		BondClient:          bondClient,
+		BondStatus:          r.BondStatus.toRefData(),
+		Deputies:            r.Deputies,
+	}, nil
+}
+
+type bondListResponse struct {
+	Bonds      []bondResponse          `json:"bonds"`
+	Pages      pageInformationResponse `json:"pages"`
+	TotalBonds int                     `json:"total"`
+}
+
+func (r bondListResponse) toBondList() (BondList, error) {
+	var bonds []model.Bond
+	if r.Bonds != nil {
+		bonds = make([]model.Bond, 0, len(r.Bonds))
+		for _, bond := range r.Bonds {
+			mappedBond, err := bond.toBond()
+			if err != nil {
+				return BondList{}, err
+			}
+			bonds = append(bonds, mappedBond)
+		}
+	}
+
+	return BondList{
+		Bonds:      bonds,
+		Pages:      r.Pages.toPageInformation(),
+		TotalBonds: r.TotalBonds,
+	}, nil
+}
+
 func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, error) {
 	var v BondList
 
@@ -53,9 +123,16 @@ func (c *ApiClient) GetBondList(ctx Context, params BondListParams) (BondList, e
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response bondListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.toBondList()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return BondList{}, err
 	}
 
 	return v, nil

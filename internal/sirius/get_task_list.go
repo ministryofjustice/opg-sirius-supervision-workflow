@@ -42,6 +42,108 @@ type TaskListParams struct {
 	DueDateTo         *time.Time
 }
 
+type taskMetaDataResponse struct {
+	TaskTypeCount []TypeAndCount           `json:"taskTypeCount"`
+	AssigneeCount []model.AssigneeAndCount `json:"assigneeTaskCount"`
+}
+
+type taskResponse struct {
+	Assignee      *assigneeWithTeamsResponse `json:"assignee,omitempty"`
+	Orders        []orderResponse            `json:"caseItems,omitempty"`
+	Persons       []clientSummaryResponse    `json:"persons,omitempty"`
+	Clients       []clientSummaryResponse    `json:"clients,omitempty"`
+	Deputies      []deputyResponse           `json:"deputies,omitempty"`
+	Status        string                     `json:"status,omitempty"`
+	DueDate       string                     `json:"dueDate"`
+	Id            int                        `json:"id"`
+	Type          string                     `json:"type"`
+	Name          string                     `json:"name"`
+	Description   string                     `json:"description,omitempty"`
+	RAGRating     int                        `json:"ragRating,omitempty"`
+	CreatedTime   string                     `json:"createdTime,omitempty"`
+	CaseOwnerTask bool                       `json:"caseOwnerTask"`
+	IsPriority    bool                       `json:"isPriority"`
+}
+
+func (r taskResponse) toTask() (model.Task, error) {
+	var orders []model.Order
+	if r.Orders != nil {
+		orders = make([]model.Order, 0, len(r.Orders))
+		for _, order := range r.Orders {
+			mappedOrder, err := order.toOrder()
+			if err != nil {
+				return model.Task{}, err
+			}
+			orders = append(orders, mappedOrder)
+		}
+	}
+
+	var clients []model.Client
+	if r.Clients != nil {
+		clients = make([]model.Client, 0, len(r.Clients))
+		for _, client := range r.Clients {
+			client := client
+			clients = append(clients, client.toClient())
+		}
+	}
+
+	var deputies []model.Deputy
+	if r.Deputies != nil {
+		deputies = make([]model.Deputy, 0, len(r.Deputies))
+		for _, deputy := range r.Deputies {
+			mappedDeputy, err := deputy.toDeputy()
+			if err != nil {
+				return model.Task{}, err
+			}
+			deputies = append(deputies, mappedDeputy)
+		}
+	}
+
+	return model.Task{
+		Assignee:      r.Assignee.toAssignee(),
+		Orders:        orders,
+		Clients:       clients,
+		Deputies:      deputies,
+		DueDate:       r.DueDate,
+		Id:            r.Id,
+		Type:          r.Type,
+		Name:          r.Name,
+		CaseOwnerTask: r.CaseOwnerTask,
+		IsPriority:    r.IsPriority,
+	}, nil
+}
+
+type taskListResponse struct {
+	Tasks      []taskResponse          `json:"tasks"`
+	Pages      pageInformationResponse `json:"pages"`
+	TotalTasks int                     `json:"total"`
+	MetaData   taskMetaDataResponse    `json:"metadata"`
+}
+
+func (r taskListResponse) toTaskList() (TaskList, error) {
+	var tasks []model.Task
+	if r.Tasks != nil {
+		tasks = make([]model.Task, 0, len(r.Tasks))
+		for _, task := range r.Tasks {
+			mappedTask, err := task.toTask()
+			if err != nil {
+				return TaskList{}, err
+			}
+			tasks = append(tasks, mappedTask)
+		}
+	}
+
+	return TaskList{
+		Tasks:      tasks,
+		Pages:      r.Pages.toPageInformation(),
+		TotalTasks: r.TotalTasks,
+		MetaData: TaskMetaData{
+			TaskTypeCount: r.MetaData.TaskTypeCount,
+			AssigneeCount: r.MetaData.AssigneeCount,
+		},
+	}, nil
+}
+
 func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, error) {
 	var v TaskList
 	var teamIds []string
@@ -86,9 +188,16 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response taskListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.toTaskList()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return TaskList{}, err
 	}
 
 	return v, nil
