@@ -1,5 +1,7 @@
 package model
 
+import "slices"
+
 type TaskType struct {
 	Handle     string `json:"handle"`
 	Incomplete string `json:"incomplete"`
@@ -11,10 +13,5 @@ type TaskType struct {
 }
 
 func (tt TaskType) IsSelected(selectedTaskTypes []string) bool {
-	for _, selectedTaskType := range selectedTaskTypes {
-		if tt.Handle == selectedTaskType {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(selectedTaskTypes, tt.Handle)
 }
