@@ -37,12 +37,12 @@ type deputyListResponse struct {
 	MetaData      DeputyMetaData          `json:"metadata"`
 }
 
-func (r deputyListResponse) toDeputyList() (DeputyList, error) {
+func (r deputyListResponse) model() (DeputyList, error) {
 	var deputies []model.Deputy
 	if r.Deputies != nil {
 		deputies = make([]model.Deputy, 0, len(r.Deputies))
 		for _, deputy := range r.Deputies {
-			mappedDeputy, err := deputy.toDeputy()
+			mappedDeputy, err := deputy.model()
 			if err != nil {
 				return DeputyList{}, err
 			}
@@ -52,7 +52,7 @@ func (r deputyListResponse) toDeputyList() (DeputyList, error) {
 
 	return DeputyList{
 		Deputies:      deputies,
-		Pages:         r.Pages.toPageInformation(),
+		Pages:         r.Pages.model(),
 		TotalDeputies: r.TotalDeputies,
 		MetaData:      r.MetaData,
 	}, nil
@@ -108,7 +108,7 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 		return v, err
 	}
 
-	v, err = response.toDeputyList()
+	v, err = response.model()
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return DeputyList{}, err

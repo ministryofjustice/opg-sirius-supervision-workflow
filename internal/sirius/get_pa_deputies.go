@@ -12,7 +12,7 @@ type paDeputyResponse struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (r paDeputyResponse) toDeputy() model.Deputy {
+func (r paDeputyResponse) model() model.Deputy {
 	return model.Deputy{
 		Id:          r.ID,
 		DisplayName: r.DisplayName,
@@ -53,7 +53,7 @@ func (c *ApiClient) GetPADeputies(ctx Context) ([]model.Deputy, error) {
 	if response != nil {
 		deputies = make([]model.Deputy, 0, len(response))
 		for _, deputy := range response {
-			deputies = append(deputies, deputy.toDeputy())
+			deputies = append(deputies, deputy.model())
 		}
 	}
 

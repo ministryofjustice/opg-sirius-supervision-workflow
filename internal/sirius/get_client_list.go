@@ -39,12 +39,12 @@ type clientListResponse struct {
 	MetaData     ClientMetaData          `json:"metadata"`
 }
 
-func (r clientListResponse) toClientList() (ClientList, error) {
+func (r clientListResponse) model() (ClientList, error) {
 	var clients []model.Client
 	if r.Clients != nil {
 		clients = make([]model.Client, 0, len(r.Clients))
 		for _, client := range r.Clients {
-			mappedClient, err := client.toClient()
+			mappedClient, err := client.model()
 			if err != nil {
 				return ClientList{}, err
 			}
@@ -54,7 +54,7 @@ func (r clientListResponse) toClientList() (ClientList, error) {
 
 	return ClientList{
 		Clients:      clients,
-		Pages:        r.Pages.toPageInformation(),
+		Pages:        r.Pages.model(),
 		TotalClients: r.TotalClients,
 		MetaData:     r.MetaData,
 	}, nil
@@ -107,7 +107,7 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		return v, err
 	}
 
-	v, err = response.toClientList()
+	v, err = response.model()
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return ClientList{}, err

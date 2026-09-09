@@ -65,12 +65,12 @@ type taskResponse struct {
 	IsPriority    bool                       `json:"isPriority"`
 }
 
-func (r taskResponse) toTask() (model.Task, error) {
+func (r taskResponse) model() (model.Task, error) {
 	var orders []model.Order
 	if r.Orders != nil {
 		orders = make([]model.Order, 0, len(r.Orders))
 		for _, order := range r.Orders {
-			mappedOrder, err := order.toOrder()
+			mappedOrder, err := order.model()
 			if err != nil {
 				return model.Task{}, err
 			}
@@ -82,7 +82,7 @@ func (r taskResponse) toTask() (model.Task, error) {
 	if r.Clients != nil {
 		clients = make([]model.Client, 0, len(r.Clients))
 		for _, client := range r.Clients {
-			clients = append(clients, client.toClient())
+			clients = append(clients, client.model())
 		}
 	}
 
@@ -90,7 +90,7 @@ func (r taskResponse) toTask() (model.Task, error) {
 	if r.Deputies != nil {
 		deputies = make([]model.Deputy, 0, len(r.Deputies))
 		for _, deputy := range r.Deputies {
-			mappedDeputy, err := deputy.toDeputy()
+			mappedDeputy, err := deputy.model()
 			if err != nil {
 				return model.Task{}, err
 			}
@@ -99,7 +99,7 @@ func (r taskResponse) toTask() (model.Task, error) {
 	}
 
 	return model.Task{
-		Assignee:      r.Assignee.toAssignee(),
+		Assignee:      r.Assignee.model(),
 		Orders:        orders,
 		Clients:       clients,
 		Deputies:      deputies,
@@ -119,12 +119,12 @@ type taskListResponse struct {
 	MetaData   taskMetaDataResponse    `json:"metadata"`
 }
 
-func (r taskListResponse) toTaskList() (TaskList, error) {
+func (r taskListResponse) model() (TaskList, error) {
 	var tasks []model.Task
 	if r.Tasks != nil {
 		tasks = make([]model.Task, 0, len(r.Tasks))
 		for _, task := range r.Tasks {
-			mappedTask, err := task.toTask()
+			mappedTask, err := task.model()
 			if err != nil {
 				return TaskList{}, err
 			}
@@ -134,7 +134,7 @@ func (r taskListResponse) toTaskList() (TaskList, error) {
 
 	return TaskList{
 		Tasks:      tasks,
-		Pages:      r.Pages.toPageInformation(),
+		Pages:      r.Pages.model(),
 		TotalTasks: r.TotalTasks,
 		MetaData: TaskMetaData{
 			TaskTypeCount: r.MetaData.TaskTypeCount,
@@ -193,7 +193,7 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		return v, err
 	}
 
-	v, err = response.toTaskList()
+	v, err = response.model()
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return TaskList{}, err
