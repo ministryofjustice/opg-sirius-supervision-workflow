@@ -7,8 +7,8 @@ import (
 )
 
 type Team struct {
-	Id        int    `json:"id"`
-	Name      string `json:"displayName"`
+	Id        int
+	Name      string
 	Members   []Assignee
 	Deputies  []Deputy
 	Type      string

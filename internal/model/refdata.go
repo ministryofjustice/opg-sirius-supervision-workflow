@@ -3,8 +3,8 @@ package model
 import "slices"
 
 type RefData struct {
-	Handle string `json:"handle"`
-	Label  string `json:"label"`
+	Handle string
+	Label  string
 }
 
 func (r RefData) Is(handle string) bool {

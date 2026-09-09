@@ -5,19 +5,19 @@ import (
 )
 
 type Client struct {
-	Id                   int       `json:"id"`
-	CaseRecNumber        string    `json:"caseRecNumber"`
-	FirstName            string    `json:"firstname"`
-	Surname              string    `json:"surname"`
-	SupervisionCaseOwner Assignee  `json:"supervisionCaseOwner"`
-	FeePayer             Deputy    `json:"feePayer"`
-	Orders               []Order   `json:"cases"`
-	SupervisionLevel     RefData   `json:"supervisionLevel"`
-	ActiveCaseType       RefData   `json:"activeCaseType"`
-	DeputyTypes          []RefData `json:"deputyTypes"`
-	LastActionDate       Date      `json:"lastActionDate"`
-	CachedDebtTotal      float64   `json:"cachedDebtTotal"`
-	ClosedOnDate         Date      `json:"closedOnDate"`
+	Id                   int
+	CaseRecNumber        string
+	FirstName            string
+	Surname              string
+	SupervisionCaseOwner Assignee
+	FeePayer             Deputy
+	Orders               []Order
+	SupervisionLevel     RefData
+	ActiveCaseType       RefData
+	DeputyTypes          []RefData
+	LastActionDate       Date
+	CachedDebtTotal      float64
+	ClosedOnDate         Date
 }
 
 func (c Client) GetReportDueDate() string {
