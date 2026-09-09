@@ -7,21 +7,21 @@ import (
 )
 
 type DeputyImportantInformation struct {
-	PanelDeputy bool `json:"panelDeputy"`
+	PanelDeputy bool
 }
 
 type Deputy struct {
-	Id                            int                        `json:"id"`
-	DisplayName                   string                     `json:"displayName"`
-	Type                          RefData                    `json:"deputyType"`
-	Number                        int                        `json:"deputyNumber"`
-	Address                       Address                    `json:"deputyAddress"`
-	ExecutiveCaseManager          Assignee                   `json:"executiveCaseManager"`
-	Assurance                     Assurance                  `json:"mostRecentlyCompletedAssurance"`
-	ActiveClientCount             int                        `json:"activeClientCount"`
-	ActiveNonCompliantClientCount int                        `json:"activeNonCompliantClientCount"`
-	DeputyImportantInformation    DeputyImportantInformation `json:"deputyImportantInformation"`
-	Firm                          Firm                       `json:"firm"`
+	Id                            int
+	DisplayName                   string
+	Type                          RefData
+	Number                        int
+	Address                       Address
+	ExecutiveCaseManager          Assignee
+	Assurance                     Assurance
+	ActiveClientCount             int
+	ActiveNonCompliantClientCount int
+	DeputyImportantInformation    DeputyImportantInformation
+	Firm                          Firm
 }
 
 func (d Deputy) IsSelected(selectedDeputies []string) bool {
