@@ -5,23 +5,25 @@ import (
 	"strings"
 )
 
+// AssigneeAndCount is decoded directly from JSON (no DTO layer) since it is a
+// small, non-recursive struct used as-is by both the API response and the domain model.
 type AssigneeAndCount struct {
 	AssigneeId int `json:"assignee"`
 	Count      int `json:"count"`
 }
 
 type Assignee struct {
-	Id          int      `json:"id"`
-	Name        string   `json:"displayName"`
-	Teams       []Team   `json:"teams"`
-	PhoneNumber string   `json:"phoneNumber"`
-	Deleted     bool     `json:"deleted"`
-	Email       string   `json:"email"`
-	Firstname   string   `json:"firstname"`
-	Surname     string   `json:"surname"`
-	Roles       []string `json:"roles"`
-	Locked      bool     `json:"locked"`
-	Suspended   bool     `json:"suspended"`
+	Id          int
+	Name        string
+	Teams       []Team
+	PhoneNumber string
+	Deleted     bool
+	Email       string
+	Firstname   string
+	Surname     string
+	Roles       []string
+	Locked      bool
+	Suspended   bool
 }
 
 func (m Assignee) IsSelected(selectedAssignees []string) bool {
