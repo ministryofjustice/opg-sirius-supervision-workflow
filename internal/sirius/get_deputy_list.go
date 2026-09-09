@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -30,24 +31,52 @@ type DeputyListParams struct {
 	SelectedECMs []string
 }
 
+type deputyListResponse struct {
+	Deputies      []deputyResponse        `json:"persons"`
+	Pages         pageInformationResponse `json:"pages"`
+	TotalDeputies int                     `json:"total"`
+	MetaData      DeputyMetaData          `json:"metadata"`
+}
+
+func (r deputyListResponse) model() (DeputyList, error) {
+	var deputies []model.Deputy
+	if r.Deputies != nil {
+		deputies = make([]model.Deputy, 0, len(r.Deputies))
+		for _, deputy := range r.Deputies {
+			mappedDeputy, err := deputy.model()
+			if err != nil {
+				return DeputyList{}, err
+			}
+			deputies = append(deputies, mappedDeputy)
+		}
+	}
+
+	return DeputyList{
+		Deputies:      deputies,
+		Pages:         r.Pages.model(),
+		TotalDeputies: r.TotalDeputies,
+		MetaData:      r.MetaData,
+	}, nil
+}
+
 func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyList, error) {
 	var v DeputyList
-	var teamIds []string
+	query := url.Values{}
 
 	if params.Team.Id != 0 {
-		teamIds = []string{"teamIds[]=" + strconv.Itoa(params.Team.Id)}
+		query.Add("teamIds[]", strconv.Itoa(params.Team.Id))
 	}
 	for _, team := range params.Team.Teams {
-		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
+		query.Add("teamIds[]", strconv.Itoa(team.Id))
 	}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("filter", params.CreateFilter())
+	query.Set("sort", params.Sort)
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/teams/deputies?%s&limit=%d&page=%d&filter=%s&sort=%s",
-		strings.Join(teamIds, "&"),
-		params.PerPage,
-		params.Page,
-		params.CreateFilter(),
-		params.Sort,
+		"/v1/assignees/teams/deputies?%s",
+		query.Encode(),
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
@@ -74,9 +103,16 @@ func (c *ApiClient) GetDeputyList(ctx Context, params DeputyListParams) (DeputyL
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response deputyListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.model()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return DeputyList{}, err
 	}
 
 	return v, nil

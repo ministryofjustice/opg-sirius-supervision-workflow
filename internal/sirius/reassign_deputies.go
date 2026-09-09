@@ -12,6 +12,10 @@ import (
 type ReassignDeputiesParams struct {
 	AssignTeam string
 	AssignCM   string
+	DeputyIds  []string
+}
+
+type ReassignDeputiesRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	DeputyIds  []string `json:"deputyIds"`
 }
@@ -26,12 +30,15 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		assignee = params.AssignCM
 	}
 
-	params.AssigneeId, err = strconv.Atoi(assignee)
+	id, err := strconv.Atoi(assignee)
 	if err != nil {
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(params)
+	err = json.NewEncoder(&body).Encode(ReassignDeputiesRequest{
+		AssigneeId: id,
+		DeputyIds:  params.DeputyIds,
+	})
 
 	if err != nil {
 		return "", err
