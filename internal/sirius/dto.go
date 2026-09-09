@@ -11,7 +11,7 @@ type pageInformationResponse struct {
 	Total   int `json:"total"`
 }
 
-func (r pageInformationResponse) toPageInformation() model.PageInformation {
+func (r pageInformationResponse) model() model.PageInformation {
 	return model.PageInformation{
 		PageCurrent: r.Current,
 		PageTotal:   r.Total,
@@ -23,7 +23,7 @@ type refDataResponse struct {
 	Label  string `json:"label"`
 }
 
-func (r *refDataResponse) toRefData() model.RefData {
+func (r *refDataResponse) model() model.RefData {
 	if r == nil {
 		return model.RefData{}
 	}
@@ -39,7 +39,7 @@ type teamResponse struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (r teamResponse) toTeam() model.Team {
+func (r teamResponse) model() model.Team {
 	return model.Team{
 		Id:   r.ID,
 		Name: r.DisplayName,
@@ -51,7 +51,7 @@ type assigneeResponse struct {
 	DisplayName string `json:"displayName"`
 }
 
-func (r *assigneeResponse) toAssignee() model.Assignee {
+func (r *assigneeResponse) model() model.Assignee {
 	if r == nil {
 		return model.Assignee{}
 	}
@@ -68,7 +68,7 @@ type assigneeWithTeamsResponse struct {
 	DisplayName string         `json:"displayName"`
 }
 
-func (r *assigneeWithTeamsResponse) toAssignee() model.Assignee {
+func (r *assigneeWithTeamsResponse) model() model.Assignee {
 	if r == nil {
 		return model.Assignee{}
 	}
@@ -77,7 +77,7 @@ func (r *assigneeWithTeamsResponse) toAssignee() model.Assignee {
 	if r.Teams != nil {
 		teams = make([]model.Team, 0, len(r.Teams))
 		for _, team := range r.Teams {
-			teams = append(teams, team.toTeam())
+			teams = append(teams, team.model())
 		}
 	}
 
@@ -92,7 +92,7 @@ type annualReportResponse struct {
 	DueDate string `json:"dueDate"`
 }
 
-func (r *annualReportResponse) toAnnualReport() model.AnnualReport {
+func (r *annualReportResponse) model() model.AnnualReport {
 	if r == nil {
 		return model.AnnualReport{}
 	}
@@ -106,7 +106,7 @@ type addressResponse struct {
 	Town string `json:"town"`
 }
 
-func (r *addressResponse) toAddress() model.Address {
+func (r *addressResponse) model() model.Address {
 	if r == nil {
 		return model.Address{}
 	}
@@ -122,7 +122,7 @@ type assuranceResponse struct {
 	AssuranceType    *refDataResponse `json:"assuranceType,omitempty"`
 }
 
-func (r *assuranceResponse) toAssurance() (model.Assurance, error) {
+func (r *assuranceResponse) model() (model.Assurance, error) {
 	if r == nil {
 		return model.Assurance{}, nil
 	}
@@ -134,8 +134,8 @@ func (r *assuranceResponse) toAssurance() (model.Assurance, error) {
 
 	return model.Assurance{
 		ReportReviewDate: reportReviewDate,
-		ReportMarkedAs:   r.ReportMarkedAs.toRefData(),
-		Type:             r.AssuranceType.toRefData(),
+		ReportMarkedAs:   r.ReportMarkedAs.model(),
+		Type:             r.AssuranceType.model(),
 	}, nil
 }
 
@@ -143,7 +143,7 @@ type deputyImportantInformationResponse struct {
 	PanelDeputy bool `json:"panelDeputy"`
 }
 
-func (r *deputyImportantInformationResponse) toDeputyImportantInformation() model.DeputyImportantInformation {
+func (r *deputyImportantInformationResponse) model() model.DeputyImportantInformation {
 	if r == nil {
 		return model.DeputyImportantInformation{}
 	}
@@ -159,7 +159,7 @@ type firmResponse struct {
 	FirmNumber int    `json:"firmNumber"`
 }
 
-func (r *firmResponse) toFirm() model.Firm {
+func (r *firmResponse) model() model.Firm {
 	if r == nil {
 		return model.Firm{}
 	}
@@ -178,7 +178,7 @@ type deputySummaryResponse struct {
 	Firm        *firmResponse    `json:"firm,omitempty"`
 }
 
-func (r *deputySummaryResponse) toDeputy() model.Deputy {
+func (r *deputySummaryResponse) model() model.Deputy {
 	if r == nil {
 		return model.Deputy{}
 	}
@@ -186,8 +186,8 @@ func (r *deputySummaryResponse) toDeputy() model.Deputy {
 	return model.Deputy{
 		Id:          r.ID,
 		DisplayName: r.DisplayName,
-		Type:        r.DeputyType.toRefData(),
-		Firm:        r.Firm.toFirm(),
+		Type:        r.DeputyType.model(),
+		Firm:        r.Firm.model(),
 	}
 }
 
@@ -205,8 +205,8 @@ type deputyResponse struct {
 	Firm                           *firmResponse                       `json:"firm,omitempty"`
 }
 
-func (r deputyResponse) toDeputy() (model.Deputy, error) {
-	assurance, err := r.MostRecentlyCompletedAssurance.toAssurance()
+func (r deputyResponse) model() (model.Deputy, error) {
+	assurance, err := r.MostRecentlyCompletedAssurance.model()
 	if err != nil {
 		return model.Deputy{}, err
 	}
@@ -214,15 +214,15 @@ func (r deputyResponse) toDeputy() (model.Deputy, error) {
 	return model.Deputy{
 		Id:                            r.ID,
 		DisplayName:                   r.DisplayName,
-		Type:                          r.DeputyType.toRefData(),
+		Type:                          r.DeputyType.model(),
 		Number:                        r.DeputyNumber,
-		Address:                       r.DeputyAddress.toAddress(),
-		ExecutiveCaseManager:          r.ExecutiveCaseManager.toAssignee(),
+		Address:                       r.DeputyAddress.model(),
+		ExecutiveCaseManager:          r.ExecutiveCaseManager.model(),
 		Assurance:                     assurance,
 		ActiveClientCount:             r.ActiveClientCount,
 		ActiveNonCompliantClientCount: r.ActiveNonCompliantClientCount,
-		DeputyImportantInformation:    r.DeputyImportantInformation.toDeputyImportantInformation(),
-		Firm:                          r.Firm.toFirm(),
+		DeputyImportantInformation:    r.DeputyImportantInformation.model(),
+		Firm:                          r.Firm.model(),
 	}, nil
 }
 
@@ -238,7 +238,7 @@ type clientSummaryResponse struct {
 	FeePayer             *deputySummaryResponse     `json:"feePayer,omitempty"`
 }
 
-func (r *clientSummaryResponse) toClient() model.Client {
+func (r *clientSummaryResponse) model() model.Client {
 	if r == nil {
 		return model.Client{}
 	}
@@ -248,8 +248,8 @@ func (r *clientSummaryResponse) toClient() model.Client {
 		CaseRecNumber:        r.CaseRecNumber,
 		FirstName:            r.FirstName,
 		Surname:              r.Surname,
-		SupervisionCaseOwner: r.SupervisionCaseOwner.toAssignee(),
-		FeePayer:             r.FeePayer.toDeputy(),
+		SupervisionCaseOwner: r.SupervisionCaseOwner.model(),
+		FeePayer:             r.FeePayer.model(),
 	}
 }
 
@@ -268,7 +268,7 @@ type orderResponse struct {
 	IntroductoryTargetDate string                 `json:"introductoryTargetDate"`
 }
 
-func (r orderResponse) toOrder() (model.Order, error) {
+func (r orderResponse) model() (model.Order, error) {
 	orderDate, err := parseModelDate(r.Date)
 	if err != nil {
 		return model.Order{}, err
@@ -286,13 +286,13 @@ func (r orderResponse) toOrder() (model.Order, error) {
 
 	return model.Order{
 		Id:                     r.ID,
-		Client:                 r.Client.toClient(),
+		Client:                 r.Client.model(),
 		Type:                   r.Type,
-		Status:                 r.OrderStatus.toRefData(),
-		LatestAnnualReport:     r.LatestAnnualReport.toAnnualReport(),
+		Status:                 r.OrderStatus.model(),
+		LatestAnnualReport:     r.LatestAnnualReport.model(),
 		Date:                   orderDate,
 		MadeActiveDate:         madeActiveDate,
-		HowDeputyAppointed:     r.HowDeputyAppointed.toRefData(),
+		HowDeputyAppointed:     r.HowDeputyAppointed.model(),
 		IntroductoryTargetDate: introductoryTargetDate,
 	}, nil
 }
@@ -313,12 +313,12 @@ type clientResponse struct {
 	ClosedOnDate         string                     `json:"closedOnDate"`
 }
 
-func (r clientResponse) toClient() (model.Client, error) {
+func (r clientResponse) model() (model.Client, error) {
 	var orders []model.Order
 	if r.Orders != nil {
 		orders = make([]model.Order, 0, len(r.Orders))
 		for _, order := range r.Orders {
-			mappedOrder, err := order.toOrder()
+			mappedOrder, err := order.model()
 			if err != nil {
 				return model.Client{}, err
 			}
@@ -340,7 +340,7 @@ func (r clientResponse) toClient() (model.Client, error) {
 	if r.DeputyTypes != nil {
 		deputyTypes = make([]model.RefData, 0, len(r.DeputyTypes))
 		for _, deputyType := range r.DeputyTypes {
-			deputyTypes = append(deputyTypes, deputyType.toRefData())
+			deputyTypes = append(deputyTypes, deputyType.model())
 		}
 	}
 
@@ -349,11 +349,11 @@ func (r clientResponse) toClient() (model.Client, error) {
 		CaseRecNumber:        r.CaseRecNumber,
 		FirstName:            r.FirstName,
 		Surname:              r.Surname,
-		SupervisionCaseOwner: r.SupervisionCaseOwner.toAssignee(),
-		FeePayer:             r.FeePayer.toDeputy(),
+		SupervisionCaseOwner: r.SupervisionCaseOwner.model(),
+		FeePayer:             r.FeePayer.model(),
 		Orders:               orders,
-		SupervisionLevel:     r.SupervisionLevel.toRefData(),
-		ActiveCaseType:       r.ActiveCaseType.toRefData(),
+		SupervisionLevel:     r.SupervisionLevel.model(),
+		ActiveCaseType:       r.ActiveCaseType.model(),
 		DeputyTypes:          deputyTypes,
 		LastActionDate:       lastActionDate,
 		CachedDebtTotal:      r.CachedDebtTotal,

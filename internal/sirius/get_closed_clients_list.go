@@ -63,7 +63,7 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 		return v, err
 	}
 
-	v, err = response.toClientList()
+	v, err = response.model()
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return ClientList{}, err
