@@ -22,12 +22,12 @@ type currentUserResponse struct {
 	Suspended   bool           `json:"suspended"`
 }
 
-func (r currentUserResponse) toAssignee() model.Assignee {
+func (r currentUserResponse) model() model.Assignee {
 	var teams []model.Team
 	if r.Teams != nil {
 		teams = make([]model.Team, 0, len(r.Teams))
 		for _, team := range r.Teams {
-			teams = append(teams, team.toTeam())
+			teams = append(teams, team.model())
 		}
 	}
 
@@ -79,5 +79,5 @@ func (c *ApiClient) GetCurrentUserDetails(ctx Context) (model.Assignee, error) {
 		return user, err
 	}
 
-	return response.toAssignee(), nil
+	return response.model(), nil
 }

@@ -85,7 +85,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		}
 
 		for _, m := range t.Members {
-			team.Members = append(team.Members, m.toAssignee())
+			team.Members = append(team.Members, m.model())
 		}
 
 		if team.IsLay() {
