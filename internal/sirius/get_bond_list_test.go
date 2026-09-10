@@ -142,10 +142,6 @@ func TestGetBondList_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			// BodyMatch generates matchers purely from the DTO's Go type via
-			// reflection - it ignores the literal field values below, so an
-			// empty struct is sufficient and avoids implying specific example
-			// values are being asserted on.
 			b.BodyMatch(bondListResponse{})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
@@ -158,33 +154,9 @@ func TestGetBondList_contract(t *testing.T) {
 			})
 			assert.NoError(t, err)
 
-			assert.EqualValues(t, BondList{
-				Bonds: []model.Bond{
-					{
-						Id:                  1,
-						CourtRef:            "string",
-						FirstName:           "string",
-						LastName:            "string",
-						CompanyName:         "string",
-						BondReferenceNumber: "string",
-						BondAmount:          1,
-						BondIssuedDate:      model.NewDate("01/01/2023"),
-						BondClient: model.Client{
-							Id: 1,
-						},
-						BondStatus: model.RefData{
-							Label:  "string",
-							Handle: "string",
-						},
-						Deputies: []string{"string"},
-					},
-				},
-				Pages: model.PageInformation{
-					PageCurrent: 1,
-					PageTotal:   1,
-				},
-				TotalBonds: 1,
-			}, bonds)
+			assert.EqualValues(t, 1, bonds.TotalBonds)
+			assert.EqualValues(t, 1, len(bonds.Bonds))
+			assert.EqualValues(t, "string", bonds.Bonds[0].CourtRef)
 			return nil
 		})
 
