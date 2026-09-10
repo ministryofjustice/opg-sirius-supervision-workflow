@@ -2,6 +2,7 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -9,8 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -202,4 +206,50 @@ func TestCreateMemberIdArray(t *testing.T) {
 			assert.Equal(t, test.want, CreateMemberIdArray(test.params))
 		})
 	}
+}
+
+func TestGetClosedClientList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("A closed Supervision client exists").
+		UponReceiving("A request for the closed client list").
+		WithRequest("GET", "/supervision-api/v1/assignees/closed-clients", func(b *consumer.V4RequestBuilder) {
+			b.Query("teamIds[]", matchers.S("123"))
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+			b.Query("filter", matchers.S(""))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			// BodyMatch generates matchers purely from the DTO's Go type via
+			// reflection - it ignores the literal field values below, so an
+			// empty struct is sufficient and avoids implying specific example
+			// values are being asserted on.
+			b.BodyMatch(clientListResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			clientList, err := client.GetClosedClientList(getContext(nil), ClientListParams{
+				Team:    model.Team{Id: 123, Name: "Supervision closed cases"},
+				Page:    1,
+				PerPage: 25,
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, clientList.TotalClients)
+			assert.EqualValues(t, 1, len(clientList.Clients))
+			assert.EqualValues(t, "string", clientList.Clients[0].Surname)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

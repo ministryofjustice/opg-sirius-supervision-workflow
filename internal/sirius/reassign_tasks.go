@@ -16,20 +16,20 @@ type ReassignTasksParams struct {
 	IsPriority string
 }
 
-type ReassignTasksRequest struct {
+type reassignTasksRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	TaskIds    []string `json:"taskIds"`
 	IsPriority string   `json:"isPriority"`
 }
 
-type returnedTask struct {
+type returnedTaskResponse struct {
 	Id            int              `json:"id"`
 	Assignee      assigneeResponse `json:"assignee"`
 	CaseOwnerTask bool             `json:"caseOwnerTask"`
 }
 
 func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {
-	var r returnedTask
+	var r returnedTaskResponse
 	var body bytes.Buffer
 	var err error
 
@@ -43,7 +43,7 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(ReassignTasksRequest{
+	err = json.NewEncoder(&body).Encode(reassignTasksRequest{
 		AssigneeId: id,
 		TaskIds:    params.TaskIds,
 		IsPriority: params.IsPriority,

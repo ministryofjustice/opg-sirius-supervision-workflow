@@ -9,7 +9,7 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
-type TeamCollection struct {
+type teamWithMembersResponse struct {
 	ID          int                `json:"id"`
 	DisplayName string             `json:"displayName"`
 	Members     []assigneeResponse `json:"members"`
@@ -50,7 +50,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		return teams, newStatusError(resp)
 	}
 
-	var v []TeamCollection
+	var v []teamWithMembersResponse
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return teams, err

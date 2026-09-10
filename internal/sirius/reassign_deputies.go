@@ -15,13 +15,13 @@ type ReassignDeputiesParams struct {
 	DeputyIds  []string
 }
 
-type ReassignDeputiesRequest struct {
+type reassignDeputiesRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	DeputyIds  []string `json:"deputyIds"`
 }
 
 func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams) (string, error) {
-	var u ReassignResponse
+	var u reassignResponse
 	var body bytes.Buffer
 	var err error
 
@@ -35,7 +35,7 @@ func (c *ApiClient) ReassignDeputies(ctx Context, params ReassignDeputiesParams)
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(ReassignDeputiesRequest{
+	err = json.NewEncoder(&body).Encode(reassignDeputiesRequest{
 		AssigneeId: id,
 		DeputyIds:  params.DeputyIds,
 	})
