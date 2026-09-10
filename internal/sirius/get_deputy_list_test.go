@@ -167,8 +167,8 @@ func TestGetDeputyList_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A deputy exists").
-		UponReceiving("A request for the deputy list").
 		Given("I am an allocations user").
+		UponReceiving("A request for the deputy list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/deputies", func(b *consumer.V4RequestBuilder) {
 			b.Query("teamIds[]", matchers.S("123"))
 			b.Query("limit", matchers.S("25"))
