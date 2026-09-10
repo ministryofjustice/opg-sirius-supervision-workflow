@@ -138,7 +138,7 @@ func TestReassignClients_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A Supervision client exists").
-		Given("I am an allocations user").
+		Given("I am a manager").
 		UponReceiving("A request to reassign clients").
 		WithRequest("PUT", "/supervision-api/v1/clients/edit/reassign", func(b *consumer.V4RequestBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
