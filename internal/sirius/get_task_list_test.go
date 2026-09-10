@@ -304,7 +304,6 @@ func TestGetTaskList_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A caseowner task exists").
-		Given("I am an allocations user").
 		UponReceiving("A request for the task list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/tasks", func(b *consumer.V4RequestBuilder) {
 			b.Query("teamIds[]", matchers.S("123"))

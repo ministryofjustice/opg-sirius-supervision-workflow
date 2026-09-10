@@ -259,7 +259,6 @@ func TestGetClientList_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A supervision client exists").
-		Given("I am an allocations user").
 		UponReceiving("A request for the client list").
 		WithRequest("GET", "/supervision-api/v1/assignees/123/clients", func(b *consumer.V4RequestBuilder) {
 			b.Query("limit", matchers.S("25"))
