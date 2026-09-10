@@ -3,7 +3,13 @@ package sirius
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
+
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -109,7 +115,7 @@ func TestUpdateReassignTasks(t *testing.T) {
 			r := io.NopCloser(bytes.NewReader([]byte(jsonResponse)))
 
 			mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-				var params ReassignTasksRequest
+				var params reassignTasksRequest
 				err := json.NewDecoder(rq.Body).Decode(&params)
 				assert.Nil(t, err)
 				assert.Equal(t, test.wantAssigneeId, params.AssigneeId)
@@ -189,4 +195,46 @@ func TestReassignTasksReturnsInternalServerError(t *testing.T) {
 	}
 
 	assert.Equal(t, expectedResponse, err)
+}
+
+func TestReassignTasks_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("A Supervision task exists").
+		UponReceiving("A request to reassign tasks").
+		WithRequest("PUT", "/supervision-api/v1/reassign-tasks", func(b *consumer.V4RequestBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.JSONBody(matchers.StructMatcher{
+				"assigneeId": matchers.Like(123),
+				"taskIds":    matchers.EachLike("123", 1),
+				"isPriority": matchers.Like("true"),
+			})
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.BodyMatch(returnedTaskResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			msg, err := client.ReassignTasks(getContext(nil), ReassignTasksParams{
+				AssignTeam: "123",
+				TaskIds:    []string{"123"},
+				IsPriority: "true",
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, "You have assigned 1 task(s) to string as a priority", msg)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

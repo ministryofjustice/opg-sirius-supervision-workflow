@@ -117,7 +117,7 @@ func (r *addressResponse) model() model.Address {
 }
 
 type assuranceResponse struct {
-	ReportReviewDate string           `json:"reportReviewDate"`
+	ReportReviewDate string           `json:"reportReviewDate" pact:"example=2023-01-01T00:00:00+00:00"`
 	ReportMarkedAs   *refDataResponse `json:"reportMarkedAs,omitempty"`
 	AssuranceType    *refDataResponse `json:"assuranceType,omitempty"`
 }
@@ -262,10 +262,10 @@ type orderResponse struct {
 	Type                   string                 `json:"caseSubtype"`
 	OrderStatus            *refDataResponse       `json:"orderStatus,omitempty"`
 	LatestAnnualReport     *annualReportResponse  `json:"latestAnnualReport,omitempty"`
-	Date                   string                 `json:"orderDate"`
-	MadeActiveDate         string                 `json:"madeActiveDate"`
+	Date                   string                 `json:"orderDate" pact:"example=2023-01-01T00:00:00+00:00"`
+	MadeActiveDate         string                 `json:"madeActiveDate" pact:"example=2023-01-01T00:00:00+00:00"`
 	HowDeputyAppointed     *refDataResponse       `json:"howDeputyAppointed,omitempty"`
-	IntroductoryTargetDate string                 `json:"introductoryTargetDate"`
+	IntroductoryTargetDate string                 `json:"introductoryTargetDate" pact:"example=2023-01-01T00:00:00+00:00"`
 }
 
 func (r orderResponse) model() (model.Order, error) {
@@ -308,9 +308,9 @@ type clientResponse struct {
 	SupervisionLevel     *refDataResponse           `json:"supervisionLevel,omitempty"`
 	ActiveCaseType       *refDataResponse           `json:"activeCaseType,omitempty"`
 	DeputyTypes          []refDataResponse          `json:"deputyTypes,omitempty"`
-	LastActionDate       string                     `json:"lastActionDate"`
+	LastActionDate       string                     `json:"lastActionDate" pact:"example=2023-01-01T00:00:00+00:00"`
 	CachedDebtTotal      float64                    `json:"cachedDebtTotal"`
-	ClosedOnDate         string                     `json:"closedOnDate"`
+	ClosedOnDate         string                     `json:"closedOnDate" pact:"example=2023-01-01T00:00:00+00:00"`
 }
 
 func (r clientResponse) model() (model.Client, error) {
@@ -359,6 +359,10 @@ func (r clientResponse) model() (model.Client, error) {
 		CachedDebtTotal:      r.CachedDebtTotal,
 		ClosedOnDate:         closedOnDate,
 	}, nil
+}
+
+type reassignResponse struct {
+	ReassignName string `json:"reassignName"`
 }
 
 func parseModelDate(value string) (model.Date, error) {

@@ -15,18 +15,14 @@ type ReassignClientsParams struct {
 	ClientIds  []string
 }
 
-type ReassignClientsRequest struct {
+type reassignClientsRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	ClientIds  []string `json:"clientIds"`
 	IsWorkflow bool     `json:"isWorkflow"`
 }
 
-type ReassignResponse struct {
-	ReassignName string `json:"reassignName"`
-}
-
 func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (string, error) {
-	var u ReassignResponse
+	var u reassignResponse
 	var body bytes.Buffer
 	var err error
 
@@ -40,7 +36,7 @@ func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(ReassignClientsRequest{
+	err = json.NewEncoder(&body).Encode(reassignClientsRequest{
 		AssigneeId: id,
 		ClientIds:  params.ClientIds,
 		IsWorkflow: true,
