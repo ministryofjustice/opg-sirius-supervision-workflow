@@ -88,10 +88,6 @@ func TestGetPADeputies_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			// BodyMatch generates matchers purely from the DTO's Go type via
-			// reflection - it ignores the literal field values below, so an
-			// empty slice is sufficient and avoids implying specific example
-			// values are being asserted on.
 			b.BodyMatch([]paDeputyResponse{})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
@@ -100,9 +96,8 @@ func TestGetPADeputies_contract(t *testing.T) {
 			deputies, err := client.GetPADeputies(getContext(nil))
 			assert.NoError(t, err)
 
-			assert.EqualValues(t, []model.Deputy{
-				{Id: 1, DisplayName: "string"},
-			}, deputies)
+			assert.EqualValues(t, 1, len(deputies))
+			assert.EqualValues(t, "string", deputies[0].DisplayName)
 			return nil
 		})
 

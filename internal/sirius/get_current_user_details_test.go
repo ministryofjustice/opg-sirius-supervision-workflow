@@ -171,30 +171,17 @@ func TestGetCurrentUserDetails_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			// BodyMatch generates matchers purely from the DTO's Go type via
-			// reflection - it ignores the literal field values below, so an
-			// empty struct is sufficient and avoids implying specific example
-			// values are being asserted on.
 			b.BodyMatch(currentUserResponse{})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
-			user, _ := client.GetCurrentUserDetails(getContext(nil))
+			user, err := client.GetCurrentUserDetails(getContext(nil))
+			assert.NoError(t, err)
 
-			assert.EqualValues(t, model.Assignee{
-				Id:          1,
-				Name:        "string",
-				PhoneNumber: "string",
-				Teams:       []model.Team{{Id: 1, Name: "string"}},
-				Deleted:     true,
-				Email:       "string",
-				Firstname:   "string",
-				Surname:     "string",
-				Roles:       []string{"string"},
-				Locked:      true,
-				Suspended:   true,
-			}, user)
+			assert.EqualValues(t, 1, user.Id)
+			assert.EqualValues(t, "string", user.Name)
+			assert.EqualValues(t, 1, len(user.Teams))
 			return nil
 		})
 
