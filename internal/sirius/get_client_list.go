@@ -24,7 +24,7 @@ type ClientListParams struct {
 }
 
 type ClientMetaData struct {
-	AssigneeCount []model.AssigneeAndCount `json:"assigneeClientCount"`
+	AssigneeCount []model.AssigneeAndCount
 }
 
 type ClientList struct {
@@ -34,11 +34,21 @@ type ClientList struct {
 	MetaData     ClientMetaData        `json:"metadata"`
 }
 
+type clientMetaDataResponse struct {
+	AssigneeCount []assigneeAndCountResponse `json:"assigneeClientCount"`
+}
+
+func (r clientMetaDataResponse) model() ClientMetaData {
+	return ClientMetaData{
+		AssigneeCount: assigneeAndCountsModel(r.AssigneeCount),
+	}
+}
+
 type clientListResponse struct {
 	Clients      []clientResponse        `json:"clients"`
 	Pages        pageInformationResponse `json:"pages"`
 	TotalClients int                     `json:"total"`
-	MetaData     ClientMetaData          `json:"metadata"`
+	MetaData     clientMetaDataResponse  `json:"metadata"`
 }
 
 func (r clientListResponse) model() (ClientList, error) {
@@ -58,7 +68,7 @@ func (r clientListResponse) model() (ClientList, error) {
 		Clients:      clients,
 		Pages:        r.Pages.model(),
 		TotalClients: r.TotalClients,
-		MetaData:     r.MetaData,
+		MetaData:     r.MetaData.model(),
 	}, nil
 }
 
