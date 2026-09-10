@@ -268,10 +268,6 @@ func TestGetClientList_contract(t *testing.T) {
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))
-			// BodyMatch generates matchers purely from the DTO's Go type via
-			// reflection - it ignores the literal field values below, so an
-			// empty struct is sufficient and avoids implying specific example
-			// values are being asserted on.
 			b.BodyMatch(clientListResponse{})
 		}).
 		ExecuteTest(t, func(config consumer.MockServerConfig) error {
