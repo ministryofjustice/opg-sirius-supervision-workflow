@@ -2,13 +2,17 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,4 +68,43 @@ func TestApiClient_GetPADeputies_Returns500(t *testing.T) {
 		URL:    svr.URL + "/v1/assignees/pa-deputies",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetPADeputies_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("A public authority deputy exists").
+		UponReceiving("A request for PA deputies").
+		WithRequest("GET", "/supervision-api/v1/assignees/pa-deputies", func(b *consumer.V4RequestBuilder) {
+			b.Header("Accept", matchers.S("application/json"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			// BodyMatch generates matchers purely from the DTO's Go type via
+			// reflection - it ignores the literal field values below, so an
+			// empty slice is sufficient and avoids implying specific example
+			// values are being asserted on.
+			b.BodyMatch([]paDeputyResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			deputies, err := client.GetPADeputies(getContext(nil))
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, []model.Deputy{
+				{Id: 1, DisplayName: "string"},
+			}, deputies)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

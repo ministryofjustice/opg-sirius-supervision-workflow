@@ -2,13 +2,17 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -117,4 +121,72 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 		URL:    svr.URL + "/v1/bonds/without-orders?limit=25&page=1",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetBondList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("Bonds without orders exist").
+		UponReceiving("A request for bonds without orders").
+		WithRequest("GET", "/supervision-api/v1/bonds/without-orders", func(b *consumer.V4RequestBuilder) {
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			// BodyMatch generates matchers purely from the DTO's Go type via
+			// reflection - it ignores the literal field values below, so an
+			// empty struct is sufficient and avoids implying specific example
+			// values are being asserted on.
+			b.BodyMatch(bondListResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			bonds, err := client.GetBondList(getContext(nil), BondListParams{
+				Team:    model.Team{Id: 1},
+				Page:    1,
+				PerPage: 25,
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, BondList{
+				Bonds: []model.Bond{
+					{
+						Id:                  1,
+						CourtRef:            "string",
+						FirstName:           "string",
+						LastName:            "string",
+						CompanyName:         "string",
+						BondReferenceNumber: "string",
+						BondAmount:          1,
+						BondIssuedDate:      model.NewDate("01/01/2023"),
+						BondClient: model.Client{
+							Id: 1,
+						},
+						BondStatus: model.RefData{
+							Label:  "string",
+							Handle: "string",
+						},
+						Deputies: []string{"string"},
+					},
+				},
+				Pages: model.PageInformation{
+					PageCurrent: 1,
+					PageTotal:   1,
+				},
+				TotalBonds: 1,
+			}, bonds)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }
