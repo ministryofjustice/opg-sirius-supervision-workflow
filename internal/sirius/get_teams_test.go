@@ -39,7 +39,6 @@ func TestGetTeams(t *testing.T) {
 		{
 			"id":22,
 			"displayName":"Lay Team 1",
-			"members":[],
 			"teamType":{
 				"handle":"LAY",
 				"label":"Lay Team"
@@ -48,7 +47,6 @@ func TestGetTeams(t *testing.T) {
 		{
 			"id":23,
 			"displayName":"Pro Team 1",
-			"members":[],
 			"teamType":{
 				"handle":"PRO",
 				"label":"Pro Team"
@@ -102,6 +100,7 @@ func TestGetTeams(t *testing.T) {
 					TypeLabel: "Lay Team",
 					Selector:  "22",
 					Teams:     []model.Team{},
+					Members:   []model.Assignee{},
 				},
 			},
 		},
@@ -112,6 +111,7 @@ func TestGetTeams(t *testing.T) {
 			TypeLabel: "Lay Team",
 			Selector:  "22",
 			Teams:     []model.Team{},
+			Members:   []model.Assignee{},
 		},
 		{
 			Id:        23,
@@ -120,6 +120,7 @@ func TestGetTeams(t *testing.T) {
 			TypeLabel: "Pro Team",
 			Selector:  "23",
 			Teams:     []model.Team{},
+			Members:   []model.Assignee{},
 		},
 		{
 			Name:     "Professional Deputy Team",
@@ -133,13 +134,14 @@ func TestGetTeams(t *testing.T) {
 					TypeLabel: "Pro Team",
 					Selector:  "23",
 					Teams:     []model.Team{},
+					Members:   []model.Assignee{},
 				},
 			},
 		},
 	}
 
 	teams, err := client.GetTeams(getContext(nil))
-	assert.Equal(t, expectedResponse, teams)
+	assert.EqualValues(t, expectedResponse, teams)
 	assert.Equal(t, nil, err)
 }
 

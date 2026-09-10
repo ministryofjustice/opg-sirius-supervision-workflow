@@ -10,11 +10,10 @@ import (
 )
 
 type teamWithMembersResponse struct {
-	ID          int                `json:"id"`
-	DisplayName string             `json:"displayName"`
-	Members     []assigneeResponse `json:"members"`
-	Deputies    []assigneeResponse `json:"deputies"`
-	TeamType    *refDataResponse   `json:"teamType"`
+	ID          int                 `json:"id"`
+	DisplayName string              `json:"displayName"`
+	Members     *[]assigneeResponse `json:"members"`
+	TeamType    *refDataResponse    `json:"teamType"`
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
@@ -82,10 +81,13 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			TypeLabel: t.TeamType.Label,
 			Selector:  strconv.Itoa(t.ID),
 			Teams:     []model.Team{},
+			Members:   []model.Assignee{},
 		}
 
-		for _, m := range t.Members {
-			team.Members = append(team.Members, m.model())
+		if t.Members != nil {
+			for _, m := range *t.Members {
+				team.Members = append(team.Members, m.model())
+			}
 		}
 
 		if team.IsLay() {
