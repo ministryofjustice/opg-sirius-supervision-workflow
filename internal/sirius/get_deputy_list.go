@@ -12,7 +12,7 @@ import (
 )
 
 type DeputyMetaData struct {
-	DeputyMetaData []model.AssigneeAndCount `json:"ecmCount"`
+	DeputyMetaData []model.AssigneeAndCount
 }
 
 type DeputyList struct {
@@ -31,11 +31,21 @@ type DeputyListParams struct {
 	SelectedECMs []string
 }
 
+type deputyMetaDataResponse struct {
+	DeputyMetaData []assigneeAndCountResponse `json:"ecmCount"`
+}
+
+func (r deputyMetaDataResponse) model() DeputyMetaData {
+	return DeputyMetaData{
+		DeputyMetaData: assigneeAndCountsModel(r.DeputyMetaData),
+	}
+}
+
 type deputyListResponse struct {
 	Deputies      []deputyResponse        `json:"persons"`
 	Pages         pageInformationResponse `json:"pages"`
 	TotalDeputies int                     `json:"total"`
-	MetaData      DeputyMetaData          `json:"metadata"`
+	MetaData      deputyMetaDataResponse  `json:"metadata"`
 }
 
 func (r deputyListResponse) model() (DeputyList, error) {
@@ -55,7 +65,7 @@ func (r deputyListResponse) model() (DeputyList, error) {
 		Deputies:      deputies,
 		Pages:         r.Pages.model(),
 		TotalDeputies: r.TotalDeputies,
-		MetaData:      r.MetaData,
+		MetaData:      r.MetaData.model(),
 	}, nil
 }
 

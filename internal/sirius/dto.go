@@ -18,6 +18,30 @@ func (r pageInformationResponse) model() model.PageInformation {
 	}
 }
 
+type assigneeAndCountResponse struct {
+	AssigneeId int `json:"assignee"`
+	Count      int `json:"count"`
+}
+
+func (r assigneeAndCountResponse) model() model.AssigneeAndCount {
+	return model.AssigneeAndCount{
+		AssigneeId: r.AssigneeId,
+		Count:      r.Count,
+	}
+}
+
+func assigneeAndCountsModel(rs []assigneeAndCountResponse) []model.AssigneeAndCount {
+	if rs == nil {
+		return nil
+	}
+
+	assigneeAndCounts := make([]model.AssigneeAndCount, 0, len(rs))
+	for _, r := range rs {
+		assigneeAndCounts = append(assigneeAndCounts, r.model())
+	}
+	return assigneeAndCounts
+}
+
 type refDataResponse struct {
 	Handle string `json:"handle"`
 	Label  string `json:"label"`
