@@ -220,6 +220,7 @@ func TestGetClosedClientList_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A closed Supervision client exists").
+		Given("I am an allocations user").
 		UponReceiving("A request for the closed client list").
 		WithRequest("GET", "/supervision-api/v1/assignees/closed-clients", func(b *consumer.V4RequestBuilder) {
 			b.Query("teamIds[]", matchers.S("123"))

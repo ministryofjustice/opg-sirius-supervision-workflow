@@ -209,6 +209,7 @@ func TestReassignTasks_contract(t *testing.T) {
 	err = pact.
 		AddInteraction().
 		Given("A Supervision task exists").
+		Given("I am an allocations user").
 		UponReceiving("A request to reassign tasks").
 		WithRequest("PUT", "/supervision-api/v1/reassign-tasks", func(b *consumer.V4RequestBuilder) {
 			b.Header("Content-Type", matchers.S("application/json"))

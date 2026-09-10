@@ -27,13 +27,49 @@ defaults:
     shell: bash
 
 jobs:
+  identify:
+    name: Identify version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: "0"
+      - name: Define commit SHA and branch
+        id: commit_branch
+        run: |
+          if [ "${{ github.head_ref }}" == "" ]; then
+              echo "COMMIT=${{github.sha}}" >> $GITHUB_OUTPUT
+              echo "BRANCH=main" >> $GITHUB_OUTPUT
+          else
+              echo "COMMIT=${{github.event.pull_request.head.sha}}" >> $GITHUB_OUTPUT
+              echo "BRANCH=${{github.head_ref}}" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      commit: ${{ steps.commit_branch.outputs.COMMIT }}
+      branch: ${{ steps.commit_branch.outputs.BRANCH }}
+
+  create-tag:
+    name: Create Tags
+    uses: ./.github/workflows/create-tags.yml
+
   test:
     name: Test Workflow
+    needs: ['identify', 'create-tag']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Run Tests
         run: make unit-test
+
+      - name: Publish pacts
+        run: |
+          docker compose run --rm pact-cli pact-broker publish ./pacts/sirius-supervision-workflow-sirius.json \
+            --consumer-app-version ${{ needs.identify.outputs.commit }} \
+            --branch ${{ needs.identify.outputs.branch }} \
+            --tag ${{ needs.create-tag.outputs.tag }} \
+            --broker-base-url https://pact-broker.api.opg.service.justice.gov.uk \
+            --broker-username admin \
+            --broker-password ${{ secrets.PACT_BROKER_PASSWORD }}
 
       - name: Upload Code Coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
@@ -43,7 +79,7 @@ jobs:
           verbose: true
 
   lint:
-    name: GO lint
+    name: Go lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -85,10 +121,6 @@ jobs:
         with:
           name: cypress-logs
           path: cypress/logs
-
-  create-tag:
-    name: Create Tags
-    uses: ./.github/workflows/create-tags.yml
 
   verify-readonly-fs:
     name: Verify Read-only Filesystem
