@@ -44,8 +44,8 @@ type TaskListParams struct {
 }
 
 type taskMetaDataResponse struct {
-	TaskTypeCount []TypeAndCount           `json:"taskTypeCount"`
-	AssigneeCount []model.AssigneeAndCount `json:"assigneeTaskCount"`
+	TaskTypeCount []TypeAndCount             `json:"taskTypeCount"`
+	AssigneeCount []assigneeAndCountResponse `json:"assigneeTaskCount"`
 }
 
 type taskResponse struct {
@@ -139,7 +139,7 @@ func (r taskListResponse) model() (TaskList, error) {
 		TotalTasks: r.TotalTasks,
 		MetaData: TaskMetaData{
 			TaskTypeCount: r.MetaData.TaskTypeCount,
-			AssigneeCount: r.MetaData.AssigneeCount,
+			AssigneeCount: assigneeAndCountsModel(r.MetaData.AssigneeCount),
 		},
 	}, nil
 }

@@ -5,11 +5,9 @@ import (
 	"strings"
 )
 
-// AssigneeAndCount is decoded directly from JSON (no DTO layer) since it is a
-// small, non-recursive struct used as-is by both the API response and the domain model.
 type AssigneeAndCount struct {
-	AssigneeId int `json:"assignee"`
-	Count      int `json:"count"`
+	AssigneeId int
+	Count      int
 }
 
 type Assignee struct {
