@@ -2,13 +2,17 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -117,4 +121,46 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 		URL:    svr.URL + "/v1/bonds/without-orders?limit=25&page=1",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetBondList_contract(t *testing.T) {
+	t.Skip("Skipping until we have a way of creating bonds without orders in the pact provider")
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("Bonds without orders exist").
+		Given("I am an allocations user").
+		UponReceiving("A request for bonds without orders").
+		WithRequest("GET", "/supervision-api/v1/bonds/without-orders", func(b *consumer.V4RequestBuilder) {
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.BodyMatch(bondListResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			bonds, err := client.GetBondList(getContext(nil), BondListParams{
+				Team:    model.Team{Id: 1},
+				Page:    1,
+				PerPage: 25,
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, bonds.TotalBonds)
+			assert.EqualValues(t, 1, len(bonds.Bonds))
+			assert.EqualValues(t, "string", bonds.Bonds[0].CourtRef)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

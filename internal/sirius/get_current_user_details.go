@@ -9,17 +9,9 @@ import (
 
 type currentUserResponse struct {
 	ID          int            `json:"id"`
-	Name        string         `json:"name,omitempty"`
-	PhoneNumber string         `json:"phoneNumber"`
-	Teams       []teamResponse `json:"teams"`
 	DisplayName string         `json:"displayName"`
-	Deleted     bool           `json:"deleted"`
-	Email       string         `json:"email"`
-	Firstname   string         `json:"firstname"`
-	Surname     string         `json:"surname"`
+	Teams       []teamResponse `json:"teams"`
 	Roles       []string       `json:"roles"`
-	Locked      bool           `json:"locked"`
-	Suspended   bool           `json:"suspended"`
 }
 
 func (r currentUserResponse) model() model.Assignee {
@@ -32,17 +24,10 @@ func (r currentUserResponse) model() model.Assignee {
 	}
 
 	return model.Assignee{
-		Id:          r.ID,
-		Name:        r.DisplayName,
-		PhoneNumber: r.PhoneNumber,
-		Teams:       teams,
-		Deleted:     r.Deleted,
-		Email:       r.Email,
-		Firstname:   r.Firstname,
-		Surname:     r.Surname,
-		Roles:       r.Roles,
-		Locked:      r.Locked,
-		Suspended:   r.Suspended,
+		Id:    r.ID,
+		Name:  r.DisplayName,
+		Teams: teams,
+		Roles: r.Roles,
 	}
 }
 

@@ -38,9 +38,9 @@ type bondResponse struct {
 	CompanyName         string              `json:"companyName"`
 	BondReferenceNumber string              `json:"bondReferenceNumber"`
 	BondAmount          int                 `json:"bondAmount"`
-	BondIssuedDate      string              `json:"bondIssuedDate"`
-	BondClient          *bondClientResponse `json:"client,omitempty"`
-	BondStatus          *refDataResponse    `json:"bondStatus,omitempty"`
+	BondIssuedDate      string              `json:"bondIssuedDate" pact:"example=2023-01-01T00:00:00+00:00"`
+	BondClient          *bondClientResponse `json:"client"`
+	BondStatus          *refDataResponse    `json:"bondStatus"`
 	Deputies            []string            `json:"deputyNames"`
 }
 

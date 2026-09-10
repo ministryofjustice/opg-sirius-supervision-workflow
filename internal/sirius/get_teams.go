@@ -9,12 +9,11 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
-type TeamCollection struct {
+type teamWithMembersResponse struct {
 	ID          int                `json:"id"`
 	DisplayName string             `json:"displayName"`
-	Members     []assigneeResponse `json:"members"`
-	Deputies    []assigneeResponse `json:"deputies"`
-	TeamType    *refDataResponse   `json:"teamType"`
+	Members     []assigneeResponse `json:"members" pact:"min=0"`
+	TeamType    refDataResponse    `json:"teamType"`
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
@@ -50,7 +49,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		return teams, newStatusError(resp)
 	}
 
-	var v []TeamCollection
+	var v []teamWithMembersResponse
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return teams, err
@@ -71,7 +70,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	}
 
 	for _, t := range v {
-		if t.TeamType == nil {
+		if t.TeamType.Handle == "" {
 			continue
 		}
 
@@ -82,6 +81,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			TypeLabel: t.TeamType.Label,
 			Selector:  strconv.Itoa(t.ID),
 			Teams:     []model.Team{},
+			Members:   []model.Assignee{},
 		}
 
 		for _, m := range t.Members {
