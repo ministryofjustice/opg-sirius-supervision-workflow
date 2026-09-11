@@ -124,6 +124,7 @@ func TestApiClient_GetBondList_Returns500(t *testing.T) {
 }
 
 func TestGetBondList_contract(t *testing.T) {
+	t.Skip("Skipping until we have a way of creating bonds without orders in the pact provider")
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
