@@ -1,8 +1,10 @@
 package model
 
+import "slices"
+
 type RefData struct {
-	Handle string `json:"handle"`
-	Label  string `json:"label"`
+	Handle string
+	Label  string
 }
 
 func (r RefData) Is(handle string) bool {
@@ -10,10 +12,5 @@ func (r RefData) Is(handle string) bool {
 }
 
 func (r RefData) IsIn(handles []string) bool {
-	for _, handle := range handles {
-		if r.Is(handle) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(handles, r.Is)
 }

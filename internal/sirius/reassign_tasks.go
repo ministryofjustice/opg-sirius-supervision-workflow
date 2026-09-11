@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 	"net/http"
 	"strconv"
 )
@@ -13,19 +12,24 @@ import (
 type ReassignTasksParams struct {
 	AssignTeam string
 	AssignCM   string
+	TaskIds    []string
+	IsPriority string
+}
+
+type reassignTasksRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	TaskIds    []string `json:"taskIds"`
 	IsPriority string   `json:"isPriority"`
 }
 
-type returnedTask struct {
-	Id            int            `json:"id"`
-	Assignee      model.Assignee `json:"assignee"`
-	CaseOwnerTask bool           `json:"caseOwnerTask"`
+type returnedTaskResponse struct {
+	Id            int              `json:"id"`
+	Assignee      assigneeResponse `json:"assignee"`
+	CaseOwnerTask bool             `json:"caseOwnerTask"`
 }
 
 func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (string, error) {
-	var u returnedTask
+	var r returnedTaskResponse
 	var body bytes.Buffer
 	var err error
 
@@ -34,12 +38,16 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		assignee = params.AssignCM
 	}
 
-	params.AssigneeId, err = strconv.Atoi(assignee)
+	id, err := strconv.Atoi(assignee)
 	if err != nil {
 		return "", err
 	}
 
-	err = json.NewEncoder(&body).Encode(params)
+	err = json.NewEncoder(&body).Encode(reassignTasksRequest{
+		AssigneeId: id,
+		TaskIds:    params.TaskIds,
+		IsPriority: params.IsPriority,
+	})
 
 	if err != nil {
 		return "", err
@@ -83,7 +91,7 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 		return "", newStatusError(resp)
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&u)
+	err = json.NewDecoder(resp.Body).Decode(&r)
 	if err != nil {
 		c.logResponse(req, resp, err)
 		return "", err
@@ -92,11 +100,11 @@ func (c *ApiClient) ReassignTasks(ctx Context, params ReassignTasksParams) (stri
 	if params.AssignTeam != "0" {
 		switch params.IsPriority {
 		case "true":
-			return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(params.TaskIds), u.Assignee.Name), nil
+			return fmt.Sprintf("You have assigned %d task(s) to %s as a priority", len(params.TaskIds), r.Assignee.DisplayName), nil
 		case "false":
-			return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(params.TaskIds), u.Assignee.Name), nil
+			return fmt.Sprintf("You have assigned %d task(s) to %s and removed priority", len(params.TaskIds), r.Assignee.DisplayName), nil
 		default:
-			return fmt.Sprintf("You have assigned %d task(s) to %s", len(params.TaskIds), u.Assignee.Name), nil
+			return fmt.Sprintf("You have assigned %d task(s) to %s", len(params.TaskIds), r.Assignee.DisplayName), nil
 		}
 	}
 	switch params.IsPriority {

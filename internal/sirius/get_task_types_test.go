@@ -150,3 +150,8 @@ func TestApiClient_GetTaskTypes_CachesResponse(t *testing.T) {
 	assert.Equal(t, first, second)
 	assert.Equal(t, 1, requests)
 }
+
+func TestGetTaskTypes_contract(t *testing.T) {
+	// TODO: Task types are currently returned as a dynamically named object, which makes it impossible to test with Pact.
+	t.Skip("Skipping test until SFS-783 is implemented")
+}

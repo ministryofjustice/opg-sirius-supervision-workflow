@@ -55,6 +55,8 @@ services:
   gosec:
     image: securego/gosec:latest@sha256:2cf71ea78210c496c65e3a987576a9c8317b68e20f2960520b3f6f8f9f539be5
     working_dir: /app
+    environment:
+      GOTOOLCHAIN: auto
     volumes:
       - .:/app
     command: -exclude-dir=.gocache -fmt=sarif -out=/app/test-results/gosec.sarif -stdout -verbose=text /app/...
@@ -66,6 +68,12 @@ services:
     volumes:
       - ./:/home/node/app
       - watch-assets-node-modules:/home/node/app/node_modules
+
+  pact-cli:
+    image: pactfoundation/pact-cli:1.5.0.4@sha256:4708c3d61157bff90082a483e4ff70541eb66f951eb3e218ea3e80a557abd170
+    working_dir: /go/src/app
+    volumes:
+      - ./pacts:/go/src/app/pacts
 
 volumes:
   watch-assets-node-modules:

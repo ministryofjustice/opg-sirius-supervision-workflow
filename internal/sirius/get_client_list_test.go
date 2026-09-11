@@ -2,14 +2,18 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,8 +68,8 @@ func TestGetCaseloadListCanReturn200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.NotContains(t, rq.URL.RawQuery, "sort=made_active_date:asc")
-		assert.Contains(t, rq.URL.RawQuery, "caseowner:1")
+		assert.NotEqual(t, "made_active_date:asc", rq.URL.Query().Get("sort"))
+		assert.Contains(t, rq.URL.Query().Get("filter"), "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -151,7 +155,7 @@ func TestGetCaseloadListCanThrow500Error(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/v1/assignees/13/clients?limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/13/clients?filter=&limit=25&page=1&sort=",
 		Method: http.MethodGet,
 	}, err)
 }
@@ -161,8 +165,8 @@ func TestGetCaseloadListSortedByMadeActiveDateForNewDeputyOrdersTeam(t *testing.
 	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-		assert.Contains(t, r.URL.RawQuery, "sort=made_active_date:asc")
-		assert.NotContains(t, r.URL.RawQuery, "caseowner:1")
+		assert.Equal(t, "made_active_date:asc", r.URL.Query().Get("sort"))
+		assert.NotContains(t, r.URL.Query().Get("filter"), "caseowner:1")
 		return &http.Response{
 			StatusCode: 200,
 			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
@@ -184,7 +188,7 @@ func TestGetCaseloadListSortedByReportDueDateForLayTeam(t *testing.T) {
 	client := NewApiClient(mockClient, "", logger)
 
 	mocks.GetDoFunc = func(r *http.Request) (*http.Response, error) {
-		assert.Contains(t, r.URL.RawQuery, "sort=report_due_date:asc")
+		assert.Equal(t, "report_due_date:asc", r.URL.Query().Get("sort"))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       io.NopCloser(bytes.NewReader([]byte("{}"))),
@@ -241,4 +245,49 @@ func TestClientListParams_CreateFilter(t *testing.T) {
 			assert.Equal(t, test.want, test.params.CreateFilter())
 		})
 	}
+}
+
+func TestGetClientList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("A supervision client exists").
+		Given("I am an allocations user").
+		UponReceiving("A request for the client list").
+		WithRequest("GET", "/supervision-api/v1/assignees/123/clients", func(b *consumer.V4RequestBuilder) {
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+			b.Query("filter", matchers.S("caseowner:1"))
+			b.Query("sort", matchers.S(""))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.BodyMatch(clientListResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			clientList, err := client.GetClientList(getContext(nil), ClientListParams{
+				Team:       model.Team{Id: 123},
+				Page:       1,
+				PerPage:    25,
+				CaseOwners: []string{"1"},
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, clientList.TotalClients)
+			assert.EqualValues(t, 1, clientList.Pages.PageCurrent)
+			assert.EqualValues(t, 1, len(clientList.Clients))
+			assert.EqualValues(t, "string", clientList.Clients[0].FirstName)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

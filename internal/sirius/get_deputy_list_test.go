@@ -2,13 +2,17 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -70,7 +74,12 @@ func TestApiClient_GetDeputyList_Returns200(t *testing.T) {
 	r := io.NopCloser(bytes.NewReader([]byte(json)))
 
 	mocks.GetDoFunc = func(rq *http.Request) (*http.Response, error) {
-		assert.Contains(t, rq.URL.RawQuery, "teamIds[]=13&limit=25&page=1&filter=ecm:1,ecm:2&sort=field:direction")
+		query := rq.URL.Query()
+		assert.Equal(t, []string{"13"}, query["teamIds[]"])
+		assert.Equal(t, "25", query.Get("limit"))
+		assert.Equal(t, "1", query.Get("page"))
+		assert.Equal(t, "ecm:1,ecm:2", query.Get("filter"))
+		assert.Equal(t, "field:direction", query.Get("sort"))
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -141,7 +150,53 @@ func TestApiClient_GetDeputyList_Returns500(t *testing.T) {
 
 	assert.Equal(t, StatusError{
 		Code:   http.StatusInternalServerError,
-		URL:    svr.URL + "/v1/assignees/teams/deputies?teamIds[]=13&limit=25&page=1&filter=&sort=",
+		URL:    svr.URL + "/v1/assignees/teams/deputies?filter=&limit=25&page=1&sort=&teamIds%5B%5D=13",
 		Method: http.MethodGet,
 	}, err)
+}
+
+func TestGetDeputyList_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("A deputy exists").
+		Given("I am an allocations user").
+		UponReceiving("A request for the deputy list").
+		WithRequest("GET", "/supervision-api/v1/assignees/teams/deputies", func(b *consumer.V4RequestBuilder) {
+			b.Query("teamIds[]", matchers.S("123"))
+			b.Query("limit", matchers.S("25"))
+			b.Query("page", matchers.S("1"))
+			b.Query("filter", matchers.S("ecm:123"))
+			b.Query("sort", matchers.S("field:direction"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.BodyMatch(deputyListResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			deputyList, err := client.GetDeputyList(getContext(nil), DeputyListParams{
+				Team:         model.Team{Id: 123},
+				Page:         1,
+				PerPage:      25,
+				Sort:         "field:direction",
+				SelectedECMs: []string{"123"},
+			})
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, deputyList.TotalDeputies)
+			assert.EqualValues(t, 1, len(deputyList.Deputies))
+			assert.EqualValues(t, "string", deputyList.Deputies[0].DisplayName)
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

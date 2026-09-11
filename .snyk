@@ -5,4 +5,9 @@ ignore:
             reason: "Not yet fixed"
             expires: "2026-09-11T00:00:00Z"
             created: "2026-09-03T09:30:00Z"
+    SNYK-GOLANG-GOOGLEGOLANGORGGRPCINTERNALTRANSPORT-19651825:
+        - '*' :
+            reason: "Not yet fixed"
+            expires: "2026-09-11T00:00:00Z"
+            created: "2026-09-09T17:00:00Z"
 patch:

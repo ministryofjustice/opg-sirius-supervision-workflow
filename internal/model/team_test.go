@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTeam_GetAssigneesForFilter(t *testing.T) {
@@ -121,7 +122,7 @@ func TestGetUnassignedCount(t *testing.T) {
 		}
 
 		t.Run(test.testname, func(t *testing.T) {
-			assert.Equal(t, test.selectedTeam.GetUnassignedCount(selectedAssignees, test.url), test.want)
+			assert.Equal(t, test.selectedTeam.GetUnassignedCount(selectedAssignees), test.want)
 		})
 	}
 }

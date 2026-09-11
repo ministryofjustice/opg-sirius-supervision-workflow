@@ -2,13 +2,17 @@ package sirius
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
+	"github.com/pact-foundation/pact-go/v2/consumer"
+	"github.com/pact-foundation/pact-go/v2/matchers"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -147,4 +151,39 @@ func TestMyDetailsReturns200(t *testing.T) {
 	user, err := client.GetCurrentUserDetails(getContext(nil))
 	assert.Equal(t, err, nil)
 	assert.Equal(t, user, expectedResponse)
+}
+
+func TestGetCurrentUserDetails_contract(t *testing.T) {
+	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
+		Consumer: "sirius-supervision-workflow",
+		Provider: "sirius",
+		LogDir:   "../../logs",
+		PactDir:  "../../pacts",
+	})
+	assert.NoError(t, err)
+
+	err = pact.
+		AddInteraction().
+		Given("User exists").
+		UponReceiving("A request for the current user").
+		WithRequest("GET", "/supervision-api/v1/users/current", func(b *consumer.V4RequestBuilder) {
+			b.Header("Accept", matchers.S("application/json"))
+		}).
+		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
+			b.Header("Content-Type", matchers.S("application/json"))
+			b.BodyMatch(currentUserResponse{})
+		}).
+		ExecuteTest(t, func(config consumer.MockServerConfig) error {
+			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
+
+			user, err := client.GetCurrentUserDetails(getContext(nil))
+			assert.NoError(t, err)
+
+			assert.EqualValues(t, 1, user.Id)
+			assert.EqualValues(t, "string", user.Name)
+			assert.EqualValues(t, 1, len(user.Teams))
+			return nil
+		})
+
+	assert.NoError(t, err)
 }

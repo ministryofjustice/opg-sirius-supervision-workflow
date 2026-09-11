@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -42,24 +43,124 @@ type TaskListParams struct {
 	DueDateTo         *time.Time
 }
 
+type taskMetaDataResponse struct {
+	TaskTypeCount []TypeAndCount             `json:"taskTypeCount"`
+	AssigneeCount []assigneeAndCountResponse `json:"assigneeTaskCount"`
+}
+
+type taskResponse struct {
+	Assignee      *assigneeWithTeamsResponse `json:"assignee,omitempty"`
+	Orders        []orderResponse            `json:"caseItems,omitempty"`
+	Persons       []clientSummaryResponse    `json:"persons,omitempty"`
+	Clients       []clientSummaryResponse    `json:"clients,omitempty"`
+	Deputies      []deputyResponse           `json:"deputies,omitempty"`
+	Status        string                     `json:"status,omitempty"`
+	DueDate       string                     `json:"dueDate"`
+	Id            int                        `json:"id"`
+	Type          string                     `json:"type"`
+	Name          string                     `json:"name"`
+	Description   string                     `json:"description,omitempty"`
+	RAGRating     int                        `json:"ragRating,omitempty"`
+	CreatedTime   string                     `json:"createdTime,omitempty"`
+	CaseOwnerTask bool                       `json:"caseOwnerTask"`
+	IsPriority    bool                       `json:"isPriority"`
+}
+
+func (r taskResponse) model() (model.Task, error) {
+	var orders []model.Order
+	if r.Orders != nil {
+		orders = make([]model.Order, 0, len(r.Orders))
+		for _, order := range r.Orders {
+			mappedOrder, err := order.model()
+			if err != nil {
+				return model.Task{}, err
+			}
+			orders = append(orders, mappedOrder)
+		}
+	}
+
+	var clients []model.Client
+	if r.Clients != nil {
+		clients = make([]model.Client, 0, len(r.Clients))
+		for _, client := range r.Clients {
+			clients = append(clients, client.model())
+		}
+	}
+
+	var deputies []model.Deputy
+	if r.Deputies != nil {
+		deputies = make([]model.Deputy, 0, len(r.Deputies))
+		for _, deputy := range r.Deputies {
+			mappedDeputy, err := deputy.model()
+			if err != nil {
+				return model.Task{}, err
+			}
+			deputies = append(deputies, mappedDeputy)
+		}
+	}
+
+	return model.Task{
+		Assignee:      r.Assignee.model(),
+		Orders:        orders,
+		Clients:       clients,
+		Deputies:      deputies,
+		DueDate:       r.DueDate,
+		Id:            r.Id,
+		Type:          r.Type,
+		Name:          r.Name,
+		CaseOwnerTask: r.CaseOwnerTask,
+		IsPriority:    r.IsPriority,
+	}, nil
+}
+
+type taskListResponse struct {
+	Tasks      []taskResponse          `json:"tasks"`
+	Pages      pageInformationResponse `json:"pages"`
+	TotalTasks int                     `json:"total"`
+	MetaData   taskMetaDataResponse    `json:"metadata"`
+}
+
+func (r taskListResponse) model() (TaskList, error) {
+	var tasks []model.Task
+	if r.Tasks != nil {
+		tasks = make([]model.Task, 0, len(r.Tasks))
+		for _, task := range r.Tasks {
+			mappedTask, err := task.model()
+			if err != nil {
+				return TaskList{}, err
+			}
+			tasks = append(tasks, mappedTask)
+		}
+	}
+
+	return TaskList{
+		Tasks:      tasks,
+		Pages:      r.Pages.model(),
+		TotalTasks: r.TotalTasks,
+		MetaData: TaskMetaData{
+			TaskTypeCount: r.MetaData.TaskTypeCount,
+			AssigneeCount: assigneeAndCountsModel(r.MetaData.AssigneeCount),
+		},
+	}, nil
+}
+
 func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, error) {
 	var v TaskList
-	var teamIds []string
-
+	query := url.Values{}
 	if params.Team.Id != 0 {
-		teamIds = []string{"teamIds[]=" + strconv.Itoa(params.Team.Id)}
+		query.Add("teamIds[]", strconv.Itoa(params.Team.Id))
 	}
 	for _, team := range params.Team.Teams {
-		teamIds = append(teamIds, "teamIds[]="+strconv.Itoa(team.Id))
+		query.Add("teamIds[]", strconv.Itoa(team.Id))
 	}
+	query.Set("filter", params.CreateFilter())
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("sort", "ispriority:desc,duedate:asc,id:asc")
 
 	endpoint := fmt.Sprintf(
-		"/v1/assignees/teams/tasks?%s&filter=%s&limit=%d&page=%d&sort=%s",
-		strings.Join(teamIds, "&"),
-		params.CreateFilter(),
-		params.PerPage,
-		params.Page,
-		"ispriority:desc,duedate:asc,id:asc",
+		"/v1/assignees/teams/tasks?%s",
+		query.Encode(),
 	)
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
@@ -86,16 +187,23 @@ func (c *ApiClient) GetTaskList(ctx Context, params TaskListParams) (TaskList, e
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response taskListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.model()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return TaskList{}, err
 	}
 
 	return v, nil
 }
 
 func (p TaskListParams) CreateFilter() string {
-	filter := "status:Not+started,"
+	filter := "status:Not started,"
 
 	if slices.Contains(p.SelectedTaskTypes, TaskTypeEcmHandle) {
 		p.SelectedTaskTypes = getEcmTaskTypesString(p.TaskTypes)

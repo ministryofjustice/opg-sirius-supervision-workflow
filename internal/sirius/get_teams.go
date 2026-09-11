@@ -9,21 +9,11 @@ import (
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
 )
 
-type TeamCollection struct {
-	ID          int    `json:"id"`
-	DisplayName string `json:"displayName"`
-	Members     []struct {
-		ID          int    `json:"id"`
-		DisplayName string `json:"displayName"`
-	} `json:"members"`
-	Deputies []struct {
-		ID          int    `json:"id"`
-		DisplayName string `json:"displayName"`
-	}
-	TeamType *struct {
-		Handle string `json:"handle"`
-		Label  string `json:"label"`
-	} `json:"teamType"`
+type teamWithMembersResponse struct {
+	ID          int                 `json:"id"`
+	DisplayName string              `json:"displayName"`
+	Members     *[]assigneeResponse `json:"members"`
+	TeamType    *refDataResponse    `json:"teamType"`
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
@@ -59,7 +49,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 		return teams, newStatusError(resp)
 	}
 
-	var v []TeamCollection
+	var v []teamWithMembersResponse
 	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
 		c.logResponse(req, resp, err)
 		return teams, err
@@ -91,13 +81,13 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			TypeLabel: t.TeamType.Label,
 			Selector:  strconv.Itoa(t.ID),
 			Teams:     []model.Team{},
+			Members:   []model.Assignee{},
 		}
 
-		for _, m := range t.Members {
-			team.Members = append(team.Members, model.Assignee{
-				Id:   m.ID,
-				Name: m.DisplayName,
-			})
+		if t.Members != nil {
+			for _, m := range *t.Members {
+				team.Members = append(team.Members, m.model())
+			}
 		}
 
 		if team.IsLay() {
