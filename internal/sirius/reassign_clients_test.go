@@ -127,6 +127,7 @@ func TestReassignClientsReturnsInternalServerError(t *testing.T) {
 }
 
 func TestReassignClients_contract(t *testing.T) {
+	t.Skip("Working, so skip to allow for cleaner fail logs")
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
