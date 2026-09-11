@@ -153,5 +153,5 @@ func TestApiClient_GetTaskTypes_CachesResponse(t *testing.T) {
 
 func TestGetTaskTypes_contract(t *testing.T) {
 	// TODO: Task types are currently returned as a dynamically named object, which makes it impossible to test with Pact.
-	// Ticket SFS-783 will address this by refactoring the API to return a list of task types instead of an object with dynamic keys.
+	t.Skip("Skipping test until SFS-783 is implemented")
 }
