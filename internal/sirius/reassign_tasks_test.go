@@ -198,7 +198,6 @@ func TestReassignTasksReturnsInternalServerError(t *testing.T) {
 }
 
 func TestReassignTasks_contract(t *testing.T) {
-	t.Skip("Skipping contract to get pa deputies working")
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
