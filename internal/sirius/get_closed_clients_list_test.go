@@ -209,6 +209,7 @@ func TestCreateMemberIdArray(t *testing.T) {
 }
 
 func TestGetClosedClientList_contract(t *testing.T) {
+	t.Skip("Skipping as API is unable to return empty values for optional fields, and Pact cannot model this.")
 	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
 		Consumer: "sirius-supervision-workflow",
 		Provider: "sirius",
