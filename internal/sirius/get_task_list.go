@@ -49,19 +49,18 @@ type taskMetaDataResponse struct {
 }
 
 type taskResponse struct {
-	Assignee      *assigneeWithTeamsResponse `json:"assignee,omitempty"`
-	Orders        []orderResponse            `json:"caseItems,omitempty"`
-	Persons       []clientSummaryResponse    `json:"persons,omitempty"`
-	Clients       []clientSummaryResponse    `json:"clients,omitempty"`
-	Deputies      []deputyResponse           `json:"deputies,omitempty"`
-	Status        string                     `json:"status,omitempty"`
+	Assignee      *assigneeWithTeamsResponse `json:"assignee"`
+	Orders        []orderResponse            `json:"caseItems" pact:"min=0"`
+	Clients       []clientSummaryResponse    `json:"clients" pact:"min=0"`
+	Deputies      []deputyResponse           `json:"deputies" pact:"min=0"`
+	Status        string                     `json:"status"`
 	DueDate       string                     `json:"dueDate"`
 	Id            int                        `json:"id"`
 	Type          string                     `json:"type"`
 	Name          string                     `json:"name"`
-	Description   string                     `json:"description,omitempty"`
-	RAGRating     int                        `json:"ragRating,omitempty"`
-	CreatedTime   string                     `json:"createdTime,omitempty"`
+	Description   string                     `json:"description"`
+	RAGRating     int                        `json:"ragRating"`
+	CreatedTime   string                     `json:"createdTime"`
 	CaseOwnerTask bool                       `json:"caseOwnerTask"`
 	IsPriority    bool                       `json:"isPriority"`
 }

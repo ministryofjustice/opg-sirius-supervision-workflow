@@ -166,7 +166,7 @@ func TestGetDeputyList_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("A deputy exists").
+		Given("An active Supervision client with a deputy and order exists").
 		Given("I am an allocations user").
 		UponReceiving("A request for the deputy list").
 		WithRequest("GET", "/supervision-api/v1/assignees/teams/deputies", func(b *consumer.V4RequestBuilder) {
