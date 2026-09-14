@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           role-session-name: opg-sirius-supervision-workflow-verify-readonly-fs
@@ -154,7 +154,7 @@ jobs:
           docker load -i /tmp/images/multi-arch-image.tar
 
       - name: Configure OIDC AWS credentials for ECR push
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: arn:aws:iam::311462405659:role/sirius-component-ecr-role
           role-session-name: opg-sirius-supervision-workflow-github-actions-ecr-push
@@ -218,7 +218,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure OIDC AWS credentials for SSM
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: arn:aws:iam::997462338508:role/sirius-supervision-component-ssm-role
           role-session-name: opg-sirius-supervision-workflow-github-actions-ssm-push
