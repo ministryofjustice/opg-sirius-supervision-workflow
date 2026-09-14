@@ -264,7 +264,7 @@ func TestGetClientList_contract(t *testing.T) {
 		WithRequest("GET", "/supervision-api/v1/assignees/123/clients", func(b *consumer.V4RequestBuilder) {
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
-			b.Query("filter", matchers.S("caseowner:123"))
+			b.Query("filter", matchers.S(""))
 			b.Query("sort", matchers.S(""))
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
@@ -275,10 +275,9 @@ func TestGetClientList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			clientList, err := client.GetClientList(getContext(nil), ClientListParams{
-				Team:       model.Team{Id: 123},
-				Page:       1,
-				PerPage:    25,
-				CaseOwners: []string{"123"},
+				Team:    model.Team{Id: 123},
+				Page:    1,
+				PerPage: 25,
 			})
 			assert.NoError(t, err)
 
