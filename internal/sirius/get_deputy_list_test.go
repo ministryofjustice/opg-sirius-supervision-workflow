@@ -173,7 +173,7 @@ func TestGetDeputyList_contract(t *testing.T) {
 			b.Query("teamIds[]", matchers.S("123"))
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
-			b.Query("filter", matchers.S("ecm:123"))
+			b.Query("filter", matchers.S(""))
 			b.Query("sort", matchers.S("field:direction"))
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
@@ -184,11 +184,10 @@ func TestGetDeputyList_contract(t *testing.T) {
 			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
 
 			deputyList, err := client.GetDeputyList(getContext(nil), DeputyListParams{
-				Team:         model.Team{Id: 123},
-				Page:         1,
-				PerPage:      25,
-				Sort:         "field:direction",
-				SelectedECMs: []string{"123"},
+				Team:    model.Team{Id: 123},
+				Page:    1,
+				PerPage: 25,
+				Sort:    "field:direction",
 			})
 			assert.NoError(t, err)
 
