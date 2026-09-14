@@ -264,7 +264,7 @@ func TestGetClientList_contract(t *testing.T) {
 		WithRequest("GET", "/supervision-api/v1/assignees/123/clients", func(b *consumer.V4RequestBuilder) {
 			b.Query("limit", matchers.S("25"))
 			b.Query("page", matchers.S("1"))
-			b.Query("filter", matchers.S("caseowner:1"))
+			b.Query("filter", matchers.S("caseowner:123"))
 			b.Query("sort", matchers.S(""))
 		}).
 		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
@@ -278,7 +278,7 @@ func TestGetClientList_contract(t *testing.T) {
 				Team:       model.Team{Id: 123},
 				Page:       1,
 				PerPage:    25,
-				CaseOwners: []string{"1"},
+				CaseOwners: []string{"123"},
 			})
 			assert.NoError(t, err)
 
