@@ -9,7 +9,7 @@ import (
 
 type currentUserResponse struct {
 	ID          int            `json:"id"`
-	Name        string         `json:"name,omitempty"`
+	Name        string         `json:"name"`
 	PhoneNumber string         `json:"phoneNumber"`
 	Teams       []teamResponse `json:"teams"`
 	DisplayName string         `json:"displayName"`
