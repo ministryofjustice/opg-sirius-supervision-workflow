@@ -208,6 +208,7 @@ func TestGetTeams_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
+		Given("I am fetching Supervision teams with members").
 		UponReceiving("A request for teams").
 		WithRequest("GET", "/supervision-api/v1/teams", func(b *consumer.V4RequestBuilder) {
 			b.Header("Accept", matchers.S("application/json"))

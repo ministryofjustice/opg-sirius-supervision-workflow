@@ -88,7 +88,7 @@ func (r *assigneeResponse) model() model.Assignee {
 
 type assigneeWithTeamsResponse struct {
 	ID          int            `json:"id"`
-	Teams       []teamResponse `json:"teams,omitempty"`
+	Teams       []teamResponse `json:"teams"`
 	DisplayName string         `json:"displayName"`
 }
 
@@ -142,8 +142,8 @@ func (r *addressResponse) model() model.Address {
 
 type assuranceResponse struct {
 	ReportReviewDate string           `json:"reportReviewDate" pact:"example=2023-01-01T00:00:00+00:00"`
-	ReportMarkedAs   *refDataResponse `json:"reportMarkedAs,omitempty"`
-	AssuranceType    *refDataResponse `json:"assuranceType,omitempty"`
+	ReportMarkedAs   *refDataResponse `json:"reportMarkedAs"`
+	AssuranceType    *refDataResponse `json:"assuranceType"`
 }
 
 func (r *assuranceResponse) model() (model.Assurance, error) {
@@ -198,8 +198,8 @@ func (r *firmResponse) model() model.Firm {
 type deputySummaryResponse struct {
 	ID          int              `json:"id"`
 	DisplayName string           `json:"displayName"`
-	DeputyType  *refDataResponse `json:"deputyType,omitempty"`
-	Firm        *firmResponse    `json:"firm,omitempty"`
+	DeputyType  *refDataResponse `json:"deputyType"`
+	Firm        *firmResponse    `json:"firm"`
 }
 
 func (r *deputySummaryResponse) model() model.Deputy {
@@ -219,14 +219,14 @@ type deputyResponse struct {
 	ID                             int                                 `json:"id"`
 	DeputyNumber                   int                                 `json:"deputyNumber"`
 	DisplayName                    string                              `json:"displayName"`
-	DeputyType                     *refDataResponse                    `json:"deputyType,omitempty"`
-	DeputyAddress                  *addressResponse                    `json:"deputyAddress,omitempty"`
-	ExecutiveCaseManager           *assigneeResponse                   `json:"executiveCaseManager,omitempty"`
-	MostRecentlyCompletedAssurance *assuranceResponse                  `json:"mostRecentlyCompletedAssurance,omitempty"`
+	DeputyType                     *refDataResponse                    `json:"deputyType"`
+	DeputyAddress                  *addressResponse                    `json:"deputyAddress"`
+	ExecutiveCaseManager           *assigneeResponse                   `json:"executiveCaseManager"`
+	MostRecentlyCompletedAssurance *assuranceResponse                  `json:"mostRecentlyCompletedAssurance"`
 	ActiveClientCount              int                                 `json:"activeClientCount"`
 	ActiveNonCompliantClientCount  int                                 `json:"activeNonCompliantClientCount"`
-	DeputyImportantInformation     *deputyImportantInformationResponse `json:"deputyImportantInformation,omitempty"`
-	Firm                           *firmResponse                       `json:"firm,omitempty"`
+	DeputyImportantInformation     *deputyImportantInformationResponse `json:"deputyImportantInformation"`
+	Firm                           *firmResponse                       `json:"firm"`
 }
 
 func (r deputyResponse) model() (model.Deputy, error) {
@@ -252,14 +252,14 @@ func (r deputyResponse) model() (model.Deputy, error) {
 
 type clientSummaryResponse struct {
 	ID                   int                        `json:"id"`
-	UID                  string                     `json:"uId,omitempty"`
+	UID                  string                     `json:"uId"`
 	CaseRecNumber        string                     `json:"caseRecNumber"`
-	Salutation           string                     `json:"salutation,omitempty"`
+	Salutation           string                     `json:"salutation"`
 	FirstName            string                     `json:"firstname"`
-	MiddleNames          string                     `json:"middlenames,omitempty"`
+	MiddleNames          string                     `json:"middlenames"`
 	Surname              string                     `json:"surname"`
-	SupervisionCaseOwner *assigneeWithTeamsResponse `json:"supervisionCaseOwner,omitempty"`
-	FeePayer             *deputySummaryResponse     `json:"feePayer,omitempty"`
+	SupervisionCaseOwner *assigneeWithTeamsResponse `json:"supervisionCaseOwner"`
+	FeePayer             *deputySummaryResponse     `json:"feePayer"`
 }
 
 func (r *clientSummaryResponse) model() model.Client {
@@ -279,16 +279,16 @@ func (r *clientSummaryResponse) model() model.Client {
 
 type orderResponse struct {
 	ID                     int                    `json:"id"`
-	UID                    string                 `json:"uId,omitempty"`
-	Client                 *clientSummaryResponse `json:"client,omitempty"`
-	CaseRecNumber          string                 `json:"caseRecNumber,omitempty"`
-	CaseType               string                 `json:"caseType,omitempty"`
+	UID                    string                 `json:"uId"`
+	Client                 *clientSummaryResponse `json:"client"`
+	CaseRecNumber          string                 `json:"caseRecNumber"`
+	CaseType               string                 `json:"caseType"`
 	Type                   string                 `json:"caseSubtype"`
-	OrderStatus            *refDataResponse       `json:"orderStatus,omitempty"`
-	LatestAnnualReport     *annualReportResponse  `json:"latestAnnualReport,omitempty"`
+	OrderStatus            *refDataResponse       `json:"orderStatus"`
+	LatestAnnualReport     *annualReportResponse  `json:"latestAnnualReport"`
 	Date                   string                 `json:"orderDate" pact:"example=2023-01-01T00:00:00+00:00"`
 	MadeActiveDate         string                 `json:"madeActiveDate" pact:"example=2023-01-01T00:00:00+00:00"`
-	HowDeputyAppointed     *refDataResponse       `json:"howDeputyAppointed,omitempty"`
+	HowDeputyAppointed     *refDataResponse       `json:"howDeputyAppointed"`
 	IntroductoryTargetDate string                 `json:"introductoryTargetDate" pact:"example=2023-01-01T00:00:00+00:00"`
 }
 
@@ -326,12 +326,12 @@ type clientResponse struct {
 	CaseRecNumber        string                     `json:"caseRecNumber"`
 	FirstName            string                     `json:"firstname"`
 	Surname              string                     `json:"surname"`
-	SupervisionCaseOwner *assigneeWithTeamsResponse `json:"supervisionCaseOwner,omitempty"`
-	FeePayer             *deputySummaryResponse     `json:"feePayer,omitempty"`
-	Orders               []orderResponse            `json:"cases,omitempty"`
-	SupervisionLevel     *refDataResponse           `json:"supervisionLevel,omitempty"`
-	ActiveCaseType       *refDataResponse           `json:"activeCaseType,omitempty"`
-	DeputyTypes          []refDataResponse          `json:"deputyTypes,omitempty"`
+	SupervisionCaseOwner *assigneeWithTeamsResponse `json:"supervisionCaseOwner"`
+	FeePayer             *deputySummaryResponse     `json:"feePayer"`
+	Orders               []orderResponse            `json:"cases"`
+	SupervisionLevel     *refDataResponse           `json:"supervisionLevel"`
+	ActiveCaseType       *refDataResponse           `json:"activeCaseType"`
+	DeputyTypes          []refDataResponse          `json:"deputyTypes"`
 	LastActionDate       string                     `json:"lastActionDate" pact:"example=2023-01-01T00:00:00+00:00"`
 	CachedDebtTotal      float64                    `json:"cachedDebtTotal"`
 	ClosedOnDate         string                     `json:"closedOnDate" pact:"example=2023-01-01T00:00:00+00:00"`
