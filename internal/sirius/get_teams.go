@@ -10,10 +10,10 @@ import (
 )
 
 type teamWithMembersResponse struct {
-	ID          int                 `json:"id"`
-	DisplayName string              `json:"displayName"`
-	Members     *[]assigneeResponse `json:"members"`
-	TeamType    *refDataResponse    `json:"teamType"`
+	ID          int                `json:"id"`
+	DisplayName string             `json:"displayName"`
+	Members     []assigneeResponse `json:"members" pact:"min=0"`
+	TeamType    refDataResponse    `json:"teamType"`
 }
 
 func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
@@ -70,7 +70,7 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 	}
 
 	for _, t := range v {
-		if t.TeamType == nil {
+		if t.TeamType.Handle == "" {
 			continue
 		}
 
@@ -84,10 +84,8 @@ func (c *ApiClient) GetTeams(ctx Context) ([]model.Team, error) {
 			Members:   []model.Assignee{},
 		}
 
-		if t.Members != nil {
-			for _, m := range *t.Members {
-				team.Members = append(team.Members, m.model())
-			}
+		for _, m := range t.Members {
+			team.Members = append(team.Members, m.model())
 		}
 
 		if team.IsLay() {
