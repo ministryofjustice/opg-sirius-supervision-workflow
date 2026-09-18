@@ -11,17 +11,10 @@ type AssigneeAndCount struct {
 }
 
 type Assignee struct {
-	Id          int
-	Name        string
-	Teams       []Team
-	PhoneNumber string
-	Deleted     bool
-	Email       string
-	Firstname   string
-	Surname     string
-	Roles       []string
-	Locked      bool
-	Suspended   bool
+	Id    int
+	Name  string
+	Teams []Team
+	Roles []string
 }
 
 func (m Assignee) IsSelected(selectedAssignees []string) bool {
