@@ -12,17 +12,17 @@ import (
 type ReassignClientsParams struct {
 	AssignTeam string
 	AssignCM   string
+	ClientIds  []string
+}
+
+type reassignClientsRequest struct {
 	AssigneeId int      `json:"assigneeId"`
 	ClientIds  []string `json:"clientIds"`
 	IsWorkflow bool     `json:"isWorkflow"`
 }
 
-type ReassignResponse struct {
-	ReassignName string `json:"reassignName"`
-}
-
 func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (string, error) {
-	var u ReassignResponse
+	var u reassignResponse
 	var body bytes.Buffer
 	var err error
 
@@ -31,13 +31,16 @@ func (c *ApiClient) ReassignClients(ctx Context, params ReassignClientsParams) (
 		assignee = params.AssignCM
 	}
 
-	params.AssigneeId, err = strconv.Atoi(assignee)
+	id, err := strconv.Atoi(assignee)
 	if err != nil {
 		return "", err
 	}
 
-	params.IsWorkflow = true
-	err = json.NewEncoder(&body).Encode(params)
+	err = json.NewEncoder(&body).Encode(reassignClientsRequest{
+		AssigneeId: id,
+		ClientIds:  params.ClientIds,
+		IsWorkflow: true,
+	})
 
 	if err != nil {
 		return "", err
