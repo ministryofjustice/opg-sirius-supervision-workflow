@@ -2,7 +2,6 @@ package sirius
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -10,11 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ministryofjustice/opg-go-common/telemetry"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/mocks"
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
-	"github.com/pact-foundation/pact-go/v2/consumer"
-	"github.com/pact-foundation/pact-go/v2/matchers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -290,49 +286,4 @@ func TestTaskList_CalculateTaskTypeCounts(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, tasks.CalculateTaskTypeCounts(taskTypes))
-}
-
-func TestGetTaskList_contract(t *testing.T) {
-	t.Skip("Not possible while the API returns tasks with persons, clients, deputies, and caseitems arrays, as all are conditional and Pact cannot model conditionally empty arrays")
-	pact, err := consumer.NewV4Pact(consumer.MockHTTPProviderConfig{
-		Consumer: "sirius-supervision-workflow",
-		Provider: "sirius",
-		LogDir:   "../../logs",
-		PactDir:  "../../pacts",
-	})
-	assert.NoError(t, err)
-
-	err = pact.
-		AddInteraction().
-		Given("A Supervision task exists").
-		Given("I am an allocations user").
-		UponReceiving("A request for the task list").
-		WithRequest("GET", "/supervision-api/v1/assignees/teams/tasks", func(b *consumer.V4RequestBuilder) {
-			b.Query("teamIds[]", matchers.S("123"))
-			b.Query("filter", matchers.S("status:Not started"))
-			b.Query("limit", matchers.S("25"))
-			b.Query("page", matchers.S("1"))
-			b.Query("sort", matchers.S("ispriority:desc,duedate:asc,id:asc"))
-		}).
-		WillRespondWith(200, func(b *consumer.V4ResponseBuilder) {
-			b.Header("Content-Type", matchers.S("application/json"))
-			b.BodyMatch(taskListResponse{})
-		}).
-		ExecuteTest(t, func(config consumer.MockServerConfig) error {
-			client := NewApiClient(http.DefaultClient, fmt.Sprintf("http://%s:%d/supervision-api", config.Host, config.Port), telemetry.NewLogger("test"))
-
-			taskList, err := client.GetTaskList(getContext(nil), TaskListParams{
-				Team:    model.Team{Id: 123},
-				Page:    1,
-				PerPage: 25,
-			})
-			assert.NoError(t, err)
-
-			assert.EqualValues(t, 1, taskList.TotalTasks)
-			assert.EqualValues(t, 1, len(taskList.Tasks))
-			assert.EqualValues(t, 1, taskList.Tasks[0].Id)
-			return nil
-		})
-
-	assert.NoError(t, err)
 }
