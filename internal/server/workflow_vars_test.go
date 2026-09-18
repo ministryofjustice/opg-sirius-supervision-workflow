@@ -27,9 +27,7 @@ func (m *mockWorkflowVarsClient) GetTeams(ctx sirius.Context) ([]model.Team, err
 }
 
 var mockUserDetailsData = model.Assignee{
-	Id:        123,
-	Firstname: "John",
-	Surname:   "Doe",
+	Id: 123,
 	Teams: []model.Team{
 		{
 			Id:   13,
