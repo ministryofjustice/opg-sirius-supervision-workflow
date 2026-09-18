@@ -136,7 +136,8 @@ func TestReassignDeputies_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("An active Supervision client with a deputy and order exists").
+		Given("A public authority deputy exists").
+		Given("There is a user to reassign to").
 		Given("I am a manager").
 		UponReceiving("A request to reassign deputies").
 		WithRequest("PUT", "/supervision-api/v1/deputies/reassign", func(b *consumer.V4RequestBuilder) {

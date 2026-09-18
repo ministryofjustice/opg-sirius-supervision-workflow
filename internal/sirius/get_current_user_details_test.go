@@ -51,22 +51,15 @@ func TestGetCurrentUserDetails(t *testing.T) {
 	}
 
 	expectedResponse := model.Assignee{
-		Id:          65,
-		PhoneNumber: "12345678",
+		Id: 65,
 		Teams: []model.Team{
 			{
 				Name: "Lay Team 1 - (Supervision)",
 				Id:   13,
 			},
 		},
-		Name:      "case manager",
-		Deleted:   false,
-		Email:     "case.manager@opgtest.com",
-		Firstname: "case",
-		Surname:   "manager",
-		Roles:     []string{"Case Manager"},
-		Locked:    false,
-		Suspended: false,
+		Name:  "case manager",
+		Roles: []string{"Case Manager"},
 	}
 
 	teams, err := client.GetCurrentUserDetails(getContext(nil))
@@ -135,17 +128,10 @@ func TestMyDetailsReturns200(t *testing.T) {
 	}
 
 	expectedResponse := model.Assignee{
-		Id:          55,
-		PhoneNumber: "12345678",
-		Teams:       []model.Team{},
-		Name:        "case manager",
-		Deleted:     false,
-		Email:       "case.manager@opgtest.com",
-		Firstname:   "case",
-		Surname:     "manager",
-		Roles:       []string{"OPG User", "Case Manager"},
-		Locked:      false,
-		Suspended:   false,
+		Id:    55,
+		Teams: []model.Team{},
+		Name:  "case manager",
+		Roles: []string{"OPG User", "Case Manager"},
 	}
 
 	user, err := client.GetCurrentUserDetails(getContext(nil))
@@ -164,7 +150,7 @@ func TestGetCurrentUserDetails_contract(t *testing.T) {
 
 	err = pact.
 		AddInteraction().
-		Given("User exists").
+		Given("I am an allocations user").
 		UponReceiving("A request for the current user").
 		WithRequest("GET", "/supervision-api/v1/users/current", func(b *consumer.V4RequestBuilder) {
 			b.Header("Accept", matchers.S("application/json"))
