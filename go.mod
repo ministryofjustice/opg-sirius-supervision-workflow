@@ -3,7 +3,7 @@ module github.com/ministryofjustice/opg-sirius-workflow
 go 1.26.2
 
 require (
-	github.com/ministryofjustice/opg-go-common v1.165.27
+	github.com/ministryofjustice/opg-go-common v1.165.28
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.12.1
 	go.opentelemetry.io/contrib/detectors/aws/ecs v1.46.0
