@@ -1,39 +1,27 @@
 package sirius
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
-type ClosedClientsParams struct {
-	TeamIds []string `json:"teamIds"`
-}
-
 func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (ClientList, error) {
 	var v ClientList
-	var filter string
-	var body bytes.Buffer
-	var err error
+	query := url.Values{}
 
-	filter = params.CreateFilter()
-	ClosedClientMemberIds := ClosedClientsParams{TeamIds: CreateMemberIdArray(params)}
-
-	err = json.NewEncoder(&body).Encode(ClosedClientMemberIds)
-	if err != nil {
-		return v, err
+	for _, teamId := range CreateMemberIdArray(params) {
+		query.Add("teamIds[]", teamId)
 	}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("filter", params.CreateFilter())
 
-	endpoint := fmt.Sprintf(
-		"/v1/assignees/closed-clients?limit=%d&page=%d&filter=%s",
-		params.PerPage,
-		params.Page,
-		filter,
-	)
+	endpoint := fmt.Sprintf("/v1/assignees/closed-clients?%s", query.Encode())
 
-	req, err := c.newRequest(ctx, http.MethodGet, endpoint, &body)
+	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
 		c.logErrorRequest(req, err)
@@ -57,9 +45,16 @@ func (c *ApiClient) GetClosedClientList(ctx Context, params ClientListParams) (C
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response clientListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.model()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return ClientList{}, err
 	}
 
 	return v, err
