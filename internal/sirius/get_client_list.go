@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/ministryofjustice/opg-sirius-workflow/internal/model"
@@ -22,7 +24,7 @@ type ClientListParams struct {
 }
 
 type ClientMetaData struct {
-	AssigneeCount []model.AssigneeAndCount `json:"assigneeClientCount"`
+	AssigneeCount []model.AssigneeAndCount
 }
 
 type ClientList struct {
@@ -30,6 +32,44 @@ type ClientList struct {
 	Pages        model.PageInformation `json:"pages"`
 	TotalClients int                   `json:"total"`
 	MetaData     ClientMetaData        `json:"metadata"`
+}
+
+type clientMetaDataResponse struct {
+	AssigneeCount []assigneeAndCountResponse `json:"assigneeClientCount"`
+}
+
+func (r clientMetaDataResponse) model() ClientMetaData {
+	return ClientMetaData{
+		AssigneeCount: assigneeAndCountsModel(r.AssigneeCount),
+	}
+}
+
+type clientListResponse struct {
+	Clients      []clientResponse        `json:"clients"`
+	Pages        pageInformationResponse `json:"pages"`
+	TotalClients int                     `json:"total"`
+	MetaData     clientMetaDataResponse  `json:"metadata"`
+}
+
+func (r clientListResponse) model() (ClientList, error) {
+	var clients []model.Client
+	if r.Clients != nil {
+		clients = make([]model.Client, 0, len(r.Clients))
+		for _, client := range r.Clients {
+			mappedClient, err := client.model()
+			if err != nil {
+				return ClientList{}, err
+			}
+			clients = append(clients, mappedClient)
+		}
+	}
+
+	return ClientList{
+		Clients:      clients,
+		Pages:        r.Pages.model(),
+		TotalClients: r.TotalClients,
+		MetaData:     r.MetaData.model(),
+	}, nil
 }
 
 func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientList, error) {
@@ -47,7 +87,13 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		filter = params.CreateFilter()
 	}
 
-	endpoint := fmt.Sprintf("/v1/assignees/%d/clients?limit=%d&page=%d&filter=%s&sort=%s", params.Team.Id, params.PerPage, params.Page, filter, sort)
+	query := url.Values{}
+	query.Set("limit", strconv.Itoa(params.PerPage))
+	query.Set("page", strconv.Itoa(params.Page))
+	query.Set("filter", filter)
+	query.Set("sort", sort)
+
+	endpoint := fmt.Sprintf("/v1/assignees/%d/clients?%s", params.Team.Id, query.Encode())
 	req, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 
 	if err != nil {
@@ -73,9 +119,16 @@ func (c *ApiClient) GetClientList(ctx Context, params ClientListParams) (ClientL
 		return v, newStatusError(resp)
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	var response clientListResponse
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		c.logResponse(req, resp, err)
 		return v, err
+	}
+
+	v, err = response.model()
+	if err != nil {
+		c.logResponse(req, resp, err)
+		return ClientList{}, err
 	}
 
 	return v, err

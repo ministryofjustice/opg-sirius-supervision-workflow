@@ -3,9 +3,9 @@ package model
 import "fmt"
 
 type Firm struct {
-	Id     int    `json:"id"`
-	Name   string `json:"firmName"`
-	Number int    `json:"firmNumber"`
+	Id     int
+	Name   string
+	Number int
 }
 
 func (f Firm) GetFirmURL() string {

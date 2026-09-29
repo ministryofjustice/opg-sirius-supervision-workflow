@@ -1,7 +1,6 @@
 package urlbuilder
 
 import (
-	"fmt"
 	"net/url"
 	"slices"
 )
@@ -36,7 +35,10 @@ func (s Sort) ToURL() string {
 	if s.OrderBy == "" {
 		return ""
 	}
-	return fmt.Sprintf("order-by=%s&sort=%s", s.OrderBy, s.GetDirection())
+	values := url.Values{}
+	values.Set("order-by", s.OrderBy)
+	values.Set("sort", s.GetDirection())
+	return values.Encode()
 }
 
 func (s Sort) GetAriaSort(orderBy string) string {

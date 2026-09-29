@@ -584,9 +584,7 @@ func TestClientTasksPreselectsCaseManagerOnFirstPageLoadIfTeamMatches(t *testing
 		app := WorkflowVars{
 			Path: "test-path",
 			MyDetails: model.Assignee{
-				Id:        123,
-				Firstname: "John",
-				Surname:   "Doe",
+				Id: 123,
 				Teams: []model.Team{
 					{
 						Id:   tt.myDetailsTeamId,

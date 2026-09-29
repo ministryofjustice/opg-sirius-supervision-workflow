@@ -115,12 +115,12 @@ func TestGetTaskListCanThrow500Error(t *testing.T) {
 		{
 			name:         "Single Team ID requested",
 			selectedTeam: model.Team{Id: 13},
-			expectedURL:  "/v1/assignees/teams/tasks?teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
+			expectedURL:  "/v1/assignees/teams/tasks?filter=status%3ANot+started&limit=25&page=1&sort=ispriority%3Adesc%2Cduedate%3Aasc%2Cid%3Aasc&teamIds%5B%5D=13",
 		},
 		{
 			name:         "Multiple Team IDs requested",
 			selectedTeam: model.Team{Id: 0, Teams: []model.Team{{Id: 12}, {Id: 13}}},
-			expectedURL:  "/v1/assignees/teams/tasks?teamIds[]=12&teamIds[]=13&filter=status:Not+started&limit=25&page=1&sort=ispriority:desc,duedate:asc,id:asc",
+			expectedURL:  "/v1/assignees/teams/tasks?filter=status%3ANot+started&limit=25&page=1&sort=ispriority%3Adesc%2Cduedate%3Aasc%2Cid%3Aasc&teamIds%5B%5D=12&teamIds%5B%5D=13",
 		},
 	}
 	for _, test := range tests {
@@ -166,31 +166,31 @@ func TestTaskListParams_CreateFilter(t *testing.T) {
 	}{
 		{
 			params: TaskListParams{},
-			want:   "status:Not+started",
+			want:   "status:Not started",
 		},
 		{
 			params: TaskListParams{SelectedTaskTypes: []string{"CWGN"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1"}},
-			want:   "status:Not+started,type:CWGN,assigneeid_or_null:LayTeam1",
+			want:   "status:Not started,type:CWGN,assigneeid_or_null:LayTeam1",
 		},
 		{
 			params: TaskListParams{SelectedTaskTypes: []string{"CWGN", "ORAL"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1 User2", "LayTeam1 User3"}},
-			want:   "status:Not+started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3",
+			want:   "status:Not started,type:CWGN,type:ORAL,assigneeid_or_null:LayTeam1 User2,assigneeid_or_null:LayTeam1 User3",
 		},
 		{
 			params: TaskListParams{SelectedTaskTypes: []string{"CWGN", "ORAL", "FAKE", "TEST"}, TaskTypes: SetUpTaskTypes(), Assignees: []string{"LayTeam1 User3"}},
-			want:   "status:Not+started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3",
+			want:   "status:Not started,type:CWGN,type:ORAL,type:FAKE,type:TEST,assigneeid_or_null:LayTeam1 User3",
 		},
 		{
 			params: TaskListParams{Assignees: []string{"LayTeam1"}},
-			want:   "status:Not+started,assigneeid_or_null:LayTeam1",
+			want:   "status:Not started,assigneeid_or_null:LayTeam1",
 		},
 		{
 			params: TaskListParams{Assignees: []string{"LayTeam1"}, DueDateFrom: &selectedDueDateFrom, DueDateTo: &selectedDueDateTo},
-			want:   "status:Not+started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18",
+			want:   "status:Not started,assigneeid_or_null:LayTeam1,due_date_from:2022-12-17,due_date_to:2022-12-18",
 		},
 		{
 			params: TaskListParams{SelectedTaskTypes: []string{TaskTypeEcmHandle}, TaskTypes: SetUpTaskTypes()},
-			want:   "status:Not+started,type:CWGN,type:RRRR",
+			want:   "status:Not started,type:CWGN,type:RRRR",
 		},
 	}
 	for i, test := range tests {

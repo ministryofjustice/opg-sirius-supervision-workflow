@@ -1,9 +1,9 @@
 package model
 
 type Assurance struct {
-	ReportReviewDate Date    `json:"reportReviewDate"`
-	ReportMarkedAs   RefData `json:"reportMarkedAs"`
-	Type             RefData `json:"assuranceType"`
+	ReportReviewDate Date
+	ReportMarkedAs   RefData
+	Type             RefData
 }
 
 type RAGRating struct {

@@ -5,16 +5,16 @@ import (
 )
 
 type Task struct {
-	Assignee      Assignee `json:"assignee"`
-	Orders        []Order  `json:"caseItems"`
-	Clients       []Client `json:"clients"`
-	Deputies      []Deputy `json:"deputies"`
-	DueDate       string   `json:"dueDate"`
-	Id            int      `json:"id"`
-	Type          string   `json:"type"`
-	Name          string   `json:"name"`
-	CaseOwnerTask bool     `json:"caseOwnerTask"`
-	IsPriority    bool     `json:"isPriority"`
+	Assignee      Assignee
+	Orders        []Order
+	Clients       []Client
+	Deputies      []Deputy
+	DueDate       string
+	Id            int
+	Type          string
+	Name          string
+	CaseOwnerTask bool
+	IsPriority    bool
 }
 
 type DueDateStatus struct {

@@ -7,8 +7,8 @@ import (
 )
 
 type Team struct {
-	Id        int    `json:"id"`
-	Name      string `json:"displayName"`
+	Id        int
+	Name      string
 	Members   []Assignee
 	Deputies  []Deputy
 	Type      string
@@ -36,7 +36,7 @@ func (t Team) GetAssigneesForFilter() []Assignee {
 	return deduped
 }
 
-func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount, urlPath string) string {
+func (t Team) GetUnassignedCount(selectedAssignees []AssigneeAndCount) string {
 	for _, a := range selectedAssignees {
 		if t.Id == a.AssigneeId {
 			stringValue := strconv.Itoa(a.Count)

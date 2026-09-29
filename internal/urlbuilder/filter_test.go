@@ -1,9 +1,10 @@
 package urlbuilder
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateFilter(t *testing.T) {
