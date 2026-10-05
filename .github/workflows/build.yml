@@ -72,7 +72,7 @@ jobs:
             --broker-password ${{ secrets.PACT_BROKER_PASSWORD }}
 
       - name: Upload Code Coverage
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: test-results/test-coverage.txt
           fail_ci_if_error: false
@@ -96,7 +96,7 @@ jobs:
         run: make gosec
       - name: Upload GoSec results to GitHub Security tab
         if: ${{ always() }}
-        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           sarif_file: "test-results/gosec.sarif"
           category: gosec
@@ -131,7 +131,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           role-session-name: opg-sirius-supervision-workflow-verify-readonly-fs
@@ -158,7 +158,7 @@ jobs:
 
   build:
     name: Build Sirius Workflow
-    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@089d6e96fcc5948c191848744e178545fad5cb14 # v3.19.16
+    uses: ministryofjustice/opg-github-workflows/.github/workflows/build-multi-architecture-image.yml@83c4e945ed260f410bc500d5703ecc2a4b104ecf # v3.19.17
     with:
       image_name: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow
       build_options: --file docker/sirius-workflow/Dockerfile
@@ -186,7 +186,7 @@ jobs:
           docker load -i /tmp/images/multi-arch-image.tar
 
       - name: Configure OIDC AWS credentials for ECR push
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: arn:aws:iam::311462405659:role/sirius-component-ecr-role
           role-session-name: opg-sirius-supervision-workflow-github-actions-ecr-push
@@ -200,13 +200,13 @@ jobs:
           registries: 311462405659
 
       - name: Snyk Scan
-        uses: ministryofjustice/opg-github-actions/actions/snyk-scan@722a5f955424aaba01e9ca43d68390cd4048d6e1 # v4.10.2
+        uses: ministryofjustice/opg-github-actions/actions/snyk-scan@ae37b9b322286123971417e82b665e56e9d6aa3f # v4.10.3
         with:
           SNYK_TEST_IMAGE: 311462405659.dkr.ecr.eu-west-1.amazonaws.com/sirius/sirius-workflow:latest
           SNYK_TOKEN: ${{ secrets.SNYK_OPG_ORG_TOKEN }}
 
       - name: Upload Snyk scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         if: always()
         with:
           sarif_file: "test-results/snyk.sarif"
@@ -250,7 +250,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure OIDC AWS credentials for SSM
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: arn:aws:iam::997462338508:role/sirius-supervision-component-ssm-role
           role-session-name: opg-sirius-supervision-workflow-github-actions-ssm-push
