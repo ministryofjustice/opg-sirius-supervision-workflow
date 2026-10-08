@@ -165,5 +165,5 @@ func TestReassignDeputies_contract(t *testing.T) {
 		})
 
 	assert.NoError(t, err)
-	
+
 }
