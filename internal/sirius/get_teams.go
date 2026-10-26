@@ -12,7 +12,7 @@ import (
 type teamWithMembersResponse struct {
 	ID          int                `json:"id"`
 	DisplayName string             `json:"displayName"`
-	Members     []assigneeResponse `json:"members" pact:"min=0"`
+	Members     []assigneeResponse `json:"members"`
 	TeamType    refDataResponse    `json:"teamType"`
 }
 
