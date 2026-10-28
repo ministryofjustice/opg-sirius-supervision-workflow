@@ -61,6 +61,17 @@ jobs:
       - name: Run Tests
         run: make unit-test
 
+      - name: Configure OIDC AWS credentials for ECR pull
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        with:
+          role-to-assume: arn:aws:iam::311462405659:role/sirius-component-ecr-role
+          role-session-name: opg-sirius-supervision-workflow-github-actions-ecr-pull
+          role-duration-seconds: 900
+          aws-region: eu-west-1
+      - name: ECR Login
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+        with:
+          registries: 311462405659
       - name: Publish pacts
         run: |
           docker compose run --rm pact-cli pact-broker publish ./pacts/sirius-supervision-workflow-sirius.json \
