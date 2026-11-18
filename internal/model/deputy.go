@@ -7,7 +7,7 @@ import (
 )
 
 type DeputyImportantInformation struct {
-	PanelDeputy bool
+	PanelDeputyStatus RefData
 }
 
 type Deputy struct {
