@@ -178,7 +178,7 @@ func getSuccessMessage(r *http.Request, w http.ResponseWriter, cookieName string
 			return "", err
 		}
 	}
-	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0), Secure: true}
+	dc := &http.Cookie{Name: cookieName, MaxAge: -1, Expires: time.Unix(1, 0), Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
 	http.SetCookie(w, dc)
 	value, err := base64.URLEncoding.DecodeString(c.Value)
 	return string(value), err
