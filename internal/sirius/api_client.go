@@ -111,7 +111,7 @@ func (c *ApiClient) newRequest(ctx Context, method, path string, body io.Reader)
 }
 
 func (c *ApiClient) logErrorRequest(req *http.Request, err error) {
-	c.logger.Info("method: " + req.Method + ", url: " + req.URL.Path)
+	c.logger.Info("request", slog.String("method", req.Method), slog.String("url", req.URL.Path))
 	if err != nil {
 		c.logger.Error(err.Error())
 	}
@@ -122,7 +122,7 @@ func (c *ApiClient) logResponse(req *http.Request, resp *http.Response, err erro
 	if resp != nil {
 		response = strconv.Itoa(resp.StatusCode)
 	}
-	c.logger.Info("method: " + req.Method + ", url: " + req.URL.Path + ", response: " + response)
+	c.logger.Info("response", slog.String("method", req.Method), slog.String("url", req.URL.Path), slog.String("response", response))
 	if err != nil && !errors.Is(err, context.Canceled) {
 		c.logger.Error(err.Error())
 	}

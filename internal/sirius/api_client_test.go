@@ -54,8 +54,11 @@ func SetUpTest() (*slog.Logger, *mocks.MockClient) {
 }
 
 type LogEntry struct {
-	Level   string `json:"level"`
-	Message string `json:"msg"`
+	Level    string `json:"level"`
+	Message  string `json:"msg"`
+	Method   string `json:"method"`
+	URL      string `json:"url"`
+	Response string `json:"response"`
 }
 
 func TestLogResponseLogsErrors(t *testing.T) {
@@ -81,7 +84,10 @@ func TestLogResponseLogsErrors(t *testing.T) {
 	}
 
 	assert.Equal(t, "INFO", logEntries[0].Level)
-	assert.Equal(t, "method: POST, url: /my-page, response: 200", logEntries[0].Message)
+	assert.Equal(t, "response", logEntries[0].Message)
+	assert.Equal(t, "POST", logEntries[0].Method)
+	assert.Equal(t, "/my-page", logEntries[0].URL)
+	assert.Equal(t, "200", logEntries[0].Response)
 
 	assert.Equal(t, "ERROR", logEntries[1].Level)
 	assert.Equal(t, "some error", logEntries[1].Message)
@@ -110,5 +116,6 @@ func TestLogResponseIgnoresContextCanceled(t *testing.T) {
 	}
 
 	assert.Equal(t, "INFO", logEntries[0].Level)
-	assert.Equal(t, "method: POST, url: /my-page, response: 200", logEntries[0].Message)
+	assert.Equal(t, "response", logEntries[0].Message)
+	assert.Equal(t, "200", logEntries[0].Response)
 }
