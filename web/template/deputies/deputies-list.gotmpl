@@ -68,7 +68,7 @@
 
               <td class="govuk-table__cell">
                 <a href="{{ sirius .GetURL }}" class="govuk-link">{{ .DisplayName }}</a>
-                {{ if eq .DeputyImportantInformation.PanelDeputy true }}
+                {{ if eq .DeputyImportantInformation.PanelDeputyStatus.Handle "YES" }}
                   <span class="moj-badge">Panel Deputy</span>
                 {{end}}
                 <span class="secondary">{{ if .IsPro }}{{ .Address.Town }} - {{ end }}{{ .Number }}</span>

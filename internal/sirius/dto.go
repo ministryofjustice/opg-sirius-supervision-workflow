@@ -164,7 +164,7 @@ func (r *assuranceResponse) model() (model.Assurance, error) {
 }
 
 type deputyImportantInformationResponse struct {
-	PanelDeputy bool `json:"panelDeputy"`
+	PanelDeputyStatus model.RefData `json:"panelDeputyStatus"`
 }
 
 func (r *deputyImportantInformationResponse) model() model.DeputyImportantInformation {
@@ -173,7 +173,7 @@ func (r *deputyImportantInformationResponse) model() model.DeputyImportantInform
 	}
 
 	return model.DeputyImportantInformation{
-		PanelDeputy: r.PanelDeputy,
+		PanelDeputyStatus: r.PanelDeputyStatus,
 	}
 }
 

@@ -946,7 +946,10 @@ module.exports = function () {
             "activeClientCount": 100,
             "activeNonCompliantClientCount": 10,
             "deputyImportantInformation": {
-              "panelDeputy": true
+              "panelDeputyStatus": {
+                "handle": "YES",
+                "label": "Yes",
+              }
             },
             "firm": {
                 "id": 78745361,
